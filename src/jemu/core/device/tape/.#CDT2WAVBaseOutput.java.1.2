@@ -1,0 +1,211 @@
+package jemu.core.device.tape;
+
+/**
+ * Generic wave data output manager
+ * Converted from "TZX to WAV Converter v0.2 (C) 2006 Francisco Javier Crespo <tzx2wav@ya.com>"
+ * 
+ * @author John Girvin (@see http://www.girv.net)
+ *
+ */
+public abstract class CDT2WAVBaseOutput {
+	
+	//
+	// CONSTANTS
+	//
+
+	private static final int LOAMP    = 0x26;      		// Low Level Amplitude  (-3 dB)
+	private static final int HIAMP    = 0xDA;      		// High Level Amplitude (-3 dB)
+    protected boolean med = false;
+
+    //
+    // INSTANCE VARIABLES
+    //
+    
+	private double z80_freq = 3500000.0; // Z80 frequency in Hz
+
+    private byte[] buf = null;			// output buffer
+    private int bufPos = 0;
+    private double frequency = 44100.0;	// wave data frequency
+    private double cycle     = 0.0;		// Z80 cycles per wave sample
+
+    private int amp = LOAMP;			// current amplitude
+	
+	/**
+	 * Create an output manager in "test mode", where no output data
+	 * is generated but all other processing is the same.
+	 * 
+	 * @param freq - frequency of output data to pretend-generate
+	 */
+	public CDT2WAVBaseOutput(int freq) {
+		super();
+		
+		this.buf = null;
+		this.bufPos = 0;
+		this.frequency = freq;
+    /*    if (freq == 44100) {
+            z80_freq = 3400000.0;
+        } else if (freq == 22050) {
+            z80_freq = 3494400.0;
+        }*/
+		this.cycle = frequency / z80_freq;
+		
+		init();
+	}
+	
+	/**
+	 * Dereference any allocated resources. Do not call this object again
+	 * after calling dispose().
+	 */
+	public void dispose() {
+		buf = null;
+	}
+	
+	//
+	// Concrete implementation interface
+	//
+	
+	protected abstract void init();
+	protected abstract void write(int numsamples);
+	protected abstract void stop();
+
+	/**
+	 * Get the sample frequency to use when generating output
+	 * 
+	 * @return frequency in Hz
+	 */
+	protected double getFrequency() {
+		return frequency;
+	}
+
+    /**
+     * Set the current position in the output buffer.
+     * 
+	 * @return buffer position
+     */
+	protected void outputSeek(int pos) {
+		bufPos = pos;
+	}
+		
+    /**
+     * Return the current position in the output buffer.
+     * This is valid even if the output manager is in "test" mode.
+     * 
+	 * @return buffer position
+     */
+	protected int outputTell() {
+		return bufPos;
+	}
+	
+	/**
+	 * Write a byte to the output buffer
+	 * 
+	 * @param b - the byte to write
+	 */
+	protected final void outputByte(byte b) {
+		if (buf != null) {
+			buf[bufPos] = b;
+		}
+		bufPos++;
+	}
+
+	/**
+	 * Write bytes to the output buffer
+	 * 
+	 * @param b - the byte to write
+	 * @param count - number of times to write the byte
+	 */
+	protected final void outputByte(byte b, int count) {
+		if (buf != null) {
+			int p = bufPos;
+			for (int i = 0; i < count; i++) {
+				buf[p++] = b;
+			}
+		}
+		bufPos += count;
+	}
+	
+	//
+	// PUBLIC INTERFACE
+	//
+	
+	/**
+	 * Reset the output buffer. If the supplied buffer is null, the
+	 * output manager will operate in test mode.
+	 * 
+	 * @param buf - output buffer
+	 */
+	public void setOutputBuffer(byte[] buf) {
+		this.buf = buf;
+		this.bufPos = 0;
+	}
+	
+	/**
+	 * Convert a sampling value in Z80 T-States to number of samples for wave output 
+	 * 
+	 * @param tstates - number of Z80 T-States
+	 * @return Number of wave samples at current frequency
+	 */
+	public int samples(int tstates) {
+		return ( (int)(0.5 + (cycle*(double)tstates)) );
+	}
+
+	/**
+	 * Sets the sign of the wave
+	 * 
+	 * @param high - true to set the wave to high amplitude
+	 */
+	public void setAmp(boolean high) {
+		amp = (high ? HIAMP : LOAMP);
+	}
+
+	/**
+	 * Sets the sign of the wave to LO
+	 */
+	public void setAmpLow() {
+		amp = LOAMP;
+	}
+	
+	/**
+	 * Toggles the sign of the wave
+	 * TODO: WHOLE CONCEPT TO BE RECODED IN ToggleSgn();
+	 */
+	public void toggleAmp() {
+		if (isLowAmp()) {
+			amp = HIAMP;
+		} else {
+			amp = LOAMP;
+		}
+	}
+	
+	/**
+	 * Is the wave sign currently low amplitude?
+	 * 
+	 * @return boolean - true iff the wave sign currently low amplitude
+	 */
+	protected boolean isLowAmp() {
+		return (amp == LOAMP);
+	}
+
+	/**
+	 * Generate wave data for "len" samples.
+	 * 
+	 * @param numsamples
+	 */
+	public void play(int numsamples) {
+		write(numsamples);
+	}
+
+	/**
+	 * Waits for a number of milliseconds
+	 * 
+	 * @param ms - number of milliseconds
+	 */
+	public void pause(int ms) {
+		int p;
+		//if (curr!=(numblocks-1))
+		//{
+			p = (int)((((double) ms) * frequency)/1000.0);
+			play(p);
+		//}
+	}
+}
