@@ -2,10 +2,16 @@ package org.maia.amstrad.jemu.impl;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.Graphics2D;
+import java.awt.HeadlessException;
+import java.awt.MenuBar;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.JFrame;
 
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerAutotypeListener;
@@ -14,8 +20,10 @@ import jemu.ui.Autotype;
 import jemu.ui.JEMU;
 import jemu.ui.Switches;
 
+import org.maia.amstrad.jemu.AmstradMonitorMode;
 import org.maia.amstrad.jemu.AmstradPc;
 import org.maia.amstrad.jemu.AmstradPcBasicRuntime;
+import org.maia.amstrad.jemu.AmstradPcFrame;
 import org.maia.amstrad.jemu.JemuFrameAdapter;
 
 public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener {
@@ -24,25 +32,32 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 
 	private boolean started;
 
+	private boolean paused;
+
 	private boolean terminated;
 
 	private boolean autotyping;
 
-	public AmstradPcImpl(JemuFrameAdapter frameAdapter) {
-		this.jemuInstance = new JEMU(frameAdapter);
+	public AmstradPcImpl() {
+		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
 	}
 
 	@Override
-	public boolean isBasicSourceFile(File file) {
-		String fname = file.getName().toLowerCase();
-		return fname.endsWith(".bas") || fname.endsWith(".txt");
+	public AmstradPcFrame displayInFrame() {
+		AmstradPcFrame frame = super.displayInFrame();
+		getFrameBridge().setFrame(frame);
+		return frame;
 	}
 
 	@Override
 	public boolean isSnapshotFile(File file) {
+		return isUncompressedSnapshotFile(file) || isCompressedSnapshotFile(file);
+	}
+
+	private boolean isUncompressedSnapshotFile(File file) {
 		String fname = file.getName().toLowerCase();
-		return fname.endsWith(".sna") || fname.endsWith(".snz");
+		return fname.endsWith(".sna");
 	}
 
 	private boolean isCompressedSnapshotFile(File file) {
@@ -75,7 +90,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		checkStarted();
 		checkNotTerminated();
 		Settings.set(Settings.SNAPSHOT_FILE, file.getAbsolutePath());
-		Switches.uncompressed = !isCompressedSnapshotFile(file);
+		Switches.uncompressed = isUncompressedSnapshotFile(file);
 		Switches.save64 = true; // 64k RAM memory dump
 	}
 
@@ -86,7 +101,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		getJemuInstance().init();
 		getJemuInstance().start();
 		getJemuInstance().addAutotypeListener(this);
-		getFrameAdapter().pack();
+		getFrameBridge().pack();
 		setStarted(true);
 		fireStartedEvent();
 		if (waitUntilReady) {
@@ -106,11 +121,29 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
+	public synchronized void pause() {
+		checkStarted();
+		checkNotTerminated();
+		if (!isPaused()) {
+			getJemuInstance().pauseOrResume();
+			setPaused(true);
+		}
+	}
+
+	@Override
+	public synchronized void resume() {
+		checkPaused();
+		getJemuInstance().pauseOrResume();
+		setPaused(false);
+	}
+
+	@Override
 	public synchronized void terminate() {
 		checkNotTerminated();
 		Autotype.clearText();
 		getJemuInstance().destroy();
 		setTerminated(true);
+		fireTerminatedEvent();
 	}
 
 	@Override
@@ -126,6 +159,18 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
+	public void setMonitorMode(AmstradMonitorMode mode) {
+		checkNotTerminated();
+		if (AmstradMonitorMode.COLOR.equals(mode)) {
+			getJemuInstance().changeMonitorModeToColour();
+		} else if (AmstradMonitorMode.GREEN.equals(mode)) {
+			getJemuInstance().changeMonitorModeToGreen();
+		} else if (AmstradMonitorMode.GRAY.equals(mode)) {
+			getJemuInstance().changeMonitorModeToGray();
+		}
+	}
+
+	@Override
 	public BufferedImage makeScreenshot() {
 		checkStarted();
 		checkNotTerminated();
@@ -135,21 +180,6 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		comp.paintAll(graphics);
 		graphics.dispose();
 		return image;
-	}
-
-	private void checkStarted() {
-		if (!isStarted())
-			throw new IllegalStateException("This Amstrad PC has not been started");
-	}
-
-	private void checkNotStarted() {
-		if (isStarted())
-			throw new IllegalStateException("This Amstrad PC is already started");
-	}
-
-	private void checkNotTerminated() {
-		if (isTerminated())
-			throw new IllegalStateException("This Amstrad PC was terminated");
 	}
 
 	private void waitUntilReady() {
@@ -212,11 +242,12 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		return jemuInstance;
 	}
 
-	public JemuFrameAdapter getFrameAdapter() {
-		return getJemuInstance().getFrameAdapter();
+	private JemuFrameBridge getFrameBridge() {
+		return (JemuFrameBridge) getJemuInstance().getFrameAdapter();
 	}
 
-	private boolean isStarted() {
+	@Override
+	public boolean isStarted() {
 		return started;
 	}
 
@@ -224,7 +255,17 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		this.started = started;
 	}
 
-	private boolean isTerminated() {
+	@Override
+	public boolean isPaused() {
+		return paused;
+	}
+
+	private void setPaused(boolean paused) {
+		this.paused = paused;
+	}
+
+	@Override
+	public boolean isTerminated() {
 		return terminated;
 	}
 
@@ -254,6 +295,145 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 					sleep(100L);
 				}
 			}
+		}
+
+	}
+
+	private static class JemuFrameBridge extends JemuFrameAdapter {
+
+		private JFrame frame;
+
+		public JemuFrameBridge() {
+			this(null);
+		}
+
+		public JemuFrameBridge(JFrame frame) {
+			setFrame(frame);
+		}
+
+		@Override
+		public void setTitle(String title) {
+			if (!isFrameLess()) {
+				getFrame().setTitle(title);
+			}
+		}
+
+		@Override
+		public void setMenuBar(MenuBar menuBar) {
+			if (!isFrameLess()) {
+				if (Settings.getBoolean(Settings.SHOWMENU, true)) {
+					getFrame().setMenuBar(menuBar);
+				}
+			}
+		}
+
+		@Override
+		public void removeMenuBar(MenuBar menuBar) {
+			if (!isFrameLess()) {
+				getFrame().remove(menuBar);
+			}
+		}
+
+		@Override
+		public void setLocation(int x, int y) {
+			if (!isFrameLess()) {
+				getFrame().setLocation(x, y);
+			}
+		}
+
+		@Override
+		public void setSize(int width, int height) {
+			if (!isFrameLess()) {
+				getFrame().setSize(width, height);
+			}
+		}
+
+		@Override
+		public void setResizable(boolean resizable) {
+			if (!isFrameLess()) {
+				getFrame().setResizable(resizable);
+			}
+		}
+
+		@Override
+		public void setAlwaysOnTop(boolean alwaysOnTop) {
+			if (!isFrameLess()) {
+				getFrame().setAlwaysOnTop(alwaysOnTop);
+			}
+		}
+
+		@Override
+		public void setVisible(boolean visible) {
+			if (!isFrameLess()) {
+				getFrame().setVisible(visible);
+			}
+		}
+
+		@Override
+		public void pack() {
+			if (!isFrameLess()) {
+				getFrame().pack();
+			}
+		}
+
+		@Override
+		public void dispose() {
+			if (!isFrameLess()) {
+				getFrame().dispose();
+			}
+		}
+
+		@Override
+		public void setUndecorated(boolean undecorated) {
+			if (!isFrameLess()) {
+				getFrame().setUndecorated(undecorated);
+			}
+		}
+
+		@Override
+		public int getX() {
+			if (!isFrameLess()) {
+				return getFrame().getX();
+			} else {
+				return 0;
+			}
+		}
+
+		@Override
+		public int getY() {
+			if (!isFrameLess()) {
+				return getFrame().getY();
+			} else {
+				return 0;
+			}
+		}
+
+		@Override
+		public Dimension getSize() {
+			if (!isFrameLess()) {
+				return getFrame().getSize();
+			} else {
+				return new Dimension();
+			}
+		}
+
+		@Override
+		public FileDialog createFileDialog(String title, int mode) {
+			if (isFrameLess())
+				throw new HeadlessException("Not backed by any frame");
+			return new FileDialog(getFrame(), title, mode);
+		}
+
+		private boolean isFrameLess() {
+			return getFrame() == null;
+		}
+
+		private JFrame getFrame() {
+			return frame;
+		}
+
+		public void setFrame(JFrame frame) {
+			this.frame = frame;
 		}
 
 	}

@@ -1730,7 +1730,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				autosavecheck();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_PAUSE) {
-				pausecheck();
+				pauseOrResume();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_HOME)
 				romsetter.setRoms();
@@ -2243,8 +2243,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 	}
 
-	public void pausecheck() {
-		if (paused == 0) {
+	public void pauseOrResume() {
+		if (!isPaused()) {
 			paused = 1;
 			stopComputer();
 			System.out.println("System halted");
@@ -2255,6 +2255,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 	}
 
+	public boolean isPaused() {
+		return paused == 1;
+	}
+	
 	public void info() {
 		message();
 	}
@@ -2849,7 +2853,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			} else if (menuAdd.equals("Java console"))
 				Console.frameconsole.setVisible(true);
 			else if (menuAdd.equals("Pause"))
-				pausecheck();
+				pauseOrResume();
 			else if (menuAdd.equals("Eject all")) {
 				computer.setCurrentDrive(3);
 				mediumeject();
@@ -3554,49 +3558,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			}
 			LoadFiles();
 		} else if (e.getSource() == checkColor) {
-			Switches.monitormode = 0;
-			Display.monmessage = "Colour monitor";
-			Settings.set(Settings.MONITOR, "COLOUR");
-			Display.showmon = 150;
-			checkColor.setState(true);
-			checkGreen.setState(false);
-			checkGrey.setState(false);
-			checkJColor.setState(false);
-			display.changePerformance();
-			jemu.system.cpc.CPC.resetInk = 1;
+			changeMonitorModeToColour();
 		} else if (e.getSource() == checkGreen) {
-			Switches.monitormode = 2;
-			Display.monmessage = "Green monitor";
-			Settings.set(Settings.MONITOR, "GREEN");
-			Display.showmon = 150;
-			checkColor.setState(false);
-			checkGreen.setState(true);
-			checkGrey.setState(false);
-			checkJColor.setState(false);
-			display.changePerformance();
-			jemu.system.cpc.CPC.resetInk = 1;
+			changeMonitorModeToGreen();
 		} else if (e.getSource() == checkGrey) {
-			Switches.monitormode = 3;
-			Display.monmessage = "Grey monitor";
-			Settings.set(Settings.MONITOR, "GRAY");
-			Display.showmon = 150;
-			checkColor.setState(false);
-			checkGreen.setState(false);
-			checkGrey.setState(true);
-			checkJColor.setState(false);
-			display.changePerformance();
-			jemu.system.cpc.CPC.resetInk = 1;
+			changeMonitorModeToGray();
 		} else if (e.getSource() == checkJColor) {
-			Switches.monitormode = 1;
-			Display.monmessage = "2nd Colorset";
-			Settings.set(Settings.MONITOR, "COLOUR2");
-			Display.showmon = 150;
-			checkColor.setState(false);
-			checkGreen.setState(false);
-			checkGrey.setState(false);
-			checkJColor.setState(true);
-			display.changePerformance();
-			jemu.system.cpc.CPC.resetInk = 1;
+			changeMonitorModeToColour2();
 		}
 		if (e.getSource() == checkFPS) {
 			if (checkFPS.getState() == true)
@@ -3698,6 +3666,58 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		 * setComputer(((ComputerDescriptor)item).content); findWindow(this).pack(); LoadFiles(); } catch(Exception ex)
 		 * { ex.printStackTrace(); } } } } }
 		 */
+	}
+
+	public void changeMonitorModeToColour() {
+		Switches.monitormode = 0;
+		Display.monmessage = "Colour monitor";
+		Settings.set(Settings.MONITOR, Settings.MONITOR_COLOUR);
+		Display.showmon = 150;
+		checkColor.setState(true);
+		checkGreen.setState(false);
+		checkGrey.setState(false);
+		checkJColor.setState(false);
+		display.changePerformance();
+		jemu.system.cpc.CPC.resetInk = 1;
+	}
+
+	public void changeMonitorModeToGreen() {
+		Switches.monitormode = 2;
+		Display.monmessage = "Green monitor";
+		Settings.set(Settings.MONITOR, Settings.MONITOR_GREEN);
+		Display.showmon = 150;
+		checkColor.setState(false);
+		checkGreen.setState(true);
+		checkGrey.setState(false);
+		checkJColor.setState(false);
+		display.changePerformance();
+		jemu.system.cpc.CPC.resetInk = 1;
+	}
+
+	public void changeMonitorModeToGray() {
+		Switches.monitormode = 3;
+		Display.monmessage = "Grey monitor";
+		Settings.set(Settings.MONITOR, Settings.MONITOR_GRAY);
+		Display.showmon = 150;
+		checkColor.setState(false);
+		checkGreen.setState(false);
+		checkGrey.setState(true);
+		checkJColor.setState(false);
+		display.changePerformance();
+		jemu.system.cpc.CPC.resetInk = 1;
+	}
+
+	public void changeMonitorModeToColour2() {
+		Switches.monitormode = 1;
+		Display.monmessage = "2nd Colorset";
+		Settings.set(Settings.MONITOR, Settings.MONITOR_COLOUR2);
+		Display.showmon = 150;
+		checkColor.setState(false);
+		checkGreen.setState(false);
+		checkGrey.setState(false);
+		checkJColor.setState(true);
+		display.changePerformance();
+		jemu.system.cpc.CPC.resetInk = 1;
 	}
 
 	public void saveDsk() {

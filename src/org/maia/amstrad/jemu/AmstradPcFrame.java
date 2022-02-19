@@ -36,7 +36,6 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener {
 
 	public void terminate() {
 		getAmstradPc().terminate();
-		dispose();
 	}
 
 	@Override
@@ -46,6 +45,11 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener {
 
 	@Override
 	public void amstradPcRebooting(AmstradPc amstradPc) {
+	}
+
+	@Override
+	public void amstradPcTerminated(AmstradPc amstradPc) {
+		dispose();
 	}
 
 	public AmstradPc getAmstradPc() {

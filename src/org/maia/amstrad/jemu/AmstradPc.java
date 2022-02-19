@@ -15,9 +15,27 @@ public abstract class AmstradPc {
 		this.stateListeners = new Vector<AmstradPcStateListener>();
 	}
 
-	public abstract boolean isBasicSourceFile(File file);
+	public AmstradPcFrame displayInFrame() {
+		checkNotTerminated();
+		AmstradPcFrame frame = new AmstradPcFrame(this);
+		if (isStarted()) {
+			frame.amstradPcStarted(this);
+		}
+		return frame;
+	}
+
+	public boolean isBasicSourceFile(File file) {
+		String fname = file.getName().toLowerCase();
+		return fname.endsWith(".bas") || fname.endsWith(".txt");
+	}
 
 	public abstract boolean isSnapshotFile(File file);
+
+	public abstract boolean isStarted();
+
+	public abstract boolean isPaused();
+
+	public abstract boolean isTerminated();
 
 	public abstract void launch(File file) throws IOException;
 
@@ -27,13 +45,39 @@ public abstract class AmstradPc {
 
 	public abstract void reboot(boolean waitUntilReady);
 
+	public abstract void pause();
+
+	public abstract void resume();
+
 	public abstract void terminate();
 
 	public abstract AmstradPcBasicRuntime getBasicRuntime();
 
 	public abstract Component getDisplayPane();
 
+	public abstract void setMonitorMode(AmstradMonitorMode mode);
+
 	public abstract BufferedImage makeScreenshot();
+
+	protected void checkStarted() {
+		if (!isStarted())
+			throw new IllegalStateException("This Amstrad PC has not been started");
+	}
+
+	protected void checkNotStarted() {
+		if (isStarted())
+			throw new IllegalStateException("This Amstrad PC is already started");
+	}
+
+	protected void checkPaused() {
+		if (!isPaused())
+			throw new IllegalStateException("This Amstrad PC is not paused");
+	}
+
+	protected void checkNotTerminated() {
+		if (isTerminated())
+			throw new IllegalStateException("This Amstrad PC was terminated");
+	}
 
 	public void addStateListener(AmstradPcStateListener listener) {
 		getStateListeners().add(listener);
@@ -51,6 +95,11 @@ public abstract class AmstradPc {
 	protected void fireRebootingEvent() {
 		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcRebooting(this);
+	}
+
+	protected void fireTerminatedEvent() {
+		for (AmstradPcStateListener listener : getStateListeners())
+			listener.amstradPcTerminated(this);
 	}
 
 	protected List<AmstradPcStateListener> getStateListeners() {

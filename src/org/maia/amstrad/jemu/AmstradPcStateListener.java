@@ -6,4 +6,6 @@ public interface AmstradPcStateListener {
 
 	void amstradPcRebooting(AmstradPc amstradPc);
 
+	void amstradPcTerminated(AmstradPc amstradPc);
+
 }

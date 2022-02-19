@@ -104,6 +104,12 @@ public class Settings {
 	public static final String SCANEFFECT = "display_effect";
 	public static final String BILINEAR = "bilinear";
 
+	// Enum values for "MONITOR" setting
+	public static final String MONITOR_COLOUR = "COLOUR";
+	public static final String MONITOR_GREEN = "GREEN";
+	public static final String MONITOR_GRAY = "GRAY";
+	public static final String MONITOR_COLOUR2 = "COLOUR2";
+
 	// Rom banks
 	// in progress
 	//
