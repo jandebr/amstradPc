@@ -14,9 +14,12 @@ package jemu.ui;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 
+import javax.swing.*;
 import javax.swing.border.*;
+
+import org.maia.amstrad.io.MultiplexOutputStream;
+import org.maia.amstrad.jemu.AmstradFactory;
 
 public class Console extends WindowAdapter implements WindowListener, ActionListener, Runnable
 {
@@ -94,7 +97,11 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		try
 		{
 			PipedOutputStream pout=new PipedOutputStream(this.pin);
-			System.setOut(new PrintStream(pout,true)); 
+			OutputStream cos = AmstradFactory.getInstance().getAmstradContext().getConsoleOutputStream();
+			MultiplexOutputStream multiplexOut = new MultiplexOutputStream();
+			multiplexOut.addOutputStream(pout);
+			if (cos != null) multiplexOut.addOutputStream(cos);
+			System.setOut(new PrintStream(multiplexOut,true)); 
 		} 
 		catch (java.io.IOException io)
 		{
@@ -108,7 +115,11 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		try 
 		{
 			PipedOutputStream pout2=new PipedOutputStream(this.pin2);
-			System.setErr(new PrintStream(pout2,true));
+			OutputStream ces = AmstradFactory.getInstance().getAmstradContext().getConsoleErrorStream();
+			MultiplexOutputStream multiplexOut = new MultiplexOutputStream();
+			multiplexOut.addOutputStream(pout2);
+			if (ces != null) multiplexOut.addOutputStream(ces);
+			System.setErr(new PrintStream(multiplexOut,true));
 		} 
 		catch (java.io.IOException io)
 		{

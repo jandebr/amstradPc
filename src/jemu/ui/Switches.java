@@ -128,6 +128,7 @@ public class Switches {
         public static boolean autoboot          = true;
         public static boolean FloppySound       = true;
         public static boolean notebook          = false;
+        public static boolean showLogoAtLaunch	= false;
         public static String loadname           = "";                     // name of medium loaded
         public static String loaddrivea         = "Drive is empty.";  // Message for Drive 0
         public static String loaddriveb         = "Drive is empty.";  // Message for Drive 1
@@ -141,7 +142,4 @@ public class Switches {
         public static int luminance             = 255;
         public static int vhold                 = 45;
         public static int diagnose                 = 0;
-        
-        public static boolean playSoundAtLaunch = false; // @JDB
-        public static boolean showLogoAtLaunch = false; // @JDB
 }
