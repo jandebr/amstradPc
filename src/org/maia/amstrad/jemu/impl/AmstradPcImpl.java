@@ -148,9 +148,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 	public synchronized void terminate() {
 		checkNotTerminated();
 		Autotype.clearText();
-		System.out.println("QUIT before");
 		getJemuInstance().quit();
-		System.out.println("QUIT after");
 		setTerminated(true);
 		fireTerminatedEvent();
 	}

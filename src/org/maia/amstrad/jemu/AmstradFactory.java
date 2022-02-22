@@ -1,7 +1,5 @@
 package org.maia.amstrad.jemu;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
@@ -15,7 +13,7 @@ import javax.swing.JSeparator;
 import org.maia.amstrad.jemu.impl.AmstradContextImpl;
 import org.maia.amstrad.jemu.impl.AmstradPcImpl;
 import org.maia.amstrad.jemu.impl.AmstradSettingsImpl;
-import org.maia.amstrad.jemu.menu.ExportScreenshotAction;
+import org.maia.amstrad.jemu.menu.ScreenshotAction;
 import org.maia.amstrad.jemu.menu.LoadBasicFileAction;
 import org.maia.amstrad.jemu.menu.MonitorModeAction;
 import org.maia.amstrad.jemu.menu.OpenSnapshotFileAction;
@@ -36,27 +34,13 @@ public class AmstradFactory {
 	public AmstradContext getAmstradContext() {
 		if (context == null) {
 			AmstradSettings userSettings = createUserSettings();
-			if (userSettings == null) {
-				System.err.println("Can't load user settings");
-				System.exit(1);
-			}
 			context = new AmstradContextImpl(userSettings, System.out, System.err);
 		}
 		return context;
 	}
 
 	private AmstradSettings createUserSettings() {
-		AmstradSettings userSettings = null;
-		try {
-			userSettings = new AmstradSettingsImpl(getUserSettingsFile());
-		} catch (IOException e) {
-			System.err.println("Can't load user settings: " + e.getMessage());
-		}
-		return userSettings;
-	}
-
-	private File getUserSettingsFile() {
-		return new File(System.getProperty("javacpc.ini", "javacpc.ini"));
+		return new AmstradSettingsImpl();
 	}
 
 	public AmstradPc createAmstradPc() {
@@ -111,7 +95,7 @@ public class AmstradFactory {
 				button.setSelected(true);
 		}
 		menu.add(new JSeparator());
-		menu.add(new JMenuItem(new ExportScreenshotAction(amstradPc)));
+		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
 		return menu;
 	}
 

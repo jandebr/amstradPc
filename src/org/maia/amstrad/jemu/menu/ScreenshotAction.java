@@ -10,17 +10,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.maia.amstrad.jemu.AmstradPc;
 
-public class ExportScreenshotAction extends FileChooserAction {
+public class ScreenshotAction extends FileChooserAction {
 
-	public ExportScreenshotAction(AmstradPc amstradPc) {
-		this(amstradPc, "Export screenshot...");
+	public ScreenshotAction(AmstradPc amstradPc) {
+		this(amstradPc, "Take screenshot...");
 	}
 
-	public ExportScreenshotAction(AmstradPc amstradPc, String name) {
+	public ScreenshotAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	public ExportScreenshotAction(AmstradPc amstradPc, String name, Icon icon) {
+	public ScreenshotAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 

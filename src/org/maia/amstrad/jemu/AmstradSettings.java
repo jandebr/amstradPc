@@ -24,4 +24,6 @@ public abstract class AmstradSettings {
 
 	public abstract void set(String key, String value);
 
+	public abstract void reset();
+
 }

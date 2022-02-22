@@ -10,8 +10,6 @@ import org.maia.amstrad.jemu.AmstradSettings;
 
 public class AmstradSettingsImpl extends AmstradSettings {
 
-	private File propertiesFile;
-
 	private Properties properties;
 
 	private boolean dirty;
@@ -20,8 +18,21 @@ public class AmstradSettingsImpl extends AmstradSettings {
 
 	private Thread saveThread;
 
-	public AmstradSettingsImpl(File propertiesFile) throws IOException {
-		this.propertiesFile = propertiesFile;
+	private static final String DEFAULT_INI_FILE = "javacpc.ini";
+
+	public static final String SYSTEM_PROPERTY_INI_FILE_IN = "javacpc.ini";
+
+	public static final String SYSTEM_PROPERTY_INI_FILE_OUT = "javacpc.ini.out";
+
+	public AmstradSettingsImpl() {
+		reset();
+	}
+
+	@Override
+	public synchronized void reset() {
+		if (isDirty()) {
+			saveProperties();
+		}
 		this.properties = loadProperties();
 	}
 
@@ -50,25 +61,42 @@ public class AmstradSettingsImpl extends AmstradSettings {
 		}
 	}
 
-	private Properties loadProperties() throws IOException {
+	private Properties loadProperties() {
 		Properties props = new Properties();
-		props.load(new FileInputStream(getPropertiesFile()));
-		System.out.println("Loaded " + props.size() + " user settings from " + getPropertiesFile().getAbsolutePath());
+		File file = getPropertiesInputFile();
+		try {
+			props.load(new FileInputStream(file));
+			System.out.println("Loaded " + props.size() + " user settings from " + file.getAbsolutePath());
+		} catch (IOException e) {
+			System.err.println("Can't load user settings (" + e.getMessage() + ")");
+		}
 		return props;
 	}
 
 	private void saveProperties() {
-		try {
-			getProperties().store(new FileOutputStream(getPropertiesFile()), "[Settings]");
-			setDirty(false);
-			System.out.println("Saved user settings to " + getPropertiesFile().getAbsolutePath());
-		} catch (IOException e) {
-			System.err.println("Can't save user settings (" + e.getMessage() + ")");
+		File file = getPropertiesOutputFile();
+		if (file != null) {
+			try {
+				getProperties().store(new FileOutputStream(file), "[Settings]");
+				System.out.println("Saved user settings to " + file.getAbsolutePath());
+			} catch (IOException e) {
+				System.err.println("Can't save user settings (" + e.getMessage() + ")");
+			}
 		}
+		setDirty(false);
 	}
 
-	private File getPropertiesFile() {
-		return propertiesFile;
+	private File getPropertiesInputFile() {
+		return new File(System.getProperty(SYSTEM_PROPERTY_INI_FILE_IN, DEFAULT_INI_FILE));
+	}
+
+	private File getPropertiesOutputFile() {
+		File file = null;
+		String path = System.getProperty(SYSTEM_PROPERTY_INI_FILE_OUT);
+		if (path != null) {
+			file = new File(path);
+		}
+		return file;
 	}
 
 	private Properties getProperties() {
