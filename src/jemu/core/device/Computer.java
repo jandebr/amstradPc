@@ -584,14 +584,14 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			try {
 				if (action == STOP) {
 					synchronized (thread) {
-						// System.out.println(this + " Waiting");
+						//System.out.println(this + " Waiting");
 						thread.wait();
-						// System.out.println(this + " Not Waiting");
+						//System.out.println(this + " Not Waiting");
 					}
 				}
 				if (action != STOP) {
 					try {
-						// System.out.println(this + " Running");
+						//System.out.println(this + " Running");
 						running = true;
 						synchronized (thread) {
 							mode = action;
@@ -602,7 +602,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 						emulate(mode);
 					} finally {
 						running = false;
-						// System.out.println(this + " Not running");
+						//System.out.println(this + " Not running");
 						fireActionEvent();
 					}
 				}
@@ -610,6 +610,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Computer thread end");
 	}
 
 	public Vector<FileDescriptor> getFiles() {
@@ -762,6 +763,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		getAutotypeListeners().remove(listener);
 	}
 
+	public List<ComputerAutotypeListener> getAutotypeListeners() {
+		return autotypeListeners;
+	}
+
 	protected void fireAutotypeStarted() {
 		for (ComputerAutotypeListener listener : getAutotypeListeners())
 			listener.autotypeStarted(this);
@@ -770,10 +775,6 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	protected void fireAutotypeEnded() {
 		for (ComputerAutotypeListener listener : getAutotypeListeners())
 			listener.autotypeEnded(this);
-	}
-
-	public List<ComputerAutotypeListener> getAutotypeListeners() {
-		return autotypeListeners;
 	}
 
 }

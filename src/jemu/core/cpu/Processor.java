@@ -97,6 +97,8 @@ public abstract class Processor extends Device {
     } while(!stopped);
   }
 
+  public static long bigsteps = 0L;
+  
   public void runTo(int address) {
     stopped = false;
     do {

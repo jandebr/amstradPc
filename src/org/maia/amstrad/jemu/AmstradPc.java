@@ -15,9 +15,9 @@ public abstract class AmstradPc {
 		this.stateListeners = new Vector<AmstradPcStateListener>();
 	}
 
-	public AmstradPcFrame displayInFrame() {
+	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
 		checkNotTerminated();
-		AmstradPcFrame frame = new AmstradPcFrame(this);
+		AmstradPcFrame frame = new AmstradPcFrame(this, exitOnClose);
 		if (isStarted()) {
 			frame.amstradPcStarted(this);
 		}
@@ -90,6 +90,16 @@ public abstract class AmstradPc {
 	protected void fireStartedEvent() {
 		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcStarted(this);
+	}
+
+	protected void firePausingEvent() {
+		for (AmstradPcStateListener listener : getStateListeners())
+			listener.amstradPcPausing(this);
+	}
+
+	protected void fireResumingEvent() {
+		for (AmstradPcStateListener listener : getStateListeners())
+			listener.amstradPcResuming(this);
 	}
 
 	protected void fireRebootingEvent() {

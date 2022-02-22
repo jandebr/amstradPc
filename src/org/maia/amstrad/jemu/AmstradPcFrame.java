@@ -1,41 +1,33 @@
 package org.maia.amstrad.jemu;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-public class AmstradPcFrame extends JFrame implements AmstradPcStateListener {
+public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
 
 	private AmstradPc amstradPc;
 
-	public AmstradPcFrame(AmstradPc amstradPc) {
-		this(amstradPc, "JavaCPC - Amstrad CPC Emulator");
+	private boolean closing;
+
+	public AmstradPcFrame(AmstradPc amstradPc, boolean exitOnClose) {
+		this(amstradPc, "JavaCPC - Amstrad CPC Emulator", exitOnClose);
 	}
 
-	public AmstradPcFrame(AmstradPc amstradPc, String title) {
+	public AmstradPcFrame(AmstradPc amstradPc, String title, boolean exitOnClose) {
 		super(title);
 		this.amstradPc = amstradPc;
 		amstradPc.addStateListener(this);
-		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+		addWindowListener(this);
 		setFocusable(false);
+		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
 		buildUI();
-	}
-
-	protected void processWindowEvent(WindowEvent we) {
-		super.processWindowEvent(we);
-		if (we.getID() == WindowEvent.WINDOW_CLOSING) {
-			terminate();
-		}
 	}
 
 	protected void buildUI() {
 		getContentPane().add(getAmstradPc().getDisplayPane(), BorderLayout.CENTER);
-	}
-
-	public void terminate() {
-		getAmstradPc().terminate();
 	}
 
 	@Override
@@ -44,16 +36,66 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener {
 	}
 
 	@Override
+	public void amstradPcPausing(AmstradPc amstradPc) {
+	}
+
+	@Override
+	public void amstradPcResuming(AmstradPc amstradPc) {
+	}
+
+	@Override
 	public void amstradPcRebooting(AmstradPc amstradPc) {
 	}
 
 	@Override
-	public void amstradPcTerminated(AmstradPc amstradPc) {
-		dispose();
+	public synchronized void amstradPcTerminated(AmstradPc amstradPc) {
+		if (!isClosing()) {
+			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		}
+	}
+
+	@Override
+	public void windowActivated(WindowEvent event) {
+	}
+
+	@Override
+	public void windowClosed(WindowEvent event) {
+	}
+
+	@Override
+	public synchronized void windowClosing(WindowEvent event) {
+		setClosing(true);
+		if (!getAmstradPc().isTerminated()) {
+			getAmstradPc().terminate();
+		}
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent event) {
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent event) {
+	}
+
+	@Override
+	public void windowIconified(WindowEvent event) {
+	}
+
+	@Override
+	public void windowOpened(WindowEvent event) {
 	}
 
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
+	}
+
+	private boolean isClosing() {
+		return closing;
+	}
+
+	private void setClosing(boolean closing) {
+		this.closing = closing;
 	}
 
 }

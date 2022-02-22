@@ -18,6 +18,7 @@ import jemu.core.device.ComputerAutotypeListener;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
 import jemu.ui.JEMU;
+import jemu.ui.JEMU.PauseListener;
 import jemu.ui.Switches;
 
 import org.maia.amstrad.jemu.AmstradMonitorMode;
@@ -26,13 +27,11 @@ import org.maia.amstrad.jemu.AmstradPcBasicRuntime;
 import org.maia.amstrad.jemu.AmstradPcFrame;
 import org.maia.amstrad.jemu.JemuFrameAdapter;
 
-public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener {
+public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener, PauseListener {
 
 	private JEMU jemuInstance;
 
 	private boolean started;
-
-	private boolean paused;
 
 	private boolean terminated;
 
@@ -44,8 +43,8 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public AmstradPcFrame displayInFrame() {
-		AmstradPcFrame frame = super.displayInFrame();
+	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
+		AmstradPcFrame frame = super.displayInFrame(exitOnClose);
 		getFrameBridge().setFrame(frame);
 		return frame;
 	}
@@ -101,6 +100,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		getJemuInstance().init();
 		getJemuInstance().start();
 		getJemuInstance().addAutotypeListener(this);
+		getJemuInstance().addPauseListener(this);
 		getFrameBridge().pack();
 		setStarted(true);
 		fireStartedEvent();
@@ -125,23 +125,32 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		checkStarted();
 		checkNotTerminated();
 		if (!isPaused()) {
-			getJemuInstance().pauseOrResume();
-			setPaused(true);
+			getJemuInstance().pauseToggle();
 		}
 	}
 
 	@Override
 	public synchronized void resume() {
 		checkPaused();
-		getJemuInstance().pauseOrResume();
-		setPaused(false);
+		getJemuInstance().pauseToggle();
+	}
+
+	@Override
+	public void pauseStateChanged(JEMU jemuInstance, boolean paused) {
+		if (paused) {
+			firePausingEvent();
+		} else {
+			fireResumingEvent();
+		}
 	}
 
 	@Override
 	public synchronized void terminate() {
 		checkNotTerminated();
 		Autotype.clearText();
-		getJemuInstance().destroy();
+		System.out.println("QUIT before");
+		getJemuInstance().quit();
+		System.out.println("QUIT after");
 		setTerminated(true);
 		fireTerminatedEvent();
 	}
@@ -257,11 +266,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 
 	@Override
 	public boolean isPaused() {
-		return paused;
-	}
-
-	private void setPaused(boolean paused) {
-		this.paused = paused;
+		return getJemuInstance().isPaused();
 	}
 
 	@Override

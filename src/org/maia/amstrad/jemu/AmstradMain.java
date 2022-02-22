@@ -7,26 +7,18 @@ public class AmstradMain {
 
 	public static void main(String[] args) throws IOException {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
-		AmstradPcFrame frame = amstradPc.displayInFrame();
+		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		frame.setJMenuBar(AmstradFactory.getInstance().createSimpleMenuBar(amstradPc));
 		if (args.length == 0) {
-			start(amstradPc);
+			amstradPc.start(false);
 		} else if (args.length == 1) {
-			launch(amstradPc, new File(args[0]));
+			amstradPc.launch(new File(args[0]));
 		} else if (args.length == 2 && amstradPc.isBasicSourceFile(new File(args[0]))
 				&& amstradPc.isSnapshotFile(new File(args[1]))) {
 			makeRunnableSnapshot(amstradPc, new File(args[0]), new File(args[1]));
 		} else {
 			System.err.println("Invalid startup arguments");
 		}
-	}
-
-	public static void start(AmstradPc amstradPc) {
-		amstradPc.start(true);
-	}
-
-	public static void launch(AmstradPc amstradPc, File file) throws IOException {
-		amstradPc.launch(file);
 	}
 
 	public static void makeRunnableSnapshot(AmstradPc amstradPc, File basicFile, File snapshotFile) throws IOException {

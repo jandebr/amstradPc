@@ -115,6 +115,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	private JemuFrameAdapter frameAdapter;
 
+	private List<PauseListener> pauseListeners;
+
 	protected boolean isbackground;
 	JInternalFrame intern = new JInternalFrame(null);
 	int updateP = 0;
@@ -313,13 +315,14 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		return panel;
 	}
 
-	public JemuFrameAdapter getFrameAdapter() {
-		return frameAdapter;
-	}
-
 	public JEMU(JemuFrameAdapter frameAdapter) {
 		this.frameAdapter = frameAdapter;
+		this.pauseListeners = new Vector<PauseListener>();
 		enableEvents(AWTEvent.KEY_EVENT_MASK);
+	}
+
+	public JemuFrameAdapter getFrameAdapter() {
+		return frameAdapter;
 	}
 
 	public void init() {
@@ -539,8 +542,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void reBoot() {
 		computer.reset();
+		setPaused(0);
 		Display.showpause = 0;
 		computer.start();
+		firePauseStateChanged();
 		stopsimple = 0;
 		if (runner) {
 			if (autoloadprogram != null) {
@@ -1296,16 +1301,17 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		computer.removeAutotypeListener(listener);
 	}
 
-	public void destroy() {
+	public void quit() {
 		if (debugger != null) {
 			debugger.removeAllBreakpoints();
 			debugger.continueAndReset();
 		}
-		this.setVisible(true);
 		Switches.breakpoints = false;
+		// this.setVisible(false);
+		// computer.start();
 		Autotype.save();
-		jemu.system.cpc.CPC.shouldquit = true;
 		jemu.system.cpc.CPC.checkSaveOnExit();
+		computer.dispose();
 	}
 
 	public void osdCheck() {
@@ -1730,7 +1736,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				autosavecheck();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_PAUSE) {
-				pauseOrResume();
+				pauseToggle();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_HOME)
 				romsetter.setRoms();
@@ -2194,7 +2200,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void stopComputer() {
-		Display.showpause = 4;
+		Display.showpause = 1;
+		display.repaint();
 		pausetimer = 1;
 	}
 
@@ -2243,22 +2250,32 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 	}
 
-	public void pauseOrResume() {
+	public void pauseToggle() {
 		if (!isPaused()) {
-			paused = 1;
+			setPaused(1);
 			stopComputer();
 			System.out.println("System halted");
 		} else {
-			paused = 0;
+			setPaused(0);
 			goComputer();
 			System.out.println("System started");
 		}
+		firePauseStateChanged();
 	}
 
 	public boolean isPaused() {
 		return paused == 1;
 	}
-	
+
+	private void setPaused(int paused) {
+		this.paused = paused;
+	}
+
+	private void firePauseStateChanged() {
+		for (PauseListener listener : getPauseListeners())
+			listener.pauseStateChanged(this, isPaused());
+	}
+
 	public void info() {
 		message();
 	}
@@ -2800,13 +2817,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else if (e.getSource() instanceof MenuItem) {
 			String menuAdd = e.getActionCommand();
 			if (menuAdd.equals("Quit")) {
-				if (debugger != null) {
-					debugger.removeAllBreakpoints();
-					debugger.continueAndReset();
-				}
-				computer.start();
-				Autotype.save();
-				jemu.system.cpc.CPC.checkSaveOnExit();
+				quit();
 			} else if (menuAdd.equals("Reset            Ctrl + F9"))
 				reset();
 			else if (menuAdd.equals("Reboot"))
@@ -2853,7 +2864,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			} else if (menuAdd.equals("Java console"))
 				Console.frameconsole.setVisible(true);
 			else if (menuAdd.equals("Pause"))
-				pauseOrResume();
+				pauseToggle();
 			else if (menuAdd.equals("Eject all")) {
 				computer.setCurrentDrive(3);
 				mediumeject();
@@ -5393,6 +5404,24 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void setStandalone(boolean standalone) {
 		this.isStandalone = standalone;
+	}
+
+	public void addPauseListener(PauseListener listener) {
+		getPauseListeners().add(listener);
+	}
+
+	public void removePauseListener(PauseListener listener) {
+		getPauseListeners().remove(listener);
+	}
+
+	private List<PauseListener> getPauseListeners() {
+		return pauseListeners;
+	}
+
+	public static interface PauseListener {
+
+		void pauseStateChanged(JEMU jemu, boolean paused);
+
 	}
 
 }

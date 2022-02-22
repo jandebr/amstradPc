@@ -79,7 +79,6 @@ public class CPC extends Computer {
 	public static boolean doRecord = false;
 	protected int tapestopper = 0;
 	public static boolean Bypass = false;
-	public static boolean shouldquit = false;
 	public static boolean trueaudio = false;
 	// protected boolean hidetape = false;voi
 	public static boolean tape_stereo = false;
@@ -688,9 +687,6 @@ public class CPC extends Computer {
 			else
 				POKE(0xAE45, 0);
 
-		if (shouldquit)
-			start();
-
 		if ((relay && play) || (trueaudio && play))
 			tapeCycle();
 
@@ -803,7 +799,6 @@ public class CPC extends Computer {
 	}
 
 	public static void checkSaveOnExit() {
-		shouldquit = true;
 		if (Switches.checksave) {
 			Frame dummy2 = new Frame();
 			if (df0mod) {
