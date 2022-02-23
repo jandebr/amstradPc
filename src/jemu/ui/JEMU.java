@@ -1307,8 +1307,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			debugger.continueAndReset();
 		}
 		Switches.breakpoints = false;
-		// this.setVisible(false);
-		// computer.start();
 		Autotype.save();
 		jemu.system.cpc.CPC.checkSaveOnExit();
 		computer.dispose();
