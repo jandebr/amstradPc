@@ -1,0 +1,2 @@
+docker run --name orbit11_schneidercpc-1 --restart=unless-stopped -d -p 5901:5901 -p 6901:6901 -p 8901:8901 -v /volume1/docker/\@tmp/SchneiderCPC/:/dockermount/:rw --user $(id -u):$(id -g) orbit11/schneidercpc
+/dockerstartup/vnc_startup.sh --wait
