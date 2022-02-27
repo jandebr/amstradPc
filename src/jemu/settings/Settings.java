@@ -84,6 +84,7 @@ public class Settings {
 	public static final String ONTOP = "on_top";
 	public static final String HIDEFRAME = "hide_frame";
 	public static final String SHOWMENU = "show_menu";
+	public static final String UPDATETITLE = "update_title";
 	public static final String NOTEBOOK = "notebook";
 	public static final String STANDALONE = "standalone";
 

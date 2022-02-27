@@ -339,7 +339,9 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		@Override
 		public void setTitle(String title) {
 			if (!isFrameLess()) {
-				getFrame().setTitle(title);
+				if (Settings.getBoolean(Settings.UPDATETITLE, true)) {
+					getFrame().setTitle(title);
+				}
 			}
 		}
 
