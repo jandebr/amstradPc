@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +31,7 @@ import jemu.core.Util;
 import jemu.core.cpu.Processor;
 import jemu.core.device.floppy.Drive;
 import jemu.core.device.memory.Memory;
+import jemu.settings.Settings;
 import jemu.ui.Display;
 import jemu.ui.Switches;
 import jemu.util.diss.Disassembler;
@@ -142,8 +144,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	protected void setBasePath(String path) {
-		romPath = "system/" + path + "/rom/";
-		filePath = "system/" + path + "/file/";
+		String systemDir = Settings.get(Settings.SYSTEM_DIR, "system");
+		File dir = new File(systemDir, path);
+		romPath = new File(dir, "rom").getPath() + File.separator;
+		filePath = new File(dir, "file").getPath() + File.separator;
 	}
 
 	public void initialise() {
@@ -584,14 +588,14 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			try {
 				if (action == STOP) {
 					synchronized (thread) {
-						//System.out.println(this + " Waiting");
+						// System.out.println(this + " Waiting");
 						thread.wait();
-						//System.out.println(this + " Not Waiting");
+						// System.out.println(this + " Not Waiting");
 					}
 				}
 				if (action != STOP) {
 					try {
-						//System.out.println(this + " Running");
+						// System.out.println(this + " Running");
 						running = true;
 						synchronized (thread) {
 							mode = action;
@@ -602,7 +606,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 						emulate(mode);
 					} finally {
 						running = false;
-						//System.out.println(this + " Not running");
+						// System.out.println(this + " Not running");
 						fireActionEvent();
 					}
 				}

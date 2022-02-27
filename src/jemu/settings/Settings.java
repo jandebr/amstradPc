@@ -87,6 +87,7 @@ public class Settings {
 	public static final String NOTEBOOK = "notebook";
 	public static final String STANDALONE = "standalone";
 
+	public static final String SYSTEM_DIR = "system_dir";
 	public static final String SNAPSHOT_FILE = "snapshot_file";
 
 	/** Property for choosen system (String). */
