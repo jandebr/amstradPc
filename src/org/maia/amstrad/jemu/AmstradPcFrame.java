@@ -30,6 +30,10 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		getContentPane().add(getAmstradPc().getDisplayPane(), BorderLayout.CENTER);
 	}
 
+	public void installSimpleMenuBar() {
+		setJMenuBar(AmstradFactory.getInstance().createSimpleMenuBar(getAmstradPc()));
+	}
+
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
 		setVisible(true);

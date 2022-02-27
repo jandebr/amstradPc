@@ -8,7 +8,7 @@ public class AmstradMain {
 	public static void main(String[] args) throws IOException {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		frame.setJMenuBar(AmstradFactory.getInstance().createSimpleMenuBar(amstradPc));
+		frame.installSimpleMenuBar();
 		if (args.length == 0) {
 			amstradPc.start(false);
 		} else if (args.length == 1) {
