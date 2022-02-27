@@ -30,7 +30,7 @@ public class ScreenshotAction extends FileChooserAction {
 		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			try {
-				ImageIO.write(image, "png", getFileChooser().getSelectedFile());
+				ImageIO.write(image, "png", getSelectedFileWithExtension(".png"));
 			} catch (Exception e) {
 				System.err.println("Failed to export screenshot: " + e.getMessage());
 			}

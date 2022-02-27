@@ -1,6 +1,7 @@
 package org.maia.amstrad.jemu.menu;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
@@ -26,11 +27,11 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			try {
-				getAmstradPc().saveSnapshot(getFileChooser().getSelectedFile());
+				getAmstradPc().saveSnapshot(getSelectedFileWithExtension(".sna", ".snz"));
 			} catch (Exception e) {
 				System.err.println("Failed to save snapshot file: " + e.getMessage());
 			}
 		}
 	}
-
+	
 }

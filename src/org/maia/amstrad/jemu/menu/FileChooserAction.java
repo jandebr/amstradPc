@@ -19,6 +19,26 @@ public abstract class FileChooserAction extends AmstradPcAction {
 		super(amstradPc, name, icon);
 	}
 
+	protected File getSelectedFileWithExtension(String... allowedFileExtensions) {
+		File file = getSelectedFile();
+		if (file != null) {
+			boolean allowed = false;
+			String fname = file.getName().toLowerCase();
+			for (String ext : allowedFileExtensions) {
+				if (fname.endsWith(ext))
+					allowed = true;
+			}
+			if (!allowed) {
+				file = new File(file.getPath() + allowedFileExtensions[0]);
+			}
+		}
+		return file;
+	}
+
+	protected File getSelectedFile() {
+		return getFileChooser().getSelectedFile();
+	}
+
 	protected JFileChooser getFileChooser() {
 		if (fileChooser == null) {
 			fileChooser = buildFileChooser();

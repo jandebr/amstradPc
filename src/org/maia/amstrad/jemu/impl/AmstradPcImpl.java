@@ -17,6 +17,7 @@ import jemu.core.device.Computer;
 import jemu.core.device.ComputerAutotypeListener;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
+import jemu.ui.Display;
 import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
 import jemu.ui.Switches;
@@ -178,13 +179,16 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public BufferedImage makeScreenshot() {
+	public synchronized BufferedImage makeScreenshot() {
 		checkStarted();
 		checkNotTerminated();
 		Component comp = getDisplayPane();
 		BufferedImage image = new BufferedImage(comp.getWidth(), comp.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics = image.createGraphics();
+		int showpause = Display.showpause;
+		Display.showpause = 0;
 		comp.paintAll(graphics);
+		Display.showpause = showpause;
 		graphics.dispose();
 		return image;
 	}
