@@ -38,6 +38,8 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 
 	private boolean autotyping;
 
+	private static boolean instanceRunning; // maximum 1 running Jemu instance in JVM
+
 	public AmstradPcImpl() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
@@ -96,6 +98,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 
 	@Override
 	public synchronized void start(boolean waitUntilReady) {
+		checkNoInstanceRunning();
 		checkNotStarted();
 		checkNotTerminated();
 		getJemuInstance().init();
@@ -104,6 +107,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		getJemuInstance().addPauseListener(this);
 		getFrameBridge().pack();
 		setStarted(true);
+		setInstanceRunning(true);
 		fireStartedEvent();
 		if (waitUntilReady) {
 			waitUntilReady();
@@ -151,6 +155,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		Autotype.clearText();
 		getJemuInstance().quit();
 		setTerminated(true);
+		setInstanceRunning(false);
 		fireTerminatedEvent();
 	}
 
@@ -249,6 +254,11 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 		}
 	}
 
+	private static void checkNoInstanceRunning() {
+		if (isInstanceRunning())
+			throw new IllegalStateException("There can only be a single JEMU Amstrad PC running");
+	}
+
 	private JEMU getJemuInstance() {
 		return jemuInstance;
 	}
@@ -286,6 +296,14 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 
 	private void setAutotyping(boolean autotyping) {
 		this.autotyping = autotyping;
+	}
+
+	private static boolean isInstanceRunning() {
+		return instanceRunning;
+	}
+
+	private static void setInstanceRunning(boolean instanceRunning) {
+		AmstradPcImpl.instanceRunning = instanceRunning;
 	}
 
 	private class AmstradPcBasicRuntimeImpl extends AmstradPcBasicRuntime {
