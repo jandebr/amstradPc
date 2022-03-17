@@ -79,7 +79,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 			getBasicRuntime().run(file);
 		} else if (isSnapshotFile(file)) {
 			if (!isStarted()) {
-				start(false);
+				start(true);
 			}
 			getJemuInstance().doAutoOpen(file);
 		} else {

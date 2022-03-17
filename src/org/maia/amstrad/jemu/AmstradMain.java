@@ -26,7 +26,17 @@ public class AmstradMain {
 		AmstradPcBasicRuntime basic = amstradPc.getBasicRuntime();
 		basic.load(basicFile);
 		basic.keyboardEnter("CLS: INPUT \"Press [enter] to start\",A$: RUN");
+		sleep(500L);
 		amstradPc.saveSnapshot(snapshotFile);
+	}
+
+	private static void sleep(long milliseconds) {
+		if (milliseconds > 0L) {
+			try {
+				Thread.sleep(milliseconds);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 }
