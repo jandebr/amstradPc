@@ -1,11 +1,11 @@
-package org.maia.amstrad.jemu.menu;
+package org.maia.amstrad.pc.menu;
 
 import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.jemu.AmstradPc;
+import org.maia.amstrad.pc.AmstradPc;
 
 public abstract class FileChooserAction extends AmstradPcAction {
 

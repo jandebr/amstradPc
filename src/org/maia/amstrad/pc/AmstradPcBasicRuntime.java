@@ -1,4 +1,4 @@
-package org.maia.amstrad.jemu;
+package org.maia.amstrad.pc;
 
 import java.io.BufferedReader;
 import java.io.File;

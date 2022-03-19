@@ -102,7 +102,7 @@ import jemu.system.cpc.RomSetter;
 import jemu.ui.gfx.AnimatedGifEncoder;
 import jemu.util.hexeditor.HexEditor;
 
-import org.maia.amstrad.jemu.JemuFrameAdapter;
+import org.maia.amstrad.pc.jemu.JemuFrameAdapter;
 
 public class JEMU extends Applet implements KeyListener, MouseListener, ItemListener, ActionListener, FocusListener,
 		Runnable, DriveListener, MouseMotionListener {

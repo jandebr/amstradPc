@@ -1,4 +1,4 @@
-package org.maia.amstrad.jemu.impl;
+package org.maia.amstrad.pc.jemu;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -22,13 +22,12 @@ import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
 import jemu.ui.Switches;
 
-import org.maia.amstrad.jemu.AmstradMonitorMode;
-import org.maia.amstrad.jemu.AmstradPc;
-import org.maia.amstrad.jemu.AmstradPcBasicRuntime;
-import org.maia.amstrad.jemu.AmstradPcFrame;
-import org.maia.amstrad.jemu.JemuFrameAdapter;
+import org.maia.amstrad.pc.AmstradMonitorMode;
+import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcBasicRuntime;
+import org.maia.amstrad.pc.AmstradPcFrame;
 
-public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener, PauseListener {
+public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener {
 
 	private JEMU jemuInstance;
 
@@ -40,7 +39,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 
 	private static boolean instanceRunning; // maximum 1 running Jemu instance in JVM
 
-	public AmstradPcImpl() {
+	public JemuAmstradPc() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
 	}
@@ -303,7 +302,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	private static void setInstanceRunning(boolean instanceRunning) {
-		AmstradPcImpl.instanceRunning = instanceRunning;
+		JemuAmstradPc.instanceRunning = instanceRunning;
 	}
 
 	private class AmstradPcBasicRuntimeImpl extends AmstradPcBasicRuntime {
@@ -313,7 +312,7 @@ public class AmstradPcImpl extends AmstradPc implements ComputerAutotypeListener
 
 		@Override
 		public void keyboardType(CharSequence text, boolean waitUntilTyped) {
-			synchronized (AmstradPcImpl.this) {
+			synchronized (JemuAmstradPc.this) {
 				Autotype.typeText(text);
 				if (waitUntilTyped) {
 					waitUntilAutotypeEnded();

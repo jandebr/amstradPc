@@ -1,4 +1,4 @@
-package org.maia.amstrad.jemu;
+package org.maia.amstrad.pc.jemu;
 
 import java.awt.Dimension;
 import java.awt.FileDialog;

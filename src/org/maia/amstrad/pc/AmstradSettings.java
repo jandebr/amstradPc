@@ -1,4 +1,4 @@
-package org.maia.amstrad.jemu;
+package org.maia.amstrad.pc;
 
 import jemu.settings.Settings;
 

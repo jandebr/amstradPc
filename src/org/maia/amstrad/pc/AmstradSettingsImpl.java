@@ -1,12 +1,10 @@
-package org.maia.amstrad.jemu.impl;
+package org.maia.amstrad.pc;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.maia.amstrad.jemu.AmstradSettings;
 
 public class AmstradSettingsImpl extends AmstradSettings {
 

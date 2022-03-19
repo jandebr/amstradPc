@@ -1,4 +1,4 @@
-package org.maia.amstrad.jemu;
+package org.maia.amstrad.pc;
 
 import java.util.Enumeration;
 
@@ -10,17 +10,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 
-import org.maia.amstrad.jemu.impl.AmstradContextImpl;
-import org.maia.amstrad.jemu.impl.AmstradPcImpl;
-import org.maia.amstrad.jemu.impl.AmstradSettingsImpl;
-import org.maia.amstrad.jemu.menu.ScreenshotAction;
-import org.maia.amstrad.jemu.menu.LoadBasicFileAction;
-import org.maia.amstrad.jemu.menu.MonitorModeAction;
-import org.maia.amstrad.jemu.menu.OpenSnapshotFileAction;
-import org.maia.amstrad.jemu.menu.PauseResumeAction;
-import org.maia.amstrad.jemu.menu.QuitAction;
-import org.maia.amstrad.jemu.menu.RebootAction;
-import org.maia.amstrad.jemu.menu.SaveSnapshotFileAction;
+import org.maia.amstrad.pc.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.menu.LoadBasicFileAction;
+import org.maia.amstrad.pc.menu.MonitorModeAction;
+import org.maia.amstrad.pc.menu.OpenSnapshotFileAction;
+import org.maia.amstrad.pc.menu.PauseResumeAction;
+import org.maia.amstrad.pc.menu.QuitAction;
+import org.maia.amstrad.pc.menu.RebootAction;
+import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
+import org.maia.amstrad.pc.menu.ScreenshotAction;
 
 public class AmstradFactory {
 
@@ -44,7 +42,7 @@ public class AmstradFactory {
 	}
 
 	public AmstradPc createAmstradPc() {
-		return new AmstradPcImpl();
+		return new JemuAmstradPc();
 	}
 
 	public JMenuBar createSimpleMenuBar(AmstradPc amstradPc) {

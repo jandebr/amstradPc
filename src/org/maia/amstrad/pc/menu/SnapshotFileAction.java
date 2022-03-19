@@ -1,10 +1,10 @@
-package org.maia.amstrad.jemu.menu;
+package org.maia.amstrad.pc.menu;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.maia.amstrad.jemu.AmstradPc;
+import org.maia.amstrad.pc.AmstradPc;
 
 public abstract class SnapshotFileAction extends FileChooserAction {
 

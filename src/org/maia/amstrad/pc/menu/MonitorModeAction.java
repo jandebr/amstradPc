@@ -1,11 +1,11 @@
-package org.maia.amstrad.jemu.menu;
+package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 
-import org.maia.amstrad.jemu.AmstradMonitorMode;
-import org.maia.amstrad.jemu.AmstradPc;
+import org.maia.amstrad.pc.AmstradMonitorMode;
+import org.maia.amstrad.pc.AmstradPc;
 
 public class MonitorModeAction extends AmstradPcAction {
 

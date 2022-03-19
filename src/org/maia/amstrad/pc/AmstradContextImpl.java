@@ -1,9 +1,6 @@
-package org.maia.amstrad.jemu.impl;
+package org.maia.amstrad.pc;
 
 import java.io.PrintStream;
-
-import org.maia.amstrad.jemu.AmstradContext;
-import org.maia.amstrad.jemu.AmstradSettings;
 
 public class AmstradContextImpl extends AmstradContext {
 

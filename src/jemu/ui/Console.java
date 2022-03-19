@@ -19,7 +19,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import org.maia.amstrad.io.MultiplexOutputStream;
-import org.maia.amstrad.jemu.AmstradFactory;
+import org.maia.amstrad.pc.AmstradFactory;
 
 public class Console extends WindowAdapter implements WindowListener, ActionListener, Runnable
 {

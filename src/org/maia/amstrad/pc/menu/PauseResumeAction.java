@@ -1,9 +1,9 @@
-package org.maia.amstrad.jemu.menu;
+package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
 
-import org.maia.amstrad.jemu.AmstradPc;
-import org.maia.amstrad.jemu.AmstradPcStateListener;
+import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcStateListener;
 
 public class PauseResumeAction extends AmstradPcAction implements AmstradPcStateListener {
 
