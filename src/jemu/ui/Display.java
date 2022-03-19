@@ -145,7 +145,7 @@ public class Display extends JComponent {
 	Image mask = mask1;
 	public static boolean scaneffect = false;
 	public static boolean horizontal = true;
-	boolean masked = false;
+	public boolean masked = false;
 
 	private static final long serialVersionUID = 1L;
 	public static int loadgames = 0;
@@ -163,7 +163,7 @@ public class Display extends JComponent {
 	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	GraphicsDevice gs = ge.getDefaultScreenDevice();
 	GraphicsConfiguration gc = gs.getDefaultConfiguration();
-	protected boolean scanlines, drawlines, showeffect;
+	public boolean scanlines, drawlines, showeffect;
 	public static String monmessage = "Colour monitor"; // Message which monitor (CPC)
 	public static String automessage = "Autosave is OFF";
 	public static int showmon = 250;
@@ -802,7 +802,6 @@ public class Display extends JComponent {
 		Graphics g = off_Image.createGraphics();
 		if (Switches.bilinear) {
 			Graphics2D g2 = (Graphics2D) g;
-
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 			g = g2;
 		}
@@ -898,16 +897,12 @@ public class Display extends JComponent {
 					g.fillRect(4 + (i * 13), 140, 12, 12);
 				}
 		}
-
 		if (jemu.system.cpc.CPC.YM_Rec) {
 			g.drawImage(ymrec, 10, 12, this);
-
 		}
-
-		if (showeffect)
+		if (showeffect || masked) {
 			g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
-		if (masked)
-			g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
+		}
 		return off_Image;
 	}
 

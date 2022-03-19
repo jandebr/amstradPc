@@ -57,7 +57,7 @@ public abstract class AmstradPc {
 
 	public abstract void setMonitorMode(AmstradMonitorMode mode);
 
-	public abstract BufferedImage makeScreenshot();
+	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
 
 	protected void checkStarted() {
 		if (!isStarted())

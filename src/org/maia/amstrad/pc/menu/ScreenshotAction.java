@@ -13,7 +13,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class ScreenshotAction extends FileChooserAction {
 
 	public ScreenshotAction(AmstradPc amstradPc) {
-		this(amstradPc, "Take screenshot...");
+		this(amstradPc, "Save screen image...");
 	}
 
 	public ScreenshotAction(AmstradPc amstradPc, String name) {
@@ -26,7 +26,7 @@ public class ScreenshotAction extends FileChooserAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		BufferedImage image = getAmstradPc().makeScreenshot();
+		BufferedImage image = getAmstradPc().makeScreenshot(includeMonitorEffect());
 		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			try {
@@ -44,6 +44,10 @@ public class ScreenshotAction extends FileChooserAction {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Screenshot files (*.png)", "png");
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
+	}
+
+	protected boolean includeMonitorEffect() {
+		return false;
 	}
 
 }

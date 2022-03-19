@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
-import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.MenuBar;
 import java.awt.image.BufferedImage;
@@ -183,17 +182,17 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public synchronized BufferedImage makeScreenshot() {
+	public synchronized BufferedImage makeScreenshot(boolean monitorEffect) {
 		checkStarted();
 		checkNotTerminated();
-		Component comp = getDisplayPane();
-		BufferedImage image = new BufferedImage(comp.getWidth(), comp.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics2D graphics = image.createGraphics();
-		int showpause = Display.showpause;
-		Display.showpause = 0;
-		comp.paintAll(graphics);
-		Display.showpause = showpause;
-		graphics.dispose();
+		Display display = getJemuInstance().getDisplay();
+		boolean masked = display.masked;
+		boolean showeffect = display.showeffect;
+		display.masked = monitorEffect;
+		display.showeffect = monitorEffect;
+		BufferedImage image = display.getImage();
+		display.masked = masked;
+		display.showeffect = showeffect;
 		return image;
 	}
 
@@ -205,7 +204,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		System.out.println("Wait until Basic runtime is Ready");
 		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
 		sleep(minWaitTimeMs);
-		BufferedImage image = makeScreenshot();
+		BufferedImage image = makeScreenshot(false);
 		double s = (image.getWidth() + 28.0) / 384.0;
 		int cursorX = (int) Math.round(s * 34 + (s - 1) * 2);
 		int cursorY = (int) Math.round(s * 108 + (s - 1) * 6);
@@ -213,7 +212,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		while (color.getGreen() < 100 && System.currentTimeMillis() < timeout) {
 			sleep(100L);
 			System.out.println("Checking if Basic runtime is Ready");
-			image = makeScreenshot();
+			image = makeScreenshot(false);
 			color = new Color(image.getRGB(cursorX, cursorY));
 		}
 		if (System.currentTimeMillis() >= timeout) {

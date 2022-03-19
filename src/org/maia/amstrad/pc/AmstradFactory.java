@@ -19,6 +19,7 @@ import org.maia.amstrad.pc.menu.QuitAction;
 import org.maia.amstrad.pc.menu.RebootAction;
 import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
 import org.maia.amstrad.pc.menu.ScreenshotAction;
+import org.maia.amstrad.pc.menu.ScreenshotWithMonitorEffectAction;
 
 public class AmstradFactory {
 
@@ -60,6 +61,9 @@ public class AmstradFactory {
 		menu.add(new JMenuItem(new OpenSnapshotFileAction(amstradPc)));
 		menu.add(new JMenuItem(new SaveSnapshotFileAction(amstradPc)));
 		menu.add(new JSeparator());
+		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
+		menu.add(new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc)));
+		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new QuitAction(amstradPc)));
 		return menu;
 	}
@@ -92,8 +96,6 @@ public class AmstradFactory {
 			if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode))
 				button.setSelected(true);
 		}
-		menu.add(new JSeparator());
-		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
 		return menu;
 	}
 
