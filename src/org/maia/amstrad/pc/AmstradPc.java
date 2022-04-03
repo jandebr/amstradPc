@@ -55,7 +55,15 @@ public abstract class AmstradPc {
 
 	public abstract Component getDisplayPane();
 
+	public AmstradMonitorMode getMonitorMode() {
+		return AmstradFactory.getInstance().getAmstradContext().getUserSettings().getMonitorMode();
+	}
+
 	public abstract void setMonitorMode(AmstradMonitorMode mode);
+
+	public abstract boolean isFullscreen();
+
+	public abstract void toggleFullscreen();
 
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
 

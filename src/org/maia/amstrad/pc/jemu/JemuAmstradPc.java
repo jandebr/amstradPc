@@ -182,6 +182,17 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
+	public boolean isFullscreen() {
+		return JEMU.fullscreen;
+	}
+
+	@Override
+	public void toggleFullscreen() {
+		checkNotTerminated();
+		getJemuInstance().FullSize();
+	}
+
+	@Override
 	public synchronized BufferedImage makeScreenshot(boolean monitorEffect) {
 		checkStarted();
 		checkNotTerminated();
@@ -322,7 +333,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	}
 
-	private static class JemuFrameBridge extends JemuFrameAdapter {
+	private class JemuFrameBridge extends JemuFrameAdapter {
 
 		private JFrame frame;
 
@@ -348,6 +359,10 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			if (!isFrameLess()) {
 				if (Settings.getBoolean(Settings.SHOWMENU, true)) {
 					getFrame().setMenuBar(menuBar);
+				} else {
+					if (getFrame().getJMenuBar() != null && !getAmstradPc().isFullscreen()) {
+						getFrame().getJMenuBar().setVisible(true);
+					}
 				}
 			}
 		}
@@ -355,7 +370,13 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		@Override
 		public void removeMenuBar(MenuBar menuBar) {
 			if (!isFrameLess()) {
-				getFrame().remove(menuBar);
+				if (Settings.getBoolean(Settings.SHOWMENU, true)) {
+					getFrame().remove(menuBar);
+				} else {
+					if (getFrame().getJMenuBar() != null) {
+						getFrame().getJMenuBar().setVisible(false);
+					}
+				}
 			}
 		}
 
@@ -447,6 +468,10 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			if (isFrameLess())
 				throw new HeadlessException("Not backed by any frame");
 			return new FileDialog(getFrame(), title, mode);
+		}
+
+		private AmstradPc getAmstradPc() {
+			return JemuAmstradPc.this;
 		}
 
 		private boolean isFrameLess() {

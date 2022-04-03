@@ -1,5 +1,7 @@
 package org.maia.amstrad.pc;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
@@ -9,8 +11,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.menu.FullscreenAction;
 import org.maia.amstrad.pc.menu.LoadBasicFileAction;
 import org.maia.amstrad.pc.menu.MonitorModeAction;
 import org.maia.amstrad.pc.menu.OpenSnapshotFileAction;
@@ -90,12 +94,16 @@ public class AmstradFactory {
 		monitorGroup.add(monitor1);
 		monitorGroup.add(monitor2);
 		monitorGroup.add(monitor3);
-		AmstradMonitorMode monitorMode = getAmstradContext().getUserSettings().getMonitorMode();
+		AmstradMonitorMode monitorMode = amstradPc.getMonitorMode();
 		for (Enumeration<AbstractButton> en = monitorGroup.getElements(); en.hasMoreElements();) {
 			AbstractButton button = en.nextElement();
 			if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode))
 				button.setSelected(true);
 		}
+		menu.add(new JSeparator());
+		JMenuItem item = new JMenuItem(new FullscreenAction(amstradPc));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK));
+		menu.add(item);
 		return menu;
 	}
 

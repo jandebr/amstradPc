@@ -10,7 +10,7 @@ public class AmstradMain {
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		frame.installSimpleMenuBar();
 		if (args.length == 0) {
-			amstradPc.start(false);
+			amstradPc.start(true);
 		} else if (args.length == 1) {
 			amstradPc.launch(new File(args[0]));
 		} else if (args.length == 2 && amstradPc.isBasicSourceFile(new File(args[0]))

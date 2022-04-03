@@ -772,7 +772,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			intern.add(downlabel, BorderLayout.SOUTH);
 			intern.add(leftlabel, BorderLayout.WEST);
 			intern.add(rightlabel, BorderLayout.EAST);
-
 			intern.setTitle("Output");
 			intern.setBackground(new Color(0x222222));
 			intern.setVisible(true);
