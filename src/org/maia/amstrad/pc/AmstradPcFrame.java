@@ -34,6 +34,14 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		setJMenuBar(AmstradFactory.getInstance().createSimpleMenuBar(getAmstradPc()));
 	}
 
+	public boolean isFullscreen() {
+		return getAmstradPc().isFullscreen();
+	}
+
+	public void toggleFullscreen() {
+		getAmstradPc().toggleFullscreen();
+	}
+
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
 		setVisible(true);

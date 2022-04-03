@@ -5,8 +5,12 @@
             <manifest>
                 <attribute name="Main-Class" value="org.maia.amstrad.pc.AmstradMain"/>
                 <attribute name="Class-Path" value="."/>
+            	<attribute name="SplashScreen-Image" value="images/splash.png"/>
             </manifest>
             <fileset dir="bin"/>
+			<fileset dir="resources">
+				<include name="images/*" />
+			</fileset>
         </jar>
     </target>
 </project>
