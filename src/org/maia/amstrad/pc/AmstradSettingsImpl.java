@@ -138,10 +138,7 @@ public class AmstradSettingsImpl extends AmstradSettings {
 						saveProperties();
 					}
 				}
-				try {
-					Thread.sleep(50L);
-				} catch (InterruptedException e) {
-				}
+				AmstradContext.sleep(50L);
 			}
 		}
 

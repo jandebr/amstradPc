@@ -1,13 +1,13 @@
-package org.maia.amstrad.pc;
+package org.maia.amstrad.pc.basic;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public abstract class AmstradPcBasicRuntime {
+public abstract class BasicRuntime {
 
-	protected AmstradPcBasicRuntime() {
+	protected BasicRuntime() {
 	}
 
 	public abstract void keyboardType(CharSequence text, boolean waitUntilTyped);
@@ -55,6 +55,18 @@ public abstract class AmstradPcBasicRuntime {
 		}
 		reader.close();
 		keyboardType(sb);
+	}
+
+	public abstract void save(File basicFile) throws IOException;
+
+	public void escape() {
+		char escape = 0x1b;
+		keyboardType("" + escape);
+	}
+
+	public void interrupt() {
+		escape();
+		escape();
 	}
 
 }

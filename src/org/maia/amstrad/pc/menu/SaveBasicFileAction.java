@@ -7,17 +7,17 @@ import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class SaveSnapshotFileAction extends SnapshotFileAction {
+public class SaveBasicFileAction extends BasicFileAction {
 
-	public SaveSnapshotFileAction(AmstradPc amstradPc) {
-		this(amstradPc, "Save snapshot file...");
+	public SaveBasicFileAction(AmstradPc amstradPc) {
+		this(amstradPc, "Save Basic file...");
 	}
 
-	public SaveSnapshotFileAction(AmstradPc amstradPc, String name) {
+	public SaveBasicFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	public SaveSnapshotFileAction(AmstradPc amstradPc, String name, Icon icon) {
+	public SaveBasicFileAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 
@@ -29,17 +29,13 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 				@Override
 				public void run() {
 					try {
-						getAmstradPc().saveSnapshot(getSelectedFileWithExtension(".sna", ".snz"), isSnapshotRunnable());
+						getAmstradPc().getBasicRuntime().save(getSelectedFileWithExtension(".bas", ".txt"));
 					} catch (Exception e) {
-						System.err.println("Failed to save snapshot file: " + e.getMessage());
+						System.err.println("Failed to save Basic source file: " + e.getMessage());
 					}
 				}
 			}).start();
 		}
-	}
-
-	protected boolean isSnapshotRunnable() {
-		return false;
 	}
 
 }

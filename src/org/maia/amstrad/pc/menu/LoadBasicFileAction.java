@@ -8,7 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class LoadBasicFileAction extends FileChooserAction {
+public class LoadBasicFileAction extends BasicFileAction {
 
 	public LoadBasicFileAction(AmstradPc amstradPc) {
 		this(amstradPc, "Load Basic file...");
@@ -37,15 +37,6 @@ public class LoadBasicFileAction extends FileChooserAction {
 				}
 			}).start();
 		}
-	}
-
-	@Override
-	protected JFileChooser buildFileChooser() {
-		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
-		fileChooser.setDialogTitle(getName());
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Basic source files (*.bas, *.txt)", "bas", "txt");
-		fileChooser.setFileFilter(filter);
-		return fileChooser;
 	}
 
 }

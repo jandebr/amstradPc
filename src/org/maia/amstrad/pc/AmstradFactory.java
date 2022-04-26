@@ -21,6 +21,8 @@ import org.maia.amstrad.pc.menu.OpenSnapshotFileAction;
 import org.maia.amstrad.pc.menu.PauseResumeAction;
 import org.maia.amstrad.pc.menu.QuitAction;
 import org.maia.amstrad.pc.menu.RebootAction;
+import org.maia.amstrad.pc.menu.SaveBasicFileAction;
+import org.maia.amstrad.pc.menu.SaveRunnableSnapshotFileAction;
 import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
 import org.maia.amstrad.pc.menu.ScreenshotAction;
 import org.maia.amstrad.pc.menu.ScreenshotWithMonitorEffectAction;
@@ -61,9 +63,11 @@ public class AmstradFactory {
 	private JMenu createFileMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("File");
 		menu.add(new JMenuItem(new LoadBasicFileAction(amstradPc)));
+		menu.add(new JMenuItem(new SaveBasicFileAction(amstradPc)));
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new OpenSnapshotFileAction(amstradPc)));
 		menu.add(new JMenuItem(new SaveSnapshotFileAction(amstradPc)));
+		menu.add(new JMenuItem(new SaveRunnableSnapshotFileAction(amstradPc)));
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
 		menu.add(new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc)));

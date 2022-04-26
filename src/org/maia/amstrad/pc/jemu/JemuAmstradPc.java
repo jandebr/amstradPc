@@ -8,7 +8,9 @@ import java.awt.HeadlessException;
 import java.awt.MenuBar;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.swing.JFrame;
 
@@ -21,10 +23,12 @@ import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
 import jemu.ui.Switches;
 
+import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcBasicRuntime;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.basic.BasicRuntime;
+import org.maia.amstrad.pc.basic.LocomotiveBasicDecompiler;
 
 public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener {
 
@@ -37,6 +41,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	private boolean autotyping;
 
 	private static boolean instanceRunning; // maximum 1 running Jemu instance in JVM
+
+	private static final int SNAPSHOT_HEADER_SIZE = 256; // in bytes
 
 	public JemuAmstradPc() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
@@ -86,12 +92,17 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public void saveSnapshot(File file) throws IOException {
+	public void saveSnapshot(File file, boolean runnable) throws IOException {
 		checkStarted();
 		checkNotTerminated();
+		if (runnable) {
+			getBasicRuntime().keyboardEnter("CLS: INPUT \"Press [enter] to start\",A$: RUN");
+			AmstradContext.sleep(500L);
+		}
 		Settings.set(Settings.SNAPSHOT_FILE, file.getAbsolutePath());
 		Switches.uncompressed = isUncompressedSnapshotFile(file);
 		Switches.save64 = true; // 64k RAM memory dump
+		waitUntilSnapshotReady(file);
 	}
 
 	@Override
@@ -158,10 +169,10 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public synchronized AmstradPcBasicRuntime getBasicRuntime() {
+	public synchronized BasicRuntime getBasicRuntime() {
 		checkStarted();
 		checkNotTerminated();
-		return new AmstradPcBasicRuntimeImpl();
+		return new JemuBasicRuntimeImpl();
 	}
 
 	@Override
@@ -214,14 +225,14 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	private void waitUntilReady(long minWaitTimeMs, long maxWaitTimeMs) {
 		System.out.println("Wait until Basic runtime is Ready");
 		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
-		sleep(minWaitTimeMs);
+		AmstradContext.sleep(minWaitTimeMs);
 		BufferedImage image = makeScreenshot(false);
 		double s = (image.getWidth() + 28.0) / 384.0;
 		int cursorX = (int) Math.round(s * 34 + (s - 1) * 2);
 		int cursorY = (int) Math.round(s * 108 + (s - 1) * 6);
 		Color color = new Color(image.getRGB(cursorX, cursorY));
 		while (color.getGreen() < 100 && System.currentTimeMillis() < timeout) {
-			sleep(100L);
+			AmstradContext.sleep(100L);
 			System.out.println("Checking if Basic runtime is Ready");
 			image = makeScreenshot(false);
 			color = new Color(image.getRGB(cursorX, cursorY));
@@ -232,13 +243,38 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		System.out.println("Basic runtime is Ready");
 	}
 
-	private void sleep(long milliseconds) {
-		if (milliseconds > 0L) {
-			try {
-				Thread.sleep(milliseconds);
-			} catch (InterruptedException e) {
-			}
+	private void waitUntilSnapshotReady(File snapshotFile) {
+		waitUntilSnapshotReady(snapshotFile, 1000L);
+	}
+
+	private void waitUntilSnapshotReady(File snapshotFile, long maxWaitTimeMs) {
+		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
+		while (snapshotFile.length() < 65536L + SNAPSHOT_HEADER_SIZE && System.currentTimeMillis() < timeout) {
+			AmstradContext.sleep(100L);
 		}
+	}
+
+	private short[] getMemoryBinaryDump() throws IOException {
+		short[] dump = new short[65536]; // 64k RAM memory dump
+		byte[] buffer = new byte[2048];
+		int bufferIndex = 0;
+		File temp = File.createTempFile("amstrad", ".sna");
+		saveSnapshot(temp, false);
+		FileInputStream in = new FileInputStream(temp);
+		in.read(buffer, 0, SNAPSHOT_HEADER_SIZE); // skip header
+		int bytesRead = in.read(buffer);
+		while (bytesRead >= 0) {
+			for (int i = 0; i < bytesRead; i++) {
+				short s = (short) buffer[i];
+				if (s < 0)
+					s += 256;
+				dump[bufferIndex++] = s;
+			}
+			bytesRead = in.read(buffer);
+		}
+		in.close();
+		temp.delete();
+		return dump;
 	}
 
 	@Override
@@ -315,9 +351,9 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		JemuAmstradPc.instanceRunning = instanceRunning;
 	}
 
-	private class AmstradPcBasicRuntimeImpl extends AmstradPcBasicRuntime {
+	private class JemuBasicRuntimeImpl extends BasicRuntime {
 
-		public AmstradPcBasicRuntimeImpl() {
+		public JemuBasicRuntimeImpl() {
 		}
 
 		@Override
@@ -326,9 +362,19 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 				Autotype.typeText(text);
 				if (waitUntilTyped) {
 					waitUntilAutotypeEnded();
-					sleep(100L);
+					AmstradContext.sleep(100L);
 				}
 			}
+		}
+
+		@Override
+		public void save(File basicFile) throws IOException {
+			short[] dump = getMemoryBinaryDump();
+			System.arraycopy(dump, 368, dump, 0, dump.length - 368); // remove preamble to basic code
+			CharSequence basicCode = new LocomotiveBasicDecompiler().decompile(dump);
+			PrintWriter pw = new PrintWriter(basicFile);
+			pw.print(basicCode);
+			pw.close();
 		}
 
 	}

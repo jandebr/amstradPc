@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.pc.basic.BasicRuntime;
+
 public abstract class AmstradPc {
 
 	private List<AmstradPcStateListener> stateListeners;
@@ -39,7 +41,7 @@ public abstract class AmstradPc {
 
 	public abstract void launch(File file) throws IOException;
 
-	public abstract void saveSnapshot(File file) throws IOException;
+	public abstract void saveSnapshot(File file, boolean runnable) throws IOException;
 
 	public abstract void start(boolean waitUntilReady);
 
@@ -51,7 +53,7 @@ public abstract class AmstradPc {
 
 	public abstract void terminate();
 
-	public abstract AmstradPcBasicRuntime getBasicRuntime();
+	public abstract BasicRuntime getBasicRuntime();
 
 	public abstract Component getDisplayPane();
 
