@@ -254,22 +254,18 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 	}
 
-	private short[] getMemoryBinaryDump() throws IOException {
-		short[] dump = new short[65536]; // 64k RAM memory dump
+	private byte[] getMemoryBinaryDump() throws IOException {
+		byte[] dump = new byte[65536]; // 64k RAM memory dump
 		byte[] buffer = new byte[2048];
-		int bufferIndex = 0;
+		int dumpIndex = 0;
 		File temp = File.createTempFile("amstrad", ".sna");
 		saveSnapshot(temp, false);
 		FileInputStream in = new FileInputStream(temp);
 		in.read(buffer, 0, SNAPSHOT_HEADER_SIZE); // skip header
 		int bytesRead = in.read(buffer);
 		while (bytesRead >= 0) {
-			for (int i = 0; i < bytesRead; i++) {
-				short s = (short) buffer[i];
-				if (s < 0)
-					s += 256;
-				dump[bufferIndex++] = s;
-			}
+			System.arraycopy(buffer, 0, dump, dumpIndex, bytesRead);
+			dumpIndex += bytesRead;
 			bytesRead = in.read(buffer);
 		}
 		in.close();
@@ -369,7 +365,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 		@Override
 		public void save(File basicFile) throws IOException {
-			short[] dump = getMemoryBinaryDump();
+			byte[] dump = getMemoryBinaryDump();
 			System.arraycopy(dump, 368, dump, 0, dump.length - 368); // remove preamble to basic code
 			CharSequence basicCode = new LocomotiveBasicDecompiler().decompile(dump);
 			PrintWriter pw = new PrintWriter(basicFile);

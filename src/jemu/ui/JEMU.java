@@ -5402,9 +5402,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public Display getDisplay() {
 		return display;
 	}
-	
+
 	public void setStandalone(boolean standalone) {
 		this.isStandalone = standalone;
+	}
+
+	public boolean isRunning() {
+		return computer.isRunning();
 	}
 
 	public void addPauseListener(PauseListener listener) {
