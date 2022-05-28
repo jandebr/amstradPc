@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.maia.amstrad.pc.AmstradContext;
+import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicCompiler;
+import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicDecompiler;
 
 public abstract class BasicRuntime {
 
