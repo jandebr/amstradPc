@@ -43,8 +43,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private static final int SNAPSHOT_HEADER_SIZE = 256; // in bytes
 
-	private static final int BASIC_MEMORY_OFFSET = 0x170; // in bytes
-
 	public JemuAmstradPc() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
@@ -349,19 +347,39 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 		@Override
 		protected void loadFittedByteCode(byte[] byteCode) {
-			// TODO Auto-generated method stub
-			// Marking end of Basic byte code
-			byte[] mem = null;
-			for (int i = 0; i < 4; i++) {
-				mem[0xAE83 + i * 2] = (byte) 0xBB;
-				mem[0xAE84 + i * 2] = (byte) 0x24;
+			synchronized (JemuAmstradPc.this) {
+				JEMU jemu = getJemuInstance();
+				// Pause
+				boolean running = jemu.isRunning();
+				if (running) {
+					jemu.pauseComputer();
+				}
+				// Load byte code
+				jemu.writeMemory(byteCode, MEMORY_ADDRESS_START_OF_PROGRAM);
+				// Marking end of byte code
+				int addr = MEMORY_ADDRESS_START_OF_PROGRAM + byteCode.length;
+				byte w0 = (byte) (addr % 256);
+				byte w1 = (byte) (addr / 256);
+				byte[] data = new byte[8];
+				for (int i = 0; i < 4; i++) {
+					data[i * 2] = w0;
+					data[i * 2 + 1] = w1;
+				}
+				jemu.writeMemory(data, MEMORY_POINTER_END_OF_PROGRAM);
+				// Resume
+				if (running) {
+					jemu.goComputer();
+				}
 			}
 		}
 
 		@Override
 		protected byte[] exportFittedByteCode() {
-			// TODO Auto-generated method stub
-			return null;
+			synchronized (JemuAmstradPc.this) {
+				int len = MEMORY_POINTER_END_OF_PROGRAM - MEMORY_ADDRESS_START_OF_PROGRAM;
+				byte[] mem = getJemuInstance().readMemory(MEMORY_ADDRESS_START_OF_PROGRAM, len);
+				return fitByteCode(mem);
+			}
 		}
 
 	}

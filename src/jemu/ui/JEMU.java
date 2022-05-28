@@ -2175,7 +2175,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void writeMemory(byte[] data, int dataOffset, int dataLength, int memoryOffset) {
 		boolean running = computer.isRunning();
-		computer.stop();
+		if (running) {
+			computer.stop();
+		}
 		computer.writeMemory(data, dataOffset, dataLength, memoryOffset);
 		if (running) {
 			computer.start();
@@ -2184,14 +2186,16 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public byte[] readMemory(int memoryOffset, int memoryLength) {
 		boolean running = computer.isRunning();
-		computer.stop();
+		if (running) {
+			computer.stop();
+		}
 		byte[] data = computer.readMemory(memoryOffset, memoryLength);
 		if (running) {
 			computer.start();
 		}
 		return data;
 	}
-	
+
 	public void resetComputer() {
 		checkTurbo.setState(false);
 		computer.reset();

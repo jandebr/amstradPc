@@ -7,7 +7,7 @@ import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class SaveBasicBinaryFileAction extends BasicSourceFileAction {
+public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 
 	public SaveBasicBinaryFileAction(AmstradPc amstradPc) {
 		this(amstradPc, "Save Basic binary file...");

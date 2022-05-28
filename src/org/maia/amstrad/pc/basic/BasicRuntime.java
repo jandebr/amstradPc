@@ -9,6 +9,10 @@ import org.maia.amstrad.pc.AmstradContext;
 
 public abstract class BasicRuntime {
 
+	protected static final int MEMORY_ADDRESS_START_OF_PROGRAM = 0x170;
+
+	protected static final int MEMORY_POINTER_END_OF_PROGRAM = 0xAE83; // points to memory address following 0x0000
+
 	protected BasicRuntime() {
 	}
 
@@ -78,7 +82,7 @@ public abstract class BasicRuntime {
 	 * 
 	 * @param byteCode
 	 *            The Basic bytecode to load. The bytecode is <em>fitted</em>, meaning it starts right at the first byte
-	 *            and ends with the word 0x0000 for the next (void) line length
+	 *            of the Basic program and ends with the word 0x0000 for the next (void) line length
 	 */
 	protected abstract void loadFittedByteCode(byte[] byteCode);
 
@@ -107,11 +111,11 @@ public abstract class BasicRuntime {
 	 * Exports Basic bytecode from memory
 	 * 
 	 * @return The exported Basic bytecode. The bytecode is <em>fitted</em>, meaning it starts right at the first byte
-	 *         and ends with the word 0x0000 for the next (void) line length
+	 *         of the Basic program and ends with the word 0x0000 for the next (void) line length
 	 */
 	protected abstract byte[] exportFittedByteCode();
 
-	private byte[] fitByteCode(byte[] byteCode) {
+	protected byte[] fitByteCode(byte[] byteCode) {
 		if (byteCode.length < 2) {
 			return new byte[2]; // 0x0000
 		} else {
@@ -135,5 +139,5 @@ public abstract class BasicRuntime {
 			}
 		}
 	}
-	
+
 }
