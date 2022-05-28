@@ -7,17 +7,17 @@ import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class OpenSnapshotFileAction extends SnapshotFileAction {
+public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
 
-	public OpenSnapshotFileAction(AmstradPc amstradPc) {
-		this(amstradPc, "Open snapshot file...");
+	public LoadBasicBinaryFileAction(AmstradPc amstradPc) {
+		this(amstradPc, "Load Basic binary file...");
 	}
 
-	public OpenSnapshotFileAction(AmstradPc amstradPc, String name) {
+	public LoadBasicBinaryFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	public OpenSnapshotFileAction(AmstradPc amstradPc, String name, Icon icon) {
+	public LoadBasicBinaryFileAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 
@@ -29,9 +29,9 @@ public class OpenSnapshotFileAction extends SnapshotFileAction {
 				@Override
 				public void run() {
 					try {
-						getAmstradPc().launch(getFileChooser().getSelectedFile());
+						getAmstradPc().getBasicRuntime().loadByteCodeFromFile(getFileChooser().getSelectedFile());
 					} catch (Exception e) {
-						System.err.println("Failed to open snapshot file: " + e.getMessage());
+						System.err.println("Failed to load Basic binary file: " + e.getMessage());
 					}
 				}
 			}).start();

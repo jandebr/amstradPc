@@ -6,13 +6,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public abstract class BasicFileAction extends FileChooserAction {
+public abstract class BasicBinaryFileAction extends FileChooserAction {
 
-	protected BasicFileAction(AmstradPc amstradPc, String name) {
+	protected BasicBinaryFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	protected BasicFileAction(AmstradPc amstradPc, String name, Icon icon) {
+	protected BasicBinaryFileAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 
@@ -20,7 +20,7 @@ public abstract class BasicFileAction extends FileChooserAction {
 	protected JFileChooser buildFileChooser() {
 		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
 		fileChooser.setDialogTitle(getName());
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Basic source files (*.bas, *.txt)", "bas", "txt");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Basic binary files (*.bin)", "bin");
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
 	}

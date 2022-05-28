@@ -7,7 +7,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class ScreenshotWithMonitorEffectAction extends ScreenshotAction {
 
 	public ScreenshotWithMonitorEffectAction(AmstradPc amstradPc) {
-		this(amstradPc, "Save monitor image...");
+		this(amstradPc, "Capture monitor image...");
 	}
 
 	public ScreenshotWithMonitorEffectAction(AmstradPc amstradPc, String name) {

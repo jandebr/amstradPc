@@ -8,9 +8,7 @@ import java.awt.HeadlessException;
 import java.awt.MenuBar;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.swing.JFrame;
 
@@ -28,11 +26,12 @@ import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.basic.BasicRuntime;
-import org.maia.amstrad.pc.basic.LocomotiveBasicDecompiler;
 
 public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener {
 
 	private JEMU jemuInstance;
+
+	private BasicRuntime basicRuntime;
 
 	private boolean started;
 
@@ -44,9 +43,12 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private static final int SNAPSHOT_HEADER_SIZE = 256; // in bytes
 
+	private static final int BASIC_MEMORY_OFFSET = 0x170; // in bytes
+
 	public JemuAmstradPc() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
+		this.basicRuntime = new JemuBasicRuntimeImpl();
 	}
 
 	@Override
@@ -74,13 +76,18 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	@Override
 	public void launch(File file) throws IOException {
 		checkNotTerminated();
-		if (isBasicSourceFile(file)) {
+		if (isBasicSourceFile(file) || isBasicByteCodeFile(file)) {
 			if (!isStarted()) {
 				start(true);
 			} else {
 				reboot(true);
 			}
-			getBasicRuntime().run(file);
+			if (isBasicSourceFile(file)) {
+				getBasicRuntime().loadSourceCodeFromFile(file);
+			} else {
+				getBasicRuntime().loadByteCodeFromFile(file);
+			}
+			getBasicRuntime().run();
 		} else if (isSnapshotFile(file)) {
 			if (!isStarted()) {
 				start(true);
@@ -92,13 +99,9 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public void saveSnapshot(File file, boolean runnable) throws IOException {
+	public void saveSnapshot(File file) throws IOException {
 		checkStarted();
 		checkNotTerminated();
-		if (runnable) {
-			getBasicRuntime().keyboardEnter("CLS: INPUT \"Press [enter] to start\",A$: RUN");
-			AmstradContext.sleep(500L);
-		}
 		Settings.set(Settings.SNAPSHOT_FILE, file.getAbsolutePath());
 		Switches.uncompressed = isUncompressedSnapshotFile(file);
 		Switches.save64 = true; // 64k RAM memory dump
@@ -172,7 +175,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public synchronized BasicRuntime getBasicRuntime() {
 		checkStarted();
 		checkNotTerminated();
-		return new JemuBasicRuntimeImpl();
+		return basicRuntime;
 	}
 
 	@Override
@@ -252,25 +255,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		while (snapshotFile.length() < 65536L + SNAPSHOT_HEADER_SIZE && System.currentTimeMillis() < timeout) {
 			AmstradContext.sleep(100L);
 		}
-	}
-
-	private byte[] getMemoryBinaryDump() throws IOException {
-		byte[] dump = new byte[65536]; // 64k RAM memory dump
-		byte[] buffer = new byte[2048];
-		int dumpIndex = 0;
-		File temp = File.createTempFile("amstrad", ".sna");
-		saveSnapshot(temp, false);
-		FileInputStream in = new FileInputStream(temp);
-		in.read(buffer, 0, SNAPSHOT_HEADER_SIZE); // skip header
-		int bytesRead = in.read(buffer);
-		while (bytesRead >= 0) {
-			System.arraycopy(buffer, 0, dump, dumpIndex, bytesRead);
-			dumpIndex += bytesRead;
-			bytesRead = in.read(buffer);
-		}
-		in.close();
-		temp.delete();
-		return dump;
 	}
 
 	@Override
@@ -364,13 +348,20 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 
 		@Override
-		public void save(File basicFile) throws IOException {
-			byte[] dump = getMemoryBinaryDump();
-			System.arraycopy(dump, 368, dump, 0, dump.length - 368); // remove preamble to basic code
-			CharSequence basicCode = new LocomotiveBasicDecompiler().decompile(dump);
-			PrintWriter pw = new PrintWriter(basicFile);
-			pw.print(basicCode);
-			pw.close();
+		protected void loadFittedByteCode(byte[] byteCode) {
+			// TODO Auto-generated method stub
+			// Marking end of Basic byte code
+			byte[] mem = null;
+			for (int i = 0; i < 4; i++) {
+				mem[0xAE83 + i * 2] = (byte) 0xBB;
+				mem[0xAE84 + i * 2] = (byte) 0x24;
+			}
+		}
+
+		@Override
+		protected byte[] exportFittedByteCode() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	}

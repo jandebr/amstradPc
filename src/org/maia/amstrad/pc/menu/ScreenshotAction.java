@@ -13,7 +13,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class ScreenshotAction extends FileChooserAction {
 
 	public ScreenshotAction(AmstradPc amstradPc) {
-		this(amstradPc, "Save screen image...");
+		this(amstradPc, "Capture screen image...");
 	}
 
 	public ScreenshotAction(AmstradPc amstradPc, String name) {

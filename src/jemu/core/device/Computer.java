@@ -461,12 +461,22 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	public abstract void tapeEject();
 
 	/*
-	 * public abstract void BreakPoint(int breaknumber, int address); public abstract int getBreakPoint(int
-	 * breaknumber);
-	 * 
-	 * public abstract void BreakCheck();
+	 * Subclasses to override
 	 */
 	public void loadFile(int type, String name) throws Exception {
+	}
+
+	/*
+	 * Subclasses to override
+	 */
+	public void writeMemory(byte[] data, int dataOffset, int dataLength, int memoryOffset) {
+	}
+
+	/*
+	 * Subclasses to override
+	 */
+	public byte[] readMemory(int memoryOffset, int memoryLength) {
+		return null;
 	}
 
 	public abstract Dimension getDisplaySize(boolean large);

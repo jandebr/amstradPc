@@ -2038,7 +2038,6 @@ public class CPC extends Computer {
 			else
 				System.out.print(",");
 		}
-
 		gateArray.setModeAndROMEnable(memory, data[GA_ROM]);
 		memory.setRAMBank(data[GA_RAM]);
 
@@ -2053,7 +2052,6 @@ public class CPC extends Computer {
 		ppi.setOutputValue(PPI8255.PORT_C, portC);
 
 		psg.setBDIR_BC2_BC1(PSG_VALUES[portC >> 6], ppi.readOutput(PPI8255.PORT_A));
-
 		psg.setSelectedRegister(data[PSG_REG]);
 		for (int i = 0; i < 14; i++)
 			psg.setRegister(i, data[PSG_REGS + i] & 0xff);
@@ -2071,9 +2069,23 @@ public class CPC extends Computer {
 		else if (length <= 524600)
 			memSize = 0x80000;
 		System.out.println("Calculated length is " + memSize);
-
 		byte[] mem = memory.getMemory();
 		System.arraycopy(data, 0x100, mem, 0, memSize);
+	}
+
+	@Override
+	public void writeMemory(byte[] data, int dataOffset, int dataLength, int memoryOffset) {
+		byte[] mem = memory.getMemory();
+		System.arraycopy(data, dataOffset, mem, memoryOffset, dataLength);
+	}
+
+	@Override
+	public byte[] readMemory(int memoryOffset, int memoryLength) {
+		byte[] mem = memory.getMemory();
+		byte[] data = new byte[memoryLength];
+		int length = Math.min(memoryLength, mem.length - memoryOffset);
+		System.arraycopy(mem, memoryOffset, data, 0, length);
+		return data;
 	}
 
 	public void SNK_Save() {

@@ -31,6 +31,10 @@ public abstract class AmstradPc {
 		return fname.endsWith(".bas") || fname.endsWith(".txt");
 	}
 
+	public boolean isBasicByteCodeFile(File file) {
+		return file.getName().toLowerCase().endsWith(".bin");
+	}
+
 	public abstract boolean isSnapshotFile(File file);
 
 	public abstract boolean isStarted();
@@ -41,7 +45,7 @@ public abstract class AmstradPc {
 
 	public abstract void launch(File file) throws IOException;
 
-	public abstract void saveSnapshot(File file, boolean runnable) throws IOException;
+	public abstract void saveSnapshot(File file) throws IOException;
 
 	public abstract void start(boolean waitUntilReady);
 

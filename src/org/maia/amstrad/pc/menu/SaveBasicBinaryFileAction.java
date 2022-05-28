@@ -7,17 +7,17 @@ import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class SaveSnapshotFileAction extends SnapshotFileAction {
+public class SaveBasicBinaryFileAction extends BasicSourceFileAction {
 
-	public SaveSnapshotFileAction(AmstradPc amstradPc) {
-		this(amstradPc, "Save snapshot file...");
+	public SaveBasicBinaryFileAction(AmstradPc amstradPc) {
+		this(amstradPc, "Save Basic binary file...");
 	}
 
-	public SaveSnapshotFileAction(AmstradPc amstradPc, String name) {
+	public SaveBasicBinaryFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	public SaveSnapshotFileAction(AmstradPc amstradPc, String name, Icon icon) {
+	public SaveBasicBinaryFileAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 
@@ -29,9 +29,9 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 				@Override
 				public void run() {
 					try {
-						getAmstradPc().saveSnapshot(getSelectedFileWithExtension(".sna", ".snz"));
+						getAmstradPc().getBasicRuntime().exportByteCodeToFile(getSelectedFileWithExtension(".bin"));
 					} catch (Exception e) {
-						System.err.println("Failed to save snapshot file: " + e.getMessage());
+						System.err.println("Failed to save Basic binary file: " + e.getMessage());
 					}
 				}
 			}).start();

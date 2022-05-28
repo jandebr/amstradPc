@@ -4,21 +4,20 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class LoadBasicFileAction extends BasicFileAction {
+public class LoadSnapshotFileAction extends SnapshotFileAction {
 
-	public LoadBasicFileAction(AmstradPc amstradPc) {
-		this(amstradPc, "Load Basic file...");
+	public LoadSnapshotFileAction(AmstradPc amstradPc) {
+		this(amstradPc, "Load snapshot file...");
 	}
 
-	public LoadBasicFileAction(AmstradPc amstradPc, String name) {
+	public LoadSnapshotFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	public LoadBasicFileAction(AmstradPc amstradPc, String name, Icon icon) {
+	public LoadSnapshotFileAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 
@@ -30,9 +29,9 @@ public class LoadBasicFileAction extends BasicFileAction {
 				@Override
 				public void run() {
 					try {
-						getAmstradPc().getBasicRuntime().load(getFileChooser().getSelectedFile());
+						getAmstradPc().launch(getFileChooser().getSelectedFile());
 					} catch (Exception e) {
-						System.err.println("Failed to load Basic source file: " + e.getMessage());
+						System.err.println("Failed to load snapshot file: " + e.getMessage());
 					}
 				}
 			}).start();
