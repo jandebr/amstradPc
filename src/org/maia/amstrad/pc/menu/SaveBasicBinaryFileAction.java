@@ -1,10 +1,12 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 
+import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
@@ -29,7 +31,9 @@ public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 				@Override
 				public void run() {
 					try {
-						getAmstradPc().getBasicRuntime().exportByteCodeToFile(getSelectedFileWithExtension(".bin"));
+						File file = getSelectedFileWithExtension(".bin");
+						getAmstradPc().getBasicRuntime().exportByteCodeToFile(file);
+						AmstradContext.printInfoMessage(getAmstradPc(), "Saved " + file.getName());
 					} catch (Exception e) {
 						System.err.println("Failed to save Basic binary file: " + e.getMessage());
 					}

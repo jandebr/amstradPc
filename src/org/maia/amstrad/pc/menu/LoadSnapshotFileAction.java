@@ -29,7 +29,7 @@ public class LoadSnapshotFileAction extends SnapshotFileAction {
 				@Override
 				public void run() {
 					try {
-						getAmstradPc().launch(getFileChooser().getSelectedFile());
+						getAmstradPc().launch(getSelectedFile());
 					} catch (Exception e) {
 						System.err.println("Failed to load snapshot file: " + e.getMessage());
 					}

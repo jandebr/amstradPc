@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import jemu.settings.Settings;
+
 public abstract class AmstradContext {
 
 	protected AmstradContext() {
@@ -52,6 +54,20 @@ public abstract class AmstradContext {
 		}
 		in.close();
 		return data;
+	}
+
+	public static void printInfoMessage(AmstradPc amstradPc, String message) {
+		if (amstradPc.isStarted() && !amstradPc.isTerminated() && showConsoleMessages()) {
+			amstradPc.getBasicRuntime().keyboardEnter("' " + message);
+		}
+	}
+
+	public static boolean showConsoleMessages() {
+		return Settings.getBoolean(Settings.CONSOLE_MESSAGES, true);
+	}
+
+	public static void setShowConsoleMessages(boolean show) {
+		Settings.setBoolean(Settings.CONSOLE_MESSAGES, show);
 	}
 
 }

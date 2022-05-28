@@ -6,6 +6,7 @@ import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -14,6 +15,7 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.menu.AutoTypeFileAction;
 import org.maia.amstrad.pc.menu.FullscreenAction;
 import org.maia.amstrad.pc.menu.LoadBasicBinaryFileAction;
 import org.maia.amstrad.pc.menu.LoadBasicSourceFileAction;
@@ -27,6 +29,7 @@ import org.maia.amstrad.pc.menu.SaveBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
 import org.maia.amstrad.pc.menu.ScreenshotAction;
 import org.maia.amstrad.pc.menu.ScreenshotWithMonitorEffectAction;
+import org.maia.amstrad.pc.menu.ShowConsoleMessagesAction;
 
 public class AmstradFactory {
 
@@ -57,6 +60,7 @@ public class AmstradFactory {
 		JMenuBar menubar = new JMenuBar();
 		menubar.add(createFileMenu(amstradPc));
 		menubar.add(createEmulatorMenu(amstradPc));
+		menubar.add(createCaptureMenu(amstradPc));
 		menubar.add(createMonitorMenu(amstradPc));
 		return menubar;
 	}
@@ -71,17 +75,26 @@ public class AmstradFactory {
 		menu.add(new JMenuItem(new SaveBasicBinaryFileAction(amstradPc)));
 		menu.add(new JMenuItem(new SaveSnapshotFileAction(amstradPc)));
 		menu.add(new JSeparator());
-		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
-		menu.add(new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc)));
-		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new QuitAction(amstradPc)));
 		return menu;
 	}
 
 	private JMenu createEmulatorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Emulator");
+		menu.add(new JMenuItem(new AutoTypeFileAction(amstradPc)));
+		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new ShowConsoleMessagesAction(amstradPc));
+		checkItem.setState(AmstradContext.showConsoleMessages());
+		menu.add(checkItem);
+		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new PauseResumeAction(amstradPc)));
 		menu.add(new JMenuItem(new RebootAction(amstradPc)));
+		return menu;
+	}
+
+	private JMenu createCaptureMenu(AmstradPc amstradPc) {
+		JMenu menu = new JMenu("Capture");
+		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
+		menu.add(new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc)));
 		return menu;
 	}
 

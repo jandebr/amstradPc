@@ -19,7 +19,7 @@ public abstract class AmstradSettings {
 		}
 		return mode;
 	}
-
+	
 	public abstract String get(String key, String defaultValue);
 
 	public abstract void set(String key, String value);

@@ -1,11 +1,12 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class LoadBasicSourceFileAction extends BasicSourceFileAction {
@@ -30,7 +31,9 @@ public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 				@Override
 				public void run() {
 					try {
-						getAmstradPc().getBasicRuntime().loadSourceCodeFromFile(getFileChooser().getSelectedFile());
+						File file = getSelectedFile();
+						getAmstradPc().getBasicRuntime().loadSourceCodeFromFile(file);
+						AmstradContext.printInfoMessage(getAmstradPc(), "Loaded " + file.getName());
 					} catch (Exception e) {
 						System.err.println("Failed to load Basic source file: " + e.getMessage());
 					}
