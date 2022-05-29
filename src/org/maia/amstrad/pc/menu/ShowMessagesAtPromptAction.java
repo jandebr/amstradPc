@@ -8,24 +8,24 @@ import javax.swing.JCheckBoxMenuItem;
 import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradPc;
 
-public class ShowConsoleMessagesAction extends AmstradPcAction {
+public class ShowMessagesAtPromptAction extends AmstradPcAction {
 
-	public ShowConsoleMessagesAction(AmstradPc amstradPc) {
-		this(amstradPc, "Show console messages");
+	public ShowMessagesAtPromptAction(AmstradPc amstradPc) {
+		this(amstradPc, "Show messages at prompt");
 	}
 
-	public ShowConsoleMessagesAction(AmstradPc amstradPc, String name) {
+	public ShowMessagesAtPromptAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	public ShowConsoleMessagesAction(AmstradPc amstradPc, String name, Icon icon) {
+	public ShowMessagesAtPromptAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		boolean show = ((JCheckBoxMenuItem) event.getSource()).getState();
-		AmstradContext.setShowConsoleMessages(show);
+		AmstradContext.setShowMessagesAtPrompt(show);
 	}
 
 }

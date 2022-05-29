@@ -52,18 +52,9 @@ public abstract class BasicRuntime {
 		keyboardEnter("RUN");
 	}
 
-	public void escape() {
-		char escape = 0x1b;
-		keyboardType("" + escape);
-	}
-
-	public void interrupt() {
-		escape();
-		escape();
-	}
-
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException {
 		loadSourceCode(AmstradContext.readTextFileContents(sourceCodeFile));
+		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
 	}
 
 	public void loadSourceCode(CharSequence sourceCode) {
@@ -73,6 +64,7 @@ public abstract class BasicRuntime {
 
 	public void loadByteCodeFromFile(File byteCodeFile) throws IOException {
 		loadByteCode(AmstradContext.readBinaryFileContents(byteCodeFile));
+		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
 	}
 
 	public void loadByteCode(byte[] byteCode) {
@@ -92,6 +84,7 @@ public abstract class BasicRuntime {
 		PrintWriter pw = new PrintWriter(file);
 		pw.print(exportSourceCode());
 		pw.close();
+		System.out.println("Exported source code to " + file.getPath());
 	}
 
 	public CharSequence exportSourceCode() {
@@ -103,6 +96,7 @@ public abstract class BasicRuntime {
 		FileOutputStream os = new FileOutputStream(file);
 		os.write(exportByteCode());
 		os.close();
+		System.out.println("Exported byte code to " + file.getPath());
 	}
 
 	public byte[] exportByteCode() {

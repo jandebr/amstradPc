@@ -29,7 +29,7 @@ import org.maia.amstrad.pc.menu.SaveBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
 import org.maia.amstrad.pc.menu.ScreenshotAction;
 import org.maia.amstrad.pc.menu.ScreenshotWithMonitorEffectAction;
-import org.maia.amstrad.pc.menu.ShowConsoleMessagesAction;
+import org.maia.amstrad.pc.menu.ShowMessagesAtPromptAction;
 
 public class AmstradFactory {
 
@@ -82,8 +82,8 @@ public class AmstradFactory {
 	private JMenu createEmulatorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(new JMenuItem(new AutoTypeFileAction(amstradPc)));
-		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new ShowConsoleMessagesAction(amstradPc));
-		checkItem.setState(AmstradContext.showConsoleMessages());
+		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new ShowMessagesAtPromptAction(amstradPc));
+		checkItem.setState(AmstradContext.showMessagesAtPrompt());
 		menu.add(checkItem);
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new PauseResumeAction(amstradPc)));

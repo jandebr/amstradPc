@@ -74,6 +74,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	@Override
 	public void launch(File file) throws IOException {
 		checkNotTerminated();
+		System.out.println("Launching from " + file.getPath());
 		if (isBasicSourceFile(file) || isBasicByteCodeFile(file)) {
 			if (!isStarted()) {
 				start(true);
@@ -104,6 +105,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		Switches.uncompressed = isUncompressedSnapshotFile(file);
 		Switches.save64 = true; // 64k RAM memory dump
 		waitUntilSnapshotReady(file);
+		System.out.println("Saved snapshot to " + file.getPath());
 	}
 
 	@Override

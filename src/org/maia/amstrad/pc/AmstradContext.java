@@ -9,6 +9,8 @@ import java.io.PrintStream;
 
 import jemu.settings.Settings;
 
+import org.maia.amstrad.pc.basic.BasicRuntime;
+
 public abstract class AmstradContext {
 
 	protected AmstradContext() {
@@ -57,17 +59,26 @@ public abstract class AmstradContext {
 	}
 
 	public static void printInfoMessage(AmstradPc amstradPc, String message) {
-		if (amstradPc.isStarted() && !amstradPc.isTerminated() && showConsoleMessages()) {
-			amstradPc.getBasicRuntime().keyboardEnter("' " + message);
+		printInfoMessage(amstradPc, message, false, true);
+	}
+
+	public static void printInfoMessage(AmstradPc amstradPc, String message, boolean continuation, boolean close) {
+		if (amstradPc.isStarted() && !amstradPc.isTerminated() && showMessagesAtPrompt()) {
+			BasicRuntime rt = amstradPc.getBasicRuntime();
+			if (!continuation)
+				rt.keyboardType("'");
+			rt.keyboardType(message);
+			if (close)
+				rt.keyboardEnter();
 		}
 	}
 
-	public static boolean showConsoleMessages() {
-		return Settings.getBoolean(Settings.CONSOLE_MESSAGES, true);
+	public static boolean showMessagesAtPrompt() {
+		return Settings.getBoolean(Settings.PROMPT_MESSAGES, false);
 	}
 
-	public static void setShowConsoleMessages(boolean show) {
-		Settings.setBoolean(Settings.CONSOLE_MESSAGES, show);
+	public static void setShowMessagesAtPrompt(boolean show) {
+		Settings.setBoolean(Settings.PROMPT_MESSAGES, show);
 	}
 
 }
