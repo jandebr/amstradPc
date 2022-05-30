@@ -1,9 +1,7 @@
 package org.maia.amstrad.pc.basic.locomotive;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import org.maia.amstrad.pc.basic.BasicDecompiler;
+import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.basic.locomotive.LocomotiveTokenMap.Token;
 
 public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implements BasicDecompiler {
@@ -74,7 +72,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 				line.append(':');
 			} else if (b >= 0x02 && b <= 0x0d) {
 				// variable
-				nextWord(); // memory offset, always 0
+				nextWord(); // memory offset
 				line.append(nextSymbolicName());
 				if (b == 0x02) {
 					line.append('%'); // integer variable
@@ -84,7 +82,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 					line.append('!'); // floating point variable
 				}
 			} else if (b >= 0x0e && b <= 0x18) {
-				// number constant 0 to 10
+				// number constant 0 to 10 (although 10 is usually 0x19 0x0a)
 				line.append(b - 0x0e);
 			} else if (b == 0x19) {
 				// 8-bit integer decimal value
@@ -92,14 +90,18 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 			} else if (b >= 0x1a && b <= 0x1e) {
 				// 16-bit integer
 				int v = nextWord();
-				if (b == 0x1a || b == 0x1d || b == 0x1e) {
-					line.append(v);
+				if (b == 0x1a) {
+					line.append(v); // decimal
 				} else if (b == 0x1b) {
-					line.append("&X"); // binair
+					line.append("&X"); // binary
 					line.append(Integer.toBinaryString(v));
 				} else if (b == 0x1c) {
 					line.append("&"); // hexadecimal
 					line.append(Integer.toHexString(v));
+				} else if (b == 0x1d) {
+					line.append(wordAt(v - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM + 3)); // line pointer
+				} else if (b == 0x1e) {
+					line.append(v); // line number
 				}
 			} else if (b == 0x1f) {
 				// floating point value
@@ -176,9 +178,15 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 	}
 
 	private int nextWord() {
-		if (byteCodeIndex >= byteCode.length - 1)
+		int word = wordAt(byteCodeIndex);
+		byteCodeIndex += 2;
+		return word;
+	}
+
+	private int wordAt(int index) {
+		if (index >= byteCode.length - 1)
 			throw new EndOfInputException();
-		return (byteCode[byteCodeIndex++] & 0xff) | ((byteCode[byteCodeIndex++] << 8) & 0xff00);
+		return (byteCode[index] & 0xff) | ((byteCode[index + 1] << 8) & 0xff00);
 	}
 
 	private double nextFloatingPoint() {

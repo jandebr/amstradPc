@@ -11,9 +11,9 @@ import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicDecompiler;
 
 public abstract class BasicRuntime {
 
-	protected static final int MEMORY_ADDRESS_START_OF_PROGRAM = 0x170;
+	public static final int MEMORY_ADDRESS_START_OF_PROGRAM = 0x170;
 
-	protected static final int MEMORY_POINTER_END_OF_PROGRAM = 0xAE83; // points to memory address following 0x0000
+	public static final int MEMORY_POINTER_END_OF_PROGRAM = 0xAE83; // points to memory address following 0x0000
 
 	protected BasicRuntime() {
 	}
@@ -58,8 +58,10 @@ public abstract class BasicRuntime {
 	}
 
 	public void loadSourceCode(CharSequence sourceCode) {
-		BasicCompiler compiler = new LocomotiveBasicCompiler();
-		loadByteCode(compiler.compile(sourceCode));
+		if (sourceCode != null) {
+			BasicCompiler compiler = new LocomotiveBasicCompiler();
+			loadByteCode(compiler.compile(sourceCode));
+		}
 	}
 
 	public void loadByteCodeFromFile(File byteCodeFile) throws IOException {
@@ -68,7 +70,9 @@ public abstract class BasicRuntime {
 	}
 
 	public void loadByteCode(byte[] byteCode) {
-		loadFittedByteCode(fitByteCode(byteCode));
+		if (byteCode != null) {
+			loadFittedByteCode(fitByteCode(byteCode));
+		}
 	}
 
 	/**

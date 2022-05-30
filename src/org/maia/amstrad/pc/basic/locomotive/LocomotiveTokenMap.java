@@ -1,16 +1,22 @@
 package org.maia.amstrad.pc.basic.locomotive;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class LocomotiveTokenMap {
 
-	private Map<Integer, Token> internalMap;
+	private Map<Integer, Token> byteCodeMap;
+
+	private Map<Character, Set<Token>> firstCharIndex;
 
 	public LocomotiveTokenMap() {
-		this.internalMap = new HashMap<Integer, Token>(512);
+		this.byteCodeMap = new HashMap<Integer, Token>(512);
+		this.firstCharIndex = new HashMap<Character, Set<Token>>(26);
 		loadBasicTokens();
-		loadExtraTokens();
+		loadExtendedTokens();
 	}
 
 	private void loadBasicTokens() {
@@ -123,7 +129,7 @@ public class LocomotiveTokenMap {
 		register(new Token((byte) 0xed, "USING"));
 	}
 
-	private void loadExtraTokens() {
+	private void loadExtendedTokens() {
 		register(new Token((byte) 0xff, (byte) 0x00, "ABS"));
 		register(new Token((byte) 0xff, (byte) 0x01, "ASC"));
 		register(new Token((byte) 0xff, (byte) 0x02, "ATN"));
@@ -182,15 +188,30 @@ public class LocomotiveTokenMap {
 	}
 
 	public void register(Token token) {
-		getInternalMap().put(getTokenIndex(token), token);
+		getByteCodeMap().put(getTokenIndex(token), token);
+		Character fc = token.getFirstCharacter();
+		Set<Token> set = getFirstCharIndex().get(fc);
+		if (set == null) {
+			set = new HashSet<Token>(8);
+			getFirstCharIndex().put(fc, set);
+		}
+		set.add(token);
 	}
 
 	public Token getToken(byte codeByte) {
-		return getInternalMap().get(getTokenIndex(codeByte));
+		return getByteCodeMap().get(getTokenIndex(codeByte));
 	}
 
 	public Token getToken(byte prefixByte, byte codeByte) {
-		return getInternalMap().get(getTokenIndex(prefixByte, codeByte));
+		return getByteCodeMap().get(getTokenIndex(prefixByte, codeByte));
+	}
+
+	public Set<Token> getTokensStartingWith(char c) {
+		Set<Token> set = getFirstCharIndex().get(c);
+		if (set == null)
+			return Collections.emptySet();
+		else
+			return set;
 	}
 
 	private Integer getTokenIndex(Token token) {
@@ -205,8 +226,12 @@ public class LocomotiveTokenMap {
 		return Integer.valueOf((prefixByte << 8) & 0xff00 | (codeByte & 0xff));
 	}
 
-	private Map<Integer, Token> getInternalMap() {
-		return internalMap;
+	private Map<Integer, Token> getByteCodeMap() {
+		return byteCodeMap;
+	}
+
+	private Map<Character, Set<Token>> getFirstCharIndex() {
+		return firstCharIndex;
 	}
 
 	public static class Token {
@@ -227,6 +252,32 @@ public class LocomotiveTokenMap {
 			this.sourceForm = sourceForm;
 		}
 
+		@Override
+		public String toString() {
+			return getSourceForm().toString();
+		}
+
+		@Override
+		public int hashCode() {
+			return 31 + ((sourceForm == null) ? 0 : sourceForm.hashCode());
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Token other = (Token) obj;
+			return getSourceForm().equals(other.getSourceForm());
+		}
+
+		public Character getFirstCharacter() {
+			return getSourceForm().charAt(0);
+		}
+
 		public byte getPrefixByte() {
 			return prefixByte;
 		}
@@ -240,5 +291,5 @@ public class LocomotiveTokenMap {
 		}
 
 	}
-	
+
 }

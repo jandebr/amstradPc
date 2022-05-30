@@ -9,8 +9,8 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 	@Override
 	public byte[] compile(CharSequence sourceCode) {
-		// TODO Auto-generated method stub
 		System.out.println("About to compile");
+		System.out.println(getTokenMap().getTokensStartingWith('P'));
 		return null;
 	}
 

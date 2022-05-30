@@ -74,7 +74,7 @@ public abstract class AmstradContext {
 	}
 
 	public static boolean showMessagesAtPrompt() {
-		return Settings.getBoolean(Settings.PROMPT_MESSAGES, false);
+		return Settings.getBoolean(Settings.PROMPT_MESSAGES, true);
 	}
 
 	public static void setShowMessagesAtPrompt(boolean show) {
