@@ -240,13 +240,13 @@ public class LocomotiveTokenMap {
 
 		private byte codeByte;
 
-		private CharSequence sourceForm;
+		private String sourceForm;
 
-		public Token(byte codeByte, CharSequence sourceForm) {
+		public Token(byte codeByte, String sourceForm) {
 			this((byte) 0, codeByte, sourceForm);
 		}
 
-		public Token(byte prefixByte, byte codeByte, CharSequence sourceForm) {
+		public Token(byte prefixByte, byte codeByte, String sourceForm) {
 			this.prefixByte = prefixByte;
 			this.codeByte = codeByte;
 			this.sourceForm = sourceForm;
@@ -254,7 +254,7 @@ public class LocomotiveTokenMap {
 
 		@Override
 		public String toString() {
-			return getSourceForm().toString();
+			return getSourceForm();
 		}
 
 		@Override
@@ -278,6 +278,14 @@ public class LocomotiveTokenMap {
 			return getSourceForm().charAt(0);
 		}
 
+		public boolean isBasicToken() {
+			return getPrefixByte() == 0;
+		}
+
+		public boolean isExtendedToken() {
+			return !isBasicToken();
+		}
+
 		public byte getPrefixByte() {
 			return prefixByte;
 		}
@@ -286,7 +294,7 @@ public class LocomotiveTokenMap {
 			return codeByte;
 		}
 
-		public CharSequence getSourceForm() {
+		public String getSourceForm() {
 			return sourceForm;
 		}
 
