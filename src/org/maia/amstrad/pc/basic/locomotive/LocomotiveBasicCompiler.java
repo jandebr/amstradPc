@@ -1,6 +1,6 @@
 package org.maia.amstrad.pc.basic.locomotive;
 
-import java.util.Locale;
+import java.util.InputMismatchException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -41,32 +41,29 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 	}
 
 	private void compileLine(String line) {
-		int i = line.indexOf(' ');
-		if (i < 0)
-			throw new MalformedSyntaxException("Could not split on line number: " + line);
+		TextScanner scanner = new TextScanner(line);
+		scanner.skipWhitespace();
 		try {
-			int lineNumber = Integer.parseInt(line.substring(0, i));
+			int lineNumber = scanner.scanInt();
 			appendWord(lineNumber);
-			compileCode(line.substring(i + 1));
+			scanner.skipWhitespace();
+			compileLineBody(scanner);
 			appendByte(0); // end of line
-		} catch (NumberFormatException e) {
-			throw new MalformedSyntaxException("Could not parse line number: " + line);
+		} catch (InputMismatchException e) {
+			throw new MalformedSyntaxException("Could not parse line number", line);
 		}
 	}
 
-	private void compileCode(String code) {
-		String upperCode = code.toUpperCase(Locale.US);
-		int ci = 0;
-		while (ci < code.length()) {
-			Token token = tokenAhead(upperCode, ci);
-			if (token != null) {
+	private void compileLineBody(TextScanner scanner) {
+		while (!scanner.atEndOfText()) {
+			if (scanner.hasTokenAhead()) {
+				Token token = scanner.scanToken();
 				if (token.isExtendedToken()) {
-					appendByte(0xff);
+					appendByte(token.getPrefixByte());
 				}
 				appendByte(token.getCodeByte());
-				ci += token.getSourceForm().length();
 			} else {
-				char c = code.charAt(ci++);
+				char c = scanner.scanChar();
 				if (c == ':') {
 					appendByte(0x01); // instruction separator
 				} else {
@@ -74,19 +71,6 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 				}
 			}
 		}
-	}
-
-	private Token tokenAhead(String upperCode, int fromIndex) {
-		int maxSymbolLength = upperCode.length() - fromIndex;
-		Set<Token> tokens = getTokenMap().getTokensStartingWith(upperCode.charAt(fromIndex));
-		for (Token token : tokens) {
-			String symbol = token.getSourceForm();
-			if (symbol.length() <= maxSymbolLength
-					&& upperCode.substring(fromIndex, fromIndex + symbol.length()).equals(symbol)) {
-				return token;
-			}
-		}
-		return null;
 	}
 
 	private void appendByte(int value) {
@@ -119,8 +103,148 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 	@SuppressWarnings("serial")
 	public static class MalformedSyntaxException extends RuntimeException {
 
-		public MalformedSyntaxException(String message) {
+		private String codeLine;
+
+		public MalformedSyntaxException(String message, String codeLine) {
 			super(message);
+			setCodeLine(codeLine);
+		}
+
+		public String getCodeLine() {
+			return codeLine;
+		}
+
+		private void setCodeLine(String codeLine) {
+			this.codeLine = codeLine;
+		}
+
+	}
+
+	private class TextScanner {
+
+		private String text;
+
+		private int position;
+
+		public TextScanner(String text) {
+			this.text = text;
+		}
+
+		public boolean atEndOfText() {
+			return getPosition() >= getText().length();
+		}
+
+		public void skipWhitespace() {
+			while (!atEndOfText() && isWhitespace(getCurrentChar()))
+				advancePosition();
+		}
+
+		public boolean hasIntAhead() {
+			boolean ahead = false;
+			int p0 = getPosition();
+			try {
+				scanInt();
+				ahead = true;
+			} catch (InputMismatchException e) {
+			} finally {
+				setPosition(p0);
+			}
+			return ahead;
+		}
+
+		public int scanInt() throws InputMismatchException {
+			int p0 = getPosition();
+			while (!atEndOfText() && isDigit(getCurrentChar()))
+				advancePosition();
+			try {
+				return Integer.parseInt(subText(p0, getPosition()));
+			} catch (NumberFormatException e) {
+				setPosition(p0);
+				throw new InputMismatchException(e.getMessage());
+			}
+		}
+
+		public boolean hasCharAhead() {
+			return !atEndOfText();
+		}
+
+		public char scanChar() throws InputMismatchException {
+			if (!atEndOfText()) {
+				char c = getCurrentChar();
+				advancePosition();
+				return c;
+			} else {
+				throw new InputMismatchException("No character ahead");
+			}
+		}
+
+		public boolean hasTokenAhead() {
+			boolean ahead = false;
+			int p0 = getPosition();
+			try {
+				scanToken();
+				ahead = true;
+			} catch (InputMismatchException e) {
+			} finally {
+				setPosition(p0);
+			}
+			return ahead;
+		}
+
+		public Token scanToken() throws InputMismatchException {
+			if (!atEndOfText()) {
+				int maxSymbolLength = charsRemaining();
+				Set<Token> tokens = getTokenMap().getTokensStartingWith(Character.toUpperCase(getCurrentChar()));
+				for (Token token : tokens) {
+					String symbol = token.getSourceForm();
+					if (symbol.length() <= maxSymbolLength
+							&& subText(getPosition(), getPosition() + symbol.length()).toUpperCase().equals(symbol)) {
+						advancePosition(symbol.length());
+						return token;
+					}
+				}
+			}
+			throw new InputMismatchException("No token ahead");
+		}
+
+		private void advancePosition() {
+			advancePosition(1);
+		}
+
+		private void advancePosition(int n) {
+			setPosition(getPosition() + n);
+		}
+
+		private int charsRemaining() {
+			return getText().length() - getPosition();
+		}
+
+		private char getCurrentChar() {
+			return getText().charAt(getPosition());
+		}
+
+		private boolean isWhitespace(char c) {
+			return Character.isWhitespace(c);
+		}
+
+		private boolean isDigit(char c) {
+			return Character.isDigit(c);
+		}
+
+		private String subText(int fromPosition, int toPosition) {
+			return getText().substring(fromPosition, toPosition);
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		private int getPosition() {
+			return position;
+		}
+
+		private void setPosition(int position) {
+			this.position = position;
 		}
 
 	}

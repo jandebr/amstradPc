@@ -12,6 +12,8 @@ public class LocomotiveTokenMap {
 
 	private Map<Character, Set<Token>> firstCharIndex;
 
+	public static final byte EXTENDED_PREFIX_BYTE = (byte) 0xff; // prefix byte for the extended tokens
+
 	public LocomotiveTokenMap() {
 		this.byteCodeMap = new HashMap<Integer, Token>(512);
 		this.firstCharIndex = new HashMap<Character, Set<Token>>(26);
@@ -130,61 +132,61 @@ public class LocomotiveTokenMap {
 	}
 
 	private void loadExtendedTokens() {
-		register(new Token((byte) 0xff, (byte) 0x00, "ABS"));
-		register(new Token((byte) 0xff, (byte) 0x01, "ASC"));
-		register(new Token((byte) 0xff, (byte) 0x02, "ATN"));
-		register(new Token((byte) 0xff, (byte) 0x03, "CHR$"));
-		register(new Token((byte) 0xff, (byte) 0x04, "CINT"));
-		register(new Token((byte) 0xff, (byte) 0x05, "COS"));
-		register(new Token((byte) 0xff, (byte) 0x06, "CREAL"));
-		register(new Token((byte) 0xff, (byte) 0x07, "EXP"));
-		register(new Token((byte) 0xff, (byte) 0x08, "FIX"));
-		register(new Token((byte) 0xff, (byte) 0x09, "FRE"));
-		register(new Token((byte) 0xff, (byte) 0x0a, "INKEY"));
-		register(new Token((byte) 0xff, (byte) 0x0b, "INP"));
-		register(new Token((byte) 0xff, (byte) 0x0c, "INT"));
-		register(new Token((byte) 0xff, (byte) 0x0d, "JOY"));
-		register(new Token((byte) 0xff, (byte) 0x0e, "LEN"));
-		register(new Token((byte) 0xff, (byte) 0x0f, "LOG"));
-		register(new Token((byte) 0xff, (byte) 0x10, "LOG10"));
-		register(new Token((byte) 0xff, (byte) 0x11, "LOWER$"));
-		register(new Token((byte) 0xff, (byte) 0x12, "PEEK"));
-		register(new Token((byte) 0xff, (byte) 0x13, "REMAIN"));
-		register(new Token((byte) 0xff, (byte) 0x14, "SGN"));
-		register(new Token((byte) 0xff, (byte) 0x15, "SIN"));
-		register(new Token((byte) 0xff, (byte) 0x16, "SPACE$"));
-		register(new Token((byte) 0xff, (byte) 0x17, "SQ"));
-		register(new Token((byte) 0xff, (byte) 0x18, "SQR"));
-		register(new Token((byte) 0xff, (byte) 0x19, "STR$"));
-		register(new Token((byte) 0xff, (byte) 0x1a, "TAN"));
-		register(new Token((byte) 0xff, (byte) 0x1b, "UNT"));
-		register(new Token((byte) 0xff, (byte) 0x1c, "UPPER$"));
-		register(new Token((byte) 0xff, (byte) 0x1d, "VAL"));
-		register(new Token((byte) 0xff, (byte) 0x40, "EOF"));
-		register(new Token((byte) 0xff, (byte) 0x41, "ERR"));
-		register(new Token((byte) 0xff, (byte) 0x42, "HIMEM"));
-		register(new Token((byte) 0xff, (byte) 0x43, "INKEY$"));
-		register(new Token((byte) 0xff, (byte) 0x44, "PI"));
-		register(new Token((byte) 0xff, (byte) 0x45, "RND"));
-		register(new Token((byte) 0xff, (byte) 0x46, "TIME"));
-		register(new Token((byte) 0xff, (byte) 0x47, "XPOS"));
-		register(new Token((byte) 0xff, (byte) 0x48, "YPOS"));
-		register(new Token((byte) 0xff, (byte) 0x49, "DERR"));
-		register(new Token((byte) 0xff, (byte) 0x71, "BIN$"));
-		register(new Token((byte) 0xff, (byte) 0x72, "DEC$"));
-		register(new Token((byte) 0xff, (byte) 0x73, "HEX$"));
-		register(new Token((byte) 0xff, (byte) 0x74, "INSTR"));
-		register(new Token((byte) 0xff, (byte) 0x75, "LEFT$"));
-		register(new Token((byte) 0xff, (byte) 0x76, "MAX"));
-		register(new Token((byte) 0xff, (byte) 0x77, "MIN"));
-		register(new Token((byte) 0xff, (byte) 0x78, "POS"));
-		register(new Token((byte) 0xff, (byte) 0x79, "RIGHT$"));
-		register(new Token((byte) 0xff, (byte) 0x7a, "ROUND"));
-		register(new Token((byte) 0xff, (byte) 0x7b, "STRING$"));
-		register(new Token((byte) 0xff, (byte) 0x7c, "TEST"));
-		register(new Token((byte) 0xff, (byte) 0x7d, "TESTR"));
-		register(new Token((byte) 0xff, (byte) 0x7e, "COPYCHR$"));
-		register(new Token((byte) 0xff, (byte) 0x7f, "VPOS"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x00, "ABS"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x01, "ASC"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x02, "ATN"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x03, "CHR$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x04, "CINT"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x05, "COS"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x06, "CREAL"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x07, "EXP"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x08, "FIX"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x09, "FRE"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x0a, "INKEY"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x0b, "INP"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x0c, "INT"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x0d, "JOY"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x0e, "LEN"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x0f, "LOG"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x10, "LOG10"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x11, "LOWER$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x12, "PEEK"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x13, "REMAIN"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x14, "SGN"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x15, "SIN"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x16, "SPACE$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x17, "SQ"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x18, "SQR"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x19, "STR$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x1a, "TAN"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x1b, "UNT"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x1c, "UPPER$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x1d, "VAL"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x40, "EOF"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x41, "ERR"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x42, "HIMEM"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x43, "INKEY$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x44, "PI"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x45, "RND"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x46, "TIME"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x47, "XPOS"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x48, "YPOS"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x49, "DERR"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x71, "BIN$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x72, "DEC$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x73, "HEX$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x74, "INSTR"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x75, "LEFT$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x76, "MAX"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x77, "MIN"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x78, "POS"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x79, "RIGHT$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x7a, "ROUND"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x7b, "STRING$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x7c, "TEST"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x7d, "TESTR"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x7e, "COPYCHR$"));
+		register(new Token(EXTENDED_PREFIX_BYTE, (byte) 0x7f, "VPOS"));
 	}
 
 	public void register(Token token) {
