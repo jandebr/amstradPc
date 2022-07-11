@@ -2,7 +2,7 @@ package org.maia.amstrad.pc.basic.locomotive;
 
 import org.maia.amstrad.pc.basic.BasicDecompiler;
 import org.maia.amstrad.pc.basic.BasicRuntime;
-import org.maia.amstrad.pc.basic.locomotive.LocomotiveTokenMap.Token;
+import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
 
 public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implements BasicDecompiler {
 
@@ -150,11 +150,11 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 			} else if (b == 0xfe) {
 				line.append("NOT");
 			} else {
-				// token
-				Token token = b < 0xff ? getTokenMap().getToken((byte) b) : getTokenMap().getToken((byte) b,
-						(byte) nextByte());
-				if (token != null) {
-					line.append(token.getSourceForm());
+				// keyword
+				BasicKeyword keyword = b < 0xff ? getBasicKeywords().getKeyword((byte) b) : getBasicKeywords()
+						.getKeyword((byte) b, (byte) nextByte());
+				if (keyword != null) {
+					line.append(keyword.getSourceForm());
 				} else {
 					line.append("[?!:").append(b).append(']');
 				}

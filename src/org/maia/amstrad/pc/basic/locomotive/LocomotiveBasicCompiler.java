@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 
 import org.maia.amstrad.pc.basic.BasicCompiler;
 import org.maia.amstrad.pc.basic.BasicRuntime;
-import org.maia.amstrad.pc.basic.locomotive.LocomotiveTokenMap.Token;
+import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
 
 public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements BasicCompiler {
 
@@ -56,12 +56,12 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 	private void compileLineBody(TextScanner scanner) {
 		while (!scanner.atEndOfText()) {
-			if (scanner.hasTokenAhead()) {
-				Token token = scanner.scanToken();
-				if (token.isExtendedToken()) {
-					appendByte(token.getPrefixByte());
+			if (scanner.hasBasicKeywordAhead()) {
+				BasicKeyword keyword = scanner.scanBasicKeyword();
+				if (keyword.isExtendedKeyword()) {
+					appendByte(keyword.getPrefixByte());
 				}
-				appendByte(token.getCodeByte());
+				appendByte(keyword.getCodeByte());
 			} else {
 				char c = scanner.scanChar();
 				if (c == ':') {
@@ -178,11 +178,11 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			}
 		}
 
-		public boolean hasTokenAhead() {
+		public boolean hasBasicKeywordAhead() {
 			boolean ahead = false;
 			int p0 = getPosition();
 			try {
-				scanToken();
+				scanBasicKeyword();
 				ahead = true;
 			} catch (InputMismatchException e) {
 			} finally {
@@ -191,20 +191,21 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			return ahead;
 		}
 
-		public Token scanToken() throws InputMismatchException {
+		public BasicKeyword scanBasicKeyword() throws InputMismatchException {
 			if (!atEndOfText()) {
 				int maxSymbolLength = charsRemaining();
-				Set<Token> tokens = getTokenMap().getTokensStartingWith(Character.toUpperCase(getCurrentChar()));
-				for (Token token : tokens) {
-					String symbol = token.getSourceForm();
+				Set<BasicKeyword> keywords = getBasicKeywords().getKeywordsStartingWith(
+						Character.toUpperCase(getCurrentChar()));
+				for (BasicKeyword keyword : keywords) {
+					String symbol = keyword.getSourceForm();
 					if (symbol.length() <= maxSymbolLength
 							&& subText(getPosition(), getPosition() + symbol.length()).toUpperCase().equals(symbol)) {
 						advancePosition(symbol.length());
-						return token;
+						return keyword;
 					}
 				}
 			}
-			throw new InputMismatchException("No token ahead");
+			throw new InputMismatchException("No Basic keyword ahead");
 		}
 
 		private void advancePosition() {

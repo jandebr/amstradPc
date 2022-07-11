@@ -5,12 +5,12 @@ import java.util.Locale;
 
 public abstract class LocomotiveBasicProcessor {
 
-	private LocomotiveTokenMap tokenMap;
+	private LocomotiveBasicKeywords basicKeywords;
 
 	private NumberFormat floatingPointFormat;
 
 	protected LocomotiveBasicProcessor() {
-		this.tokenMap = new LocomotiveTokenMap();
+		this.basicKeywords = new LocomotiveBasicKeywords();
 		this.floatingPointFormat = createFloatingPointFormat();
 	}
 
@@ -21,8 +21,8 @@ public abstract class LocomotiveBasicProcessor {
 		return fmt;
 	}
 
-	protected LocomotiveTokenMap getTokenMap() {
-		return tokenMap;
+	protected LocomotiveBasicKeywords getBasicKeywords() {
+		return basicKeywords;
 	}
 
 	protected NumberFormat getFloatingPointFormat() {
