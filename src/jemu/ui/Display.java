@@ -139,7 +139,7 @@ public class Display extends JComponent {
 
 	final URL Mask1 = getClass().getResource("image/tv.png");
 	final Image mask1 = getToolkit().getImage(Mask1);
-	final URL Mask3 = Mask1; //getClass().getResource("image/FinalTele5.png");
+	final URL Mask3 = Mask1; // getClass().getResource("image/FinalTele5.png");
 	final Image mask3 = getToolkit().getImage(Mask3);
 
 	Image mask = mask1;
@@ -950,9 +950,10 @@ public class Display extends JComponent {
 	protected void processFocusEvent(FocusEvent e) {
 		super.processFocusEvent(e);
 		if (e.getID() == FocusEvent.FOCUS_GAINED) {
-			System.out.println("Display Focused");
-		} else
-			System.out.println("Display Lost Focus");
+			// System.out.println("Display Focused");
+		} else {
+			// System.out.println("Display Lost Focus");
+		}
 	}
 
 }

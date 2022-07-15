@@ -1,0 +1,4 @@
+10 CLS
+20 GOTO 40
+30 PRINT "jan de beer"
+40 END

@@ -1,22 +1,19 @@
 package org.maia.amstrad.pc.basic.locomotive;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class LocomotiveBasicKeywords {
 
 	private Map<Integer, BasicKeyword> byteCodeMap;
 
-	private Map<Character, Set<BasicKeyword>> firstCharIndex;
+	private Map<String, BasicKeyword> sourceFormMap;
 
 	public static final byte EXTENDED_PREFIX_BYTE = (byte) 0xff; // prefix byte for the extended keywords
 
 	public LocomotiveBasicKeywords() {
 		this.byteCodeMap = new HashMap<Integer, BasicKeyword>(512);
-		this.firstCharIndex = new HashMap<Character, Set<BasicKeyword>>(26);
+		this.sourceFormMap = new HashMap<String, BasicKeyword>(512);
 		loadBasicKeywords();
 		loadExtendedKeywords();
 	}
@@ -189,15 +186,17 @@ public class LocomotiveBasicKeywords {
 		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7f, "VPOS"));
 	}
 
-	public void register(BasicKeyword keyword) {
+	private void register(BasicKeyword keyword) {
 		getByteCodeMap().put(getKeywordIndex(keyword), keyword);
-		Character fc = keyword.getFirstCharacter();
-		Set<BasicKeyword> set = getFirstCharIndex().get(fc);
-		if (set == null) {
-			set = new HashSet<BasicKeyword>(8);
-			getFirstCharIndex().put(fc, set);
-		}
-		set.add(keyword);
+		getSourceFormMap().put(keyword.getSourceForm(), keyword);
+	}
+
+	public boolean hasKeyword(String sourceForm) {
+		return getSourceFormMap().containsKey(sourceForm);
+	}
+
+	public BasicKeyword getKeyword(String sourceForm) {
+		return getSourceFormMap().get(sourceForm);
 	}
 
 	public BasicKeyword getKeyword(byte codeByte) {
@@ -206,14 +205,6 @@ public class LocomotiveBasicKeywords {
 
 	public BasicKeyword getKeyword(byte prefixByte, byte codeByte) {
 		return getByteCodeMap().get(getKeywordIndex(prefixByte, codeByte));
-	}
-
-	public Set<BasicKeyword> getKeywordsStartingWith(char c) {
-		Set<BasicKeyword> set = getFirstCharIndex().get(c);
-		if (set == null)
-			return Collections.emptySet();
-		else
-			return set;
 	}
 
 	private Integer getKeywordIndex(BasicKeyword keyword) {
@@ -232,8 +223,8 @@ public class LocomotiveBasicKeywords {
 		return byteCodeMap;
 	}
 
-	private Map<Character, Set<BasicKeyword>> getFirstCharIndex() {
-		return firstCharIndex;
+	private Map<String, BasicKeyword> getSourceFormMap() {
+		return sourceFormMap;
 	}
 
 	public static class BasicKeyword {
@@ -276,8 +267,21 @@ public class LocomotiveBasicKeywords {
 			return getSourceForm().equals(other.getSourceForm());
 		}
 
-		public Character getFirstCharacter() {
-			return getSourceForm().charAt(0);
+		public boolean canBeFollowedByLineNumber() {
+			String sf = getSourceForm();
+			return sf.equals("GOTO") || sf.equals("GOSUB") || sf.equals("ON ERROR GOTO") || sf.equals("THEN")
+					|| sf.equals("ELSE") || sf.equals("DELETE") || sf.equals("EDIT") || sf.equals("LIST")
+					|| sf.equals("RESUME") || sf.equals("RENUM") || sf.equals("RESTORE") || sf.equals("RUN");
+		}
+
+		public boolean isRemark() {
+			String sf = getSourceForm();
+			return sf.equals("REM") || sf.equals("'");
+		}
+
+		public boolean isData() {
+			String sf = getSourceForm();
+			return sf.equals("DATA");
 		}
 
 		public boolean isBasicKeyword() {
