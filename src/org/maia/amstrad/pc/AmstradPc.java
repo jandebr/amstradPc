@@ -27,8 +27,7 @@ public abstract class AmstradPc {
 	}
 
 	public boolean isBasicSourceFile(File file) {
-		String fname = file.getName().toLowerCase();
-		return fname.endsWith(".bas") || fname.endsWith(".txt");
+		return file.getName().toLowerCase().endsWith(".bas");
 	}
 
 	public boolean isBasicByteCodeFile(File file) {

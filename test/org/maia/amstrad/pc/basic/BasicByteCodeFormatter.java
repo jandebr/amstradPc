@@ -10,6 +10,10 @@ public class BasicByteCodeFormatter {
 	}
 
 	public CharSequence format(byte[] byteCode, boolean[] underline) {
+		return format(byteCode, underline, false);
+	}
+
+	public CharSequence format(byte[] byteCode, boolean[] underline, boolean underlinedLinesOnly) {
 		StringBuilder sb = new StringBuilder(2048);
 		StringBuilder line = new StringBuilder(128);
 		StringBuilder undr = new StringBuilder(128);
@@ -44,9 +48,12 @@ public class BasicByteCodeFormatter {
 				line.insert(0, repeat(8, ' '));
 				undr.insert(0, repeat(8, ' '));
 			}
-			sb.append(line).append('\n');
-			if (!undr.toString().trim().isEmpty()) {
-				sb.append(undr).append('\n');
+			boolean underlined = !undr.toString().trim().isEmpty();
+			if (!underlinedLinesOnly || underlined) {
+				sb.append(line).append('\n');
+				if (underlined) {
+					sb.append(undr).append('\n');
+				}
 			}
 		} while (lineLength > 0);
 		return sb;
