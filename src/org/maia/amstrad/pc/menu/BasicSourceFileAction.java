@@ -20,7 +20,7 @@ public abstract class BasicSourceFileAction extends FileChooserAction {
 	protected JFileChooser buildFileChooser() {
 		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
 		fileChooser.setDialogTitle(getName());
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Basic source files (*.bas, *.txt)", "bas", "txt");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Basic source files (*.bas)", "bas");
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
 	}

@@ -19,11 +19,13 @@ public class BasicCompilerTest {
 	public static void main(String[] args) throws IOException {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		BasicCompiler compiler = new LocomotiveBasicCompiler();
+		LocomotiveBasicCompiler compiler = new LocomotiveBasicCompiler();
 		File dir = new File("resources/test/compiler");
 		PrintWriter out = new PrintWriter(new File(dir, "outcome.txt"));
 		testFilesInDirectory(dir, amstradPc, compiler, out);
+		// testFile(new File(dir, "airwulf.bas"), amstradPc, compiler, out);
 		out.close();
+		amstradPc.terminate();
 	}
 
 	private static void testFilesInDirectory(File dir, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)

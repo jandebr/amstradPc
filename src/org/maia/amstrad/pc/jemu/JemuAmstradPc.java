@@ -163,12 +163,15 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	@Override
 	public synchronized void terminate() {
-		checkNotTerminated();
-		Autotype.clearText();
-		getJemuInstance().quit();
-		setTerminated(true);
-		setInstanceRunning(false);
-		fireTerminatedEvent();
+		if (!isTerminated()) {
+			if (isStarted()) {
+				Autotype.clearText();
+				getJemuInstance().quit();
+			}
+			setTerminated(true);
+			setInstanceRunning(false);
+			fireTerminatedEvent();
+		}
 	}
 
 	@Override

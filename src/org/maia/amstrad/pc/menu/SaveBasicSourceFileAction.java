@@ -31,7 +31,7 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 				@Override
 				public void run() {
 					try {
-						File file = getSelectedFileWithExtension(".bas", ".txt");
+						File file = getSelectedFileWithExtension(".bas");
 						getAmstradPc().getBasicRuntime().exportSourceCodeToFile(file);
 						AmstradContext.printInfoMessage(getAmstradPc(), "Saved " + file.getName());
 					} catch (Exception e) {

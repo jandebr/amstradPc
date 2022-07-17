@@ -18,8 +18,8 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		ByteBuffer byteBuffer = new ByteBuffer(maxBytes);
 		StringTokenizer st = new StringTokenizer(sourceCode.toString(), "\n\r");
 		while (st.hasMoreTokens()) {
-			String line = st.nextToken().trim();
-			if (!line.isEmpty()) {
+			String line = st.nextToken();
+			if (!line.trim().isEmpty()) {
 				int i0 = byteBuffer.getSize();
 				byteBuffer.appendWord(0); // placeholder for line length
 				compileLine(line, byteBuffer);
@@ -33,12 +33,11 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 	private void compileLine(String line, ByteBuffer byteBuffer) throws MalformedSyntaxException {
 		SourceLineScanner scanner = new SourceLineScanner(line);
 		try {
-			int lineNumber = scanner.scanInt();
+			int lineNumber = scanner.scanLineNumber();
 			byteBuffer.appendWord(lineNumber);
 		} catch (InputMismatchException e) {
 			throw new MalformedSyntaxException("Could not parse line number", line);
 		}
-		scanner.skipWhitespace();
 		compileLineBody(scanner, byteBuffer);
 		byteBuffer.appendByte((byte) 0); // end of line
 	}
@@ -162,17 +161,15 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			this.text = text;
 		}
 
-		public void skipWhitespace() {
-			while (!atEndOfText() && isWhitespace(getCurrentChar()))
-				advancePosition();
-		}
-
-		public int scanInt() throws InputMismatchException {
+		public int scanLineNumber() throws InputMismatchException {
 			int p0 = getPosition();
 			while (!atEndOfText() && isDecimalDigit(getCurrentChar()))
 				advancePosition();
+			int p1 = getPosition();
+			if (!atEndOfText() && isWhitespace(getCurrentChar()))
+				advancePosition();
 			try {
-				return Integer.parseInt(subText(p0, getPosition()));
+				return Integer.parseInt(subText(p0, p1));
 			} catch (NumberFormatException e) {
 				setPosition(p0);
 				throw new InputMismatchException(e.getMessage());
@@ -294,11 +291,11 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 				if (lineNumberCanFollow) {
 					return new LineNumberToken(sourceFragment);
 				} else {
-					if (value <= 10) {
+					if (value < 10) {
 						return new SingleDigitDecimalToken(sourceFragment);
 					} else if (value <= 0xff) {
 						return new Integer8BitDecimalToken(sourceFragment);
-					} else if (value <= 0xffff) {
+					} else if (value <= 0x7fff) {
 						return new Integer16BitDecimalToken(sourceFragment);
 					} else {
 						return new FloatingPointNumberToken(sourceFragment);
@@ -586,17 +583,26 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			// Fractional part
 			while (fractionalPart != 0 && mi < 32) {
 				fractionalPart *= 2.0;
-				if (fractionalPart < 1.0) {
+				if (fractionalPart >= 1.0) {
+					mantissaBits[mi++] = 1;
+					fractionalPart = fractionalPart % 1;
+					zeros = false;
+				} else {
 					if (zeros) {
 						exponent--;
 					} else {
 						mantissaBits[mi++] = 0;
 					}
-				} else {
-					mantissaBits[mi++] = 1;
-					fractionalPart = fractionalPart % 1;
-					zeros = false;
 				}
+			}
+			if (fractionalPart >= 0.5) {
+				// Round up one binary digit
+				mi = 31;
+				while (mi > 0 && mantissaBits[mi] == 1)
+					mantissaBits[mi--] = 0;
+				mantissaBits[mi] = 1;
+				if (mi == 0)
+					exponent++;
 			}
 			// Assemble in bytes
 			int m4 = bitsToInteger(mantissaBits, 1, 8); // make first bit=0 to represent +sign
@@ -737,6 +743,8 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			BasicKeyword keyword = getKeyword();
 			if (keyword.isExtendedKeyword()) {
 				byteBuffer.appendByte(keyword.getPrefixByte());
+			} else if (keyword.getSourceForm().equals("ELSE")) {
+				byteBuffer.appendByte((byte) 0x01); // instruction separator
 			}
 			byteBuffer.appendByte(keyword.getCodeByte());
 		}
