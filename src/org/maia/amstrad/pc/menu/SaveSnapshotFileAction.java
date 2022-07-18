@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
@@ -28,10 +29,12 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					File file = getSelectedFileWithExtension(".sna", ".snz");
 					try {
-						getAmstradPc().saveSnapshot(getSelectedFileWithExtension(".sna", ".snz"));
+						getAmstradPc().saveSnapshot(file);
 					} catch (Exception e) {
 						System.err.println("Failed to save snapshot file: " + e.getMessage());
+						showErrorMessageDialog("Error saving snapshot file", "Failed to save " + file.getName(), e);
 					}
 				}
 			}).start();

@@ -2,6 +2,7 @@ package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -29,10 +30,12 @@ public class ScreenshotAction extends FileChooserAction {
 		BufferedImage image = getAmstradPc().makeScreenshot(includeMonitorEffect());
 		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			File file = getSelectedFileWithExtension(".png");
 			try {
-				ImageIO.write(image, "png", getSelectedFileWithExtension(".png"));
+				ImageIO.write(image, "png", file);
 			} catch (Exception e) {
 				System.err.println("Failed to export screenshot: " + e.getMessage());
+				showErrorMessageDialog("Error saving image", "Failed to save " + file.getName(), e);
 			}
 		}
 	}

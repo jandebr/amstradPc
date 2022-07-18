@@ -1,8 +1,8 @@
 package org.maia.amstrad.pc.basic.locomotive;
 
-import java.util.InputMismatchException;
 import java.util.StringTokenizer;
 
+import org.maia.amstrad.pc.basic.BasicCompilationException;
 import org.maia.amstrad.pc.basic.BasicCompiler;
 import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
@@ -13,16 +13,17 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 	}
 
 	@Override
-	public byte[] compile(CharSequence sourceCode) throws MalformedSyntaxException {
+	public byte[] compile(CharSequence sourceCode) throws BasicCompilationException {
 		int maxBytes = BasicRuntime.MEMORY_POINTER_END_OF_PROGRAM - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM;
 		ByteBuffer byteBuffer = new ByteBuffer(maxBytes);
 		StringTokenizer st = new StringTokenizer(sourceCode.toString(), "\n\r");
+		int lineIndex = 0;
 		while (st.hasMoreTokens()) {
-			String line = st.nextToken();
-			if (!line.trim().isEmpty()) {
+			SourceLineScanner scanner = new SourceLineScanner(st.nextToken(), lineIndex++);
+			if (!scanner.isEmpty()) {
 				int i0 = byteBuffer.getSize();
 				byteBuffer.appendWord(0); // placeholder for line length
-				compileLine(line, byteBuffer);
+				compileLine(scanner, byteBuffer);
 				byteBuffer.replaceWordAt(i0, byteBuffer.getSize() - i0); // substitute actual line length
 			}
 		}
@@ -30,56 +31,28 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		return byteBuffer.getData();
 	}
 
-	private void compileLine(String line, ByteBuffer byteBuffer) throws MalformedSyntaxException {
-		SourceLineScanner scanner = new SourceLineScanner(line);
-		try {
-			int lineNumber = scanner.scanLineNumber();
-			byteBuffer.appendWord(lineNumber);
-		} catch (InputMismatchException e) {
-			throw new MalformedSyntaxException("Could not parse line number", line);
-		}
+	private void compileLine(SourceLineScanner scanner, ByteBuffer byteBuffer) throws BasicCompilationException {
+		int lineNumber = scanner.scanLineNumber();
+		byteBuffer.appendWord(lineNumber);
 		compileLineBody(scanner, byteBuffer);
 		byteBuffer.appendByte((byte) 0); // end of line
 	}
 
-	private void compileLineBody(SourceLineScanner scanner, ByteBuffer byteBuffer) throws MalformedSyntaxException {
-		try {
-			while (!scanner.atEndOfText()) {
-				SourceToken token = scanner.scanToken();
-				if (token == null) {
-					throw new MalformedSyntaxException("Unrecognized token at position " + scanner.getPosition(),
-							scanner.getText());
-				} else {
-					token.appendByteCodeTo(byteBuffer);
-				}
+	private void compileLineBody(SourceLineScanner scanner, ByteBuffer byteBuffer) throws BasicCompilationException {
+		while (!scanner.atEndOfText()) {
+			SourceToken token = scanner.scanToken();
+			if (token == null) {
+				throw new LocomotiveBasicCompilationException("Syntax error", scanner);
+			} else {
+				token.appendByteCodeTo(byteBuffer);
 			}
-		} catch (InputMismatchException e) {
-			throw new MalformedSyntaxException("Could not parse line at position " + scanner.getPosition(),
-					scanner.getText());
 		}
 	}
 
-	@SuppressWarnings("serial")
-	public static class MalformedSyntaxException extends RuntimeException {
+	private static class LocomotiveBasicCompilationException extends BasicCompilationException {
 
-		private String codeLine;
-
-		public MalformedSyntaxException(String message, String codeLine) {
-			super(message);
-			setCodeLine(codeLine);
-		}
-
-		@Override
-		public String toString() {
-			return super.toString() + " in '" + getCodeLine() + "'";
-		}
-
-		public String getCodeLine() {
-			return codeLine;
-		}
-
-		private void setCodeLine(String codeLine) {
-			this.codeLine = codeLine;
+		public LocomotiveBasicCompilationException(String message, SourceLineScanner scanner) {
+			super(message, scanner.getText(), scanner.getLineIndex(), scanner.getPosition());
 		}
 
 	}
@@ -149,6 +122,8 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		private String text;
 
+		private int lineIndex;
+
 		private int position;
 
 		private boolean lineNumberCanFollow;
@@ -157,11 +132,16 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		private boolean insideData;
 
-		public SourceLineScanner(String text) {
+		public SourceLineScanner(String text, int lineIndex) {
 			this.text = text;
+			this.lineIndex = lineIndex;
 		}
 
-		public int scanLineNumber() throws InputMismatchException {
+		public boolean isEmpty() {
+			return getText().trim().isEmpty();
+		}
+
+		public int scanLineNumber() throws BasicCompilationException {
 			int p0 = getPosition();
 			while (!atEndOfText() && isDecimalDigit(getCurrentChar()))
 				advancePosition();
@@ -172,11 +152,11 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 				return Integer.parseInt(subText(p0, p1));
 			} catch (NumberFormatException e) {
 				setPosition(p0);
-				throw new InputMismatchException(e.getMessage());
+				throw new LocomotiveBasicCompilationException("Could not parse line number", this);
 			}
 		}
 
-		public SourceToken scanToken() throws InputMismatchException {
+		public SourceToken scanToken() throws BasicCompilationException {
 			SourceToken token = null;
 			char c = getCurrentChar();
 			if (c >= 0x20 && c <= 0x7e) {
@@ -233,7 +213,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			return token;
 		}
 
-		private NumericToken scanAmpersandNumericToken() throws InputMismatchException {
+		private NumericToken scanAmpersandNumericToken() throws BasicCompilationException {
 			int p0 = getPosition();
 			advancePosition();
 			char c = getCurrentChar();
@@ -253,7 +233,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			}
 		}
 
-		private NumericToken scanNumericToken() throws InputMismatchException {
+		private NumericToken scanNumericToken() throws BasicCompilationException {
 			int p0 = getPosition();
 			advancePosition();
 			boolean point = false;
@@ -304,7 +284,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			}
 		}
 
-		private OperatorToken scanNumericOperator() {
+		private OperatorToken scanNumericOperator() throws BasicCompilationException {
 			int p0 = getPosition();
 			char c0 = getCurrentChar();
 			advancePosition();
@@ -319,7 +299,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			return new OperatorToken(subText(p0, getPosition()));
 		}
 
-		private LiteralToken scanQuotedLiteralToken() {
+		private LiteralToken scanQuotedLiteralToken() throws BasicCompilationException {
 			int p0 = getPosition();
 			advancePosition();
 			while (!atEndOfText() && getCurrentChar() != LiteralToken.QUOTE)
@@ -329,7 +309,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			return new LiteralToken(subText(p0, getPosition()));
 		}
 
-		private String scanSymbol() {
+		private String scanSymbol() throws BasicCompilationException {
 			int p0 = getPosition();
 			advancePosition();
 			while (!atEndOfText() && isSymbolCharacter(getCurrentChar()))
@@ -349,7 +329,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			return getText().length() - getPosition();
 		}
 
-		private char getCurrentChar() throws InputMismatchException {
+		private char getCurrentChar() throws BasicCompilationException {
 			checkEndOfText();
 			return getText().charAt(getPosition());
 		}
@@ -382,9 +362,9 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			return getText().substring(fromPosition, toPosition);
 		}
 
-		private void checkEndOfText() throws InputMismatchException {
+		private void checkEndOfText() throws BasicCompilationException {
 			if (atEndOfText())
-				throw new InputMismatchException("At end of input");
+				throw new LocomotiveBasicCompilationException("Unfinished line", this);
 		}
 
 		public boolean atEndOfText() {
@@ -393,6 +373,10 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		public String getText() {
 			return text;
+		}
+
+		public int getLineIndex() {
+			return lineIndex;
 		}
 
 		public int getPosition() {

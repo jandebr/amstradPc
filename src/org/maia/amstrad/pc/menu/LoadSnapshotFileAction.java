@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
@@ -28,10 +29,12 @@ public class LoadSnapshotFileAction extends SnapshotFileAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					File file = getSelectedFile();
 					try {
-						getAmstradPc().launch(getSelectedFile());
+						getAmstradPc().launch(file);
 					} catch (Exception e) {
 						System.err.println("Failed to load snapshot file: " + e.getMessage());
+						showErrorMessageDialog("Error loading snapshot file", "Failed to load " + file.getName(), e);
 					}
 				}
 			}).start();

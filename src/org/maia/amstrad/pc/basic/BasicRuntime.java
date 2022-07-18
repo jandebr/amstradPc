@@ -6,16 +6,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.maia.amstrad.pc.AmstradContext;
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicDecompiler;
 
 public abstract class BasicRuntime {
 
+	private AmstradPc amstradPc;
+
 	public static final int MEMORY_ADDRESS_START_OF_PROGRAM = 0x170;
 
 	public static final int MEMORY_POINTER_END_OF_PROGRAM = 0xAE83; // points to memory address following 0x0000
 
-	protected BasicRuntime() {
+	protected BasicRuntime(AmstradPc amstradPc) {
+		this.amstradPc = amstradPc;
 	}
 
 	public abstract void keyboardType(CharSequence text, boolean waitUntilTyped);
@@ -52,12 +56,13 @@ public abstract class BasicRuntime {
 		keyboardEnter("RUN");
 	}
 
-	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException {
+	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {
 		loadSourceCode(AmstradContext.readTextFileContents(sourceCodeFile));
 		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
+		AmstradContext.printInfoMessage(getAmstradPc(), "Loaded " + sourceCodeFile.getName());
 	}
 
-	public void loadSourceCode(CharSequence sourceCode) {
+	public void loadSourceCode(CharSequence sourceCode) throws BasicCompilationException {
 		if (sourceCode != null) {
 			BasicCompiler compiler = new LocomotiveBasicCompiler();
 			loadByteCode(compiler.compile(sourceCode));
@@ -67,6 +72,7 @@ public abstract class BasicRuntime {
 	public void loadByteCodeFromFile(File byteCodeFile) throws IOException {
 		loadByteCode(AmstradContext.readBinaryFileContents(byteCodeFile));
 		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
+		AmstradContext.printInfoMessage(getAmstradPc(), "Loaded " + byteCodeFile.getName());
 	}
 
 	public void loadByteCode(byte[] byteCode) {
@@ -84,14 +90,15 @@ public abstract class BasicRuntime {
 	 */
 	protected abstract void loadFittedByteCode(byte[] byteCode);
 
-	public void exportSourceCodeToFile(File file) throws IOException {
+	public void exportSourceCodeToFile(File file) throws IOException, BasicDecompilationException {
 		PrintWriter pw = new PrintWriter(file);
 		pw.print(exportSourceCode());
 		pw.close();
 		System.out.println("Exported source code to " + file.getPath());
+		AmstradContext.printInfoMessage(getAmstradPc(), "Saved " + file.getName());
 	}
 
-	public CharSequence exportSourceCode() {
+	public CharSequence exportSourceCode() throws BasicDecompilationException {
 		BasicDecompiler decompiler = new LocomotiveBasicDecompiler();
 		return decompiler.decompile(exportByteCode());
 	}
@@ -101,6 +108,7 @@ public abstract class BasicRuntime {
 		os.write(exportByteCode());
 		os.close();
 		System.out.println("Exported byte code to " + file.getPath());
+		AmstradContext.printInfoMessage(getAmstradPc(), "Saved " + file.getName());
 	}
 
 	public byte[] exportByteCode() {
@@ -138,6 +146,10 @@ public abstract class BasicRuntime {
 				return fitted;
 			}
 		}
+	}
+
+	protected AmstradPc getAmstradPc() {
+		return amstradPc;
 	}
 
 }

@@ -6,7 +6,6 @@ import java.io.File;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
@@ -30,12 +29,12 @@ public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					File file = getSelectedFile();
 					try {
-						File file = getSelectedFile();
 						getAmstradPc().getBasicRuntime().loadByteCodeFromFile(file);
-						AmstradContext.printInfoMessage(getAmstradPc(), "Loaded " + file.getName());
 					} catch (Exception e) {
 						System.err.println("Failed to load Basic binary file: " + e.getMessage());
+						showErrorMessageDialog("Error loading Basic binary file", "Failed to load " + file.getName(), e);
 					}
 				}
 			}).start();

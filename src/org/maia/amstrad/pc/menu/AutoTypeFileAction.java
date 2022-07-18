@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
@@ -29,10 +30,12 @@ public class AutoTypeFileAction extends FileChooserAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					File file = getSelectedFile();
 					try {
-						getAmstradPc().getBasicRuntime().keyboardTypeFileContents(getSelectedFile());
+						getAmstradPc().getBasicRuntime().keyboardTypeFileContents(file);
 					} catch (Exception e) {
 						System.err.println("Failed to read text file: " + e.getMessage());
+						showErrorMessageDialog("Error reading text file", "Failed to read " + file.getName(), e);
 					}
 				}
 			}).start();

@@ -42,7 +42,7 @@ public abstract class AmstradPc {
 
 	public abstract boolean isTerminated();
 
-	public abstract void launch(File file) throws IOException;
+	public abstract void launch(File file) throws Exception;
 
 	public abstract void saveSnapshot(File file) throws IOException;
 

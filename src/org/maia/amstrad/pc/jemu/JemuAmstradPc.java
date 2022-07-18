@@ -25,6 +25,7 @@ import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.basic.BasicCompilationException;
 import org.maia.amstrad.pc.basic.BasicRuntime;
 
 public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener {
@@ -72,7 +73,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public void launch(File file) throws IOException {
+	public void launch(File file) throws IOException, BasicCompilationException {
 		checkNotTerminated();
 		System.out.println("Launching from " + file.getPath());
 		if (isBasicSourceFile(file) || isBasicByteCodeFile(file)) {
@@ -337,11 +338,12 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	private class JemuBasicRuntimeImpl extends BasicRuntime {
 
 		public JemuBasicRuntimeImpl() {
+			super(JemuAmstradPc.this);
 		}
 
 		@Override
 		public void keyboardType(CharSequence text, boolean waitUntilTyped) {
-			synchronized (JemuAmstradPc.this) {
+			synchronized (getAmstradPc()) {
 				Autotype.typeText(text);
 				if (waitUntilTyped) {
 					waitUntilAutotypeEnded();
@@ -352,7 +354,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 		@Override
 		protected void loadFittedByteCode(byte[] byteCode) {
-			synchronized (JemuAmstradPc.this) {
+			synchronized (getAmstradPc()) {
 				JEMU jemu = getJemuInstance();
 				// Pause
 				boolean running = jemu.isRunning();
@@ -380,7 +382,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 		@Override
 		protected byte[] exportFittedByteCode() {
-			synchronized (JemuAmstradPc.this) {
+			synchronized (getAmstradPc()) {
 				int len = MEMORY_POINTER_END_OF_PROGRAM - MEMORY_ADDRESS_START_OF_PROGRAM;
 				byte[] mem = getJemuInstance().readMemory(MEMORY_ADDRESS_START_OF_PROGRAM, len);
 				return fitByteCode(mem);

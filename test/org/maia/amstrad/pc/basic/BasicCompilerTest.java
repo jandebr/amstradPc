@@ -16,7 +16,7 @@ public class BasicCompilerTest {
 	public BasicCompilerTest() {
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		LocomotiveBasicCompiler compiler = new LocomotiveBasicCompiler();
@@ -29,7 +29,7 @@ public class BasicCompilerTest {
 	}
 
 	private static void testFilesInDirectory(File dir, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)
-			throws IOException {
+			throws IOException, BasicCompilationException {
 		File[] files = dir.listFiles();
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
@@ -42,7 +42,7 @@ public class BasicCompilerTest {
 	}
 
 	private static void testFile(File basicFile, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)
-			throws IOException {
+			throws IOException, BasicCompilationException {
 		out.println(">> Testing " + basicFile.getPath());
 		loadFileWithoutCompiler(basicFile, amstradPc);
 		byte[] referenceByteCode = amstradPc.getBasicRuntime().exportByteCode();

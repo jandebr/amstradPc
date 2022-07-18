@@ -6,7 +6,6 @@ import java.io.File;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class SaveBasicSourceFileAction extends BasicSourceFileAction {
@@ -30,12 +29,12 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					File file = getSelectedFileWithExtension(".bas");
 					try {
-						File file = getSelectedFileWithExtension(".bas");
 						getAmstradPc().getBasicRuntime().exportSourceCodeToFile(file);
-						AmstradContext.printInfoMessage(getAmstradPc(), "Saved " + file.getName());
 					} catch (Exception e) {
 						System.err.println("Failed to save Basic source file: " + e.getMessage());
+						showErrorMessageDialog("Error saving Basic source file", "Failed to save " + file.getName(), e);
 					}
 				}
 			}).start();

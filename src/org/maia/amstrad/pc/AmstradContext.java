@@ -66,7 +66,7 @@ public abstract class AmstradContext {
 		if (amstradPc.isStarted() && !amstradPc.isTerminated() && showMessagesAtPrompt()) {
 			BasicRuntime rt = amstradPc.getBasicRuntime();
 			if (!continuation)
-				rt.keyboardType("'");
+				rt.keyboardType("'"); // REMark
 			rt.keyboardType(message);
 			if (close)
 				rt.keyboardEnter();

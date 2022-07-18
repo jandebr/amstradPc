@@ -1,5 +1,6 @@
 package org.maia.amstrad.pc.basic.locomotive;
 
+import org.maia.amstrad.pc.basic.BasicDecompilationException;
 import org.maia.amstrad.pc.basic.BasicDecompiler;
 import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
@@ -17,32 +18,27 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 	}
 
 	@Override
-	public CharSequence decompile(byte[] byteCode) {
+	public CharSequence decompile(byte[] byteCode) throws BasicDecompilationException {
 		init(byteCode);
 		StringBuilder sourceCode = new StringBuilder(2048);
-		try {
-			int i0 = byteCodeIndex;
-			int announcedLineLengthInBytes = nextWord();
-			while (announcedLineLengthInBytes > 0) {
-				int lineNumber = nextWord();
-				CharSequence lineOfCode = nextLineOfCode(lineNumber);
-				int lineLengthInBytes = byteCodeIndex - i0;
-				if (lineLengthInBytes != announcedLineLengthInBytes) {
-					System.err.println("Announced line byte length " + announcedLineLengthInBytes
-							+ " does not match actual line byte length " + lineLengthInBytes + " on line number "
-							+ lineNumber);
-				} else {
-					sourceCode.append(lineNumber);
-					sourceCode.append(' ');
-					sourceCode.append(lineOfCode);
-					sourceCode.append('\n');
-					addedSourceCodeLine(lineNumber, lineOfCode);
-				}
-				i0 = byteCodeIndex;
-				announcedLineLengthInBytes = nextWord();
+		int i0 = byteCodeIndex;
+		int announcedLineLengthInBytes = nextWord();
+		while (announcedLineLengthInBytes > 0) {
+			int lineNumber = nextWord();
+			CharSequence lineOfCode = nextLineOfCode(lineNumber);
+			int lineLengthInBytes = byteCodeIndex - i0;
+			if (lineLengthInBytes != announcedLineLengthInBytes) {
+				throw new BasicDecompilationException("Announced line byte length " + announcedLineLengthInBytes
+						+ " <> actual line byte length " + lineLengthInBytes + " on line number " + lineNumber);
+			} else {
+				sourceCode.append(lineNumber);
+				sourceCode.append(' ');
+				sourceCode.append(lineOfCode);
+				sourceCode.append('\n');
+				addedSourceCodeLine(lineNumber, lineOfCode);
 			}
-		} catch (EndOfInputException e) {
-			System.err.println(e);
+			i0 = byteCodeIndex;
+			announcedLineLengthInBytes = nextWord();
 		}
 		return sourceCode;
 	}
@@ -61,7 +57,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 		// Subclasses may override
 	}
 
-	private CharSequence nextLineOfCode(int lineNumber) {
+	private CharSequence nextLineOfCode(int lineNumber) throws EndOfByteCodeException {
 		StringBuilder line = new StringBuilder(256);
 		int bytecodeOffset = byteCodeIndex;
 		int b = nextByte();
@@ -171,25 +167,25 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 		return line;
 	}
 
-	private int nextByte() {
+	private int nextByte() throws EndOfByteCodeException {
 		if (byteCodeIndex >= byteCode.length)
-			throw new EndOfInputException();
+			throw new EndOfByteCodeException();
 		return byteCode[byteCodeIndex++] & 0xff;
 	}
 
-	private int nextWord() {
+	private int nextWord() throws EndOfByteCodeException {
 		int word = wordAt(byteCodeIndex);
 		byteCodeIndex += 2;
 		return word;
 	}
 
-	private int wordAt(int index) {
+	private int wordAt(int index) throws EndOfByteCodeException {
 		if (index >= byteCode.length - 1)
-			throw new EndOfInputException();
+			throw new EndOfByteCodeException();
 		return (byteCode[index] & 0xff) | ((byteCode[index + 1] << 8) & 0xff00);
 	}
 
-	private double nextFloatingPoint() {
+	private double nextFloatingPoint() throws EndOfByteCodeException {
 		// Mantissa and sign
 		long m1 = nextByte();
 		long m2 = nextByte();
@@ -203,7 +199,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 		return sign * mantissa / Math.pow(2, 32 - e);
 	}
 
-	private CharSequence nextSymbolicName() {
+	private CharSequence nextSymbolicName() throws EndOfByteCodeException {
 		StringBuilder name = new StringBuilder(16);
 		int b;
 		do {
@@ -222,10 +218,10 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 		RSXenabled = enabled;
 	}
 
-	@SuppressWarnings("serial")
-	public static class EndOfInputException extends RuntimeException {
+	private static class EndOfByteCodeException extends BasicDecompilationException {
 
-		public EndOfInputException() {
+		public EndOfByteCodeException() {
+			super("Unfinished byte code");
 		}
 
 	}
