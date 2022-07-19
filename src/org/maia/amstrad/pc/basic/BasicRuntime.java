@@ -59,7 +59,6 @@ public abstract class BasicRuntime {
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {
 		loadSourceCode(AmstradContext.readTextFileContents(sourceCodeFile));
 		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
-		AmstradContext.printInfoMessage(getAmstradPc(), "Loaded " + sourceCodeFile.getName());
 	}
 
 	public void loadSourceCode(CharSequence sourceCode) throws BasicCompilationException {
@@ -72,7 +71,6 @@ public abstract class BasicRuntime {
 	public void loadByteCodeFromFile(File byteCodeFile) throws IOException {
 		loadByteCode(AmstradContext.readBinaryFileContents(byteCodeFile));
 		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
-		AmstradContext.printInfoMessage(getAmstradPc(), "Loaded " + byteCodeFile.getName());
 	}
 
 	public void loadByteCode(byte[] byteCode) {
@@ -95,7 +93,6 @@ public abstract class BasicRuntime {
 		pw.print(exportSourceCode());
 		pw.close();
 		System.out.println("Exported source code to " + file.getPath());
-		AmstradContext.printInfoMessage(getAmstradPc(), "Saved " + file.getName());
 	}
 
 	public CharSequence exportSourceCode() throws BasicDecompilationException {
@@ -108,7 +105,6 @@ public abstract class BasicRuntime {
 		os.write(exportByteCode());
 		os.close();
 		System.out.println("Exported byte code to " + file.getPath());
-		AmstradContext.printInfoMessage(getAmstradPc(), "Saved " + file.getName());
 	}
 
 	public byte[] exportByteCode() {

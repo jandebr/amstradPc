@@ -98,7 +98,6 @@ public class Settings {
 	public static final String BRIGHTNESS = "brightness";
 	public static final String JOYSTICK = "joystick";
 	public static final String OSD = "onscreendisplay";
-	public static final String PROMPT_MESSAGES = "prompt_messages";
 	public static final String AUTOLOAD = "autoload";
 	public static final String AUTOTYPE = "autotype";
 	public static final String MOUSEJOY = "mousejoy";

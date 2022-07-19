@@ -7,10 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import jemu.settings.Settings;
-
-import org.maia.amstrad.pc.basic.BasicRuntime;
-
 public abstract class AmstradContext {
 
 	protected AmstradContext() {
@@ -56,29 +52,6 @@ public abstract class AmstradContext {
 		}
 		in.close();
 		return data;
-	}
-
-	public static void printInfoMessage(AmstradPc amstradPc, String message) {
-		printInfoMessage(amstradPc, message, false, true);
-	}
-
-	public static void printInfoMessage(AmstradPc amstradPc, String message, boolean continuation, boolean close) {
-		if (amstradPc.isStarted() && !amstradPc.isTerminated() && showMessagesAtPrompt()) {
-			BasicRuntime rt = amstradPc.getBasicRuntime();
-			if (!continuation)
-				rt.keyboardType("'"); // REMark
-			rt.keyboardType(message);
-			if (close)
-				rt.keyboardEnter();
-		}
-	}
-
-	public static boolean showMessagesAtPrompt() {
-		return Settings.getBoolean(Settings.PROMPT_MESSAGES, true);
-	}
-
-	public static void setShowMessagesAtPrompt(boolean show) {
-		Settings.setBoolean(Settings.PROMPT_MESSAGES, show);
 	}
 
 }

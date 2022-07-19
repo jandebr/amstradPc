@@ -14,6 +14,8 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
+import jemu.settings.Settings;
+
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
 import org.maia.amstrad.pc.menu.AutoTypeFileAction;
 import org.maia.amstrad.pc.menu.FullscreenAction;
@@ -29,7 +31,7 @@ import org.maia.amstrad.pc.menu.SaveBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
 import org.maia.amstrad.pc.menu.ScreenshotAction;
 import org.maia.amstrad.pc.menu.ScreenshotWithMonitorEffectAction;
-import org.maia.amstrad.pc.menu.ShowMessagesAtPromptAction;
+import org.maia.amstrad.pc.menu.UpdateFrameTitleAction;
 
 public class AmstradFactory {
 
@@ -82,8 +84,8 @@ public class AmstradFactory {
 	private JMenu createEmulatorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(new JMenuItem(new AutoTypeFileAction(amstradPc)));
-		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new ShowMessagesAtPromptAction(amstradPc));
-		checkItem.setState(AmstradContext.showMessagesAtPrompt());
+		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new UpdateFrameTitleAction(amstradPc));
+		checkItem.setState(Settings.getBoolean(Settings.UPDATETITLE, true));
 		menu.add(checkItem);
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new PauseResumeAction(amstradPc)));
