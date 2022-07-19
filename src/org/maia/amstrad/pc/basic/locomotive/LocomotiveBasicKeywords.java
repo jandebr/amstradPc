@@ -284,6 +284,11 @@ public class LocomotiveBasicKeywords {
 			return sf.equals("DATA");
 		}
 
+		public boolean isPrecededByInstructionSeparator() {
+			String sf = getSourceForm();
+			return sf.equals("ELSE") || sf.equals("'");
+		}
+
 		public boolean isBasicKeyword() {
 			return getPrefixByte() == 0;
 		}

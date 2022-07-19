@@ -65,7 +65,9 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 			int linePositionFrom = line.length();
 			if (b == 0x01) {
 				// statement seperator
-				line.append(':');
+				if (!nextByteIsKeywordPrecededByInstructionSeparator()) {
+					line.append(':');
+				}
 			} else if (b >= 0x02 && b <= 0x0d) {
 				// variable
 				nextWord(); // memory offset
@@ -165,6 +167,15 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 			b = nextByte();
 		}
 		return line;
+	}
+
+	private boolean nextByteIsKeywordPrecededByInstructionSeparator() {
+		if (byteCodeIndex >= byteCode.length)
+			return false;
+		BasicKeyword keyword = getBasicKeywords().getKeyword(byteCode[byteCodeIndex]);
+		if (keyword == null)
+			return false;
+		return keyword.isPrecededByInstructionSeparator();
 	}
 
 	private int nextByte() throws EndOfByteCodeException {

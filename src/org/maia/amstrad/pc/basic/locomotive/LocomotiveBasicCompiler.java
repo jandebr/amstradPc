@@ -169,6 +169,12 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 						advancePosition();
 						lineNumberCanFollow = false;
 						insideData = false;
+					} else if (c == BasicKeywordToken.REMARK_SHORTHAND) {
+						String symbol = String.valueOf(c);
+						BasicKeyword keyword = getBasicKeywords().getKeyword(symbol);
+						token = new BasicKeywordToken(symbol, keyword);
+						advancePosition();
+						insideRemark = true;
 					} else if (c == NumericToken.AMPERSAND) {
 						token = scanAmpersandNumericToken();
 					} else if (isDecimalDigit(c)) {
@@ -717,6 +723,8 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		private BasicKeyword keyword;
 
+		public static final char REMARK_SHORTHAND = '\'';
+
 		public BasicKeywordToken(String sourceFragment, BasicKeyword keyword) {
 			super(sourceFragment);
 			this.keyword = keyword;
@@ -725,10 +733,11 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		@Override
 		public void appendByteCodeTo(ByteBuffer byteBuffer) {
 			BasicKeyword keyword = getKeyword();
+			if (keyword.isPrecededByInstructionSeparator()) {
+				byteBuffer.appendByte((byte) 0x01); // instruction separator
+			}
 			if (keyword.isExtendedKeyword()) {
 				byteBuffer.appendByte(keyword.getPrefixByte());
-			} else if (keyword.getSourceForm().equals("ELSE")) {
-				byteBuffer.appendByte((byte) 0x01); // instruction separator
 			}
 			byteBuffer.appendByte(keyword.getCodeByte());
 		}

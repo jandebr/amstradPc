@@ -19,11 +19,11 @@ public class BasicCompilerTest {
 	public static void main(String[] args) throws Exception {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		LocomotiveBasicCompiler compiler = new LocomotiveBasicCompiler();
+		BasicCompiler compiler = new LocomotiveBasicCompiler();
 		File dir = new File("resources/test/compiler");
 		PrintWriter out = new PrintWriter(new File(dir, "outcome.txt"));
 		testFilesInDirectory(dir, amstradPc, compiler, out);
-		// testFile(new File(dir, "airwulf.bas"), amstradPc, compiler, out);
+		// testFile(new File(dir, "test-pacman.bas"), amstradPc, compiler, out);
 		out.close();
 		amstradPc.terminate();
 	}
@@ -43,6 +43,7 @@ public class BasicCompilerTest {
 
 	private static void testFile(File basicFile, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)
 			throws IOException, BasicCompilationException {
+		System.out.println("Testing " + basicFile.getPath() + "...");
 		out.println(">> Testing " + basicFile.getPath());
 		loadFileWithoutCompiler(basicFile, amstradPc);
 		byte[] referenceByteCode = amstradPc.getBasicRuntime().exportByteCode();
