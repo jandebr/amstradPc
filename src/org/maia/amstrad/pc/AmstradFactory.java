@@ -31,7 +31,8 @@ import org.maia.amstrad.pc.menu.SaveBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
 import org.maia.amstrad.pc.menu.ScreenshotAction;
 import org.maia.amstrad.pc.menu.ScreenshotWithMonitorEffectAction;
-import org.maia.amstrad.pc.menu.UpdateFrameTitleAction;
+import org.maia.amstrad.pc.menu.UpdateWindowTitleAction;
+import org.maia.amstrad.pc.menu.WindowAlwaysOnTopAction;
 
 public class AmstradFactory {
 
@@ -64,6 +65,7 @@ public class AmstradFactory {
 		menubar.add(createEmulatorMenu(amstradPc));
 		menubar.add(createCaptureMenu(amstradPc));
 		menubar.add(createMonitorMenu(amstradPc));
+		menubar.add(createWindowMenu(amstradPc));
 		return menubar;
 	}
 
@@ -84,9 +86,6 @@ public class AmstradFactory {
 	private JMenu createEmulatorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(new JMenuItem(new AutoTypeFileAction(amstradPc)));
-		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new UpdateFrameTitleAction(amstradPc));
-		checkItem.setState(Settings.getBoolean(Settings.UPDATETITLE, true));
-		menu.add(checkItem);
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new PauseResumeAction(amstradPc)));
 		menu.add(new JMenuItem(new RebootAction(amstradPc)));
@@ -121,6 +120,17 @@ public class AmstradFactory {
 			if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode))
 				button.setSelected(true);
 		}
+		return menu;
+	}
+
+	private JMenu createWindowMenu(AmstradPc amstradPc) {
+		JMenu menu = new JMenu("Window");
+		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new UpdateWindowTitleAction(amstradPc));
+		checkItem.setState(Settings.getBoolean(Settings.UPDATETITLE, true));
+		menu.add(checkItem);
+		checkItem = new JCheckBoxMenuItem(new WindowAlwaysOnTopAction(amstradPc));
+		checkItem.setState(Settings.getBoolean(Settings.ONTOP, false));
+		menu.add(checkItem);
 		menu.add(new JSeparator());
 		JMenuItem item = new JMenuItem(new FullscreenAction(amstradPc));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK));

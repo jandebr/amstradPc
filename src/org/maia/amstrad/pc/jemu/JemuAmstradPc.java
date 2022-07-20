@@ -54,6 +54,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
 		AmstradPcFrame frame = super.displayInFrame(exitOnClose);
 		getFrameBridge().setFrame(frame);
+		getJemuInstance().alwaysOnTopCheck();
 		return frame;
 	}
 
@@ -208,6 +209,12 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public void toggleFullscreen() {
 		checkNotTerminated();
 		getJemuInstance().FullSize();
+	}
+
+	@Override
+	public void setAlwaysOnTop(boolean alwaysOnTop) {
+		checkNotTerminated();
+		getJemuInstance().setAlwaysOnTop(alwaysOnTop);
 	}
 
 	@Override

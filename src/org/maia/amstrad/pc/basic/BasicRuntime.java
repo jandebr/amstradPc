@@ -22,38 +22,58 @@ public abstract class BasicRuntime {
 		this.amstradPc = amstradPc;
 	}
 
-	public abstract void keyboardType(CharSequence text, boolean waitUntilTyped);
-
 	public void keyboardType(CharSequence text) {
 		keyboardType(text, true);
 	}
 
+	public abstract void keyboardType(CharSequence text, boolean waitUntilTyped);
+
 	public void keyboardTypeFileContents(File textFile) throws IOException {
-		keyboardType(AmstradContext.readTextFileContents(textFile));
+		keyboardTypeFileContents(textFile, true);
 	}
 
-	public void keyboardEnter(CharSequence text, boolean waitUntilTyped) {
-		keyboardType(text + "\n", waitUntilTyped);
+	public void keyboardTypeFileContents(File textFile, boolean waitUntilTyped) throws IOException {
+		keyboardType(AmstradContext.readTextFileContents(textFile), waitUntilTyped);
 	}
 
 	public void keyboardEnter(CharSequence text) {
 		keyboardEnter(text, true);
 	}
 
+	public void keyboardEnter(CharSequence text, boolean waitUntilTyped) {
+		keyboardType(text + "\n", waitUntilTyped);
+	}
+
 	public void keyboardEnter() {
-		keyboardEnter("");
+		keyboardEnter(true);
+	}
+
+	public void keyboardEnter(boolean waitUntilTyped) {
+		keyboardEnter("", waitUntilTyped);
 	}
 
 	public void cls() {
-		keyboardEnter("CLS");
+		cls(true);
+	}
+
+	public void cls(boolean waitUntilTyped) {
+		keyboardEnter("CLS", waitUntilTyped);
 	}
 
 	public void list() {
-		keyboardEnter("LIST");
+		list(true);
+	}
+
+	public void list(boolean waitUntilTyped) {
+		keyboardEnter("LIST", waitUntilTyped);
 	}
 
 	public void run() {
-		keyboardEnter("RUN");
+		run(true);
+	}
+
+	public void run(boolean waitUntilTyped) {
+		keyboardEnter("RUN", waitUntilTyped);
 	}
 
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {

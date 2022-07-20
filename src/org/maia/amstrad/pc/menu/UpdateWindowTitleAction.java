@@ -9,17 +9,17 @@ import jemu.settings.Settings;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class UpdateFrameTitleAction extends AmstradPcAction {
+public class UpdateWindowTitleAction extends AmstradPcAction {
 
-	public UpdateFrameTitleAction(AmstradPc amstradPc) {
+	public UpdateWindowTitleAction(AmstradPc amstradPc) {
 		this(amstradPc, "Update window title");
 	}
 
-	public UpdateFrameTitleAction(AmstradPc amstradPc, String name) {
+	public UpdateWindowTitleAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
-	public UpdateFrameTitleAction(AmstradPc amstradPc, String name, Icon icon) {
+	public UpdateWindowTitleAction(AmstradPc amstradPc, String name, Icon icon) {
 		super(amstradPc, name, icon);
 	}
 

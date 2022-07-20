@@ -70,6 +70,8 @@ public abstract class AmstradPc {
 
 	public abstract void toggleFullscreen();
 
+	public abstract void setAlwaysOnTop(boolean alwaysOnTop);
+
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
 
 	protected void checkStarted() {
