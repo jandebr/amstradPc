@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 import jemu.settings.Settings;
 
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.menu.AlternativeDisplaySourceAction;
 import org.maia.amstrad.pc.menu.AutoTypeFileAction;
 import org.maia.amstrad.pc.menu.FullscreenAction;
 import org.maia.amstrad.pc.menu.LoadBasicBinaryFileAction;
@@ -125,12 +126,19 @@ public class AmstradFactory {
 
 	private JMenu createWindowMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Window");
+		// Update title
 		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new UpdateWindowTitleAction(amstradPc));
 		checkItem.setState(Settings.getBoolean(Settings.UPDATETITLE, true));
 		menu.add(checkItem);
+		// Always on top
 		checkItem = new JCheckBoxMenuItem(new WindowAlwaysOnTopAction(amstradPc));
 		checkItem.setState(Settings.getBoolean(Settings.ONTOP, false));
 		menu.add(checkItem);
+		// Alternative display
+		checkItem = new JCheckBoxMenuItem(new AlternativeDisplaySourceAction(amstradPc));
+		checkItem.setState(false);
+		menu.add(checkItem);
+		// Fullscreen
 		menu.add(new JSeparator());
 		JMenuItem item = new JMenuItem(new FullscreenAction(amstradPc));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK));

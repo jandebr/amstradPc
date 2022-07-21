@@ -22,6 +22,7 @@ import java.awt.image.MemoryImageSource;
 import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.swing.JComponent;
 
@@ -209,6 +210,8 @@ public class Display extends JComponent {
 	protected boolean sameSize;
 	protected boolean painted = false;
 
+	private SecondaryDisplaySource activeDisplaySource; // takes precedence over 'image'
+
 	public Display() {
 		InputStream in = getClass().getResourceAsStream("amstrad.ttf");
 		try {
@@ -216,15 +219,31 @@ public class Display extends JComponent {
 		} catch (Exception e) {
 		}
 		int[] pixelsc = new int[16 * 16];
-
 		imagec = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, pixelsc, 0, 16));
 		blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(imagec, new Point(0, 0), "invisibleCursor");
-		gunCursor = Toolkit.getDefaultToolkit().createCustomCursor(lightGun, new Point(0, 0), "invisibleCursor");
+		gunCursor = Toolkit.getDefaultToolkit().createCustomCursor(lightGun, new Point(16, 16), "invisibleCursor");
 		setCursor(blankCursor);
 		enableEvents(AWTEvent.FOCUS_EVENT_MASK);
 		setFocusTraversalKeysEnabled(true);
 		setRequestFocusEnabled(true);
 		setDoubleBuffered(true);
+	}
+
+	public void changeDisplaySource(SecondaryDisplaySource displaySource) {
+		if (activeDisplaySource != null) {
+			resetDisplaySource();
+		}
+		if (displaySource != null) {
+			activeDisplaySource = displaySource;
+			activeDisplaySource.notifyPrimaryDisplaySourceResolution(scaleW, scaleH);
+		}
+	}
+
+	public void resetDisplaySource() {
+		if (activeDisplaySource != null) {
+			activeDisplaySource.dispose();
+			activeDisplaySource = null;
+		}
 	}
 
 	public void setImageSize(Dimension size, Dimension scale) {
@@ -234,14 +253,18 @@ public class Display extends JComponent {
 		image.setAccelerationPriority(1);
 		raster = image.getRaster();
 		pixels = new int[imageWidth * imageHeight];
-		for (int i = 0; i < pixels.length; i++)
-			pixels[i] = 0xff000000;
+		Arrays.fill(pixels, 0xff000000);
 		if (scale == null)
 			scale = SCALE_1;
+		System.out.println("Display image size " + size.width + "x" + size.height + " with scale " + scale.width + "x"
+				+ scale.height);
 		scaleWidth = imageWidth * scale.width;
 		scaleHeight = imageHeight * scale.height;
 		scaleW = scaleWidth;
 		scaleH = scaleHeight;
+		if (activeDisplaySource != null) {
+			activeDisplaySource.notifyPrimaryDisplaySourceResolution(scaleW, scaleH);
+		}
 		checkSize();
 		Graphics g = getGraphics();
 		if (g != null) {
@@ -317,14 +340,13 @@ public class Display extends JComponent {
 		Insets insets = getInsets();
 		int clientWidth = size.width - insets.left - insets.right;
 		int clientHeight = size.height - insets.top - insets.bottom;
-		if (true)
-			if (Switches.stretch)
-				imageRect = new Rectangle(insets.left + (clientWidth - scaleWidth) / 2, insets.top
-						+ (clientHeight - scaleHeight) / 2, scaleWidth, scaleHeight);
-			else {
-				imageRect = new Rectangle(insets.left, insets.top, clientWidth, clientHeight);
-				sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
-			}
+		if (Switches.stretch) {
+			imageRect = new Rectangle(insets.left + (clientWidth - scaleWidth) / 2, insets.top
+					+ (clientHeight - scaleHeight) / 2, scaleWidth, scaleHeight);
+		} else {
+			imageRect = new Rectangle(insets.left, insets.top, clientWidth, clientHeight);
+			sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
+		}
 	}
 
 	public int[] getPixels() {
@@ -338,7 +360,9 @@ public class Display extends JComponent {
 	public void updateImage(boolean wait) {
 		painted = false;
 		if (imageRect.width != 0 && imageRect.height != 0 && isShowing()) {
-			raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
+			if (activeDisplaySource == null) {
+				raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
+			}
 			repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
 			if (wait)
 				waitPainted();
@@ -359,6 +383,7 @@ public class Display extends JComponent {
 		return value;
 	}
 
+	@SuppressWarnings("unused")
 	protected void paintImage(Graphics g) {
 		if (showfps >= 1)
 			doTouchFPS();
@@ -368,19 +393,10 @@ public class Display extends JComponent {
 		}
 		if (Switches.bilinear && !lowperformance) {
 			Graphics2D g2 = (Graphics2D) g;
-
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-			g = g2;
 		}
 		if (!jemu.system.cpc.CPC.YM_Play) {
-			if (sourceRect != null) {
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y
-						+ imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width, sourceRect.y
-						+ sourceRect.height, null);
-			} else if (sameSize) {
-				g.drawImage(image, imageRect.x, imageRect.y, null);
-			} else
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+			paintDisplayImage(g);
 		} else {
 			if (skin == 1)
 				g.drawImage(YMmode, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
@@ -748,7 +764,7 @@ public class Display extends JComponent {
 			g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
 	}
 
-	public void doTouchFPS() {
+	private void doTouchFPS() {
 		long time = System.currentTimeMillis();
 		mNextFPS++;
 		if (time - mLastFPSTime >= 1000) {
@@ -758,7 +774,25 @@ public class Display extends JComponent {
 		}
 	}
 
-	public void paintBalls(Graphics g) {
+	private void paintDisplayImage(Graphics g) {
+		if (activeDisplaySource != null) {
+			Graphics2D g2 = (Graphics2D) g.create(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
+			activeDisplaySource.renderOntoDisplay(g2, imageRect.width, imageRect.height);
+			g2.dispose();
+		} else {
+			if (sourceRect != null) {
+				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y
+						+ imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width, sourceRect.y
+						+ sourceRect.height, null);
+			} else if (sameSize) {
+				g.drawImage(image, imageRect.x, imageRect.y, null);
+			} else {
+				g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+			}
+		}
+	}
+
+	private void paintBalls(Graphics g) {
 		for (ck = 0; ck < ch; ck++) {
 			cj = ((((int) ((Math.cos((double) co + (double) ((float) ck / 50F) * 12.566370964050293D) * Math.sin(cl)
 					* 20D + Math.cos((double) (2.0F * cn) / 2D - (double) (((float) ck / 50F) * 6.28F)) * 40D) - Math
@@ -798,22 +832,13 @@ public class Display extends JComponent {
 
 	public BufferedImage getImage() {
 		BufferedImage off_Image = new BufferedImage(imageRect.width, imageRect.height, BufferedImage.TYPE_INT_RGB);
-
 		Graphics g = off_Image.createGraphics();
 		if (Switches.bilinear) {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-			g = g2;
 		}
 		if (!jemu.system.cpc.CPC.YM_Play) {
-			if (sourceRect != null) {
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y
-						+ imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width, sourceRect.y
-						+ sourceRect.height, null);
-			} else if (sameSize) {
-				g.drawImage(image, imageRect.x, imageRect.y, null);
-			} else
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+			paintDisplayImage(g);
 		} else {
 			if (skin == 1)
 				g.drawImage(YMmode, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
@@ -923,6 +948,10 @@ public class Display extends JComponent {
 		Insets insets = getInsets();
 		return new Dimension(imageRect.width + insets.left + insets.right, imageRect.height + insets.top
 				+ insets.bottom);
+	}
+
+	public Font getDisplayFont() {
+		return displayFont;
 	}
 
 	public int getImageWidth() {
