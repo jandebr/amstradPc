@@ -23,6 +23,8 @@ import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 
@@ -210,9 +212,11 @@ public class Display extends JComponent {
 	protected boolean sameSize;
 	protected boolean painted = false;
 
-	private SecondaryDisplaySource activeDisplaySource; // takes precedence over 'image'
+	private List<PrimaryDisplaySourceListener> primaryDisplaySourceListeners;
+	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
 
 	public Display() {
+		primaryDisplaySourceListeners = new Vector<PrimaryDisplaySourceListener>();
 		InputStream in = getClass().getResourceAsStream("amstrad.ttf");
 		try {
 			displayFont = Font.createFont(Font.TRUETYPE_FONT, in).deriveFont(0, 8);
@@ -229,20 +233,20 @@ public class Display extends JComponent {
 		setDoubleBuffered(true);
 	}
 
-	public void changeDisplaySource(SecondaryDisplaySource displaySource) {
-		if (activeDisplaySource != null) {
-			resetDisplaySource();
+	public void setSecondaryDisplaySource(SecondaryDisplaySource displaySource) {
+		if (secondaryDisplaySource != null) {
+			removeSecondaryDisplaySource();
 		}
 		if (displaySource != null) {
-			activeDisplaySource = displaySource;
-			activeDisplaySource.notifyPrimaryDisplaySourceResolution(scaleW, scaleH);
+			secondaryDisplaySource = displaySource;
+			secondaryDisplaySource.init(this);
 		}
 	}
 
-	public void resetDisplaySource() {
-		if (activeDisplaySource != null) {
-			activeDisplaySource.dispose();
-			activeDisplaySource = null;
+	public void removeSecondaryDisplaySource() {
+		if (secondaryDisplaySource != null) {
+			secondaryDisplaySource.dispose();
+			secondaryDisplaySource = null;
 		}
 	}
 
@@ -262,10 +266,8 @@ public class Display extends JComponent {
 		scaleHeight = imageHeight * scale.height;
 		scaleW = scaleWidth;
 		scaleH = scaleHeight;
-		if (activeDisplaySource != null) {
-			activeDisplaySource.notifyPrimaryDisplaySourceResolution(scaleW, scaleH);
-		}
 		checkSize();
+		notifyPrimaryDisplaySourceResolutionChanged(new Dimension(size));
 		Graphics g = getGraphics();
 		if (g != null) {
 			size = getSize();
@@ -360,7 +362,7 @@ public class Display extends JComponent {
 	public void updateImage(boolean wait) {
 		painted = false;
 		if (imageRect.width != 0 && imageRect.height != 0 && isShowing()) {
-			if (activeDisplaySource == null) {
+			if (secondaryDisplaySource == null) {
 				raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
 			}
 			repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
@@ -775,10 +777,8 @@ public class Display extends JComponent {
 	}
 
 	private void paintDisplayImage(Graphics g) {
-		if (activeDisplaySource != null) {
-			Graphics2D g2 = (Graphics2D) g.create(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
-			activeDisplaySource.renderOntoDisplay(g2, imageRect.width, imageRect.height);
-			g2.dispose();
+		if (secondaryDisplaySource != null) {
+			secondaryDisplaySource.renderOntoDisplay((Graphics2D) g, imageRect);
 		} else {
 			if (sourceRect != null) {
 				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y
@@ -983,6 +983,30 @@ public class Display extends JComponent {
 		} else {
 			// System.out.println("Display Lost Focus");
 		}
+	}
+
+	public void addPrimaryDisplaySourceListener(PrimaryDisplaySourceListener listener) {
+		getPrimaryDisplaySourceListeners().add(listener);
+	}
+
+	public void removePrimaryDisplaySourceListener(PrimaryDisplaySourceListener listener) {
+		getPrimaryDisplaySourceListeners().remove(listener);
+	}
+
+	private List<PrimaryDisplaySourceListener> getPrimaryDisplaySourceListeners() {
+		return primaryDisplaySourceListeners;
+	}
+
+	private void notifyPrimaryDisplaySourceResolutionChanged(Dimension resolution) {
+		for (PrimaryDisplaySourceListener listener : getPrimaryDisplaySourceListeners()) {
+			listener.primaryDisplaySourceResolutionChanged(this, resolution);
+		}
+	}
+
+	public static interface PrimaryDisplaySourceListener {
+
+		void primaryDisplaySourceResolutionChanged(Display display, Dimension resolution);
+
 	}
 
 }

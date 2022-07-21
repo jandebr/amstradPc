@@ -1,47 +1,19 @@
 package org.maia.amstrad.pc.display;
 
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
-public class TestDisplaySource implements AmstradPcAlternativeDisplaySource {
-
-	private Icon icon;
-
-	private Dimension primaryResolution;
+public class TestDisplaySource extends AbstractDisplaySource {
 
 	public TestDisplaySource() {
-		icon = new ImageIcon("resources/images/amstrad5.png");
 	}
 
 	@Override
-	public void notifyPrimaryDisplaySourceResolution(int width, int height) {
-		primaryResolution = new Dimension(width, height);
-	}
-
-	@Override
-	public void renderOntoDisplay(Graphics2D g2, int width, int height, AmstradPcGraphicsContext graphicsContext) {
-		setupScaling(g2, width, height);
-		g2.setColor(graphicsContext.getSystemColors().getDefaultPaperColor());
-		g2.fillRect(0, 0, width, height);
-		g2.setColor(graphicsContext.getSystemColors().getDefaultPenColor());
-		g2.setFont(graphicsContext.getSystemFont());
-		g2.drawString("Hello", 30, 40);
-		icon.paintIcon(null, g2, 30, 50);
-	}
-
-	private void setupScaling(Graphics2D g2, int targetWidth, int targetHeight) {
-		int primaryWidth = primaryResolution.width;
-		int primaryHeight = primaryResolution.height;
-		double sx = targetWidth / (double) primaryWidth;
-		double sy = targetHeight / (double) primaryHeight;
-		g2.scale(sx, sy);
-	}
-
-	@Override
-	public void dispose() {
+	protected void renderContent(Graphics2D g2, AmstradGraphicsContext graphicsContext) {
+		AmstradSystemColors colors = graphicsContext.getSystemColors();
+		g2.drawString("Hello", 0, 16);
+		g2.setColor(colors.getInk(15));
+		g2.drawLine(0, 0, 640, 400);
+		g2.drawLine(0, 400, 640, 0);
 	}
 
 }

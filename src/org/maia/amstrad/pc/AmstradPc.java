@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.basic.BasicRuntime;
-import org.maia.amstrad.pc.display.AmstradPcAlternativeDisplaySource;
-import org.maia.amstrad.pc.display.AmstradPcGraphicsContext;
+import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.display.AmstradGraphicsContext;
 
 public abstract class AmstradPc {
 
@@ -76,11 +76,9 @@ public abstract class AmstradPc {
 
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
 
-	public abstract void changeDisplaySource(AmstradPcAlternativeDisplaySource displaySource);
+	public abstract void changeDisplaySource(AmstradAlternativeDisplaySource displaySource);
 
 	public abstract void resetDisplaySource();
-
-	public abstract AmstradPcGraphicsContext getGraphicsContext();
 
 	protected void checkStarted() {
 		if (!isStarted())

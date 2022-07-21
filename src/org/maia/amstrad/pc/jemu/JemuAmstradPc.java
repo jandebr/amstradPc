@@ -8,10 +8,12 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.MenuBar;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import jemu.core.device.Computer;
@@ -19,6 +21,7 @@ import jemu.core.device.ComputerAutotypeListener;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
 import jemu.ui.Display;
+import jemu.ui.Display.PrimaryDisplaySourceListener;
 import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
 import jemu.ui.SecondaryDisplaySource;
@@ -30,17 +33,18 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.basic.BasicCompilationException;
 import org.maia.amstrad.pc.basic.BasicRuntime;
-import org.maia.amstrad.pc.display.AmstradPcAlternativeDisplaySource;
-import org.maia.amstrad.pc.display.AmstradPcGraphicsContext;
-import org.maia.amstrad.pc.display.AmstradPcSystemColors;
+import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.display.AmstradGraphicsContext;
+import org.maia.amstrad.pc.display.AmstradSystemColors;
 
-public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener {
+public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener,
+		PrimaryDisplaySourceListener {
 
 	private JEMU jemuInstance;
 
 	private BasicRuntime basicRuntime;
 
-	private AmstradPcGraphicsContext graphicsContext;
+	private AmstradGraphicsContextImpl graphicsContext;
 
 	private boolean started;
 
@@ -56,7 +60,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
 		this.basicRuntime = new JemuBasicRuntimeImpl();
-		this.graphicsContext = new AmstradPcGraphicsContextImpl();
+		this.graphicsContext = new AmstradGraphicsContextImpl();
 	}
 
 	@Override
@@ -128,6 +132,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		getJemuInstance().start();
 		getJemuInstance().addAutotypeListener(this);
 		getJemuInstance().addPauseListener(this);
+		getJemuInstance().getDisplay().addPrimaryDisplaySourceListener(this);
 		getFrameBridge().pack();
 		setStarted(true);
 		setInstanceRunning(true);
@@ -193,13 +198,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public synchronized AmstradPcGraphicsContext getGraphicsContext() {
-		checkStarted();
-		checkNotTerminated();
-		return graphicsContext;
-	}
-
-	@Override
 	public Component getDisplayPane() {
 		return getJemuInstance();
 	}
@@ -249,11 +247,10 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public synchronized void changeDisplaySource(AmstradPcAlternativeDisplaySource displaySource) {
+	public synchronized void changeDisplaySource(AmstradAlternativeDisplaySource displaySource) {
 		checkStarted();
 		checkNotTerminated();
-		getJemuInstance().getDisplay().changeDisplaySource(
-				new JemuSecondaryDisplaySourceBridge(displaySource, getGraphicsContext()));
+		getJemuInstance().getDisplay().setSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
 		// TODO
 		Switches.lightGun = true;
 		getJemuInstance().getDisplay().setCursor();
@@ -263,7 +260,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public synchronized void resetDisplaySource() {
 		checkStarted();
 		checkNotTerminated();
-		getJemuInstance().getDisplay().resetDisplaySource();
+		getJemuInstance().getDisplay().removeSecondaryDisplaySource();
 		// TODO
 		Switches.lightGun = false;
 		getJemuInstance().getDisplay().setCursor();
@@ -305,6 +302,16 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 	}
 
+	private synchronized void waitUntilAutotypeEnded() {
+		setAutotyping(true);
+		while (isAutotyping()) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
 	@Override
 	public void autotypeStarted(Computer computer) {
 		System.out.println("Autotype started");
@@ -317,14 +324,9 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		notifyAll();
 	}
 
-	private synchronized void waitUntilAutotypeEnded() {
-		setAutotyping(true);
-		while (isAutotyping()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-			}
-		}
+	@Override
+	public void primaryDisplaySourceResolutionChanged(Display display, Dimension resolution) {
+		getGraphicsContext().setPrimaryDisplaySourceResolution(resolution);
 	}
 
 	private static void checkNoInstanceRunning() {
@@ -338,6 +340,10 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private JemuFrameBridge getFrameBridge() {
 		return (JemuFrameBridge) getJemuInstance().getFrameAdapter();
+	}
+
+	private AmstradGraphicsContextImpl getGraphicsContext() {
+		return graphicsContext;
 	}
 
 	@Override
@@ -435,12 +441,11 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	}
 
-	private class AmstradPcGraphicsContextImpl implements AmstradPcGraphicsContext {
+	private class AmstradGraphicsContextImpl implements AmstradGraphicsContext {
 
-		private AmstradPcSystemColors systemColors;
+		private Dimension primaryDisplaySourceResolution;
 
-		public AmstradPcGraphicsContextImpl() {
-			this.systemColors = new AmstradPcSystemColors();
+		public AmstradGraphicsContextImpl() {
 		}
 
 		@Override
@@ -449,8 +454,22 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 
 		@Override
-		public AmstradPcSystemColors getSystemColors() {
-			return systemColors;
+		public AmstradSystemColors getSystemColors() {
+			return AmstradSystemColors.getSystemColors(getMonitorMode());
+		}
+
+		@Override
+		public AmstradMonitorMode getMonitorMode() {
+			return JemuAmstradPc.this.getMonitorMode();
+		}
+
+		@Override
+		public Dimension getPrimaryDisplaySourceResolution() {
+			return primaryDisplaySourceResolution;
+		}
+
+		public void setPrimaryDisplaySourceResolution(Dimension resolution) {
+			primaryDisplaySourceResolution = resolution;
 		}
 
 	}
@@ -610,26 +629,22 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	}
 
-	private static class JemuSecondaryDisplaySourceBridge implements SecondaryDisplaySource {
+	private class JemuSecondaryDisplaySourceBridge implements SecondaryDisplaySource {
 
-		private AmstradPcAlternativeDisplaySource source;
+		private AmstradAlternativeDisplaySource source;
 
-		private AmstradPcGraphicsContext graphicsContext;
-
-		public JemuSecondaryDisplaySourceBridge(AmstradPcAlternativeDisplaySource source,
-				AmstradPcGraphicsContext graphicsContext) {
+		public JemuSecondaryDisplaySourceBridge(AmstradAlternativeDisplaySource source) {
 			this.source = source;
-			this.graphicsContext = graphicsContext;
 		}
 
 		@Override
-		public void notifyPrimaryDisplaySourceResolution(int width, int height) {
-			getSource().notifyPrimaryDisplaySourceResolution(width, height);
+		public void init(JComponent displayComponent) {
+			getSource().init(displayComponent, getGraphicsContext());
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g2, int width, int height) {
-			getSource().renderOntoDisplay(g2, width, height, getGraphicsContext());
+		public void renderOntoDisplay(Graphics2D g2, Rectangle displayBounds) {
+			getSource().renderOntoDisplay(g2, displayBounds, getGraphicsContext());
 		}
 
 		@Override
@@ -637,12 +652,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			getSource().dispose();
 		}
 
-		private AmstradPcAlternativeDisplaySource getSource() {
+		private AmstradAlternativeDisplaySource getSource() {
 			return source;
-		}
-
-		private AmstradPcGraphicsContext getGraphicsContext() {
-			return graphicsContext;
 		}
 
 	}
