@@ -10,7 +10,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class WindowAlwaysOnTopAction extends AmstradPcAction {
 
 	public WindowAlwaysOnTopAction(AmstradPc amstradPc) {
-		this(amstradPc, "Window always on top");
+		this(amstradPc, "Always on top");
 	}
 
 	public WindowAlwaysOnTopAction(AmstradPc amstradPc, String name) {

@@ -478,7 +478,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		onTop = Settings.getBoolean(Settings.ONTOP, false);
 		onTop = Util.getBoolean(getParameter("ONTOP", Boolean.toString(onTop)));
 		aontop.setState(onTop);
-		setAlwaysOnTop(onTop);
+		applyAlwaysOnTop(onTop);
 		// Stretch
 		Switches.stretch = false;
 		// Screen size
@@ -594,7 +594,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void loaddata() {
 		Component framer = this;
-		setAlwaysOnTop(false);
+		applyAlwaysOnTop(false);
 		while (!(framer instanceof Frame)) {
 			framer = framer.getParent();
 		}
@@ -607,14 +607,14 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			loadFile(Computer.TYPE_SNAPSHOT, dlg.getDirectory() + dlg.getFile(), false);
 		}
 
-		setAlwaysOnTop(onTop);
+		applyAlwaysOnTop(onTop);
 		this.display.requestFocus();
 	}
 
 	public void loadTape(boolean launch) {
 		jemu.system.cpc.CPC.tapeloaded = false;
 		Component framer = this;
-		setAlwaysOnTop(false);
+		applyAlwaysOnTop(false);
 		while (!(framer instanceof Frame)) {
 			framer = framer.getParent();
 		}
@@ -631,7 +631,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 		loadtitle = "Load emulator file";
 
-		setAlwaysOnTop(onTop);
+		applyAlwaysOnTop(onTop);
 		this.display.requestFocus();
 		if (launch) {
 			computer.reset();
@@ -640,7 +640,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void reportBug() {
-		setAlwaysOnTop(false);
+		applyAlwaysOnTop(false);
 		String checkthis = "" + Util.hex((short) Util.random(0xffff));
 		JTextField UserName = new JTextField();
 		JTextField Email = new JTextField();
@@ -689,7 +689,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			} else
 				JOptionPane.showMessageDialog(null, "Security code not valid.\nPlease try again...");
 		}
-		setAlwaysOnTop(onTop);
+		applyAlwaysOnTop(onTop);
 	}
 
 	public static String username, usermail, usertext;
@@ -1598,7 +1598,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void CreateDsk() {
-		setAlwaysOnTop(false);
+		applyAlwaysOnTop(false);
 		if (Switches.FloppySound)
 			flopsound = 1;
 		Switches.FloppySound = false;
@@ -1607,7 +1607,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			Switches.FloppySound = true;
 		flopsound = 0;
 		saveDsk();
-		setAlwaysOnTop(onTop);
+		applyAlwaysOnTop(onTop);
 	}
 
 	public void keyTyped(KeyEvent e) {
@@ -1784,9 +1784,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			}
 
 			if (e.getKeyCode() == 107) {
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				saveDsk();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 			}
 
 			// if (skinned != true){
@@ -2347,17 +2347,23 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 	}
 
+	public void alwaysOnTopCheck() {
+		applyAlwaysOnTop(onTop);
+	}
+
 	public void setAlwaysOnTop(boolean alwaysOnTop) {
-		if (executable) {
+		if (executable && onTop != alwaysOnTop) {
+			onTop = alwaysOnTop;
+			aontop.setState(alwaysOnTop);
 			Settings.setBoolean(Settings.ONTOP, alwaysOnTop);
-			getFrameAdapter().setAlwaysOnTop(alwaysOnTop);
+			applyAlwaysOnTop(alwaysOnTop);
 		}
 	}
 
-	public void alwaysOnTopCheck() {
-		boolean alwaysOnTop = Settings.getBoolean(Settings.ONTOP, false);
-		setAlwaysOnTop(alwaysOnTop);
-		Switches.top = alwaysOnTop ? 1 : 0;
+	private void applyAlwaysOnTop(boolean alwaysOnTop) {
+		if (executable) {
+			getFrameAdapter().setAlwaysOnTop(alwaysOnTop);
+		}
 	}
 
 	public void autobootcheck() {
@@ -2784,7 +2790,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			screenpreview.dispose();
 		}
 		if (e.getSource() == okay && showabout) {
-			setAlwaysOnTop(onTop);
+			applyAlwaysOnTop(onTop);
 			about.dispose();
 			showabout = false;
 		}
@@ -2838,9 +2844,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			} else if (menuAdd.equals("About")) {
 				info();
 			} else if (menuAdd.equals("Create new DSK")) {
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				CreateDsk();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 			} else if (menuAdd.equals("Load...")) {
 				Switches.askDrive = true;
 				loaddata();
@@ -2856,9 +2862,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			else if (menuAdd.equals(recordkeys))
 				RecInfo();
 			else if (menuAdd.equals("ROM Setup")) {
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				romsetter.setRoms();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 			} else if (menuAdd.equals("Java console"))
 				Console.frameconsole.setVisible(true);
 			else if (menuAdd.equals("Pause"))
@@ -2878,9 +2884,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				} catch (final Exception er) {
 				}
 			} else if (menuAdd.equals(reportBug)) {
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				reportBug();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 			} else if (menuAdd.equals(downl)) {
 				openWebPage("http://cpc-live.com/download.php?list.7");
 			} else if (menuAdd.equals(homepage)) {
@@ -2921,21 +2927,21 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				Switches.dskcheck = true;
 			} else if (menuAdd.equals(df0save)) {
 				computer.setCurrentDrive(0);
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				saveDsk();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 				computer.setCurrentDrive(0);
 			} else if (menuAdd.equals(df1save)) {
 				computer.setCurrentDrive(1);
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				saveDsk();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 				computer.setCurrentDrive(0);
 			} else if (menuAdd.equals(df2save)) {
 				computer.setCurrentDrive(2);
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				saveDsk();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 				computer.setCurrentDrive(0);
 			} else if (menuAdd.equals(screenShot))
 				screentimer = 1;
@@ -2955,19 +2961,19 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				Switches.saveScr = true;
 			if (menuAdd.equals(df3save)) {
 				computer.setCurrentDrive(3);
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				saveDsk();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 				computer.setCurrentDrive(0);
 			} else if (menuAdd.equals("Merge DSK's...")) {
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				dskmerge();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 			} else if (menuAdd.equals("Autotype")) {
-				setAlwaysOnTop(false);
+				applyAlwaysOnTop(false);
 				Autotype.typeconsole.setVisible(true);
 				// new Autotype();
-				setAlwaysOnTop(onTop);
+				applyAlwaysOnTop(onTop);
 			} else if (menuAdd.equals("Paste      F11")) {
 				Autotype.PasteText();
 			} else if (menuAdd.equals(tapeopen)) {
@@ -3403,7 +3409,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			Settings.setBoolean(Settings.CHECKRENAME, checkrename.getState());
 		} else if (e.getSource() == aontop) {
 			setAlwaysOnTop(aontop.getState());
-			onTop = aontop.getState();
 		} else if (e.getSource() == joyemu) {
 			Settings.setBoolean(Settings.JOYSTICK, joyemu.getState());
 			qaop.setEnabled(joyemu.getState());
@@ -3712,7 +3717,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void saveDsk() {
-		setAlwaysOnTop(false);
+		applyAlwaysOnTop(false);
 		FileDialog filedia = getFrameAdapter().createFileDialog("Save DSK...", FileDialog.SAVE);
 		filedia.setFile("*.dsk");
 		filedia.setVisible(true);
@@ -3737,9 +3742,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					String insertdisk = savename;
 					loadFile(Computer.TYPE_SNAPSHOT, insertdisk, false);
 					System.out.println("loaded " + insertdisk);
-					setAlwaysOnTop(false);
+					applyAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null, "Sucessfully saved as " + filedia.getFile());
-					setAlwaysOnTop(onTop);
+					applyAlwaysOnTop(onTop);
 				}
 			}
 		}
@@ -4586,7 +4591,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void screenshot() {
-		setAlwaysOnTop(false);
+		applyAlwaysOnTop(false);
 		images = new BufferedImage(display.getImage().getWidth(sprev), display.getImage().getHeight(sprev),
 				BufferedImage.SCALE_SMOOTH);
 		images.getGraphics().drawImage(display.getImage(), 0, 0, display.getImage().getWidth(sprev),
@@ -4597,7 +4602,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		screenshottimer = 0;
 		screentimer = 0;
 		computer.reSync();
-		setAlwaysOnTop(onTop);
+		applyAlwaysOnTop(onTop);
 	}
 
 	public void screencapture() {
@@ -4662,7 +4667,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		screenpreview.add(makeshot, getGridBagConstraints(1, 2, 1.0, 1.0, 1, GridBagConstraints.BOTH));
 		screenpreview.add(cancelshot, getGridBagConstraints(2, 2, 1.0, 1.0, 1, GridBagConstraints.BOTH));
 		screenpreview.pack();
-		// screenpreview.setAlwaysOnTop(true); // screenpreview.setAlwaysOnTop(true);
+		// screenpreview.applyAlwaysOnTop(true); // screenpreview.applyAlwaysOnTop(true);
 		screenpreview.setResizable(false);
 
 	}
@@ -4706,7 +4711,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		screenpreview.add(pauseRec, getGridBagConstraints(2, 2, 1.0, 1.0, 1, GridBagConstraints.BOTH));
 		screenpreview.add(stopRec, getGridBagConstraints(3, 2, 1.0, 1.0, 1, GridBagConstraints.BOTH));
 		screenpreview.pack();
-		// screenpreview.setAlwaysOnTop(true);
+		// screenpreview.applyAlwaysOnTop(true);
 		screenpreview.setResizable(false);
 		if (doRec) {
 			if (!doingRec) {
