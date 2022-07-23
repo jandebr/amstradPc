@@ -13,8 +13,12 @@ public interface AmstradGraphicsContext {
 
 	AmstradMonitorMode getMonitorMode();
 
-	Dimension getDisplayCanvasResolution();
-
 	Dimension getPrimaryDisplaySourceResolution();
+
+	Dimension getDisplayCanvasSize();
+
+	int getTextRows();
+
+	int getTextColumns();
 
 }

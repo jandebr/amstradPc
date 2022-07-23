@@ -56,16 +56,11 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private static final int SNAPSHOT_HEADER_SIZE = 256; // in bytes
 
-	private static final int DISPLAY_CANVAS_WIDTH = 640;
-
-	private static final int DISPLAY_CANVAS_HEIGHT = 400;
-
 	public JemuAmstradPc() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
 		this.basicRuntime = new JemuBasicRuntimeImpl();
-		this.graphicsContext = new AmstradGraphicsContextImpl(
-				new Dimension(DISPLAY_CANVAS_WIDTH, DISPLAY_CANVAS_HEIGHT));
+		this.graphicsContext = new AmstradGraphicsContextImpl();
 	}
 
 	@Override
@@ -140,7 +135,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		jemu.addPauseListener(this);
 		jemu.getDisplay().addPrimaryDisplaySourceListener(this);
 		getGraphicsContext().setPrimaryDisplaySourceResolution(
-				new Dimension(jemu.getDisplay().getWidth(), jemu.getDisplay().getHeight()));
+				new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
 		getFrameBridge().pack();
 		setStarted(true);
 		setInstanceRunning(true);
@@ -262,9 +257,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			getJemuInstance().getDisplay().setSecondaryDisplaySource(
 					new JemuSecondaryDisplaySourceBridge(displaySource));
 			Switches.blockKeyboard = true;
-			// TODO
-			Switches.lightGun = true;
-			getJemuInstance().getDisplay().setCursor();
 		} else {
 			resetDisplaySource();
 		}
@@ -276,9 +268,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkNotTerminated();
 		getJemuInstance().getDisplay().removeSecondaryDisplaySource();
 		Switches.blockKeyboard = false;
-		// TODO
-		Switches.lightGun = false;
-		getJemuInstance().getDisplay().setCursor();
 	}
 
 	private void waitUntilReady() {
@@ -458,20 +447,32 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private class AmstradGraphicsContextImpl implements AmstradGraphicsContext {
 
-		private Dimension displayCanvasResolution;
+		private Dimension displayCanvasSize;
 
 		private Dimension primaryDisplaySourceResolution;
 
 		private Font systemFont;
 
-		public AmstradGraphicsContextImpl(Dimension displayCanvasResolution) {
-			this.displayCanvasResolution = displayCanvasResolution;
+		private int textRows;
+
+		private int textColumns;
+
+		public AmstradGraphicsContextImpl() {
+			this(new Dimension(BasicRuntime.DISPLAY_CANVAS_WIDTH, BasicRuntime.DISPLAY_CANVAS_HEIGHT),
+					BasicRuntime.DISPLAY_TEXT_ROWS, BasicRuntime.DISPLAY_TEXT_COLUMNS);
+		}
+
+		public AmstradGraphicsContextImpl(Dimension displayCanvasSize, int textRows, int textColumns) {
+			this.displayCanvasSize = displayCanvasSize;
+			this.textRows = textRows;
+			this.textColumns = textColumns;
 		}
 
 		@Override
 		public Font getSystemFont() {
 			if (systemFont == null) {
-				systemFont = getJemuInstance().getDisplay().getDisplayFont().deriveFont(16f);
+				float size = (float) (getDisplayCanvasSize().getWidth() / getTextColumns());
+				systemFont = getJemuInstance().getDisplay().getDisplayFont().deriveFont(size);
 			}
 			return systemFont;
 		}
@@ -487,8 +488,18 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 
 		@Override
-		public Dimension getDisplayCanvasResolution() {
-			return displayCanvasResolution;
+		public Dimension getDisplayCanvasSize() {
+			return displayCanvasSize;
+		}
+
+		@Override
+		public int getTextRows() {
+			return textRows;
+		}
+
+		@Override
+		public int getTextColumns() {
+			return textColumns;
 		}
 
 		@Override

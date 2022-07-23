@@ -14,6 +14,20 @@ public abstract class BasicRuntime {
 
 	private AmstradPc amstradPc;
 
+	public static final int DISPLAY_CANVAS_WIDTH = 640;
+
+	public static final int DISPLAY_CANVAS_HEIGHT = 400;
+
+	public static final int DISPLAY_TEXT_ROWS = 25;
+
+	public static final int DISPLAY_TEXT_COLUMNS = 40;
+
+	public static final int DEFAULT_BORDER_COLOR_INDEX = 1;
+
+	public static final int DEFAULT_PAPER_COLOR_INDEX = 1;
+
+	public static final int DEFAULT_PEN_COLOR_INDEX = 24;
+
 	public static final int MEMORY_ADDRESS_START_OF_PROGRAM = 0x170;
 
 	public static final int MEMORY_POINTER_END_OF_PROGRAM = 0xAE83; // points to memory address following 0x0000

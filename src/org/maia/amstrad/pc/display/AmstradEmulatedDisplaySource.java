@@ -1,27 +1,35 @@
 package org.maia.amstrad.pc.display;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
+import java.awt.event.KeyAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implements AmstradAlternativeDisplaySource,
-		KeyListener {
+public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements AmstradAlternativeDisplaySource,
+		MouseListener, MouseMotionListener {
 
 	private AmstradPc amstradPc;
 
 	private AmstradEmulatedDisplayCanvas displayCanvas;
 
 	private BufferedImage offscreenImage;
+
+	private JComponent displayComponent;
+
+	private Cursor displayComponentCursor;
+
+	private boolean mouseOnCanvas;
 
 	protected AmstradEmulatedDisplaySource(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
@@ -30,6 +38,9 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 	@Override
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		setDisplayCanvas(new AmstradEmulatedDisplayCanvas(graphicsContext));
+		setDisplayComponent(displayComponent);
+		setDisplayComponentCursor(displayComponent.getCursor());
+		changeCursor(getDefaultCursor());
 		displayComponent.addMouseListener(this);
 		displayComponent.addMouseMotionListener(this);
 		displayComponent.addKeyListener(this);
@@ -37,7 +48,8 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 
 	@Override
 	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
-		Insets borderInsets = deriveBorderInsets(displayBounds);
+		Insets borderInsets = deriveBorderInsets(displayBounds.getSize());
+		updateDisplayCanvasBounds(displayBounds, borderInsets);
 		renderBorder(display, displayBounds, borderInsets);
 		Graphics2D drawingSurface = deriveDrawingSurface(display, displayBounds, borderInsets, graphicsContext);
 		AmstradEmulatedDisplayCanvas canvas = getDisplayCanvas();
@@ -46,20 +58,27 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 		renderContent(canvas);
 		drawingSurface.dispose();
 		if (getOffscreenImage() != null) {
-			display.drawImage(getOffscreenImage(), displayBounds.x + borderInsets.left, displayBounds.y
-					+ borderInsets.top, displayBounds.width - borderInsets.left - borderInsets.right,
-					displayBounds.height - borderInsets.top - borderInsets.bottom, null);
+			Rectangle rect = getDisplayCanvas().getBoundsOnDisplayComponent();
+			display.drawImage(getOffscreenImage(), rect.x, rect.y, rect.width, rect.height, null);
 		}
 	}
 
-	private Insets deriveBorderInsets(Rectangle displayBounds) {
-		double sy = displayBounds.height / 272.0;
-		double sx = displayBounds.width / 384.0;
+	private Insets deriveBorderInsets(Dimension size) {
+		double sy = size.height / 272.0;
+		double sx = size.width / 384.0;
 		int top = (int) Math.floor(sy * 40.0);
 		int left = (int) Math.floor(sx * 32.0);
-		int bottom = displayBounds.height - top - (int) Math.round(sy * 200.0);
-		int right = displayBounds.width - left - (int) Math.round(sx * 320.0);
+		int bottom = size.height - top - (int) Math.ceil(sy * 200.0);
+		int right = size.width - left - (int) Math.ceil(sx * 320.0);
 		return new Insets(top, left, bottom, right);
+	}
+
+	private void updateDisplayCanvasBounds(Rectangle displayBounds, Insets borderInsets) {
+		int x = displayBounds.x + borderInsets.left;
+		int y = displayBounds.y + borderInsets.top;
+		int width = displayBounds.width - borderInsets.left - borderInsets.right;
+		int height = displayBounds.height - borderInsets.top - borderInsets.bottom;
+		getDisplayCanvas().updateBoundsOnDisplayComponent(new Rectangle(x, y, width, height));
 	}
 
 	private void renderBorder(Graphics2D display, Rectangle displayBounds, Insets borderInsets) {
@@ -79,20 +98,18 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 
 	private Graphics2D deriveDrawingSurface(Graphics2D display, Rectangle displayBounds, Insets borderInsets,
 			AmstradGraphicsContext graphicsContext) {
-		if (followPrimaryDisplaySourceResolution()
-				&& !isSamePrimaryDisplaySourceResolution(displayBounds, graphicsContext)) {
-			return deriveImageDrawingSurface(display, displayBounds, borderInsets, graphicsContext);
+		if (followPrimaryDisplaySourceResolution() && primaryDisplaySourceIsScaled(displayBounds, graphicsContext)) {
+			return deriveImageDrawingSurface(graphicsContext);
 		} else {
-			clearOffscreenImage();
+			releaseOffscreenImage();
 			return deriveDirectDrawingSurface(display, displayBounds, borderInsets, graphicsContext);
 		}
 	}
 
-	private Graphics2D deriveImageDrawingSurface(Graphics2D display, Rectangle displayBounds, Insets borderInsets,
-			AmstradGraphicsContext graphicsContext) {
-		Dimension targetResolution = graphicsContext.getDisplayCanvasResolution();
-		Dimension imageResolution = graphicsContext.getPrimaryDisplaySourceResolution();
-		BufferedImage image = deriveOffscreenImage(imageResolution);
+	private Graphics2D deriveImageDrawingSurface(AmstradGraphicsContext graphicsContext) {
+		Dimension targetResolution = graphicsContext.getDisplayCanvasSize();
+		Dimension imageResolution = deriveOffscreenImageResolution(graphicsContext);
+		BufferedImage image = provisionOffscreenImage(imageResolution);
 		Graphics2D drawingSurface = image.createGraphics();
 		double scaleX = imageResolution.getWidth() / targetResolution.getWidth();
 		double scaleY = imageResolution.getHeight() / targetResolution.getHeight();
@@ -100,45 +117,204 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 		return drawingSurface;
 	}
 
-	private BufferedImage deriveOffscreenImage(Dimension resolution) {
+	private Dimension deriveOffscreenImageResolution(AmstradGraphicsContext graphicsContext) {
+		Dimension primaryResolution = graphicsContext.getPrimaryDisplaySourceResolution();
+		Insets primaryInsets = deriveBorderInsets(primaryResolution);
+		int width = primaryResolution.width - primaryInsets.left - primaryInsets.right;
+		int height = primaryResolution.height - primaryInsets.top - primaryInsets.bottom;
+		return new Dimension(width, height);
+	}
+
+	private BufferedImage provisionOffscreenImage(Dimension resolution) {
 		BufferedImage image = getOffscreenImage();
 		if (image != null && image.getWidth() == resolution.width && image.getHeight() == resolution.height) {
 			return image;
 		} else {
+			// System.out.println("Create offscreen image with resolution: " + resolution);
 			image = new BufferedImage(resolution.width, resolution.height, BufferedImage.TYPE_INT_ARGB);
 			setOffscreenImage(image);
 			return image;
 		}
 	}
 
-	private void clearOffscreenImage() {
+	private void releaseOffscreenImage() {
 		setOffscreenImage(null);
 	}
 
 	private Graphics2D deriveDirectDrawingSurface(Graphics2D display, Rectangle displayBounds, Insets borderInsets,
 			AmstradGraphicsContext graphicsContext) {
-		Dimension targetResolution = graphicsContext.getDisplayCanvasResolution();
+		Dimension targetResolution = graphicsContext.getDisplayCanvasSize();
 		int paperWidth = displayBounds.width - borderInsets.left - borderInsets.right;
 		int paperHeight = displayBounds.height - borderInsets.top - borderInsets.bottom;
 		double scaleX = paperWidth / targetResolution.getWidth();
 		double scaleY = paperHeight / targetResolution.getHeight();
 		Graphics2D drawingSurface = (Graphics2D) display.create();
 		drawingSurface.scale(scaleX, scaleY);
-		drawingSurface.translate(borderInsets.left, borderInsets.top);
+		drawingSurface.translate(displayBounds.x + borderInsets.left, displayBounds.y + borderInsets.top);
 		return drawingSurface;
 	}
 
-	private boolean isSamePrimaryDisplaySourceResolution(Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
+	private boolean primaryDisplaySourceIsScaled(Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
 		Dimension primary = graphicsContext.getPrimaryDisplaySourceResolution();
-		return primary.width == displayBounds.width && primary.height == displayBounds.height;
+		return primary.width != displayBounds.width || primary.height != displayBounds.height;
 	}
 
+	/**
+	 * Returns whether this alternative display source follows the resolution of the primary display source
+	 * <p>
+	 * By default, this is the case, however subclasses may override this
+	 * </p>
+	 * 
+	 * @return <code>true</code> when this display source follows the primary display source's resolution
+	 */
 	protected boolean followPrimaryDisplaySourceResolution() {
-		return true; // subclasses may override this
+		// Subclasses may override this
+		return true;
 	}
 
 	protected abstract void renderContent(AmstradDisplayCanvas canvas);
 
+	protected Cursor getDefaultCursor() {
+		return getDisplayComponentCursor() != null ? getDisplayComponentCursor() : Cursor.getDefaultCursor();
+	}
+
+	protected void changeCursor(Cursor cursor) {
+		if (getDisplayComponent() != null) {
+			getDisplayComponent().setCursor(cursor);
+		}
+	}
+
+	@Override
+	public final void mousePressed(MouseEvent e) {
+		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPoint != null) {
+			mousePressedOnCanvas(canvasPoint);
+		}
+	}
+
+	@Override
+	public final void mouseReleased(MouseEvent e) {
+		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPoint != null) {
+			mouseReleasedOnCanvas(canvasPoint);
+		}
+	}
+
+	@Override
+	public final void mouseClicked(MouseEvent e) {
+		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPoint != null) {
+			mouseClickedOnCanvas(canvasPoint);
+		}
+	}
+
+	@Override
+	public synchronized final void mouseMoved(MouseEvent e) {
+		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPoint != null) {
+			if (!isMouseOnCanvas()) {
+				setMouseOnCanvas(true);
+				mouseEnteredCanvas(canvasPoint);
+			}
+			mouseMovedOnCanvas(canvasPoint);
+		} else {
+			if (isMouseOnCanvas()) {
+				setMouseOnCanvas(false);
+				mouseExitedCanvas();
+			}
+		}
+	}
+
+	@Override
+	public synchronized final void mouseDragged(MouseEvent e) {
+		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPoint != null) {
+			if (!isMouseOnCanvas()) {
+				setMouseOnCanvas(true);
+				mouseEnteredCanvas(canvasPoint);
+			}
+			mouseDraggedOnCanvas(canvasPoint);
+		} else {
+			if (isMouseOnCanvas()) {
+				setMouseOnCanvas(false);
+				mouseExitedCanvas();
+			}
+		}
+	}
+
+	@Override
+	public synchronized final void mouseEntered(MouseEvent e) {
+		if (!isMouseOnCanvas()) {
+			Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
+			if (canvasPoint != null) {
+				setMouseOnCanvas(true);
+				mouseEnteredCanvas(canvasPoint);
+			}
+		}
+	}
+
+	@Override
+	public synchronized final void mouseExited(MouseEvent e) {
+		if (isMouseOnCanvas()) {
+			setMouseOnCanvas(false);
+			mouseExitedCanvas();
+		}
+	}
+
+	protected void mousePressedOnCanvas(Point canvasPoint) {
+		// Subclasses may override this
+	}
+
+	protected void mouseReleasedOnCanvas(Point canvasPoint) {
+		// Subclasses may override this
+	}
+
+	protected void mouseClickedOnCanvas(Point canvasPoint) {
+		// Subclasses may override this
+	}
+
+	protected void mouseMovedOnCanvas(Point canvasPoint) {
+		// Subclasses may override this
+	}
+
+	protected void mouseDraggedOnCanvas(Point canvasPoint) {
+		// Subclasses may override this
+	}
+
+	protected void mouseEnteredCanvas(Point canvasPoint) {
+		// Subclasses may override this
+	}
+
+	protected void mouseExitedCanvas() {
+		// Subclasses may override this
+	}
+
+	private Point mapDisplayToCanvasCoordinates(Point displayPoint) {
+		Point canvasPoint = null;
+		AmstradEmulatedDisplayCanvas canvas = getDisplayCanvas();
+		if (canvas != null) {
+			Rectangle bounds = canvas.getBoundsOnDisplayComponent();
+			if (bounds != null) {
+				int x = (int) Math.round((displayPoint.x - bounds.x) / bounds.getWidth() * canvas.getWidth());
+				int y = (int) Math.round((displayPoint.y - bounds.y) / bounds.getHeight() * canvas.getHeight());
+				if (x >= 0 && x < canvas.getWidth() && y >= 0 && y < canvas.getHeight()) {
+					canvasPoint = new Point(x, canvas.getHeight() - 1 - y);
+				}
+			}
+		}
+		return canvasPoint;
+	}
+
+	/**
+	 * Closes this display source
+	 * <p>
+	 * The default behavior is to turn back to the primary display source. This display source will then get disposed
+	 * until it is swapped back in.
+	 * </p>
+	 * 
+	 * @see AmstradPc#resetDisplaySource()
+	 * @see AmstradPc#swapDisplaySource(AmstradAlternativeDisplaySource)
+	 */
 	public void close() {
 		getAmstradPc().resetDisplaySource(); // will invoke dispose()
 	}
@@ -148,27 +324,8 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 		displayComponent.removeMouseListener(this);
 		displayComponent.removeMouseMotionListener(this);
 		displayComponent.removeKeyListener(this);
-		clearOffscreenImage(); // release memory on garbage collection
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO convert to display canvas coordinates
-		// TODO let subclasses handle it
-		close(); // for testing only
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// System.out.println("typed '" + e.getKeyChar() + "'");
+		changeCursor(getDisplayComponentCursor());
+		releaseOffscreenImage();
 	}
 
 	protected AmstradPc getAmstradPc() {
@@ -191,9 +348,35 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 		this.offscreenImage = offscreenImage;
 	}
 
+	private JComponent getDisplayComponent() {
+		return displayComponent;
+	}
+
+	private void setDisplayComponent(JComponent displayComponent) {
+		this.displayComponent = displayComponent;
+	}
+
+	private Cursor getDisplayComponentCursor() {
+		return displayComponentCursor;
+	}
+
+	private void setDisplayComponentCursor(Cursor displayComponentCursor) {
+		this.displayComponentCursor = displayComponentCursor;
+	}
+
+	private boolean isMouseOnCanvas() {
+		return mouseOnCanvas;
+	}
+
+	private void setMouseOnCanvas(boolean mouseOnCanvas) {
+		this.mouseOnCanvas = mouseOnCanvas;
+	}
+
 	private static class AmstradEmulatedDisplayCanvas extends AmstradDisplayCanvas {
 
 		private Graphics2D drawingSurface;
+
+		private Rectangle boundsOnDisplayComponent;
 
 		public AmstradEmulatedDisplayCanvas(AmstradGraphicsContext graphicsContext) {
 			super(graphicsContext);
@@ -203,13 +386,17 @@ public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implemen
 			this.drawingSurface = drawingSurface;
 		}
 
-		public Graphics2D getDrawingSurface() {
-			return drawingSurface;
+		public void updateBoundsOnDisplayComponent(Rectangle bounds) {
+			this.boundsOnDisplayComponent = bounds;
+		}
+
+		public Rectangle getBoundsOnDisplayComponent() {
+			return boundsOnDisplayComponent;
 		}
 
 		@Override
 		protected Graphics2D getGraphics2D() {
-			return getDrawingSurface();
+			return drawingSurface;
 		}
 
 	}

@@ -12,12 +12,6 @@ public class AmstradSystemColors {
 
 	private static Map<AmstradMonitorMode, AmstradSystemColors> colorsByMonitorMode;
 
-	private static final int DEFAULT_BORDER_COLOR_INDEX = 1;
-
-	private static final int DEFAULT_PAPER_COLOR_INDEX = 1;
-
-	private static final int DEFAULT_PEN_COLOR_INDEX = 24;
-
 	private List<Color> colors;
 
 	static {
@@ -143,18 +137,6 @@ public class AmstradSystemColors {
 		colors.add(new Color(200, 200, 200)); // 25
 		colors.add(new Color(208, 208, 208)); // 26
 		return colors;
-	}
-
-	public Color getDefaultBorderColor() {
-		return getColor(DEFAULT_BORDER_COLOR_INDEX);
-	}
-
-	public Color getDefaultPaperColor() {
-		return getColor(DEFAULT_PAPER_COLOR_INDEX);
-	}
-
-	public Color getDefaultPenColor() {
-		return getColor(DEFAULT_PEN_COLOR_INDEX);
 	}
 
 	public int getNumberOfColors() {
