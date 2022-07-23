@@ -13,6 +13,8 @@ public interface AmstradGraphicsContext {
 
 	AmstradMonitorMode getMonitorMode();
 
+	Dimension getDisplayCanvasResolution();
+
 	Dimension getPrimaryDisplaySourceResolution();
 
 }

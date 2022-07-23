@@ -10,7 +10,7 @@ import org.maia.amstrad.pc.display.browser.ProgramBrowserDisplaySource;
 public class OpenProgramBrowserAction extends AmstradPcAction {
 
 	public OpenProgramBrowserAction(AmstradPc amstradPc) {
-		this(amstradPc, "Open program browser");
+		this(amstradPc, "Program browser");
 	}
 
 	public OpenProgramBrowserAction(AmstradPc amstradPc, String name) {

@@ -9,7 +9,7 @@ public interface SecondaryDisplaySource {
 
 	void init(JComponent displayComponent);
 
-	void renderOntoDisplay(Graphics2D g2, Rectangle displayBounds);
+	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds);
 
 	void dispose(JComponent displayComponent);
 

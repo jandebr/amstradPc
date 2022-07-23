@@ -9,7 +9,7 @@ public interface AmstradAlternativeDisplaySource {
 
 	void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext);
 
-	void renderOntoDisplay(Graphics2D g2, Rectangle displayBounds, AmstradGraphicsContext graphicsContext);
+	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext);
 
 	void dispose(JComponent displayComponent);
 

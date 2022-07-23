@@ -56,11 +56,16 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private static final int SNAPSHOT_HEADER_SIZE = 256; // in bytes
 
+	private static final int DISPLAY_CANVAS_WIDTH = 640;
+
+	private static final int DISPLAY_CANVAS_HEIGHT = 400;
+
 	public JemuAmstradPc() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
 		this.basicRuntime = new JemuBasicRuntimeImpl();
-		this.graphicsContext = new AmstradGraphicsContextImpl();
+		this.graphicsContext = new AmstradGraphicsContextImpl(
+				new Dimension(DISPLAY_CANVAS_WIDTH, DISPLAY_CANVAS_HEIGHT));
 	}
 
 	@Override
@@ -128,11 +133,14 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkNoInstanceRunning();
 		checkNotStarted();
 		checkNotTerminated();
-		getJemuInstance().init();
-		getJemuInstance().start();
-		getJemuInstance().addAutotypeListener(this);
-		getJemuInstance().addPauseListener(this);
-		getJemuInstance().getDisplay().addPrimaryDisplaySourceListener(this);
+		JEMU jemu = getJemuInstance();
+		jemu.init();
+		jemu.start();
+		jemu.addAutotypeListener(this);
+		jemu.addPauseListener(this);
+		jemu.getDisplay().addPrimaryDisplaySourceListener(this);
+		getGraphicsContext().setPrimaryDisplaySourceResolution(
+				new Dimension(jemu.getDisplay().getWidth(), jemu.getDisplay().getHeight()));
 		getFrameBridge().pack();
 		setStarted(true);
 		setInstanceRunning(true);
@@ -250,10 +258,16 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public synchronized void swapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
 		checkStarted();
 		checkNotTerminated();
-		getJemuInstance().getDisplay().setSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
-		// TODO
-		Switches.lightGun = true;
-		getJemuInstance().getDisplay().setCursor();
+		if (displaySource != null) {
+			getJemuInstance().getDisplay().setSecondaryDisplaySource(
+					new JemuSecondaryDisplaySourceBridge(displaySource));
+			Switches.blockKeyboard = true;
+			// TODO
+			Switches.lightGun = true;
+			getJemuInstance().getDisplay().setCursor();
+		} else {
+			resetDisplaySource();
+		}
 	}
 
 	@Override
@@ -261,6 +275,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkStarted();
 		checkNotTerminated();
 		getJemuInstance().getDisplay().removeSecondaryDisplaySource();
+		Switches.blockKeyboard = false;
 		// TODO
 		Switches.lightGun = false;
 		getJemuInstance().getDisplay().setCursor();
@@ -443,14 +458,22 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private class AmstradGraphicsContextImpl implements AmstradGraphicsContext {
 
+		private Dimension displayCanvasResolution;
+
 		private Dimension primaryDisplaySourceResolution;
 
-		public AmstradGraphicsContextImpl() {
+		private Font systemFont;
+
+		public AmstradGraphicsContextImpl(Dimension displayCanvasResolution) {
+			this.displayCanvasResolution = displayCanvasResolution;
 		}
 
 		@Override
 		public Font getSystemFont() {
-			return getJemuInstance().getDisplay().getDisplayFont();
+			if (systemFont == null) {
+				systemFont = getJemuInstance().getDisplay().getDisplayFont().deriveFont(16f);
+			}
+			return systemFont;
 		}
 
 		@Override
@@ -461,6 +484,11 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		@Override
 		public AmstradMonitorMode getMonitorMode() {
 			return JemuAmstradPc.this.getMonitorMode();
+		}
+
+		@Override
+		public Dimension getDisplayCanvasResolution() {
+			return displayCanvasResolution;
 		}
 
 		@Override
@@ -643,8 +671,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g2, Rectangle displayBounds) {
-			getSource().renderOntoDisplay(g2, displayBounds, getGraphicsContext());
+		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds) {
+			getSource().renderOntoDisplay(display, displayBounds, getGraphicsContext());
 		}
 
 		@Override

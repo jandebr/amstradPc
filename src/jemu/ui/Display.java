@@ -224,7 +224,8 @@ public class Display extends JComponent {
 		}
 		int[] pixelsc = new int[16 * 16];
 		imagec = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, pixelsc, 0, 16));
-		blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(imagec, new Point(0, 0), "invisibleCursor");
+		blankCursor = Cursor.getDefaultCursor();// Toolkit.getDefaultToolkit().createCustomCursor(imagec, new Point(0,
+												// 0), "invisibleCursor");
 		gunCursor = Toolkit.getDefaultToolkit().createCustomCursor(lightGun, new Point(16, 16), "invisibleCursor");
 		setCursor(blankCursor);
 		enableEvents(AWTEvent.FOCUS_EVENT_MASK);
