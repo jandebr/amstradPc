@@ -17,6 +17,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+@SuppressWarnings("unchecked")
 public class samp2cdt {
 
     public String[] Info = {
@@ -88,7 +89,7 @@ public class samp2cdt {
         "/slock4"       //31 Use 'Speedlock V4' loader algorithm
 
     };
-    protected final JComboBox switches = new JComboBox(Switches);
+	protected final JComboBox switches = new JComboBox(Switches);
     protected final JComboBox switchesA = new JComboBox(Switches);
     protected final JComboBox switchesB = new JComboBox(Switches);
     protected final JComboBox switchesC = new JComboBox(Switches);

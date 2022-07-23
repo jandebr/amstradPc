@@ -14,6 +14,7 @@ import java.util.*;
  * @version 1.0
  */
 
+@SuppressWarnings("unchecked")
 public class Util {
 
   /**
@@ -489,7 +490,7 @@ public class Util {
    * @param items The source array
    * @return A Vector containing the input items
    */
-  public static Vector arrayToVector(Object[] items) {
+public static Vector arrayToVector(Object[] items) {
     Vector result = new Vector(items.length);
     for (int i = 0; i < items.length; i++)
       result.addElement(items[i]);

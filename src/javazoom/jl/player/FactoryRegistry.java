@@ -56,6 +56,7 @@ public class FactoryRegistry extends AudioDeviceFactory
 	 * Registers an <code>AudioDeviceFactory</code> instance
 	 * with this registry. 
 	 */
+	@SuppressWarnings("unchecked")
 	public void addFactory(AudioDeviceFactory factory)
 	{	
 		factories.put(factory.getClass(), factory);						  

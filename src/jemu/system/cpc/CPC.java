@@ -346,6 +346,7 @@ public class CPC extends Computer {
 		setBasePath("cpc");
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initCPCType(String name) {
 		CPCname = name;
 		// check for MAXAM assembler
@@ -839,13 +840,13 @@ public class CPC extends Computer {
 		if ((value & 0x020) == 0x020) {
 			Display.tape = 4;
 			tapesound = 0xda;
-			psg.digiblast = true;
+			AY_3_8910.digiblast = true;
 
 		} else {
 			tapesound = 0x26;
 		}
-		psg.blasterA = tapesound;
-		psg.blasterB = tapesound;
+		AY_3_8910.blasterA = tapesound;
+		AY_3_8910.blasterB = tapesound;
 	}
 
 	public void TapeRelayCheck(int value) {
@@ -938,28 +939,28 @@ public class CPC extends Computer {
 						if (Switches.FloppySound) {
 
 							if (Switches.turbo == 1) {
-								psg.digicount = 10;
+								AY_3_8910.digicount = 10;
 								if (psg.readRegister(7) != 0x3f
 										&& (psg.readRegister(8) != 0 || psg.readRegister(9) != 0 || psg
 												.readRegister(10) != 0))
-									psg.digiblast = false;
+									AY_3_8910.digiblast = false;
 								else
-									psg.digiblast = true;
-								psg.blasterA = tapesound;
-								psg.blasterB = tapesoundb;
+									AY_3_8910.digiblast = true;
+								AY_3_8910.blasterA = tapesound;
+								AY_3_8910.blasterB = tapesoundb;
 							} else {
 								turbocount++;
 								if (turbocount == 20) {
 									turbocount = 0;
-									psg.digicount = 1;
+									AY_3_8910.digicount = 1;
 									if (psg.readRegister(7) != 0x3f
 											&& (psg.readRegister(8) != 0 || psg.readRegister(9) != 0 || psg
 													.readRegister(10) != 0))
-										psg.digiblast = false;
+										AY_3_8910.digiblast = false;
 									else
-										psg.digiblast = true;
-									psg.blasterA = tapesound;
-									psg.blasterB = tapesound;
+										AY_3_8910.digiblast = true;
+									AY_3_8910.blasterA = tapesound;
+									AY_3_8910.blasterB = tapesound;
 									TapeDrive.WAVBYTE = tapesound;
 								}
 							}
@@ -1590,10 +1591,10 @@ public class CPC extends Computer {
 				if (z80.getPC() < 0x02800 || z80.getPC() > 0x03000)
 					TapeRecbyte = (byte) 0x80;
 				if ((value & 0x020) == 0x20) {
-					psg.digicount = 1;
+					AY_3_8910.digicount = 1;
 					number = recordcount;
 				}
-				if (psg.digicount >= 1 && relay)
+				if (AY_3_8910.digicount >= 1 && relay)
 					TapeSound(TapeRecbyte);
 				if ((((value ^ previousPortValue) & 0x010) != 0) || ((value & 0x10) == 0x10))
 					TapeRelayCheck(value);
@@ -3048,7 +3049,7 @@ public class CPC extends Computer {
 		if (Switches.scores) {
 			Switches.scores = false;
 			// getScores();
-			getScores.getDW3Scores();
+			GetScores.getDW3Scores();
 		}
 		if (Switches.poke) {
 			Switches.poke = false;
@@ -3133,19 +3134,19 @@ public class CPC extends Computer {
 
 	public void launchDigitracker() {
 
-		Digitracker.Digitracker();
+		Digitracker.Digitrackerc1();
 		runBinary(0x5d73);
 		// AutoType("call &5d37\n");
 		blastercount = 1;
 	}
 
 	public void launchDigitrackerMC() {
-		digitrakmc.digitrakmc();
+		digitrakmc.digitrakmccode0();
 		runBinary(0x6080);
 	}
 
 	public void launchDigitrackerPG() {
-		digitrakpg.digitrakpg();
+		digitrakpg.digitrakpgcode0();
 		runBinary(0x5c80);
 	}
 
@@ -3155,7 +3156,7 @@ public class CPC extends Computer {
 	}
 
 	public void launchCheat() {
-		Devil.Devil();
+		Devil.DevilCode0();
 		runBinary(0x9000);
 	}
 

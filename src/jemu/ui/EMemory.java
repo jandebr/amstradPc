@@ -2,9 +2,11 @@ package jemu.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import jemu.core.*;
 import jemu.core.device.*;
 import jemu.core.device.memory.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -139,7 +141,8 @@ public class EMemory extends JComponent implements TimerListener {
   }
 
   //@Override
-  public Dimension getPreferredSize() {
+  @SuppressWarnings("deprecation")
+public Dimension getPreferredSize() {
     FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(getFont());
     return new Dimension(fm.charWidth('0') * (66 + addressDigits),
       fm.getHeight() * (mem == null ? 0x1000 : mem.getAddressSize() >> 4));

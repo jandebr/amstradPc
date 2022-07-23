@@ -12,11 +12,11 @@ public class AmstradSystemColors {
 
 	private static Map<AmstradMonitorMode, AmstradSystemColors> colorsByMonitorMode;
 
-	private static final int DEFAULT_BORDER_INK_INDEX = 1;
+	private static final int DEFAULT_BORDER_COLOR_INDEX = 1;
 
-	private static final int DEFAULT_PAPER_INK_INDEX = 1;
+	private static final int DEFAULT_PAPER_COLOR_INDEX = 1;
 
-	private static final int DEFAULT_PEN_INK_INDEX = 24;
+	private static final int DEFAULT_PEN_COLOR_INDEX = 24;
 
 	private List<Color> colors;
 
@@ -145,24 +145,24 @@ public class AmstradSystemColors {
 		return colors;
 	}
 
-	public Color getDefaultBorderInk() {
-		return getInk(DEFAULT_BORDER_INK_INDEX);
+	public Color getDefaultBorderColor() {
+		return getColor(DEFAULT_BORDER_COLOR_INDEX);
 	}
 
-	public Color getDefaultPaperInk() {
-		return getInk(DEFAULT_PAPER_INK_INDEX);
+	public Color getDefaultPaperColor() {
+		return getColor(DEFAULT_PAPER_COLOR_INDEX);
 	}
 
-	public Color getDefaultPenInk() {
-		return getInk(DEFAULT_PEN_INK_INDEX);
+	public Color getDefaultPenColor() {
+		return getColor(DEFAULT_PEN_COLOR_INDEX);
 	}
 
-	public int getNumberOfInks() {
+	public int getNumberOfColors() {
 		return getColors().size();
 	}
 
-	public Color getInk(int index) {
-		return getColors().get(index);
+	public Color getColor(int colorIndex) {
+		return getColors().get(colorIndex);
 	}
 
 	private List<Color> getColors() {

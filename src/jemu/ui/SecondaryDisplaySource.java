@@ -11,6 +11,6 @@ public interface SecondaryDisplaySource {
 
 	void renderOntoDisplay(Graphics2D g2, Rectangle displayBounds);
 
-	void dispose();
+	void dispose(JComponent displayComponent);
 
 }

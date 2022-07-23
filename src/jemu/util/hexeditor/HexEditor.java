@@ -15,7 +15,9 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.*;
 import java.text.NumberFormat;
+
 import javax.swing.*;
+
 import java.awt.event.*;
 
 public class HexEditor
@@ -87,7 +89,8 @@ public class HexEditor
     static JScrollBar textScroll;
     static ActionListener userActions;
 
-    public HexEditor()
+    @SuppressWarnings("unchecked")
+	public HexEditor()
     { 
         clipString = null;
         dumpWidth = 16;

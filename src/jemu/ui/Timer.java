@@ -46,7 +46,8 @@ public class Timer extends Component implements Runnable {
     enableEvents(ComponentEvent.COMPONENT_EVENT_MASK);
   }
 
-  public synchronized void post(UserEvent event) {
+  @SuppressWarnings("unchecked")
+public synchronized void post(UserEvent event) {
     events.addElement(event);
     setVisible(!isVisible());
   }
@@ -56,6 +57,7 @@ public class Timer extends Component implements Runnable {
    *
    * @param counter The Counter to be added
    */
+  @SuppressWarnings("unchecked")
   protected static void addCounter(Counter counter) {
     synchronized(timer) {
       timer.counters.addElement(counter);

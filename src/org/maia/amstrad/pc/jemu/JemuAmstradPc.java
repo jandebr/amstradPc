@@ -247,7 +247,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public synchronized void changeDisplaySource(AmstradAlternativeDisplaySource displaySource) {
+	public synchronized void swapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
 		checkStarted();
 		checkNotTerminated();
 		getJemuInstance().getDisplay().setSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
@@ -648,8 +648,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 
 		@Override
-		public void dispose() {
-			getSource().dispose();
+		public void dispose(JComponent displayComponent) {
+			getSource().dispose(displayComponent);
 		}
 
 		private AmstradAlternativeDisplaySource getSource() {

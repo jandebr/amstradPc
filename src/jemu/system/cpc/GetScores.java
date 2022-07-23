@@ -11,7 +11,7 @@ import javax.swing.*;
  *
  * @author Markus
  */
-public class getScores {
+public class GetScores {
   public static CPCMemory    memory   = CPC.memory;
   public static JFrame dummy = new JFrame();
 

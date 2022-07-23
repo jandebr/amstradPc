@@ -14,12 +14,16 @@ package jemu.system.cpc;
 */
 
 import jemu.ui.Switches;
+
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
+
 import jemu.settings.*;
 
+@SuppressWarnings("unchecked")
 public class RomSetter implements ActionListener{
 
  protected GridBagConstraints Constraints   = null;

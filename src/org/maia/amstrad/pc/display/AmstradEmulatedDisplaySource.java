@@ -4,26 +4,34 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.JComponent;
 
-public abstract class AbstractDisplaySource implements AmstradAlternativeDisplaySource {
+import org.maia.amstrad.pc.AmstradPc;
 
-	protected AbstractDisplaySource() {
+public abstract class AmstradEmulatedDisplaySource extends MouseAdapter implements AmstradAlternativeDisplaySource {
+
+	private AmstradPc amstradPc;
+
+	protected AmstradEmulatedDisplaySource(AmstradPc amstradPc) {
+		this.amstradPc = amstradPc;
 	}
 
 	@Override
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
+		displayComponent.addMouseListener(this);
+		displayComponent.addMouseMotionListener(this);
 	}
 
 	@Override
 	public void renderOntoDisplay(Graphics2D g2, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
 		Insets borderInsets = getBorderInsets(displayBounds);
 		AmstradSystemColors colors = graphicsContext.getSystemColors();
-		renderBorder(g2, displayBounds, borderInsets, colors.getDefaultBorderInk());
-		renderPaper(g2, displayBounds, borderInsets, colors.getDefaultPaperInk());
+		renderBorder(g2, displayBounds, borderInsets, colors.getDefaultBorderColor());
+		renderPaper(g2, displayBounds, borderInsets, colors.getDefaultPaperColor());
 		Graphics2D g2cs = toAmstradGraphicsCoordinateSystem(g2, displayBounds, borderInsets);
-		g2cs.setColor(colors.getDefaultPenInk());
+		g2cs.setColor(colors.getDefaultPenColor());
 		g2cs.setFont(graphicsContext.getSystemFont().deriveFont(16f));
 		renderContent(g2cs, graphicsContext);
 		g2cs.dispose();
@@ -73,8 +81,18 @@ public abstract class AbstractDisplaySource implements AmstradAlternativeDisplay
 		return g2cs;
 	}
 
+	public void close() {
+		getAmstradPc().resetDisplaySource(); // will invoke dispose()
+	}
+
 	@Override
-	public void dispose() {
+	public void dispose(JComponent displayComponent) {
+		displayComponent.removeMouseListener(this);
+		displayComponent.removeMouseMotionListener(this);
+	}
+
+	protected AmstradPc getAmstradPc() {
+		return amstradPc;
 	}
 
 }

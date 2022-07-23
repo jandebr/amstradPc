@@ -11,6 +11,6 @@ public interface AmstradAlternativeDisplaySource {
 
 	void renderOntoDisplay(Graphics2D g2, Rectangle displayBounds, AmstradGraphicsContext graphicsContext);
 
-	void dispose();
+	void dispose(JComponent displayComponent);
 
 }

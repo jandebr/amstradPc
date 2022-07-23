@@ -12,6 +12,7 @@ package jemu.core.samples;
 
 import java.io.*;
 import java.net.URL;
+
 import javax.sound.sampled.*;
 
 
@@ -89,7 +90,7 @@ public enum Samples {
          if (clip.isRunning())
             clip.stop();   // Stop the player if it is still running
          clip.setFramePosition(0); // rewind to the beginning
-         clip.loop(clip.LOOP_CONTINUOUSLY);     // Start playing
+         clip.loop(Clip.LOOP_CONTINUOUSLY);     // Start playing
       }
    }
    
@@ -97,7 +98,7 @@ public enum Samples {
       if (volume != Volume.MUTE) {
          if (!clip.isRunning()){
          clip.setFramePosition(0); // rewind to the beginning
-         clip.loop(clip.LOOP_CONTINUOUSLY);     // Start playing
+         clip.loop(Clip.LOOP_CONTINUOUSLY);     // Start playing
       }
       }
    }

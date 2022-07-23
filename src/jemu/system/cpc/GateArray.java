@@ -769,7 +769,7 @@ public int getRAMBank(){
       return cpc.PEEK(address);
   }
   public void POKE(int address, int value){
-      cpc.POKE(address, value);
+      CPC.POKE(address, value);
   }
 
 }

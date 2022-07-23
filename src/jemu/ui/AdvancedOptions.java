@@ -15,12 +15,14 @@ package jemu.ui;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
 import jemu.settings.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import jemu.core.Util;
 
+import jemu.core.Util;
 
 import javax.swing.JSlider;
 import javax.swing.event.*;
@@ -184,7 +186,8 @@ public class AdvancedOptions implements ActionListener{
     this.Constraints.fill = fill;
     return this.Constraints;
   }
-   public void init(){
+   @SuppressWarnings("unchecked")
+public void init(){
     try {
         group.add(CPCE95Out);
         group.add(VSoftOut);

@@ -76,7 +76,7 @@ public abstract class AmstradPc {
 
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
 
-	public abstract void changeDisplaySource(AmstradAlternativeDisplaySource displaySource);
+	public abstract void swapDisplaySource(AmstradAlternativeDisplaySource displaySource);
 
 	public abstract void resetDisplaySource();
 

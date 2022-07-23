@@ -2,6 +2,7 @@ package jemu.core.device.keyboard;
 
 import java.awt.event.*;
 import java.util.*;
+
 import jemu.core.*;
 import jemu.core.device.*;
 
@@ -55,7 +56,8 @@ public class MatrixKeyboard extends Device {
 
   protected void keyChanged(int col, int row, int oldValue, int newValue) { }
 
-  public void addKeyMapping(int key, int col, int row) {
+  @SuppressWarnings("unchecked")
+public void addKeyMapping(int key, int col, int row) {
     KeyMapping mapping = (KeyMapping)mappings.get(new Integer(key));
     if (mapping == null) {
       mapping = new KeyMapping();
@@ -63,7 +65,9 @@ public class MatrixKeyboard extends Device {
     }
     mapping.addMapping(col,row);
   }
-  public void addKeyMapping(String key, int col, int row) {
+  
+  @SuppressWarnings("unchecked")
+public void addKeyMapping(String key, int col, int row) {
     KeyMapping mapping = (KeyMapping)mappings.get(new Integer(key));
     if (mapping == null) {
       mapping = new KeyMapping();

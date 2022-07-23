@@ -245,7 +245,7 @@ public class Display extends JComponent {
 
 	public void removeSecondaryDisplaySource() {
 		if (secondaryDisplaySource != null) {
-			secondaryDisplaySource.dispose();
+			secondaryDisplaySource.dispose(this);
 			secondaryDisplaySource = null;
 		}
 	}

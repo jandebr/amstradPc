@@ -17,13 +17,13 @@ import javax.swing.KeyStroke;
 import jemu.settings.Settings;
 
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
-import org.maia.amstrad.pc.menu.AlternativeDisplaySourceAction;
 import org.maia.amstrad.pc.menu.AutoTypeFileAction;
 import org.maia.amstrad.pc.menu.FullscreenAction;
 import org.maia.amstrad.pc.menu.LoadBasicBinaryFileAction;
 import org.maia.amstrad.pc.menu.LoadBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.LoadSnapshotFileAction;
 import org.maia.amstrad.pc.menu.MonitorModeAction;
+import org.maia.amstrad.pc.menu.OpenProgramBrowserAction;
 import org.maia.amstrad.pc.menu.PauseResumeAction;
 import org.maia.amstrad.pc.menu.QuitAction;
 import org.maia.amstrad.pc.menu.RebootAction;
@@ -72,6 +72,8 @@ public class AmstradFactory {
 
 	private JMenu createFileMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("File");
+		menu.add(new JMenuItem(new OpenProgramBrowserAction(amstradPc)));
+		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new LoadBasicSourceFileAction(amstradPc)));
 		menu.add(new JMenuItem(new LoadBasicBinaryFileAction(amstradPc)));
 		menu.add(new JMenuItem(new LoadSnapshotFileAction(amstradPc)));
@@ -133,10 +135,6 @@ public class AmstradFactory {
 		// Always on top
 		checkItem = new JCheckBoxMenuItem(new WindowAlwaysOnTopAction(amstradPc));
 		checkItem.setState(Settings.getBoolean(Settings.ONTOP, false));
-		menu.add(checkItem);
-		// Alternative display
-		checkItem = new JCheckBoxMenuItem(new AlternativeDisplaySourceAction(amstradPc));
-		checkItem.setState(false);
 		menu.add(checkItem);
 		// Fullscreen
 		menu.add(new JSeparator());

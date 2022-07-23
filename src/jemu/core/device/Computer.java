@@ -123,6 +123,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	// Listeners for autotype
 	private List<ComputerAutotypeListener> autotypeListeners;
 
+	@SuppressWarnings("unchecked")
 	public static Computer createComputer(Applet applet, String name) throws Exception {
 		for (int index = 0; index < COMPUTERS.length; index++) {
 			if (COMPUTERS[index].key.equalsIgnoreCase(name)) {
@@ -158,6 +159,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		return addDevice(device, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Device addDevice(Device device, String name) {
 		if (name != null)
 			device.setName(name);
@@ -238,6 +240,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			JarInputStream str = new JarInputStream(result);
 			str.getNextEntry();
 			result = str;
+			str.close();
 		}
 		if (name.toLowerCase().endsWith(".snz") || name.toLowerCase().endsWith(".taz")
 				|| name.toLowerCase().endsWith(".dsz") || name.toLowerCase().endsWith(".szk")) {
@@ -248,6 +251,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void checkZip(String name) throws Exception {
 		InputStream result;
 
@@ -562,6 +566,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addActionListener(ActionListener listener) {
 		listeners.addElement(listener);
 	}
