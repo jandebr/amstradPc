@@ -239,39 +239,39 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	@Override
 	public final void mousePressed(MouseEvent e) {
-		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPoint != null) {
-			mousePressedOnCanvas(getDisplayCanvas(), canvasPoint);
+		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPosition != null) {
+			mousePressedOnCanvas(getDisplayCanvas(), canvasPosition);
 		}
 	}
 
 	@Override
 	public final void mouseReleased(MouseEvent e) {
-		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPoint != null) {
-			mouseReleasedOnCanvas(getDisplayCanvas(), canvasPoint);
+		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPosition != null) {
+			mouseReleasedOnCanvas(getDisplayCanvas(), canvasPosition);
 		}
 	}
 
 	@Override
 	public final void mouseClicked(MouseEvent e) {
-		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPoint != null) {
-			mouseClickedOnCanvas(getDisplayCanvas(), canvasPoint);
+		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPosition != null) {
+			mouseClickedOnCanvas(getDisplayCanvas(), canvasPosition);
 		}
 	}
 
 	@Override
 	public synchronized final void mouseMoved(MouseEvent e) {
-		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPoint != null) {
+		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPosition != null) {
 			if (!isMouseOnCanvas()) {
-				setMousePositionOnCanvas(canvasPoint);
-				mouseEnteredCanvas(getDisplayCanvas(), canvasPoint);
+				setMousePositionOnCanvas(canvasPosition);
+				mouseEnteredCanvas(getDisplayCanvas(), canvasPosition);
 			} else {
-				getMousePositionOnCanvas().setLocation(canvasPoint);
+				getMousePositionOnCanvas().setLocation(canvasPosition);
 			}
-			mouseMovedOnCanvas(getDisplayCanvas(), canvasPoint);
+			mouseMovedOnCanvas(getDisplayCanvas(), canvasPosition);
 		} else {
 			if (isMouseOnCanvas()) {
 				setMousePositionOnCanvas(null);
@@ -282,15 +282,15 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	@Override
 	public synchronized final void mouseDragged(MouseEvent e) {
-		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPoint != null) {
+		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
+		if (canvasPosition != null) {
 			if (!isMouseOnCanvas()) {
-				setMousePositionOnCanvas(canvasPoint);
-				mouseEnteredCanvas(getDisplayCanvas(), canvasPoint);
+				setMousePositionOnCanvas(canvasPosition);
+				mouseEnteredCanvas(getDisplayCanvas(), canvasPosition);
 			} else {
-				getMousePositionOnCanvas().setLocation(canvasPoint);
+				getMousePositionOnCanvas().setLocation(canvasPosition);
 			}
-			mouseDraggedOnCanvas(getDisplayCanvas(), canvasPoint);
+			mouseDraggedOnCanvas(getDisplayCanvas(), canvasPosition);
 		} else {
 			if (isMouseOnCanvas()) {
 				setMousePositionOnCanvas(null);
@@ -302,10 +302,10 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	@Override
 	public synchronized final void mouseEntered(MouseEvent e) {
 		if (!isMouseOnCanvas()) {
-			Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
-			if (canvasPoint != null) {
-				setMousePositionOnCanvas(canvasPoint);
-				mouseEnteredCanvas(getDisplayCanvas(), canvasPoint);
+			Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
+			if (canvasPosition != null) {
+				setMousePositionOnCanvas(canvasPosition);
+				mouseEnteredCanvas(getDisplayCanvas(), canvasPosition);
 			}
 		}
 	}
@@ -318,27 +318,27 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		}
 	}
 
-	protected void mousePressedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
+	protected void mousePressedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		// Subclasses may override this
 	}
 
-	protected void mouseReleasedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
+	protected void mouseReleasedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		// Subclasses may override this
 	}
 
-	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
+	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		// Subclasses may override this
 	}
 
-	protected void mouseMovedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
+	protected void mouseMovedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		// Subclasses may override this
 	}
 
-	protected void mouseDraggedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
+	protected void mouseDraggedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		// Subclasses may override this
 	}
 
-	protected void mouseEnteredCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
+	protected void mouseEnteredCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		// Subclasses may override this
 	}
 
@@ -358,20 +358,20 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 				&& p.y >= canvasBounds.y - canvasBounds.height + 1 && p.y <= canvasBounds.y;
 	}
 
-	private Point mapDisplayToCanvasCoordinates(Point displayPoint) {
-		Point canvasPoint = null;
+	private Point mapDisplayToCanvasCoordinates(Point displayPosition) {
+		Point canvasPosition = null;
 		AmstradEmulatedDisplayCanvas canvas = getDisplayCanvas();
 		if (canvas != null) {
 			Rectangle bounds = canvas.getBoundsOnDisplayComponent();
 			if (bounds != null) {
-				int x = (int) Math.round((displayPoint.x - bounds.x) / bounds.getWidth() * canvas.getWidth());
-				int y = (int) Math.round((displayPoint.y - bounds.y) / bounds.getHeight() * canvas.getHeight());
+				int x = (int) Math.round((displayPosition.x - bounds.x) / bounds.getWidth() * canvas.getWidth());
+				int y = (int) Math.round((displayPosition.y - bounds.y) / bounds.getHeight() * canvas.getHeight());
 				if (x >= 0 && x < canvas.getWidth() && y >= 0 && y < canvas.getHeight()) {
-					canvasPoint = new Point(x, canvas.getHeight() - 1 - y);
+					canvasPosition = new Point(x, canvas.getHeight() - 1 - y);
 				}
 			}
 		}
-		return canvasPoint;
+		return canvasPosition;
 	}
 
 	protected AmstradPc getAmstradPc() {

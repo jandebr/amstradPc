@@ -58,8 +58,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	@Override
-	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
-		super.mouseClickedOnCanvas(canvas, canvasPoint);
+	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
+		super.mouseClickedOnCanvas(canvas, canvasPosition);
 		if (isMouseOverCloseButton(canvas)) {
 			close();
 		}
