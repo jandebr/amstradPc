@@ -66,11 +66,8 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	public AmstradDisplayCanvas cls() {
-		Graphics2D g2 = getGraphics2D();
-		g2.setColor(getPaperColor());
-		g2.fillRect(0, 0, getWidth(), getHeight());
 		resetTextPosition();
-		return this;
+		return clearRect(0, getHeight() - 1, getWidth(), getHeight());
 	}
 
 	public AmstradDisplayCanvas origin() {
@@ -122,15 +119,23 @@ public abstract class AmstradDisplayCanvas {
 		return plot(p.x + rx, p.y + ry);
 	}
 
-	public AmstradDisplayCanvas clearRect(int xLower, int yLower, int width, int height) {
-		return fillRect(xLower, yLower, width, height, getPaperColorIndex());
+	public AmstradDisplayCanvas clearRect(Rectangle rect) {
+		return clearRect(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public AmstradDisplayCanvas fillRect(int xLower, int yLower, int width, int height, int colorIndex) {
-		int x1 = projectX(xLower);
-		int y1 = projectY(yLower);
-		int x2 = projectX(xLower + width - 1);
-		int y2 = projectY(yLower - height + 1);
+	public AmstradDisplayCanvas clearRect(int xLeft, int yTop, int width, int height) {
+		return fillRect(xLeft, yTop, width, height, getPaperColorIndex());
+	}
+
+	public AmstradDisplayCanvas fillRect(Rectangle rect, int colorIndex) {
+		return fillRect(rect.x, rect.y, rect.width, rect.height, colorIndex);
+	}
+
+	public AmstradDisplayCanvas fillRect(int xLeft, int yTop, int width, int height, int colorIndex) {
+		int x1 = projectX(xLeft);
+		int y1 = projectY(yTop);
+		int x2 = projectX(xLeft + width - 1);
+		int y2 = projectY(yTop - height + 1);
 		Graphics2D g2 = getGraphics2D();
 		g2.setColor(getSystemColor(colorIndex));
 		g2.fillRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1);
@@ -142,16 +147,17 @@ public abstract class AmstradDisplayCanvas {
 		return this;
 	}
 
-	public AmstradDisplayCanvas symbol(int code, byte... values) {
-		// TODO
+	public AmstradDisplayCanvas symbol(int code, int... values) {
+		getAsciiSymbolRenderer().customizeSymbol(code, values);
 		return this;
 	}
 
-	public AmstradDisplayCanvas locate(int x, int y) {
-		if (x < 1 || x > getGraphicsContext().getTextColumns() || y < 1 || y > getGraphicsContext().getTextRows()) {
-			throw new IndexOutOfBoundsException("Location out of bounds: " + x + "," + y);
+	public AmstradDisplayCanvas locate(int cursorX, int cursorY) {
+		if (cursorX < 1 || cursorX > getGraphicsContext().getTextColumns() || cursorY < 1
+				|| cursorY > getGraphicsContext().getTextRows()) {
+			throw new IndexOutOfBoundsException("Location out of bounds: " + cursorX + "," + cursorY);
 		}
-		getTextPosition().setLocation(x, y);
+		getTextPosition().setLocation(cursorX, cursorY);
 		return this;
 	}
 
@@ -218,23 +224,33 @@ public abstract class AmstradDisplayCanvas {
 	protected abstract Graphics2D getGraphics2D();
 
 	protected int projectX(int x) {
-		// Subclasses may override this to apply additional transformations
+		// Subclasses may override this method to apply additional transformations
 		return getGraphicsOrigin().x + x;
 	}
 
 	protected int projectY(int y) {
-		// Subclasses may override this to apply additional transformations
+		// Subclasses may override this method to apply additional transformations
 		return getGraphicsOrigin().y + y;
 	}
 
-	protected abstract Rectangle getTextCursorBoundsOnGraphics2D(int xCursor, int yCursor);
+	protected abstract Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY);
 
-	protected Rectangle getTextCursorBoundsOnCanvas(int xCursor, int yCursor) {
+	public Rectangle getTextCursorBoundsOnCanvas(int cursorX, int cursorY) {
 		int charWidth = getWidth() / getGraphicsContext().getTextColumns();
 		int charHeight = getHeight() / getGraphicsContext().getTextRows();
-		int xLeft = (xCursor - 1) * charWidth;
-		int yTop = getHeight() - 1 - (yCursor - 1) * charHeight;
+		int xLeft = (cursorX - 1) * charWidth;
+		int yTop = getHeight() - 1 - (cursorY - 1) * charHeight;
 		return new Rectangle(xLeft, yTop, charWidth, charHeight);
+	}
+
+	public Rectangle getTextAreaBoundsOnCanvas(int textAreaX1, int textAreaY1, int textAreaX2, int textAreaY2) {
+		Rectangle r1 = getTextCursorBoundsOnCanvas(textAreaX1, textAreaY1);
+		Rectangle r2 = getTextCursorBoundsOnCanvas(textAreaX2, textAreaY2);
+		int xLeft = Math.min(r1.x, r2.x);
+		int xRight = Math.max(r1.x + r1.width - 1, r2.x + r2.width - 1);
+		int yTop = Math.max(r1.y, r2.y);
+		int yBottom = Math.min(r1.y - r1.height + 1, r2.y - r2.height + 1);
+		return new Rectangle(xLeft, yTop, Math.abs(xRight - xLeft) + 1, Math.abs(yTop - yBottom) + 1);
 	}
 
 	public Color getBorderColor() {
@@ -336,6 +352,36 @@ public abstract class AmstradDisplayCanvas {
 						}
 					}
 				}
+			}
+		}
+
+		public void customizeSymbol(int code, int... values) {
+			if (code >= 32 && code <= 255) {
+				int chartX0 = 8 * ((code - 32) % 40);
+				int chartY0 = 8 * ((code - 32) / 40);
+				BufferedImage chart = getSymbolChart();
+				Graphics2D g2 = chart.createGraphics();
+				g2.setBackground(Color.BLACK);
+				g2.setColor(Color.WHITE);
+				g2.clearRect(chartX0, chartY0, 8, 8);
+				for (int i = 0; i < Math.min(values.length, 8); i++) {
+					int chartY = chartY0 + i;
+					int value = values[i];
+					if (value > 0 && value <= 255) {
+						int j = 0;
+						int bit = 128;
+						while (value > 0 && j < 8) {
+							if (value >= bit) {
+								value -= bit;
+								int chartX = chartX0 + j;
+								g2.drawLine(chartX, chartY, chartX, chartY);
+							}
+							bit /= 2;
+							j++;
+						}
+					}
+				}
+				g2.dispose();
 			}
 		}
 

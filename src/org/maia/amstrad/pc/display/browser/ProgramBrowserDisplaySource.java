@@ -10,13 +10,16 @@ import org.maia.amstrad.pc.display.AmstradEmulatedDisplaySource;
 
 public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
+	private boolean mouseOverButton;
+
 	public ProgramBrowserDisplaySource(AmstradPc amstradPc) {
 		super(amstradPc);
 	}
 
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
-		canvas.border(0).paper(1);
+		canvas.border(4).paper(0);
+		canvas.symbol(255, 0, 192, 51, 12, 192, 51, 12, 0);
 	}
 
 	@Override
@@ -25,26 +28,41 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	@Override
 	protected void renderContent(AmstradDisplayCanvas canvas) {
-		canvas.pen(26).move(0, 399).draw(639, 0);
-		canvas.pen(15).move(0, 0).draw(639, 399);
+		setMouseOverButton(false);
+		canvas.pen(11).move(0, 399).draw(639, 0);
+		canvas.pen(23).move(0, 0).draw(639, 399);
 		canvas.pen(24).locate(1, 1).print("Ready ");
-		canvas.pen(20).print("Steady ");
-		canvas.pen(25).print("GO");
+		canvas.pen(15).print("Steady ");
+		canvas.pen(6).print("GO");
 		canvas.pen(26).locate(1, 2);
 		for (int i = 0; i < 15; i++)
-			canvas.printchr(206);
-		canvas.pen(24).locate(1, 9).print("Ready").locate(1, 10).print((char) 143);
+			canvas.printchr(255);
+		canvas.pen(24).locate(1, 9).print("Ready").locate(1, 10).printchr(143);
+		renderCloseButton(canvas);
+		updateCursor();
+	}
+
+	private void renderCloseButton(AmstradDisplayCanvas canvas) {
+		if (isMouseOverCloseButton(canvas)) {
+			setMouseOverButton(true);
+			canvas.pen(26);
+		} else {
+			canvas.pen(13);
+		}
+		canvas.locate(35, 1).print("Close").printchr(203);
 	}
 
 	@Override
-	protected Cursor getDefaultCursor() {
-		return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+	protected boolean followPrimaryDisplaySourceResolution() {
+		return true;
 	}
 
 	@Override
-	protected void mouseClickedOnCanvas(Point canvasPoint) {
-		super.mouseClickedOnCanvas(canvasPoint);
-		System.out.println("Mouse clicked at " + canvasPoint.x + "," + canvasPoint.y);
+	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
+		super.mouseClickedOnCanvas(canvas, canvasPoint);
+		if (isMouseOverCloseButton(canvas)) {
+			close();
+		}
 	}
 
 	@Override
@@ -53,6 +71,26 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			close();
 		}
+	}
+
+	private void updateCursor() {
+		if (isMouseOverButton()) {
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		} else {
+			resetCursor();
+		}
+	}
+
+	private boolean isMouseOverCloseButton(AmstradDisplayCanvas canvas) {
+		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(35, 1, 40, 1));
+	}
+
+	private boolean isMouseOverButton() {
+		return mouseOverButton;
+	}
+
+	private void setMouseOverButton(boolean mouseOverButton) {
+		this.mouseOverButton = mouseOverButton;
 	}
 
 }

@@ -27,7 +27,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	private JComponent displayComponent;
 
-	private Cursor displayComponentCursor;
+	private Cursor displayComponentInitialCursor;
 
 	private Point mousePositionOnCanvas;
 
@@ -35,12 +35,26 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		this.amstradPc = amstradPc;
 	}
 
+	/**
+	 * Closes this display source
+	 * <p>
+	 * The default behavior is to turn back to the primary display source. This display source will then get disposed
+	 * until it is swapped back in.
+	 * </p>
+	 * 
+	 * @see AmstradPc#resetDisplaySource()
+	 * @see AmstradPc#swapDisplaySource(AmstradAlternativeDisplaySource)
+	 */
+	public void close() {
+		getAmstradPc().resetDisplaySource(); // will invoke dispose()
+	}
+
 	@Override
 	public final void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		setDisplayCanvas(new AmstradEmulatedDisplayCanvas(graphicsContext));
 		setDisplayComponent(displayComponent);
-		setDisplayComponentCursor(displayComponent.getCursor());
-		changeCursor(getDefaultCursor());
+		setDisplayComponentInitialCursor(displayComponent.getCursor());
+		resetCursor();
 		displayComponent.addMouseListener(this);
 		displayComponent.addMouseMotionListener(this);
 		displayComponent.addKeyListener(this);
@@ -53,7 +67,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		displayComponent.removeMouseListener(this);
 		displayComponent.removeMouseMotionListener(this);
 		displayComponent.removeKeyListener(this);
-		changeCursor(getDisplayComponentCursor());
+		setCursor(getDisplayComponentInitialCursor());
 		releaseOffscreenImage();
 	}
 
@@ -162,9 +176,9 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		int paperHeight = displayBounds.height - borderInsets.top - borderInsets.bottom;
 		double scaleX = paperWidth / targetResolution.getWidth();
 		double scaleY = paperHeight / targetResolution.getHeight();
-		Graphics2D drawingSurface = (Graphics2D) display.create();
+		Graphics2D drawingSurface = (Graphics2D) display.create(displayBounds.x + borderInsets.left, displayBounds.y
+				+ borderInsets.top, paperWidth, paperHeight);
 		drawingSurface.scale(scaleX, scaleY);
-		drawingSurface.translate(displayBounds.x + borderInsets.left, displayBounds.y + borderInsets.top);
 		return drawingSurface;
 	}
 
@@ -174,9 +188,17 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	}
 
 	/**
-	 * Returns whether this alternative display source follows the resolution of the primary display source
+	 * Tells whether to follow the resolution of the primary display source
 	 * <p>
-	 * By default, this is the case, however subclasses may override this
+	 * When <code>true</code> (the default), the resolution of this alternative display source matches the exact
+	 * resolution of the <code>AmstradPc</code>'s primary display source
+	 * </p>
+	 * <p>
+	 * When <code>false</code>, the resolution of this alternative display source matches the display window native
+	 * resolution, which may be higher and therefore leading to a more accurate and sharper presentation
+	 * </p>
+	 * <p>
+	 * Subclasses may override this method to choose the desired resolution
 	 * </p>
 	 * 
 	 * @return <code>true</code> when this display source follows the primary display source's resolution
@@ -193,12 +215,25 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	protected abstract void renderContent(AmstradDisplayCanvas canvas);
 
 	protected Cursor getDefaultCursor() {
-		return getDisplayComponentCursor() != null ? getDisplayComponentCursor() : Cursor.getDefaultCursor();
+		// Subclasses may override this
+		if (getDisplayComponentInitialCursor() != null) {
+			return getDisplayComponentInitialCursor();
+		} else {
+			return Cursor.getDefaultCursor();
+		}
 	}
 
-	protected void changeCursor(Cursor cursor) {
+	protected void resetCursor() {
+		setCursor(getDefaultCursor());
+	}
+
+	protected void setCursor(Cursor cursor) {
 		if (getDisplayComponent() != null) {
-			getDisplayComponent().setCursor(cursor);
+			if (cursor == null)
+				cursor = getDefaultCursor();
+			if (cursor != getDisplayComponent().getCursor()) {
+				getDisplayComponent().setCursor(cursor);
+			}
 		}
 	}
 
@@ -206,7 +241,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	public final void mousePressed(MouseEvent e) {
 		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
 		if (canvasPoint != null) {
-			mousePressedOnCanvas(canvasPoint);
+			mousePressedOnCanvas(getDisplayCanvas(), canvasPoint);
 		}
 	}
 
@@ -214,7 +249,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	public final void mouseReleased(MouseEvent e) {
 		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
 		if (canvasPoint != null) {
-			mouseReleasedOnCanvas(canvasPoint);
+			mouseReleasedOnCanvas(getDisplayCanvas(), canvasPoint);
 		}
 	}
 
@@ -222,7 +257,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	public final void mouseClicked(MouseEvent e) {
 		Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
 		if (canvasPoint != null) {
-			mouseClickedOnCanvas(canvasPoint);
+			mouseClickedOnCanvas(getDisplayCanvas(), canvasPoint);
 		}
 	}
 
@@ -232,15 +267,15 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		if (canvasPoint != null) {
 			if (!isMouseOnCanvas()) {
 				setMousePositionOnCanvas(canvasPoint);
-				mouseEnteredCanvas(canvasPoint);
+				mouseEnteredCanvas(getDisplayCanvas(), canvasPoint);
 			} else {
 				getMousePositionOnCanvas().setLocation(canvasPoint);
 			}
-			mouseMovedOnCanvas(canvasPoint);
+			mouseMovedOnCanvas(getDisplayCanvas(), canvasPoint);
 		} else {
 			if (isMouseOnCanvas()) {
 				setMousePositionOnCanvas(null);
-				mouseExitedCanvas();
+				mouseExitedCanvas(getDisplayCanvas());
 			}
 		}
 	}
@@ -251,15 +286,15 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		if (canvasPoint != null) {
 			if (!isMouseOnCanvas()) {
 				setMousePositionOnCanvas(canvasPoint);
-				mouseEnteredCanvas(canvasPoint);
+				mouseEnteredCanvas(getDisplayCanvas(), canvasPoint);
 			} else {
 				getMousePositionOnCanvas().setLocation(canvasPoint);
 			}
-			mouseDraggedOnCanvas(canvasPoint);
+			mouseDraggedOnCanvas(getDisplayCanvas(), canvasPoint);
 		} else {
 			if (isMouseOnCanvas()) {
 				setMousePositionOnCanvas(null);
-				mouseExitedCanvas();
+				mouseExitedCanvas(getDisplayCanvas());
 			}
 		}
 	}
@@ -270,7 +305,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 			Point canvasPoint = mapDisplayToCanvasCoordinates(e.getPoint());
 			if (canvasPoint != null) {
 				setMousePositionOnCanvas(canvasPoint);
-				mouseEnteredCanvas(canvasPoint);
+				mouseEnteredCanvas(getDisplayCanvas(), canvasPoint);
 			}
 		}
 	}
@@ -279,36 +314,48 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	public synchronized final void mouseExited(MouseEvent e) {
 		if (isMouseOnCanvas()) {
 			setMousePositionOnCanvas(null);
-			mouseExitedCanvas();
+			mouseExitedCanvas(getDisplayCanvas());
 		}
 	}
 
-	protected void mousePressedOnCanvas(Point canvasPoint) {
+	protected void mousePressedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
 		// Subclasses may override this
 	}
 
-	protected void mouseReleasedOnCanvas(Point canvasPoint) {
+	protected void mouseReleasedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
 		// Subclasses may override this
 	}
 
-	protected void mouseClickedOnCanvas(Point canvasPoint) {
+	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
 		// Subclasses may override this
 	}
 
-	protected void mouseMovedOnCanvas(Point canvasPoint) {
+	protected void mouseMovedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
 		// Subclasses may override this
 	}
 
-	protected void mouseDraggedOnCanvas(Point canvasPoint) {
+	protected void mouseDraggedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
 		// Subclasses may override this
 	}
 
-	protected void mouseEnteredCanvas(Point canvasPoint) {
+	protected void mouseEnteredCanvas(AmstradDisplayCanvas canvas, Point canvasPoint) {
 		// Subclasses may override this
 	}
 
-	protected void mouseExitedCanvas() {
+	protected void mouseExitedCanvas(AmstradDisplayCanvas canvas) {
 		// Subclasses may override this
+	}
+
+	protected boolean isMouseOnCanvas() {
+		return getMousePositionOnCanvas() != null;
+	}
+
+	protected boolean isMouseInCanvasBounds(Rectangle canvasBounds) {
+		if (!isMouseOnCanvas())
+			return false;
+		Point p = getMousePositionOnCanvas();
+		return p.x >= canvasBounds.x && p.x <= canvasBounds.x + canvasBounds.width - 1
+				&& p.y >= canvasBounds.y - canvasBounds.height + 1 && p.y <= canvasBounds.y;
 	}
 
 	private Point mapDisplayToCanvasCoordinates(Point displayPoint) {
@@ -325,20 +372,6 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 			}
 		}
 		return canvasPoint;
-	}
-
-	/**
-	 * Closes this display source
-	 * <p>
-	 * The default behavior is to turn back to the primary display source. This display source will then get disposed
-	 * until it is swapped back in.
-	 * </p>
-	 * 
-	 * @see AmstradPc#resetDisplaySource()
-	 * @see AmstradPc#swapDisplaySource(AmstradAlternativeDisplaySource)
-	 */
-	public void close() {
-		getAmstradPc().resetDisplaySource(); // will invoke dispose()
 	}
 
 	protected AmstradPc getAmstradPc() {
@@ -369,12 +402,12 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		this.displayComponent = displayComponent;
 	}
 
-	private Cursor getDisplayComponentCursor() {
-		return displayComponentCursor;
+	private Cursor getDisplayComponentInitialCursor() {
+		return displayComponentInitialCursor;
 	}
 
-	private void setDisplayComponentCursor(Cursor displayComponentCursor) {
-		this.displayComponentCursor = displayComponentCursor;
+	private void setDisplayComponentInitialCursor(Cursor cursor) {
+		this.displayComponentInitialCursor = cursor;
 	}
 
 	protected Point getMousePositionOnCanvas() {
@@ -383,10 +416,6 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	private void setMousePositionOnCanvas(Point mousePositionOnCanvas) {
 		this.mousePositionOnCanvas = mousePositionOnCanvas;
-	}
-
-	protected boolean isMouseOnCanvas() {
-		return getMousePositionOnCanvas() != null;
 	}
 
 	private static class AmstradEmulatedDisplayCanvas extends AmstradDisplayCanvas {
@@ -422,11 +451,11 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		}
 
 		@Override
-		protected Rectangle getTextCursorBoundsOnGraphics2D(int xCursor, int yCursor) {
+		protected Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY) {
 			int charWidth = getWidth() / getGraphicsContext().getTextColumns();
 			int charHeight = getHeight() / getGraphicsContext().getTextRows();
-			int xLeft = (xCursor - 1) * charWidth;
-			int yTop = (yCursor - 1) * charHeight;
+			int xLeft = (cursorX - 1) * charWidth;
+			int yTop = (cursorY - 1) * charHeight;
 			return new Rectangle(xLeft, yTop, charWidth, charHeight);
 		}
 
