@@ -22,8 +22,11 @@ import org.maia.amstrad.pc.menu.FullscreenAction;
 import org.maia.amstrad.pc.menu.LoadBasicBinaryFileAction;
 import org.maia.amstrad.pc.menu.LoadBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.LoadSnapshotFileAction;
+import org.maia.amstrad.pc.menu.MonitorBilinearEffectAction;
+import org.maia.amstrad.pc.menu.MonitorEffectAction;
 import org.maia.amstrad.pc.menu.MonitorModeAction;
-import org.maia.amstrad.pc.menu.OpenProgramBrowserAction;
+import org.maia.amstrad.pc.menu.MonitorScanLinesEffectAction;
+import org.maia.amstrad.pc.menu.ProgramBrowserAction;
 import org.maia.amstrad.pc.menu.PauseResumeAction;
 import org.maia.amstrad.pc.menu.QuitAction;
 import org.maia.amstrad.pc.menu.RebootAction;
@@ -60,7 +63,7 @@ public class AmstradFactory {
 		return new JemuAmstradPc();
 	}
 
-	public JMenuBar createSimpleMenuBar(AmstradPc amstradPc) {
+	public JMenuBar createMenuBar(AmstradPc amstradPc) {
 		JMenuBar menubar = new JMenuBar();
 		menubar.add(createFileMenu(amstradPc));
 		menubar.add(createEmulatorMenu(amstradPc));
@@ -72,7 +75,7 @@ public class AmstradFactory {
 
 	private JMenu createFileMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("File");
-		menu.add(new JMenuItem(new OpenProgramBrowserAction(amstradPc)));
+		menu.add(new JMenuItem(new ProgramBrowserAction(amstradPc)));
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new LoadBasicSourceFileAction(amstradPc)));
 		menu.add(new JMenuItem(new LoadBasicBinaryFileAction(amstradPc)));
@@ -104,6 +107,7 @@ public class AmstradFactory {
 
 	private JMenu createMonitorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Monitor");
+		// Color modes
 		JRadioButtonMenuItem monitor1 = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.COLOR,
 				amstradPc, "Color monitor"));
 		JRadioButtonMenuItem monitor2 = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GREEN,
@@ -123,6 +127,17 @@ public class AmstradFactory {
 			if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode))
 				button.setSelected(true);
 		}
+		// Effects
+		menu.add(new JSeparator());
+		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new MonitorEffectAction(amstradPc));
+		checkItem.setState(Settings.getBoolean(Settings.SCANEFFECT, true));
+		menu.add(checkItem);
+		checkItem = new JCheckBoxMenuItem(new MonitorScanLinesEffectAction(amstradPc));
+		checkItem.setState(Settings.getBoolean(Settings.SCANLINES, false));
+		menu.add(checkItem);
+		checkItem = new JCheckBoxMenuItem(new MonitorBilinearEffectAction(amstradPc));
+		checkItem.setState(Settings.getBoolean(Settings.BILINEAR, true));
+		menu.add(checkItem);
 		return menu;
 	}
 

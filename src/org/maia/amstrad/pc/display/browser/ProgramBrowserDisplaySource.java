@@ -15,8 +15,16 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	@Override
-	protected void renderContent(AmstradDisplayCanvas canvas) {
+	protected void init(AmstradDisplayCanvas canvas) {
 		canvas.border(0).paper(1);
+	}
+
+	@Override
+	protected void dispose() {
+	}
+
+	@Override
+	protected void renderContent(AmstradDisplayCanvas canvas) {
 		canvas.pen(26).move(0, 399).draw(639, 0);
 		canvas.pen(15).move(0, 0).draw(639, 399);
 		canvas.pen(24).locate(1, 1).print("Ready ");
@@ -24,7 +32,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		canvas.pen(25).print("GO");
 		canvas.pen(26).locate(1, 2);
 		for (int i = 0; i < 15; i++)
-			canvas.print((char) 206);
+			canvas.printchr(206);
 		canvas.pen(24).locate(1, 9).print("Ready").locate(1, 10).print((char) 143);
 	}
 
@@ -35,11 +43,13 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	@Override
 	protected void mouseClickedOnCanvas(Point canvasPoint) {
+		super.mouseClickedOnCanvas(canvasPoint);
 		System.out.println("Mouse clicked at " + canvasPoint.x + "," + canvasPoint.y);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		super.keyReleased(e);
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			close();
 		}

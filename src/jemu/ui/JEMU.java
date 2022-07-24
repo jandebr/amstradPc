@@ -1614,6 +1614,28 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+			ctrl = true;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+			shift = true;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_ALT) {
+			alt = true;
+		}
+		if (executable) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER && (alt)) {
+				alt = false;
+				FullSize();
+				return;
+			}
+			/*
+			 * if (e.getKeyCode() == KeyEvent.VK_F1 && (alt)) { alt = false; setSimpleSized(); return; } if
+			 * (e.getKeyCode() == KeyEvent.VK_F2 && (alt)) { alt = false; setDoubleSized(true); return; } if
+			 * (e.getKeyCode() == KeyEvent.VK_F3 && (alt)) { alt = false; setTripleSized(true); return; } if
+			 * (e.getKeyCode() == KeyEvent.VK_F12 && (alt)) { alt = false; setFullSized(true); return; }
+			 */
+		}
 		if (!Switches.blockKeyboard) {
 			//
 			// ** locale settings **
@@ -1686,16 +1708,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
 			}
 			// spanish mapping end
-
-			if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
-				ctrl = true;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-				shift = true;
-			}
-			if (e.getKeyCode() == KeyEvent.VK_ALT) {
-				alt = true;
-			}
 
 			if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
 				for (int i = 0; i < 4; i++) {
@@ -1870,19 +1882,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				}
 			}
 
-			if (executable) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER && (alt)) {
-					alt = false;
-					FullSize();
-					return;
-				}
-				/*
-				 * if (e.getKeyCode() == KeyEvent.VK_F1 && (alt)) { alt = false; setSimpleSized(); return; } if
-				 * (e.getKeyCode() == KeyEvent.VK_F2 && (alt)) { alt = false; setDoubleSized(true); return; } if
-				 * (e.getKeyCode() == KeyEvent.VK_F3 && (alt)) { alt = false; setTripleSized(true); return; } if
-				 * (e.getKeyCode() == KeyEvent.VK_F12 && (alt)) { alt = false; setFullSized(true); return; }
-				 */
-			}
 			computer.processKeyEvent(e);
 		}
 	}

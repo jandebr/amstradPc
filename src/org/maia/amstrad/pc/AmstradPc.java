@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
-import org.maia.amstrad.pc.display.AmstradGraphicsContext;
 
 public abstract class AmstradPc {
 
@@ -67,6 +66,12 @@ public abstract class AmstradPc {
 	}
 
 	public abstract void setMonitorMode(AmstradMonitorMode mode);
+
+	public abstract void setMonitorEffect(boolean monitorEffect);
+
+	public abstract void setMonitorScanLinesEffect(boolean scanLinesEffect);
+
+	public abstract void setMonitorBilinearEffect(boolean bilinearEffect);
 
 	public abstract boolean isFullscreen();
 
@@ -131,6 +136,11 @@ public abstract class AmstradPc {
 	protected void fireTerminatedEvent() {
 		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcTerminated(this);
+	}
+
+	protected void fireDisplaySourceChangedEvent(AmstradAlternativeDisplaySource alternativeDisplaySource) {
+		for (AmstradPcStateListener listener : getStateListeners())
+			listener.amstradPcDisplaySourceChanged(this, alternativeDisplaySource);
 	}
 
 	protected List<AmstradPcStateListener> getStateListeners() {

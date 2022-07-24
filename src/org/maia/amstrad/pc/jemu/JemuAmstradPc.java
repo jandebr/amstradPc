@@ -218,6 +218,27 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
+	public void setMonitorEffect(boolean monitorEffect) {
+		checkNotTerminated();
+		Settings.setBoolean(Settings.SCANEFFECT, monitorEffect);
+		Display.scaneffect = monitorEffect;
+	}
+
+	@Override
+	public void setMonitorScanLinesEffect(boolean scanLinesEffect) {
+		checkNotTerminated();
+		Settings.setBoolean(Settings.SCANLINES, scanLinesEffect);
+		Switches.ScanLines = scanLinesEffect;
+	}
+
+	@Override
+	public void setMonitorBilinearEffect(boolean bilinearEffect) {
+		checkNotTerminated();
+		Settings.setBoolean(Settings.BILINEAR, bilinearEffect);
+		Switches.bilinear = bilinearEffect;
+	}
+
+	@Override
 	public boolean isFullscreen() {
 		return JEMU.fullscreen;
 	}
@@ -257,6 +278,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			getJemuInstance().getDisplay().setSecondaryDisplaySource(
 					new JemuSecondaryDisplaySourceBridge(displaySource));
 			Switches.blockKeyboard = true;
+			fireDisplaySourceChangedEvent(displaySource);
 		} else {
 			resetDisplaySource();
 		}
@@ -268,6 +290,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkNotTerminated();
 		getJemuInstance().getDisplay().removeSecondaryDisplaySource();
 		Switches.blockKeyboard = false;
+		fireDisplaySourceChangedEvent(null);
 	}
 
 	private void waitUntilReady() {
