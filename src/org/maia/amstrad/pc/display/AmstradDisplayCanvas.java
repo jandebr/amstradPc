@@ -127,11 +127,15 @@ public abstract class AmstradDisplayCanvas {
 		return fillRect(xLeft, yTop, width, height, getPaperColorIndex());
 	}
 
-	public AmstradDisplayCanvas fillRect(Rectangle rect, int colorIndex) {
-		return fillRect(rect.x, rect.y, rect.width, rect.height, colorIndex);
+	public AmstradDisplayCanvas fillRect(Rectangle rect) {
+		return fillRect(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public AmstradDisplayCanvas fillRect(int xLeft, int yTop, int width, int height, int colorIndex) {
+	public AmstradDisplayCanvas fillRect(int xLeft, int yTop, int width, int height) {
+		return fillRect(xLeft, yTop, width, height, getPenColorIndex());
+	}
+
+	private AmstradDisplayCanvas fillRect(int xLeft, int yTop, int width, int height, int colorIndex) {
 		int x1 = projectX(xLeft);
 		int y1 = projectY(yTop);
 		int x2 = projectX(xLeft + width - 1);

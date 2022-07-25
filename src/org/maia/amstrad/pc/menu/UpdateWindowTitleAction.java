@@ -2,7 +2,6 @@ package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 
 import jemu.settings.Settings;
@@ -17,10 +16,6 @@ public class UpdateWindowTitleAction extends AmstradPcAction {
 
 	public UpdateWindowTitleAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
-	}
-
-	public UpdateWindowTitleAction(AmstradPc amstradPc, String name, Icon icon) {
-		super(amstradPc, name, icon);
 	}
 
 	@Override

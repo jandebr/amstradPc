@@ -18,16 +18,16 @@ import jemu.settings.Settings;
 
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
 import org.maia.amstrad.pc.menu.AutoTypeFileAction;
-import org.maia.amstrad.pc.menu.FullscreenAction;
 import org.maia.amstrad.pc.menu.LoadBasicBinaryFileAction;
 import org.maia.amstrad.pc.menu.LoadBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.LoadSnapshotFileAction;
 import org.maia.amstrad.pc.menu.MonitorBilinearEffectAction;
 import org.maia.amstrad.pc.menu.MonitorEffectAction;
+import org.maia.amstrad.pc.menu.MonitorFullscreenAction;
 import org.maia.amstrad.pc.menu.MonitorModeAction;
 import org.maia.amstrad.pc.menu.MonitorScanLinesEffectAction;
-import org.maia.amstrad.pc.menu.ProgramBrowserAction;
 import org.maia.amstrad.pc.menu.PauseResumeAction;
+import org.maia.amstrad.pc.menu.ProgramBrowserAction;
 import org.maia.amstrad.pc.menu.QuitAction;
 import org.maia.amstrad.pc.menu.RebootAction;
 import org.maia.amstrad.pc.menu.SaveBasicBinaryFileAction;
@@ -107,26 +107,8 @@ public class AmstradFactory {
 
 	private JMenu createMonitorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Monitor");
-		// Color modes
-		JRadioButtonMenuItem monitor1 = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.COLOR,
-				amstradPc, "Color monitor"));
-		JRadioButtonMenuItem monitor2 = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GREEN,
-				amstradPc, "Green monitor"));
-		JRadioButtonMenuItem monitor3 = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GRAY,
-				amstradPc, "Gray monitor"));
-		menu.add(monitor1);
-		menu.add(monitor2);
-		menu.add(monitor3);
-		ButtonGroup monitorGroup = new ButtonGroup();
-		monitorGroup.add(monitor1);
-		monitorGroup.add(monitor2);
-		monitorGroup.add(monitor3);
-		AmstradMonitorMode monitorMode = amstradPc.getMonitorMode();
-		for (Enumeration<AbstractButton> en = monitorGroup.getElements(); en.hasMoreElements();) {
-			AbstractButton button = en.nextElement();
-			if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode))
-				button.setSelected(true);
-		}
+		// Monitor modes
+		MonitorModeMenuHelper.addModesToMenu(menu, amstradPc);
 		// Effects
 		menu.add(new JSeparator());
 		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new MonitorEffectAction(amstradPc));
@@ -153,7 +135,7 @@ public class AmstradFactory {
 		menu.add(checkItem);
 		// Fullscreen
 		menu.add(new JSeparator());
-		JMenuItem item = new JMenuItem(new FullscreenAction(amstradPc));
+		JMenuItem item = new JMenuItem(new MonitorFullscreenAction(amstradPc));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK));
 		menu.add(item);
 		return menu;
@@ -170,6 +152,54 @@ public class AmstradFactory {
 		if (instance == null) {
 			instance = factory;
 		}
+	}
+
+	private static class MonitorModeMenuHelper extends AmstradPcMonitorAdapter {
+
+		private ButtonGroup buttonGroup;
+
+		private MonitorModeMenuHelper(ButtonGroup buttonGroup) {
+			this.buttonGroup = buttonGroup;
+		}
+
+		public static void addModesToMenu(JMenu menu, AmstradPc amstradPc) {
+			JRadioButtonMenuItem colorMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.COLOR,
+					amstradPc, "Color monitor"));
+			JRadioButtonMenuItem greenMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GREEN,
+					amstradPc, "Green monitor"));
+			JRadioButtonMenuItem grayMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GRAY,
+					amstradPc, "Gray monitor"));
+			menu.add(colorMode);
+			menu.add(greenMode);
+			menu.add(grayMode);
+			ButtonGroup buttonGroup = new ButtonGroup();
+			buttonGroup.add(colorMode);
+			buttonGroup.add(greenMode);
+			buttonGroup.add(grayMode);
+			MonitorModeMenuHelper helper = new MonitorModeMenuHelper(buttonGroup);
+			helper.syncMenu(amstradPc);
+			amstradPc.addMonitorListener(helper);
+		}
+
+		@Override
+		public void amstradPcMonitorModeChanged(AmstradPc amstradPc) {
+			syncMenu(amstradPc);
+		}
+
+		private void syncMenu(AmstradPc amstradPc) {
+			AmstradMonitorMode monitorMode = amstradPc.getMonitorMode();
+			for (Enumeration<AbstractButton> en = getButtonGroup().getElements(); en.hasMoreElements();) {
+				AbstractButton button = en.nextElement();
+				if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode)) {
+					button.setSelected(true);
+				}
+			}
+		}
+
+		private ButtonGroup getButtonGroup() {
+			return buttonGroup;
+		}
+
 	}
 
 }

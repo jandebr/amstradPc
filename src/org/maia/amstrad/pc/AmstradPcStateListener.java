@@ -14,6 +14,4 @@ public interface AmstradPcStateListener {
 
 	void amstradPcTerminated(AmstradPc amstradPc);
 
-	void amstradPcDisplaySourceChanged(AmstradPc amstradPc, AmstradAlternativeDisplaySource alternativeDisplaySource);
-
 }

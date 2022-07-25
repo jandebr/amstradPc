@@ -12,11 +12,7 @@ public abstract class AmstradPcAction extends AbstractAction {
 	private AmstradPc amstradPc;
 
 	protected AmstradPcAction(AmstradPc amstradPc, String name) {
-		this(amstradPc, name, null);
-	}
-
-	protected AmstradPcAction(AmstradPc amstradPc, String name, Icon icon) {
-		super(name, icon);
+		super(name);
 		this.amstradPc = amstradPc;
 	}
 

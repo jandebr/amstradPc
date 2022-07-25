@@ -6,8 +6,6 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
-
 public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
 
 	private AmstradPc amstradPc;
@@ -66,11 +64,6 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		if (!isClosing()) {
 			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 		}
-	}
-
-	@Override
-	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc,
-			AmstradAlternativeDisplaySource alternativeDisplaySource) {
 	}
 
 	@Override

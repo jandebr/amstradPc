@@ -234,20 +234,20 @@ public class Display extends JComponent {
 		setDoubleBuffered(true);
 	}
 
-	public void setSecondaryDisplaySource(SecondaryDisplaySource displaySource) {
-		if (secondaryDisplaySource != null) {
-			removeSecondaryDisplaySource();
+	public void installSecondaryDisplaySource(SecondaryDisplaySource displaySource) {
+		if (getSecondaryDisplaySource() != null) {
+			uninstallSecondaryDisplaySource();
 		}
 		if (displaySource != null) {
-			secondaryDisplaySource = displaySource;
-			secondaryDisplaySource.init(this);
+			setSecondaryDisplaySource(displaySource);
+			displaySource.init(this);
 		}
 	}
 
-	public void removeSecondaryDisplaySource() {
-		if (secondaryDisplaySource != null) {
-			secondaryDisplaySource.dispose(this);
-			secondaryDisplaySource = null;
+	public void uninstallSecondaryDisplaySource() {
+		if (getSecondaryDisplaySource() != null) {
+			getSecondaryDisplaySource().dispose(this);
+			setSecondaryDisplaySource(null);
 		}
 	}
 
@@ -363,7 +363,7 @@ public class Display extends JComponent {
 	public void updateImage(boolean wait) {
 		painted = false;
 		if (imageRect.width != 0 && imageRect.height != 0 && isShowing()) {
-			if (secondaryDisplaySource == null) {
+			if (getSecondaryDisplaySource() == null) {
 				raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
 			}
 			repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
@@ -778,8 +778,8 @@ public class Display extends JComponent {
 	}
 
 	private void paintDisplayImage(Graphics g) {
-		if (secondaryDisplaySource != null) {
-			secondaryDisplaySource.renderOntoDisplay((Graphics2D) g, imageRect);
+		if (getSecondaryDisplaySource() != null) {
+			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
 		} else {
 			if (sourceRect != null) {
 				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y
@@ -984,6 +984,14 @@ public class Display extends JComponent {
 		} else {
 			// System.out.println("Display Lost Focus");
 		}
+	}
+
+	public SecondaryDisplaySource getSecondaryDisplaySource() {
+		return secondaryDisplaySource;
+	}
+
+	private void setSecondaryDisplaySource(SecondaryDisplaySource displaySource) {
+		secondaryDisplaySource = displaySource;
 	}
 
 	public void addPrimaryDisplaySourceListener(PrimaryDisplaySourceListener listener) {

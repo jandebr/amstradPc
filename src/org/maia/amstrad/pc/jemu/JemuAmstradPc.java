@@ -208,12 +208,15 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	@Override
 	public void setMonitorMode(AmstradMonitorMode mode) {
 		checkNotTerminated();
-		if (AmstradMonitorMode.COLOR.equals(mode)) {
-			getJemuInstance().changeMonitorModeToColour();
-		} else if (AmstradMonitorMode.GREEN.equals(mode)) {
-			getJemuInstance().changeMonitorModeToGreen();
-		} else if (AmstradMonitorMode.GRAY.equals(mode)) {
-			getJemuInstance().changeMonitorModeToGray();
+		if (mode != null && !mode.equals(getMonitorMode())) {
+			if (AmstradMonitorMode.COLOR.equals(mode)) {
+				getJemuInstance().changeMonitorModeToColour();
+			} else if (AmstradMonitorMode.GREEN.equals(mode)) {
+				getJemuInstance().changeMonitorModeToGreen();
+			} else if (AmstradMonitorMode.GRAY.equals(mode)) {
+				getJemuInstance().changeMonitorModeToGray();
+			}
+			fireMonitorModeChangedEvent();
 		}
 	}
 
@@ -247,6 +250,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public void toggleFullscreen() {
 		checkNotTerminated();
 		getJemuInstance().FullSize();
+		fireFullscreenModeChangedEvent();
 	}
 
 	@Override
@@ -275,10 +279,10 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkStarted();
 		checkNotTerminated();
 		if (displaySource != null) {
-			getJemuInstance().getDisplay().setSecondaryDisplaySource(
+			getJemuInstance().getDisplay().installSecondaryDisplaySource(
 					new JemuSecondaryDisplaySourceBridge(displaySource));
 			Switches.blockKeyboard = true;
-			fireDisplaySourceChangedEvent(displaySource);
+			fireDisplaySourceChangedEvent();
 		} else {
 			resetDisplaySource();
 		}
@@ -288,9 +292,21 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public synchronized void resetDisplaySource() {
 		checkStarted();
 		checkNotTerminated();
-		getJemuInstance().getDisplay().removeSecondaryDisplaySource();
+		getJemuInstance().getDisplay().uninstallSecondaryDisplaySource();
 		Switches.blockKeyboard = false;
-		fireDisplaySourceChangedEvent(null);
+		fireDisplaySourceChangedEvent();
+	}
+
+	@Override
+	public synchronized AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource() {
+		AmstradAlternativeDisplaySource altDisplaySource = null;
+		if (isStarted()) {
+			SecondaryDisplaySource sds = getJemuInstance().getDisplay().getSecondaryDisplaySource();
+			if (sds != null && sds instanceof JemuSecondaryDisplaySourceBridge) {
+				altDisplaySource = ((JemuSecondaryDisplaySourceBridge) sds).getSource();
+			}
+		}
+		return altDisplaySource;
 	}
 
 	private void waitUntilReady() {

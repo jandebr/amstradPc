@@ -3,7 +3,6 @@ package org.maia.amstrad.pc.menu;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -17,10 +16,6 @@ public class AutoTypeFileAction extends FileChooserAction {
 
 	public AutoTypeFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
-	}
-
-	public AutoTypeFileAction(AmstradPc amstradPc, String name, Icon icon) {
-		super(amstradPc, name, icon);
 	}
 
 	@Override

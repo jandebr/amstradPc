@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateListener;
-import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 
 public class PauseResumeAction extends AmstradPcAction implements AmstradPcStateListener {
 
@@ -47,11 +46,6 @@ public class PauseResumeAction extends AmstradPcAction implements AmstradPcState
 
 	@Override
 	public void amstradPcTerminated(AmstradPc amstradPc) {
-	}
-
-	@Override
-	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc,
-			AmstradAlternativeDisplaySource alternativeDisplaySource) {
 	}
 
 	private void updateName() {

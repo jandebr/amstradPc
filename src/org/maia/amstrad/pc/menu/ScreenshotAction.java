@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -19,10 +18,6 @@ public class ScreenshotAction extends FileChooserAction {
 
 	public ScreenshotAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
-	}
-
-	public ScreenshotAction(AmstradPc amstradPc, String name, Icon icon) {
-		super(amstradPc, name, icon);
 	}
 
 	@Override

@@ -14,8 +14,11 @@ public abstract class AmstradPc {
 
 	private List<AmstradPcStateListener> stateListeners;
 
+	private List<AmstradPcMonitorListener> monitorListeners;
+
 	protected AmstradPc() {
 		this.stateListeners = new Vector<AmstradPcStateListener>();
+		this.monitorListeners = new Vector<AmstradPcMonitorListener>();
 	}
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
@@ -85,6 +88,8 @@ public abstract class AmstradPc {
 
 	public abstract void resetDisplaySource();
 
+	public abstract AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource();
+
 	protected void checkStarted() {
 		if (!isStarted())
 			throw new IllegalStateException("This Amstrad PC has not been started");
@@ -113,6 +118,14 @@ public abstract class AmstradPc {
 		getStateListeners().remove(listener);
 	}
 
+	public void addMonitorListener(AmstradPcMonitorListener listener) {
+		getMonitorListeners().add(listener);
+	}
+
+	public void removeMonitorListener(AmstradPcMonitorListener listener) {
+		getMonitorListeners().remove(listener);
+	}
+
 	protected void fireStartedEvent() {
 		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcStarted(this);
@@ -138,13 +151,27 @@ public abstract class AmstradPc {
 			listener.amstradPcTerminated(this);
 	}
 
-	protected void fireDisplaySourceChangedEvent(AmstradAlternativeDisplaySource alternativeDisplaySource) {
-		for (AmstradPcStateListener listener : getStateListeners())
-			listener.amstradPcDisplaySourceChanged(this, alternativeDisplaySource);
+	protected void fireMonitorModeChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcMonitorModeChanged(this);
+	}
+
+	protected void fireFullscreenModeChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcFullscreenModeChanged(this);
+	}
+
+	protected void fireDisplaySourceChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcDisplaySourceChanged(this);
 	}
 
 	protected List<AmstradPcStateListener> getStateListeners() {
 		return stateListeners;
+	}
+
+	protected List<AmstradPcMonitorListener> getMonitorListeners() {
+		return monitorListeners;
 	}
 
 }

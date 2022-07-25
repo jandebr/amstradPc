@@ -12,10 +12,6 @@ public abstract class BasicSourceFileAction extends FileChooserAction {
 		super(amstradPc, name);
 	}
 
-	protected BasicSourceFileAction(AmstradPc amstradPc, String name, Icon icon) {
-		super(amstradPc, name, icon);
-	}
-
 	@Override
 	protected JFileChooser buildFileChooser() {
 		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());

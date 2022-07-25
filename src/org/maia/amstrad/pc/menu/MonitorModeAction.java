@@ -2,8 +2,6 @@ package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
-
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 
@@ -12,11 +10,7 @@ public class MonitorModeAction extends AmstradPcAction {
 	private AmstradMonitorMode mode;
 
 	public MonitorModeAction(AmstradMonitorMode mode, AmstradPc amstradPc, String name) {
-		this(mode, amstradPc, name, null);
-	}
-
-	public MonitorModeAction(AmstradMonitorMode mode, AmstradPc amstradPc, String name, Icon icon) {
-		super(amstradPc, name, icon);
+		super(amstradPc, name);
 		this.mode = mode;
 	}
 

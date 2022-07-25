@@ -2,30 +2,21 @@ package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
-
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcStateListener;
+import org.maia.amstrad.pc.AmstradPcMonitorListener;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.display.browser.ProgramBrowserDisplaySource;
 
-public class ProgramBrowserAction extends AmstradPcAction implements AmstradPcStateListener {
+public class ProgramBrowserAction extends AmstradPcAction implements AmstradPcMonitorListener {
 
 	private static String NAME_OPEN = "Open program browser";
 
 	private static String NAME_CLOSE = "Close program browser";
 
 	public ProgramBrowserAction(AmstradPc amstradPc) {
-		this(amstradPc, NAME_OPEN);
-		amstradPc.addStateListener(this);
-	}
-
-	public ProgramBrowserAction(AmstradPc amstradPc, String name) {
-		super(amstradPc, name);
-	}
-
-	public ProgramBrowserAction(AmstradPc amstradPc, String name, Icon icon) {
-		super(amstradPc, name, icon);
+		super(amstradPc, "");
+		updateName();
+		amstradPc.addMonitorListener(this);
 	}
 
 	@Override
@@ -39,32 +30,25 @@ public class ProgramBrowserAction extends AmstradPcAction implements AmstradPcSt
 	}
 
 	@Override
-	public void amstradPcStarted(AmstradPc amstradPc) {
+	public void amstradPcMonitorModeChanged(AmstradPc amstradPc) {
 	}
 
 	@Override
-	public void amstradPcPausing(AmstradPc amstradPc) {
+	public void amstradPcFullscreenModeChanged(AmstradPc amstradPc) {
 	}
 
 	@Override
-	public void amstradPcResuming(AmstradPc amstradPc) {
+	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
+		updateName();
 	}
 
-	@Override
-	public void amstradPcRebooting(AmstradPc amstradPc) {
-	}
-
-	@Override
-	public void amstradPcTerminated(AmstradPc amstradPc) {
-	}
-
-	@Override
-	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc,
-			AmstradAlternativeDisplaySource alternativeDisplaySource) {
-		if (alternativeDisplaySource == null) {
-			// primary display
+	private void updateName() {
+		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getCurrentAlternativeDisplaySource();
+		if (altDisplaySource == null) {
+			// primary display is showing
 			changeName(NAME_OPEN);
-		} else if (alternativeDisplaySource instanceof ProgramBrowserDisplaySource) {
+		} else if (altDisplaySource instanceof ProgramBrowserDisplaySource) {
+			// program browser is showing
 			changeName(NAME_CLOSE);
 		}
 	}

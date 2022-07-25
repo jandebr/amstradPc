@@ -1,6 +1,5 @@
 package org.maia.amstrad.pc.menu;
 
-import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -10,10 +9,6 @@ public abstract class SnapshotFileAction extends FileChooserAction {
 
 	protected SnapshotFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
-	}
-
-	protected SnapshotFileAction(AmstradPc amstradPc, String name, Icon icon) {
-		super(amstradPc, name, icon);
 	}
 
 	@Override
