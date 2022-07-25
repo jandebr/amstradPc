@@ -6,8 +6,11 @@ import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcMonitorListener;
+import org.maia.amstrad.pc.AmstradPcStateListener;
 
-public abstract class AmstradPcAction extends AbstractAction {
+public abstract class AmstradPcAction extends AbstractAction implements AmstradPcStateListener,
+		AmstradPcMonitorListener {
 
 	private AmstradPc amstradPc;
 
@@ -47,6 +50,51 @@ public abstract class AmstradPcAction extends AbstractAction {
 
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
+	}
+
+	@Override
+	public void amstradPcMonitorModeChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcFullscreenModeChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcStarted(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcPausing(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcResuming(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcRebooting(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcTerminated(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
 	}
 
 }

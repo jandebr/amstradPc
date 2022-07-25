@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 import jemu.settings.Settings;
 
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.menu.AmstradPcAction;
 import org.maia.amstrad.pc.menu.AutoTypeFileAction;
 import org.maia.amstrad.pc.menu.LoadBasicBinaryFileAction;
 import org.maia.amstrad.pc.menu.LoadBasicSourceFileAction;
@@ -130,9 +131,7 @@ public class AmstradFactory {
 		checkItem.setState(Settings.getBoolean(Settings.UPDATETITLE, true));
 		menu.add(checkItem);
 		// Always on top
-		checkItem = new JCheckBoxMenuItem(new WindowAlwaysOnTopAction(amstradPc));
-		checkItem.setState(Settings.getBoolean(Settings.ONTOP, false));
-		menu.add(checkItem);
+		WindowAlwaysOnTopMenuHelper.addToMenu(menu, amstradPc);
 		// Fullscreen
 		menu.add(new JSeparator());
 		JMenuItem item = new JMenuItem(new MonitorFullscreenAction(amstradPc));
@@ -154,7 +153,16 @@ public class AmstradFactory {
 		}
 	}
 
-	private static class MonitorModeMenuHelper extends AmstradPcMonitorAdapter {
+	private static abstract class MonitorMenuHelper extends AmstradPcMonitorAdapter {
+
+		protected MonitorMenuHelper() {
+		}
+
+		protected abstract void syncMenu(AmstradPc amstradPc);
+
+	}
+
+	private static class MonitorModeMenuHelper extends MonitorMenuHelper {
 
 		private ButtonGroup buttonGroup;
 
@@ -186,7 +194,8 @@ public class AmstradFactory {
 			syncMenu(amstradPc);
 		}
 
-		private void syncMenu(AmstradPc amstradPc) {
+		@Override
+		protected void syncMenu(AmstradPc amstradPc) {
 			AmstradMonitorMode monitorMode = amstradPc.getMonitorMode();
 			for (Enumeration<AbstractButton> en = getButtonGroup().getElements(); en.hasMoreElements();) {
 				AbstractButton button = en.nextElement();
@@ -198,6 +207,52 @@ public class AmstradFactory {
 
 		private ButtonGroup getButtonGroup() {
 			return buttonGroup;
+		}
+
+	}
+
+	private static abstract class MonitorSwitchMenuHelper extends MonitorMenuHelper {
+
+		private JCheckBoxMenuItem checkbox;
+
+		protected MonitorSwitchMenuHelper(AmstradPcAction action) {
+			this.checkbox = new JCheckBoxMenuItem(action);
+			syncMenu(action.getAmstradPc());
+			action.getAmstradPc().addMonitorListener(this);
+		}
+
+		protected abstract boolean getState(AmstradPc amstradPc);
+
+		@Override
+		protected void syncMenu(AmstradPc amstradPc) {
+			getCheckbox().setSelected(getState(amstradPc));
+		}
+
+		protected JCheckBoxMenuItem getCheckbox() {
+			return checkbox;
+		}
+
+	}
+
+	private static class WindowAlwaysOnTopMenuHelper extends MonitorSwitchMenuHelper {
+
+		private WindowAlwaysOnTopMenuHelper(AmstradPc amstradPc) {
+			super(new WindowAlwaysOnTopAction(amstradPc));
+		}
+
+		public static void addToMenu(JMenu menu, AmstradPc amstradPc) {
+			WindowAlwaysOnTopMenuHelper helper = new WindowAlwaysOnTopMenuHelper(amstradPc);
+			menu.add(helper.getCheckbox());
+		}
+
+		@Override
+		public void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
+			syncMenu(amstradPc);
+		}
+
+		@Override
+		protected boolean getState(AmstradPc amstradPc) {
+			return amstradPc.isAlwaysOnTop();
 		}
 
 	}

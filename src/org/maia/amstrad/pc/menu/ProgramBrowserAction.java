@@ -3,11 +3,10 @@ package org.maia.amstrad.pc.menu;
 import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcMonitorListener;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.display.browser.ProgramBrowserDisplaySource;
 
-public class ProgramBrowserAction extends AmstradPcAction implements AmstradPcMonitorListener {
+public class ProgramBrowserAction extends AmstradPcAction {
 
 	private static String NAME_OPEN = "Open program browser";
 
@@ -30,15 +29,8 @@ public class ProgramBrowserAction extends AmstradPcAction implements AmstradPcMo
 	}
 
 	@Override
-	public void amstradPcMonitorModeChanged(AmstradPc amstradPc) {
-	}
-
-	@Override
-	public void amstradPcFullscreenModeChanged(AmstradPc amstradPc) {
-	}
-
-	@Override
 	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
+		super.amstradPcDisplaySourceChanged(amstradPc);
 		updateName();
 	}
 

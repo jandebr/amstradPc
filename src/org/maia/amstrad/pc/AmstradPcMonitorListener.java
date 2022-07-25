@@ -6,6 +6,8 @@ public interface AmstradPcMonitorListener {
 
 	void amstradPcFullscreenModeChanged(AmstradPc amstradPc);
 
+	void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc);
+
 	void amstradPcDisplaySourceChanged(AmstradPc amstradPc);
 
 }

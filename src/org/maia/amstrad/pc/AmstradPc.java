@@ -80,6 +80,8 @@ public abstract class AmstradPc {
 
 	public abstract void toggleFullscreen();
 
+	public abstract boolean isAlwaysOnTop();
+
 	public abstract void setAlwaysOnTop(boolean alwaysOnTop);
 
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
@@ -159,6 +161,11 @@ public abstract class AmstradPc {
 	protected void fireFullscreenModeChangedEvent() {
 		for (AmstradPcMonitorListener listener : getMonitorListeners())
 			listener.amstradPcFullscreenModeChanged(this);
+	}
+
+	protected void fireWindowAlwaysOnTopChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcWindowAlwaysOnTopChanged(this);
 	}
 
 	protected void fireDisplaySourceChangedEvent() {

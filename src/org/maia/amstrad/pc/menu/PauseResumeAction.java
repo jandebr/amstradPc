@@ -3,9 +3,8 @@ package org.maia.amstrad.pc.menu;
 import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcStateListener;
 
-public class PauseResumeAction extends AmstradPcAction implements AmstradPcStateListener {
+public class PauseResumeAction extends AmstradPcAction {
 
 	private static String NAME_PAUSE = "Pause";
 
@@ -27,25 +26,15 @@ public class PauseResumeAction extends AmstradPcAction implements AmstradPcState
 	}
 
 	@Override
-	public void amstradPcStarted(AmstradPc amstradPc) {
-	}
-
-	@Override
 	public void amstradPcPausing(AmstradPc amstradPc) {
+		super.amstradPcPausing(amstradPc);
 		updateName();
 	}
 
 	@Override
 	public void amstradPcResuming(AmstradPc amstradPc) {
+		super.amstradPcResuming(amstradPc);
 		updateName();
-	}
-
-	@Override
-	public void amstradPcRebooting(AmstradPc amstradPc) {
-	}
-
-	@Override
-	public void amstradPcTerminated(AmstradPc amstradPc) {
 	}
 
 	private void updateName() {

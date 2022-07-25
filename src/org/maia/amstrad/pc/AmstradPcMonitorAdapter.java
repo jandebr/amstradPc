@@ -16,6 +16,11 @@ public abstract class AmstradPcMonitorAdapter implements AmstradPcMonitorListene
 	}
 
 	@Override
+	public void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
+		// Subclasses can override this
+	}
+
+	@Override
 	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
 		// Subclasses can override this
 	}

@@ -204,18 +204,22 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	 * @return <code>true</code> when this display source follows the primary display source's resolution
 	 */
 	protected boolean followPrimaryDisplaySourceResolution() {
-		// Subclasses may override this
+		// Subclasses may override this method
 		return true;
 	}
 
-	protected abstract void init(AmstradDisplayCanvas canvas);
+	protected void init(AmstradDisplayCanvas canvas) {
+		// Subclasses may override this method
+	}
 
-	protected abstract void dispose();
+	protected void dispose() {
+		// Subclasses may override this method
+	}
 
 	protected abstract void renderContent(AmstradDisplayCanvas canvas);
 
 	protected Cursor getDefaultCursor() {
-		// Subclasses may override this
+		// Subclasses may override this method
 		if (getDisplayComponentInitialCursor() != null) {
 			return getDisplayComponentInitialCursor();
 		} else {
@@ -319,31 +323,31 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	}
 
 	protected void mousePressedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		// Subclasses may override this
+		// Subclasses may override this method
 	}
 
 	protected void mouseReleasedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		// Subclasses may override this
+		// Subclasses may override this method
 	}
 
 	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		// Subclasses may override this
+		// Subclasses may override this method
 	}
 
 	protected void mouseMovedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		// Subclasses may override this
+		// Subclasses may override this method
 	}
 
 	protected void mouseDraggedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		// Subclasses may override this
+		// Subclasses may override this method
 	}
 
 	protected void mouseEnteredCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		// Subclasses may override this
+		// Subclasses may override this method
 	}
 
 	protected void mouseExitedCanvas(AmstradDisplayCanvas canvas) {
-		// Subclasses may override this
+		// Subclasses may override this method
 	}
 
 	protected boolean isMouseOnCanvas() {

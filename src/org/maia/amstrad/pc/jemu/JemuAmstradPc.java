@@ -254,9 +254,15 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
+	public boolean isAlwaysOnTop() {
+		return Settings.getBoolean(Settings.ONTOP, false);
+	}
+
+	@Override
 	public void setAlwaysOnTop(boolean alwaysOnTop) {
 		checkNotTerminated();
 		getJemuInstance().setAlwaysOnTop(alwaysOnTop);
+		fireWindowAlwaysOnTopChangedEvent();
 	}
 
 	@Override

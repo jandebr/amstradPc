@@ -19,13 +19,10 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
+		super.init(canvas);
 		getAmstradPc().setMonitorMode(AmstradMonitorMode.COLOR);
 		canvas.border(4).paper(0);
 		canvas.symbol(255, 0, 192, 51, 12, 192, 51, 12, 0);
-	}
-
-	@Override
-	protected void dispose() {
 	}
 
 	@Override
@@ -33,9 +30,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		setMouseOverButton(false);
 		canvas.pen(11).move(0, 399).draw(639, 0);
 		canvas.pen(23).move(0, 0).draw(639, 399);
-		canvas.pen(24).locate(1, 1).print("Ready ");
-		canvas.pen(15).print("Steady ");
-		canvas.pen(6).print("GO");
+		canvas.pen(24).locate(1, 1).print("Ready ").pen(15).print("Steady ").pen(6).print("GO");
 		canvas.pen(26).locate(1, 2);
 		for (int i = 0; i < 15; i++)
 			canvas.printchr(255);
@@ -51,12 +46,15 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		} else {
 			canvas.pen(13);
 		}
-		canvas.locate(35, 1).print("Close").printchr(203);
+		canvas.locate(40, 1).printchr(203);
 	}
 
-	@Override
-	protected boolean followPrimaryDisplaySourceResolution() {
-		return true;
+	private void updateCursor() {
+		if (isMouseOverButton()) {
+			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		} else {
+			resetCursor();
+		}
 	}
 
 	@Override
@@ -75,16 +73,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		}
 	}
 
-	private void updateCursor() {
-		if (isMouseOverButton()) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		} else {
-			resetCursor();
-		}
-	}
-
 	private boolean isMouseOverCloseButton(AmstradDisplayCanvas canvas) {
-		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(35, 1, 40, 1));
+		return isMouseInCanvasBounds(canvas.getTextCursorBoundsOnCanvas(40, 1));
 	}
 
 	private boolean isMouseOverButton() {
