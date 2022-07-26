@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.browser;
+package org.maia.amstrad.pc.browser.ui;
 
 import java.awt.Cursor;
 import java.awt.Point;

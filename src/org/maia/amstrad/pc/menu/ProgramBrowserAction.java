@@ -3,7 +3,7 @@ package org.maia.amstrad.pc.menu;
 import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.pc.browser.ui.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 
 public class ProgramBrowserAction extends AmstradPcAction {
