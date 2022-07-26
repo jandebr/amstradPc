@@ -35,11 +35,11 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 	}
 
 	public boolean isFullscreen() {
-		return getAmstradPc().isFullscreen();
+		return getAmstradPc().isWindowFullscreen();
 	}
 
 	public void toggleFullscreen() {
-		getAmstradPc().toggleFullscreen();
+		getAmstradPc().toggleWindowFullscreen();
 	}
 
 	@Override

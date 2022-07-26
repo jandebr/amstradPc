@@ -70,19 +70,29 @@ public abstract class AmstradPc {
 
 	public abstract void setMonitorMode(AmstradMonitorMode mode);
 
+	public abstract boolean isMonitorEffectOn();
+
 	public abstract void setMonitorEffect(boolean monitorEffect);
+
+	public abstract boolean isMonitorScanLinesEffectOn();
 
 	public abstract void setMonitorScanLinesEffect(boolean scanLinesEffect);
 
+	public abstract boolean isMonitorBilinearEffectOn();
+
 	public abstract void setMonitorBilinearEffect(boolean bilinearEffect);
 
-	public abstract boolean isFullscreen();
+	public abstract boolean isWindowFullscreen();
 
-	public abstract void toggleFullscreen();
+	public abstract void toggleWindowFullscreen();
 
-	public abstract boolean isAlwaysOnTop();
+	public abstract boolean isWindowAlwaysOnTop();
 
-	public abstract void setAlwaysOnTop(boolean alwaysOnTop);
+	public abstract void setWindowAlwaysOnTop(boolean alwaysOnTop);
+
+	public abstract boolean isWindowTitleDynamic();
+
+	public abstract void setWindowTitleDynamic(boolean dynamicTitle);
 
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
 
@@ -158,14 +168,34 @@ public abstract class AmstradPc {
 			listener.amstradPcMonitorModeChanged(this);
 	}
 
-	protected void fireFullscreenModeChangedEvent() {
+	protected void fireMonitorEffectChangedEvent() {
 		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcFullscreenModeChanged(this);
+			listener.amstradPcMonitorEffectChanged(this);
+	}
+
+	protected void fireMonitorScanLinesEffectChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcMonitorScanLinesEffectChanged(this);
+	}
+
+	protected void fireMonitorBilinearEffectChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcMonitorBilinearEffectChanged(this);
+	}
+
+	protected void fireWindowFullscreenChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcWindowFullscreenChanged(this);
 	}
 
 	protected void fireWindowAlwaysOnTopChangedEvent() {
 		for (AmstradPcMonitorListener listener : getMonitorListeners())
 			listener.amstradPcWindowAlwaysOnTopChanged(this);
+	}
+
+	protected void fireWindowTitleDynamicChangedEvent() {
+		for (AmstradPcMonitorListener listener : getMonitorListeners())
+			listener.amstradPcWindowTitleDynamicChanged(this);
 	}
 
 	protected void fireDisplaySourceChangedEvent() {

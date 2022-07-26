@@ -6,20 +6,20 @@ import javax.swing.JCheckBoxMenuItem;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class WindowAlwaysOnTopAction extends AmstradPcAction {
+public class WindowDynamicTitleAction extends AmstradPcAction {
 
-	public WindowAlwaysOnTopAction(AmstradPc amstradPc) {
-		this(amstradPc, "Always on top");
+	public WindowDynamicTitleAction(AmstradPc amstradPc) {
+		this(amstradPc, "Dynamic window title");
 	}
 
-	public WindowAlwaysOnTopAction(AmstradPc amstradPc, String name) {
+	public WindowDynamicTitleAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		boolean state = ((JCheckBoxMenuItem) event.getSource()).getState();
-		getAmstradPc().setWindowAlwaysOnTop(state);
+		getAmstradPc().setWindowTitleDynamic(state);
 	}
 
 }

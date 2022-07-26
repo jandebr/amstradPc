@@ -4,9 +4,17 @@ public interface AmstradPcMonitorListener {
 
 	void amstradPcMonitorModeChanged(AmstradPc amstradPc);
 
-	void amstradPcFullscreenModeChanged(AmstradPc amstradPc);
+	void amstradPcMonitorEffectChanged(AmstradPc amstradPc);
+
+	void amstradPcMonitorScanLinesEffectChanged(AmstradPc amstradPc);
+
+	void amstradPcMonitorBilinearEffectChanged(AmstradPc amstradPc);
+
+	void amstradPcWindowFullscreenChanged(AmstradPc amstradPc);
 
 	void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc);
+
+	void amstradPcWindowTitleDynamicChanged(AmstradPc amstradPc);
 
 	void amstradPcDisplaySourceChanged(AmstradPc amstradPc);
 

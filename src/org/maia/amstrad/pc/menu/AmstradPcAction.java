@@ -58,12 +58,32 @@ public abstract class AmstradPcAction extends AbstractAction implements AmstradP
 	}
 
 	@Override
-	public void amstradPcFullscreenModeChanged(AmstradPc amstradPc) {
+	public void amstradPcMonitorEffectChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcMonitorBilinearEffectChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcWindowFullscreenChanged(AmstradPc amstradPc) {
 		// Subclasses may override this method when interested in this event
 	}
 
 	@Override
 	public void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
+		// Subclasses may override this method when interested in this event
+	}
+
+	@Override
+	public void amstradPcWindowTitleDynamicChanged(AmstradPc amstradPc) {
 		// Subclasses may override this method when interested in this event
 	}
 

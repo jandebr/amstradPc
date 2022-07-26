@@ -221,48 +221,88 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
+	public boolean isMonitorEffectOn() {
+		return Settings.getBoolean(Settings.SCANEFFECT, true);
+	}
+
+	@Override
 	public void setMonitorEffect(boolean monitorEffect) {
 		checkNotTerminated();
-		Settings.setBoolean(Settings.SCANEFFECT, monitorEffect);
-		Display.scaneffect = monitorEffect;
+		if (monitorEffect != isMonitorEffectOn()) {
+			Settings.setBoolean(Settings.SCANEFFECT, monitorEffect);
+			Display.scaneffect = monitorEffect;
+			fireMonitorEffectChangedEvent();
+		}
+	}
+
+	@Override
+	public boolean isMonitorScanLinesEffectOn() {
+		return Settings.getBoolean(Settings.SCANLINES, false);
 	}
 
 	@Override
 	public void setMonitorScanLinesEffect(boolean scanLinesEffect) {
 		checkNotTerminated();
-		Settings.setBoolean(Settings.SCANLINES, scanLinesEffect);
-		Switches.ScanLines = scanLinesEffect;
+		if (scanLinesEffect != isMonitorScanLinesEffectOn()) {
+			Settings.setBoolean(Settings.SCANLINES, scanLinesEffect);
+			Switches.ScanLines = scanLinesEffect;
+			fireMonitorScanLinesEffectChangedEvent();
+		}
+	}
+
+	@Override
+	public boolean isMonitorBilinearEffectOn() {
+		return Settings.getBoolean(Settings.BILINEAR, true);
 	}
 
 	@Override
 	public void setMonitorBilinearEffect(boolean bilinearEffect) {
 		checkNotTerminated();
-		Settings.setBoolean(Settings.BILINEAR, bilinearEffect);
-		Switches.bilinear = bilinearEffect;
+		if (bilinearEffect != isMonitorBilinearEffectOn()) {
+			Settings.setBoolean(Settings.BILINEAR, bilinearEffect);
+			Switches.bilinear = bilinearEffect;
+			fireMonitorBilinearEffectChangedEvent();
+		}
 	}
 
 	@Override
-	public boolean isFullscreen() {
+	public boolean isWindowFullscreen() {
 		return JEMU.fullscreen;
 	}
 
 	@Override
-	public void toggleFullscreen() {
+	public void toggleWindowFullscreen() {
 		checkNotTerminated();
 		getJemuInstance().FullSize();
-		fireFullscreenModeChangedEvent();
+		fireWindowFullscreenChangedEvent();
 	}
 
 	@Override
-	public boolean isAlwaysOnTop() {
+	public boolean isWindowAlwaysOnTop() {
 		return Settings.getBoolean(Settings.ONTOP, false);
 	}
 
 	@Override
-	public void setAlwaysOnTop(boolean alwaysOnTop) {
+	public void setWindowAlwaysOnTop(boolean alwaysOnTop) {
 		checkNotTerminated();
-		getJemuInstance().setAlwaysOnTop(alwaysOnTop);
-		fireWindowAlwaysOnTopChangedEvent();
+		if (alwaysOnTop != isWindowAlwaysOnTop()) {
+			getJemuInstance().setAlwaysOnTop(alwaysOnTop);
+			fireWindowAlwaysOnTopChangedEvent();
+		}
+	}
+
+	@Override
+	public boolean isWindowTitleDynamic() {
+		return Settings.getBoolean(Settings.UPDATETITLE, true);
+	}
+
+	@Override
+	public void setWindowTitleDynamic(boolean dynamicTitle) {
+		checkNotTerminated();
+		if (dynamicTitle != isWindowTitleDynamic()) {
+			Settings.setBoolean(Settings.UPDATETITLE, dynamicTitle);
+			fireWindowTitleDynamicChangedEvent();
+		}
 	}
 
 	@Override
@@ -585,7 +625,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 				if (Settings.getBoolean(Settings.SHOWMENU, true)) {
 					getFrame().setMenuBar(menuBar);
 				} else {
-					if (getFrame().getJMenuBar() != null && !getAmstradPc().isFullscreen()) {
+					if (getFrame().getJMenuBar() != null && !getAmstradPc().isWindowFullscreen()) {
 						getFrame().getJMenuBar().setVisible(true);
 					}
 				}

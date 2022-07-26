@@ -14,8 +14,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
-import jemu.settings.Settings;
-
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
 import org.maia.amstrad.pc.menu.AmstradPcAction;
 import org.maia.amstrad.pc.menu.AutoTypeFileAction;
@@ -36,8 +34,8 @@ import org.maia.amstrad.pc.menu.SaveBasicSourceFileAction;
 import org.maia.amstrad.pc.menu.SaveSnapshotFileAction;
 import org.maia.amstrad.pc.menu.ScreenshotAction;
 import org.maia.amstrad.pc.menu.ScreenshotWithMonitorEffectAction;
-import org.maia.amstrad.pc.menu.UpdateWindowTitleAction;
 import org.maia.amstrad.pc.menu.WindowAlwaysOnTopAction;
+import org.maia.amstrad.pc.menu.WindowDynamicTitleAction;
 
 public class AmstradFactory {
 
@@ -108,31 +106,18 @@ public class AmstradFactory {
 
 	private JMenu createMonitorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Monitor");
-		// Monitor modes
 		MonitorModeMenuHelper.addModesToMenu(menu, amstradPc);
-		// Effects
 		menu.add(new JSeparator());
-		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new MonitorEffectAction(amstradPc));
-		checkItem.setState(Settings.getBoolean(Settings.SCANEFFECT, true));
-		menu.add(checkItem);
-		checkItem = new JCheckBoxMenuItem(new MonitorScanLinesEffectAction(amstradPc));
-		checkItem.setState(Settings.getBoolean(Settings.SCANLINES, false));
-		menu.add(checkItem);
-		checkItem = new JCheckBoxMenuItem(new MonitorBilinearEffectAction(amstradPc));
-		checkItem.setState(Settings.getBoolean(Settings.BILINEAR, true));
-		menu.add(checkItem);
+		MonitorEffectMenuHelper.addToMenu(menu, amstradPc);
+		MonitorScanLinesEffectMenuHelper.addToMenu(menu, amstradPc);
+		MonitorBilinearEffectMenuHelper.addToMenu(menu, amstradPc);
 		return menu;
 	}
 
 	private JMenu createWindowMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Window");
-		// Update title
-		JCheckBoxMenuItem checkItem = new JCheckBoxMenuItem(new UpdateWindowTitleAction(amstradPc));
-		checkItem.setState(Settings.getBoolean(Settings.UPDATETITLE, true));
-		menu.add(checkItem);
-		// Always on top
+		WindowTitleAutoUpdateMenuHelper.addToMenu(menu, amstradPc);
 		WindowAlwaysOnTopMenuHelper.addToMenu(menu, amstradPc);
-		// Fullscreen
 		menu.add(new JSeparator());
 		JMenuItem item = new JMenuItem(new MonitorFullscreenAction(amstradPc));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK));
@@ -211,11 +196,11 @@ public class AmstradFactory {
 
 	}
 
-	private static abstract class MonitorSwitchMenuHelper extends MonitorMenuHelper {
+	private static abstract class MonitorCheckboxMenuHelper extends MonitorMenuHelper {
 
 		private JCheckBoxMenuItem checkbox;
 
-		protected MonitorSwitchMenuHelper(AmstradPcAction action) {
+		protected MonitorCheckboxMenuHelper(AmstradPcAction action) {
 			this.checkbox = new JCheckBoxMenuItem(action);
 			syncMenu(action.getAmstradPc());
 			action.getAmstradPc().addMonitorListener(this);
@@ -224,7 +209,7 @@ public class AmstradFactory {
 		protected abstract boolean getState(AmstradPc amstradPc);
 
 		@Override
-		protected void syncMenu(AmstradPc amstradPc) {
+		protected final void syncMenu(AmstradPc amstradPc) {
 			getCheckbox().setSelected(getState(amstradPc));
 		}
 
@@ -234,7 +219,99 @@ public class AmstradFactory {
 
 	}
 
-	private static class WindowAlwaysOnTopMenuHelper extends MonitorSwitchMenuHelper {
+	private static class MonitorEffectMenuHelper extends MonitorCheckboxMenuHelper {
+
+		private MonitorEffectMenuHelper(AmstradPc amstradPc) {
+			super(new MonitorEffectAction(amstradPc));
+		}
+
+		public static void addToMenu(JMenu menu, AmstradPc amstradPc) {
+			MonitorEffectMenuHelper helper = new MonitorEffectMenuHelper(amstradPc);
+			menu.add(helper.getCheckbox());
+		}
+
+		@Override
+		public void amstradPcMonitorEffectChanged(AmstradPc amstradPc) {
+			syncMenu(amstradPc);
+		}
+
+		@Override
+		protected boolean getState(AmstradPc amstradPc) {
+			return amstradPc.isMonitorEffectOn();
+		}
+
+	}
+
+	private static class MonitorScanLinesEffectMenuHelper extends MonitorCheckboxMenuHelper {
+
+		private MonitorScanLinesEffectMenuHelper(AmstradPc amstradPc) {
+			super(new MonitorScanLinesEffectAction(amstradPc));
+		}
+
+		public static void addToMenu(JMenu menu, AmstradPc amstradPc) {
+			MonitorScanLinesEffectMenuHelper helper = new MonitorScanLinesEffectMenuHelper(amstradPc);
+			menu.add(helper.getCheckbox());
+		}
+
+		@Override
+		public void amstradPcMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
+			syncMenu(amstradPc);
+		}
+
+		@Override
+		protected boolean getState(AmstradPc amstradPc) {
+			return amstradPc.isMonitorScanLinesEffectOn();
+		}
+
+	}
+
+	private static class MonitorBilinearEffectMenuHelper extends MonitorCheckboxMenuHelper {
+
+		private MonitorBilinearEffectMenuHelper(AmstradPc amstradPc) {
+			super(new MonitorBilinearEffectAction(amstradPc));
+		}
+
+		public static void addToMenu(JMenu menu, AmstradPc amstradPc) {
+			MonitorBilinearEffectMenuHelper helper = new MonitorBilinearEffectMenuHelper(amstradPc);
+			menu.add(helper.getCheckbox());
+		}
+
+		@Override
+		public void amstradPcMonitorBilinearEffectChanged(AmstradPc amstradPc) {
+			syncMenu(amstradPc);
+		}
+
+		@Override
+		protected boolean getState(AmstradPc amstradPc) {
+			return amstradPc.isMonitorBilinearEffectOn();
+		}
+
+	}
+
+	private static class WindowTitleAutoUpdateMenuHelper extends MonitorCheckboxMenuHelper {
+
+		private WindowTitleAutoUpdateMenuHelper(AmstradPc amstradPc) {
+			super(new WindowDynamicTitleAction(amstradPc));
+		}
+
+		public static void addToMenu(JMenu menu, AmstradPc amstradPc) {
+			WindowTitleAutoUpdateMenuHelper helper = new WindowTitleAutoUpdateMenuHelper(amstradPc);
+			menu.add(helper.getCheckbox());
+		}
+
+		@Override
+		public void amstradPcWindowTitleDynamicChanged(AmstradPc amstradPc) {
+			syncMenu(amstradPc);
+		}
+
+		@Override
+		protected boolean getState(AmstradPc amstradPc) {
+			return amstradPc.isWindowTitleDynamic();
+		}
+
+	}
+
+	private static class WindowAlwaysOnTopMenuHelper extends MonitorCheckboxMenuHelper {
 
 		private WindowAlwaysOnTopMenuHelper(AmstradPc amstradPc) {
 			super(new WindowAlwaysOnTopAction(amstradPc));
@@ -252,7 +329,7 @@ public class AmstradFactory {
 
 		@Override
 		protected boolean getState(AmstradPc amstradPc) {
-			return amstradPc.isAlwaysOnTop();
+			return amstradPc.isWindowAlwaysOnTop();
 		}
 
 	}

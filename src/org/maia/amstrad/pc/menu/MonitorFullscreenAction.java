@@ -16,7 +16,7 @@ public class MonitorFullscreenAction extends AmstradPcAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		getAmstradPc().toggleFullscreen();
+		getAmstradPc().toggleWindowFullscreen();
 	}
 
 }
