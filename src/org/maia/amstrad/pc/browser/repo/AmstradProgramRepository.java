@@ -1,14 +1,22 @@
-package org.maia.amstrad.pc.browser.model;
+package org.maia.amstrad.pc.browser.repo;
 
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.maia.amstrad.pc.AmstradPc;
 
 public abstract class AmstradProgramRepository {
 
 	protected AmstradProgramRepository() {
 	}
 
-	public abstract Node getRootNode();
+	@Override
+	public String toString() {
+		return getRootNode().toString();
+	}
+
+	public abstract FolderNode getRootNode();
 
 	public void refresh() {
 		getRootNode().refresh();
@@ -20,6 +28,14 @@ public abstract class AmstradProgramRepository {
 
 		protected Node(String name) {
 			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder(32);
+			sb.append('[').append(isFolder() ? "F" : "P").append(']');
+			sb.append(' ').append(getName());
+			return sb.toString();
 		}
 
 		public abstract boolean isFolder();
@@ -55,6 +71,19 @@ public abstract class AmstradProgramRepository {
 
 		protected FolderNode(String name) {
 			super(name);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder(1024);
+			sb.append(super.toString());
+			for (Node node : getChildNodes()) {
+				StringTokenizer st = new StringTokenizer(node.toString(), "\n");
+				while (st.hasMoreTokens()) {
+					sb.append('\n').append('\t').append(st.nextToken());
+				}
+			}
+			return sb.toString();
 		}
 
 		@Override
@@ -96,13 +125,20 @@ public abstract class AmstradProgramRepository {
 			programInfo = null;
 		}
 
-		protected abstract AmstradProgramInfo readProgramInfo();
+		protected abstract AmstradProgramInfo readProgramInfo() throws AmstradProgramException;
 
-		public AmstradProgramInfo getProgramInfo() {
+		public AmstradProgramInfo getProgramInfo() throws AmstradProgramException {
 			if (programInfo == null) {
 				programInfo = readProgramInfo();
 			}
 			return programInfo;
+		}
+
+		public abstract void loadInto(AmstradPc amstradPc) throws AmstradProgramException;
+
+		public void runWith(AmstradPc amstradPc) throws AmstradProgramException {
+			loadInto(amstradPc);
+			amstradPc.getBasicRuntime().run();
 		}
 
 	}

@@ -18,6 +18,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import jemu.settings.Settings;
+
 import org.maia.amstrad.io.MultiplexOutputStream;
 import org.maia.amstrad.pc.AmstradFactory;
 
@@ -96,11 +98,12 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		
 		try
 		{
-			PipedOutputStream pout=new PipedOutputStream(this.pin);
-			OutputStream cos = AmstradFactory.getInstance().getAmstradContext().getConsoleOutputStream();
 			MultiplexOutputStream multiplexOut = new MultiplexOutputStream();
-			multiplexOut.addOutputStream(pout);
+			OutputStream cos = AmstradFactory.getInstance().getAmstradContext().getConsoleOutputStream();
 			if (cos != null) multiplexOut.addOutputStream(cos);
+			if (Settings.getBoolean(Settings.CONSOLE, false)) {
+				multiplexOut.addOutputStream(new PipedOutputStream(this.pin));
+			}
 			System.setOut(new PrintStream(multiplexOut,true)); 
 		} 
 		catch (java.io.IOException io)
@@ -114,11 +117,12 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		
 		try 
 		{
-			PipedOutputStream pout2=new PipedOutputStream(this.pin2);
-			OutputStream ces = AmstradFactory.getInstance().getAmstradContext().getConsoleErrorStream();
 			MultiplexOutputStream multiplexOut = new MultiplexOutputStream();
-			multiplexOut.addOutputStream(pout2);
+			OutputStream ces = AmstradFactory.getInstance().getAmstradContext().getConsoleErrorStream();
 			if (ces != null) multiplexOut.addOutputStream(ces);
+			if (Settings.getBoolean(Settings.CONSOLE, false)) {
+				multiplexOut.addOutputStream(new PipedOutputStream(this.pin2));
+			}
 			System.setErr(new PrintStream(multiplexOut,true));
 		} 
 		catch (java.io.IOException io)

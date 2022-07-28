@@ -30,14 +30,6 @@ public abstract class AmstradPc {
 		return frame;
 	}
 
-	public boolean isBasicSourceFile(File file) {
-		return file.getName().toLowerCase().endsWith(".bas");
-	}
-
-	public boolean isBasicByteCodeFile(File file) {
-		return file.getName().toLowerCase().endsWith(".bin");
-	}
-
 	public abstract boolean isSnapshotFile(File file);
 
 	public abstract boolean isStarted();

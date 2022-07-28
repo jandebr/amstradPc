@@ -35,7 +35,7 @@ public class BasicCompilerTest {
 			File file = files[i];
 			if (file.isDirectory()) {
 				testFilesInDirectory(file, amstradPc, compiler, out);
-			} else if (amstradPc.isBasicSourceFile(file)) {
+			} else if (BasicRuntime.isBasicSourceFile(file)) {
 				testFile(file, amstradPc, compiler, out);
 			}
 		}

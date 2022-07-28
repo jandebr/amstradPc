@@ -77,26 +77,24 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	private boolean isUncompressedSnapshotFile(File file) {
-		String fname = file.getName().toLowerCase();
-		return fname.endsWith(".sna");
+		return file.isFile() && file.getName().toLowerCase().endsWith(".sna");
 	}
 
 	private boolean isCompressedSnapshotFile(File file) {
-		String fname = file.getName().toLowerCase();
-		return fname.endsWith(".snz");
+		return file.isFile() && file.getName().toLowerCase().endsWith(".snz");
 	}
 
 	@Override
 	public void launch(File file) throws IOException, BasicCompilationException {
 		checkNotTerminated();
 		System.out.println("Launching from " + file.getPath());
-		if (isBasicSourceFile(file) || isBasicByteCodeFile(file)) {
+		if (BasicRuntime.isBasicSourceFile(file) || BasicRuntime.isBasicByteCodeFile(file)) {
 			if (!isStarted()) {
 				start(true);
 			} else {
 				reboot(true);
 			}
-			if (isBasicSourceFile(file)) {
+			if (BasicRuntime.isBasicSourceFile(file)) {
 				getBasicRuntime().loadSourceCodeFromFile(file);
 			} else {
 				getBasicRuntime().loadByteCodeFromFile(file);

@@ -1,8 +1,14 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 
+import jemu.settings.Settings;
+
+import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.browser.repo.AmstradProgramRepository;
+import org.maia.amstrad.pc.browser.repo.FileBasedAmstradProgramRepository;
 import org.maia.amstrad.pc.browser.ui.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 
@@ -21,11 +27,18 @@ public class ProgramBrowserAction extends AmstradPcAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		if (NAME_OPEN.equals(getName())) {
-			ProgramBrowserDisplaySource displaySource = new ProgramBrowserDisplaySource(getAmstradPc());
+			ProgramBrowserDisplaySource displaySource = new ProgramBrowserDisplaySource(getAmstradPc(),
+					getAmstradProgramRepository());
 			getAmstradPc().swapDisplaySource(displaySource);
 		} else {
 			getAmstradPc().resetDisplaySource();
 		}
+	}
+
+	private AmstradProgramRepository getAmstradProgramRepository() {
+		// TODO select and remember root folder
+		File rootFolder = new File(Settings.get(Settings.PROGRAMS_DIR, "."));
+		return new FileBasedAmstradProgramRepository(rootFolder, true, AmstradMonitorMode.GREEN);
 	}
 
 	@Override

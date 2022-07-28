@@ -6,20 +6,25 @@ import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.browser.repo.AmstradProgramRepository;
 import org.maia.amstrad.pc.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.display.AmstradEmulatedDisplaySource;
 
 public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
+	private AmstradProgramRepository programRepository;
+
 	private boolean mouseOverButton;
 
-	public ProgramBrowserDisplaySource(AmstradPc amstradPc) {
+	public ProgramBrowserDisplaySource(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
 		super(amstradPc);
+		this.programRepository = programRepository;
 	}
 
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
+		System.out.println(getProgramRepository());
 		getAmstradPc().setMonitorMode(AmstradMonitorMode.COLOR);
 		canvas.border(4).paper(0);
 		canvas.symbol(255, 0, 192, 51, 12, 192, 51, 12, 0);
@@ -83,6 +88,10 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	private void setMouseOverButton(boolean mouseOverButton) {
 		this.mouseOverButton = mouseOverButton;
+	}
+
+	public AmstradProgramRepository getProgramRepository() {
+		return programRepository;
 	}
 
 }

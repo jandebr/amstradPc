@@ -90,6 +90,14 @@ public abstract class BasicRuntime {
 		keyboardEnter("RUN", waitUntilTyped);
 	}
 
+	public static boolean isBasicSourceFile(File file) {
+		return file.isFile() && file.getName().toLowerCase().endsWith(".bas");
+	}
+
+	public static boolean isBasicByteCodeFile(File file) {
+		return file.isFile() && file.getName().toLowerCase().endsWith(".bin");
+	}
+
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {
 		loadSourceCode(AmstradContext.readTextFileContents(sourceCodeFile));
 		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
