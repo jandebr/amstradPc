@@ -38,8 +38,9 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		canvas.pen(24).locate(1, 1).print("Ready ").pen(15).print("Steady ").pen(6).print("GO");
 		canvas.pen(26).locate(1, 2);
 		for (int i = 0; i < 15; i++)
-			canvas.printchr(255);
-		canvas.pen(24).locate(1, 9).print("Ready").locate(1, 10).printchr(143);
+			canvas.printChr(255);
+		canvas.pen(24).locate(1, 9).print("Ready").locate(1, 10).printChr(143);
+		canvas.pen(11).move(4,271).drawStr("Ready");
 		renderCloseButton(canvas);
 		updateCursor();
 	}
@@ -51,7 +52,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		} else {
 			canvas.pen(13);
 		}
-		canvas.locate(40, 1).printchr(203);
+		canvas.locate(40, 1).printChr(203);
 	}
 
 	private void updateCursor() {

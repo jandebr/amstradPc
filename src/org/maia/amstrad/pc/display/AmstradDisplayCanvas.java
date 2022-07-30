@@ -166,32 +166,72 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	public AmstradDisplayCanvas print(String str) {
+		return print(str, false);
+	}
+
+	public AmstradDisplayCanvas print(String str, boolean transparentBackground) {
 		for (int i = 0; i < str.length(); i++) {
 			boolean lastChar = isTextPositionAtEndOfScreen();
-			print(str.charAt(i));
+			printChr(str.charAt(i), transparentBackground);
 			if (lastChar)
 				break;
 		}
 		return this;
 	}
 
-	public AmstradDisplayCanvas printchr(int code) {
-		return print((char) code);
+	public AmstradDisplayCanvas printChr(int code) {
+		return printChr(code, false);
 	}
 
-	public AmstradDisplayCanvas print(char c) {
-		printAsciiSymbol(c);
+	public AmstradDisplayCanvas printChr(int code, boolean transparentBackground) {
+		return printChr((char) code, transparentBackground);
+	}
+
+	public AmstradDisplayCanvas printChr(char c) {
+		return printChr(c, false);
+	}
+
+	public AmstradDisplayCanvas printChr(char c, boolean transparentBackground) {
+		printAsciiSymbolAtTextPosition(c, transparentBackground);
 		advanceTextPosition();
 		return this;
 	}
 
-	private void printAsciiSymbol(char c) {
+	public AmstradDisplayCanvas drawStr(String str) {
+		for (int i = 0; i < str.length(); i++) {
+			drawChr(str.charAt(i));
+		}
+		return this;
+	}
+
+	public AmstradDisplayCanvas drawChr(int code) {
+		return drawChr((char) code);
+	}
+
+	public AmstradDisplayCanvas drawChr(char c) {
+		printAsciiSymbolAtGraphicsPosition(c, true);
+		return mover(getWidth() / getGraphicsContext().getTextColumns(), 0);
+	}
+
+	private void printAsciiSymbolAtTextPosition(char c, boolean transparentBackground) {
 		Point p = getTextPosition();
 		Rectangle bounds = getTextCursorBoundsOnGraphics2D(p.x, p.y);
+		printAsciiSymbolInBounds(c, bounds, transparentBackground);
+	}
+
+	private void printAsciiSymbolAtGraphicsPosition(char c, boolean transparentBackground) {
+		Point p = getGraphicsPosition();
+		int charWidth = getWidth() / getGraphicsContext().getTextColumns();
+		int charHeight = getHeight() / getGraphicsContext().getTextRows();
+		Rectangle bounds = new Rectangle(projectX(p.x), projectY(p.y), charWidth, charHeight);
+		printAsciiSymbolInBounds(c, bounds, transparentBackground);
+	}
+
+	private void printAsciiSymbolInBounds(char c, Rectangle bounds, boolean transparentBackground) {
 		Graphics2D g2 = (Graphics2D) getGraphics2D().create(bounds.x, bounds.y, bounds.width, bounds.height);
 		double scale = getWidth() / getGraphicsContext().getTextColumns() / 8.0;
 		g2.scale(scale, scale);
-		g2.setBackground(getPaperColor());
+		g2.setBackground(transparentBackground ? null : getPaperColor());
 		g2.setColor(getPenColor());
 		getAsciiSymbolRenderer().printSymbol(c, g2);
 		g2.dispose();
@@ -339,9 +379,9 @@ public abstract class AmstradDisplayCanvas {
 			}
 		}
 
-		public void printSymbol(int code, Graphics2D g2) {
-			if (g2.getBackground() != null) {
-				g2.clearRect(0, 0, 8, 8);
+		public void printSymbol(int code, Graphics2D canonicalGraphics2D) {
+			if (canonicalGraphics2D.getBackground() != null) {
+				canonicalGraphics2D.clearRect(0, 0, 8, 8);
 			}
 			if (code >= 32 && code <= 255) {
 				BufferedImage chart = getSymbolChart();
@@ -352,7 +392,7 @@ public abstract class AmstradDisplayCanvas {
 					for (int j = 0; j < 8; j++) {
 						int chartX = chartX0 + j;
 						if ((chart.getRGB(chartX, chartY) & 0xff) != 0) {
-							g2.fillRect(j, i, 1, 1);
+							canonicalGraphics2D.fillRect(j, i, 1, 1);
 						}
 					}
 				}
