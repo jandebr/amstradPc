@@ -24,9 +24,11 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	private StackedFolderItemList stackedFolderItemList;
 
+	private Window currentWindow;
+
 	private ProgramMenu programMenu;
 
-	private Rectangle modalCloseButtonBounds;
+	private Rectangle modalWindowCloseButtonBounds;
 
 	private boolean mouseOverButton;
 
@@ -42,12 +44,15 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		super(amstradPc);
 		this.programRepository = programRepository;
 		this.stackedFolderItemList = new StackedFolderItemList(programRepository, 20);
+		this.currentWindow = Window.MAIN;
 	}
 
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
 		getAmstradPc().setMonitorMode(AmstradMonitorMode.COLOR);
+		getAmstradPc().setMonitorBilinearEffect(false);
+		getAmstradPc().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
 		canvas.symbol(255, 24, 60, 126, 255, 126, 110, 110, 124); // home
 	}
@@ -59,7 +64,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		renderHomeButton(canvas);
 		renderCloseButton(canvas);
 		renderStack(getStackedFolderItemList(), canvas);
-		if (isInProgramMenu()) {
+		if (Window.PROGRAM_MENU.equals(getCurrentWindow())) {
 			renderProgramMenu(getProgramMenu(), canvas);
 		}
 		updateCursor();
@@ -73,7 +78,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	private void renderHomeButton(AmstradDisplayCanvas canvas) {
-		if (!isInProgramMenu() && isMouseOverHomeButton(canvas)) {
+		if (!isModalWindowOpen() && isMouseOverHomeButton(canvas)) {
 			setMouseOverButton(true);
 			canvas.paper(14).pen(24);
 		} else {
@@ -84,7 +89,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	private void renderCloseButton(AmstradDisplayCanvas canvas) {
-		if (!isInProgramMenu() && isMouseOverCloseButton(canvas)) {
+		if (!isModalWindowOpen() && isMouseOverMainCloseButton(canvas)) {
 			setMouseOverButton(true);
 			canvas.paper(6).pen(24);
 		} else {
@@ -120,7 +125,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 				if (highlighted) {
 					if (hasFocus) {
 						canvas.pen(11).locate(1, 25).print(item.getName());
-						canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
+						if (!isModalWindowOpen())
+							canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
 						canvas.paper(2);
 					} else {
 						canvas.paper(3);
@@ -197,9 +203,9 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			boolean highlighted = menu.getIndexOfSelectedItem() == i;
 			if (highlighted) {
 				canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
-				canvas.paper(1);
+				canvas.paper(9);
 			}
-			canvas.pen(21).locate(tx0, ty).print(label);
+			canvas.pen(22).locate(tx0, ty).print(label);
 			canvas.paper(COLOR_MODAL_BACKGROUND);
 			ty++;
 			i++;
@@ -211,8 +217,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		canvas.paper(COLOR_MODAL_BACKGROUND).clearRect(bounds);
 		// close button
 		Rectangle closeBounds = new Rectangle(bounds.x + bounds.width - 32, bounds.y, 32, 16);
-		setModalCloseButtonBounds(closeBounds);
-		if (isMouseOverModalCloseButton()) {
+		setModalWindowCloseButtonBounds(closeBounds);
+		if (isMouseOverModalWindowCloseButton()) {
 			setMouseOverButton(true);
 			canvas.paper(6).pen(24);
 		} else {
@@ -234,15 +240,15 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	@Override
 	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		super.mouseClickedOnCanvas(canvas, canvasPosition);
-		if (!isInProgramMenu()) {
+		if (!isModalWindowOpen()) {
 			if (isMouseOverHomeButton(canvas)) {
 				home();
-			} else if (isMouseOverCloseButton(canvas)) {
+			} else if (isMouseOverMainCloseButton(canvas)) {
 				close();
 			}
 		} else {
-			if (isMouseOverModalCloseButton()) {
-				closeProgramMenu();
+			if (isMouseOverModalWindowCloseButton()) {
+				closeModalWindow();
 			}
 		}
 	}
@@ -251,22 +257,22 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		getStackedFolderItemList().reset();
 	}
 
-	public void closeProgramMenu() {
-		setProgramMenu(null);
-		setModalCloseButtonBounds(null);
+	public void closeModalWindow() {
+		setModalWindowCloseButtonBounds(null);
+		setCurrentWindow(Window.MAIN);
 	}
 
 	@Override
-	public synchronized void keyPressed(KeyEvent e) {
-		super.keyPressed(e);
-		if (!isInProgramMenu()) {
-			handleKeyInBrowser(e);
-		} else {
-			handleKeyInProgramMenu(e);
+	protected void keyboardKeyPressed(KeyEvent e) {
+		super.keyboardKeyPressed(e);
+		if (!isModalWindowOpen()) {
+			handleKeyboardKeyInMainWindow(e);
+		} else if (Window.PROGRAM_MENU.equals(getCurrentWindow())) {
+			handleKeyboardKeyInProgramMenu(e);
 		}
 	}
 
-	private void handleKeyInBrowser(KeyEvent e) {
+	private void handleKeyboardKeyInMainWindow(KeyEvent e) {
 		StackedFolderItemList stack = getStackedFolderItemList();
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_DOWN) {
@@ -278,13 +284,17 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		} else if (keyCode == KeyEvent.VK_LEFT) {
 			stack.browseLeft();
 		} else if (keyCode == KeyEvent.VK_ENTER) {
-			setProgramMenu(stack.createProgramMenu(7));
+			ProgramMenu menu = stack.createProgramMenu(7);
+			if (menu != null) {
+				setProgramMenu(menu);
+				setCurrentWindow(Window.PROGRAM_MENU);
+			}
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			close();
 		}
 	}
 
-	private void handleKeyInProgramMenu(KeyEvent e) {
+	private void handleKeyboardKeyInProgramMenu(KeyEvent e) {
 		ProgramMenu menu = getProgramMenu();
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_DOWN) {
@@ -294,24 +304,24 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		} else if (keyCode == KeyEvent.VK_ENTER) {
 			menu.getSelectedItem().execute();
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
-			closeProgramMenu();
+			closeModalWindow();
 		}
 	}
 
-	private boolean isInProgramMenu() {
-		return getProgramMenu() != null;
+	private boolean isModalWindowOpen() {
+		return !Window.MAIN.equals(getCurrentWindow());
 	}
 
 	private boolean isMouseOverHomeButton(AmstradDisplayCanvas canvas) {
 		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(1, 1, 2, 1));
 	}
 
-	private boolean isMouseOverCloseButton(AmstradDisplayCanvas canvas) {
+	private boolean isMouseOverMainCloseButton(AmstradDisplayCanvas canvas) {
 		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(39, 1, 40, 1));
 	}
 
-	private boolean isMouseOverModalCloseButton() {
-		Rectangle bounds = getModalCloseButtonBounds();
+	private boolean isMouseOverModalWindowCloseButton() {
+		Rectangle bounds = getModalWindowCloseButtonBounds();
 		if (bounds != null) {
 			return isMouseInCanvasBounds(bounds);
 		} else {
@@ -327,12 +337,12 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		this.mouseOverButton = mouseOverButton;
 	}
 
-	private Rectangle getModalCloseButtonBounds() {
-		return modalCloseButtonBounds;
+	private Rectangle getModalWindowCloseButtonBounds() {
+		return modalWindowCloseButtonBounds;
 	}
 
-	private void setModalCloseButtonBounds(Rectangle bounds) {
-		this.modalCloseButtonBounds = bounds;
+	private void setModalWindowCloseButtonBounds(Rectangle bounds) {
+		this.modalWindowCloseButtonBounds = bounds;
 	}
 
 	public AmstradProgramRepository getProgramRepository() {
@@ -343,12 +353,30 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		return stackedFolderItemList;
 	}
 
+	private Window getCurrentWindow() {
+		return currentWindow;
+	}
+
+	private void setCurrentWindow(Window currentWindow) {
+		this.currentWindow = currentWindow;
+	}
+
 	private ProgramMenu getProgramMenu() {
 		return programMenu;
 	}
 
 	private void setProgramMenu(ProgramMenu programMenu) {
 		this.programMenu = programMenu;
+	}
+
+	private static enum Window {
+
+		MAIN,
+
+		PROGRAM_MENU,
+
+		PROGRAM_INFO;
+
 	}
 
 	private class StackedFolderItemList {
@@ -576,13 +604,17 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			super(maxItemsShowing);
 			this.program = program;
 			this.menuItems = new Vector<ProgramMenuItem>();
-			initMenuItems();
+			populateMenuItems();
 		}
 
-		private void initMenuItems() {
-			addMenuItem(new ProgramLoadMenuItem(getProgram()));
-			addMenuItem(new ProgramRunMenuItem(getProgram()));
-			addMenuItem(new ProgramCloseMenuItem(getProgram()));
+		private void populateMenuItems() {
+			AmstradProgram program = getProgram();
+			addMenuItem(new ProgramRunMenuItem(program));
+			addMenuItem(new ProgramLoadMenuItem(program));
+			if (program.hasInfo()) {
+				addMenuItem(new ProgramInfoMenuItem(program));
+			}
+			addMenuItem(new ProgramCloseMenuItem(program));
 		}
 
 		private void addMenuItem(ProgramMenuItem menuItem) {
@@ -650,9 +682,15 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					close(); // TODO close only after successful load
+					AmstradProgram program = getProgram();
+					AmstradPc amstradPc = getAmstradPc();
 					try {
-						getProgram().loadInto(getAmstradPc());
+						releaseKeyboard();
+						amstradPc.getBasicRuntime().NEW();
+						program.loadInto(amstradPc);
+						closeModalWindow();
+						close(); // restores monitor settings
+						amstradPc.setMonitorMode(program.getPreferredMonitorMode());
 					} catch (AmstradProgramException exc) {
 						System.err.println(exc);
 					}
@@ -673,14 +711,34 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					close(); // TODO close only after successful run
+					AmstradProgram program = getProgram();
+					AmstradPc amstradPc = getAmstradPc();
 					try {
-						getProgram().runWith(getAmstradPc());
+						releaseKeyboard();
+						amstradPc.getBasicRuntime().NEW();
+						program.runWith(amstradPc);
+						closeModalWindow();
+						close(); // restores monitor settings
+						amstradPc.setMonitorMode(program.getPreferredMonitorMode());
 					} catch (AmstradProgramException exc) {
 						System.err.println(exc);
 					}
 				}
 			}).start();
+		}
+
+	}
+
+	private class ProgramInfoMenuItem extends ProgramMenuItem {
+
+		public ProgramInfoMenuItem(AmstradProgram program) {
+			super(program, "Info");
+		}
+
+		@Override
+		protected void execute() {
+			closeModalWindow();
+			setCurrentWindow(Window.PROGRAM_INFO);
 		}
 
 	}
@@ -693,7 +751,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 		@Override
 		protected void execute() {
-			closeProgramMenu();
+			closeModalWindow();
 		}
 
 	}

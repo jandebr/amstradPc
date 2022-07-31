@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -31,6 +32,10 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	private Point mousePositionOnCanvas;
 
+	private AmstradKeyboardController keyboardController;
+
+	private boolean catchKeyboardEvents;
+
 	protected AmstradEmulatedDisplaySource(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 	}
@@ -50,14 +55,17 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	}
 
 	@Override
-	public final void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
+	public final void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext,
+			AmstradKeyboardController keyboardController) {
 		setDisplayCanvas(new AmstradEmulatedDisplayCanvas(graphicsContext));
 		setDisplayComponent(displayComponent);
 		setDisplayComponentInitialCursor(displayComponent.getCursor());
+		setKeyboardController(keyboardController);
 		resetCursor();
 		displayComponent.addMouseListener(this);
 		displayComponent.addMouseMotionListener(this);
 		displayComponent.addKeyListener(this);
+		acquireKeyboard();
 		init(getDisplayCanvas());
 	}
 
@@ -67,6 +75,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		displayComponent.removeMouseListener(this);
 		displayComponent.removeMouseMotionListener(this);
 		displayComponent.removeKeyListener(this);
+		releaseKeyboard();
 		setCursor(getDisplayComponentInitialCursor());
 		releaseOffscreenImage();
 	}
@@ -206,6 +215,12 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	 * @return <code>true</code> when this display source follows the primary display source's resolution
 	 */
 	protected boolean followPrimaryDisplaySourceResolution() {
+		// Subclasses may override this method
+		return true;
+	}
+
+	@Override
+	public boolean shouldRestoreMonitorSettingsOnDispose() {
 		// Subclasses may override this method
 		return true;
 	}
@@ -380,6 +395,52 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		return canvasPosition;
 	}
 
+	public final synchronized void acquireKeyboard() {
+		setCatchKeyboardEvents(true);
+		getKeyboardController().sendKeyboardEventsToComputer(false);
+	}
+
+	public final synchronized void releaseKeyboard() {
+		setCatchKeyboardEvents(false);
+		getKeyboardController().sendKeyboardEventsToComputer(true);
+	}
+
+	@Override
+	public final synchronized void keyPressed(KeyEvent e) {
+		super.keyPressed(e);
+		if (isCatchKeyboardEvents()) {
+			keyboardKeyPressed(e);
+		}
+	}
+
+	@Override
+	public final synchronized void keyReleased(KeyEvent e) {
+		super.keyReleased(e);
+		if (isCatchKeyboardEvents()) {
+			keyboardKeyReleased(e);
+		}
+	}
+
+	@Override
+	public final synchronized void keyTyped(KeyEvent e) {
+		super.keyTyped(e);
+		if (isCatchKeyboardEvents()) {
+			keyboardKeyTyped(e);
+		}
+	}
+
+	protected void keyboardKeyPressed(KeyEvent e) {
+		// Subclasses may override this method
+	}
+
+	protected void keyboardKeyReleased(KeyEvent e) {
+		// Subclasses may override this method
+	}
+
+	protected void keyboardKeyTyped(KeyEvent e) {
+		// Subclasses may override this method
+	}
+
 	protected AmstradPc getAmstradPc() {
 		return amstradPc;
 	}
@@ -422,6 +483,22 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	private void setMousePositionOnCanvas(Point mousePositionOnCanvas) {
 		this.mousePositionOnCanvas = mousePositionOnCanvas;
+	}
+
+	private AmstradKeyboardController getKeyboardController() {
+		return keyboardController;
+	}
+
+	private void setKeyboardController(AmstradKeyboardController keyboardController) {
+		this.keyboardController = keyboardController;
+	}
+
+	private boolean isCatchKeyboardEvents() {
+		return catchKeyboardEvents;
+	}
+
+	private void setCatchKeyboardEvents(boolean catchKeyboardEvents) {
+		this.catchKeyboardEvents = catchKeyboardEvents;
 	}
 
 	private static class AmstradEmulatedDisplayCanvas extends AmstradDisplayCanvas {

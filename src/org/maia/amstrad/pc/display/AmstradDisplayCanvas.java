@@ -361,6 +361,8 @@ public abstract class AmstradDisplayCanvas {
 
 		private BufferedImage symbolChart;
 
+		private boolean customSymbol32;
+
 		public AsciiSymbolRenderer() {
 			loadSystemSymbolChart();
 		}
@@ -373,6 +375,7 @@ public abstract class AmstradDisplayCanvas {
 			try {
 				InputStream in = getClass().getResourceAsStream("image/amstrad-ascii.png");
 				symbolChart = ImageIO.read(in);
+				customSymbol32 = false;
 				in.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -383,7 +386,7 @@ public abstract class AmstradDisplayCanvas {
 			if (canonicalGraphics2D.getBackground() != null) {
 				canonicalGraphics2D.clearRect(0, 0, 8, 8);
 			}
-			if (code >= 32 && code <= 255) {
+			if ((code > 32 && code <= 255) || (code == 32 && customSymbol32)) {
 				BufferedImage chart = getSymbolChart();
 				int chartX0 = 8 * ((code - 32) % 40);
 				int chartY0 = 8 * ((code - 32) / 40);
@@ -426,6 +429,8 @@ public abstract class AmstradDisplayCanvas {
 					}
 				}
 				g2.dispose();
+				if (code == 32)
+					customSymbol32 = true;
 			}
 		}
 

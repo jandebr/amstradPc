@@ -12,11 +12,13 @@ public abstract class AmstradProgram {
 
 	public abstract AmstradMonitorMode getPreferredMonitorMode();
 
+	public abstract boolean hasInfo();
+
 	public abstract void loadInto(AmstradPc amstradPc) throws AmstradProgramException;
 
 	public void runWith(AmstradPc amstradPc) throws AmstradProgramException {
 		loadInto(amstradPc);
-		amstradPc.getBasicRuntime().run();
+		amstradPc.getBasicRuntime().RUN();
 	}
 
 }

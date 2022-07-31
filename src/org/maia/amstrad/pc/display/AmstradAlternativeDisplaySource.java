@@ -7,10 +7,13 @@ import javax.swing.JComponent;
 
 public interface AmstradAlternativeDisplaySource {
 
-	void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext);
+	void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext,
+			AmstradKeyboardController keyboardController);
 
 	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext);
 
 	void dispose(JComponent displayComponent);
+
+	boolean shouldRestoreMonitorSettingsOnDispose();
 
 }

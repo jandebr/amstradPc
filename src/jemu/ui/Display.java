@@ -363,9 +363,7 @@ public class Display extends JComponent {
 	public void updateImage(boolean wait) {
 		painted = false;
 		if (imageRect.width != 0 && imageRect.height != 0 && isShowing()) {
-			if (getSecondaryDisplaySource() == null) {
-				raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
-			}
+			raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
 			repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
 			if (wait)
 				waitPainted();
@@ -831,6 +829,10 @@ public class Display extends JComponent {
 		JEMU.doupdate.setSelected(true);
 	}
 
+	public BufferedImage getRawPrimaryImage() {
+		return image;
+	}
+	
 	public BufferedImage getImage() {
 		BufferedImage off_Image = new BufferedImage(imageRect.width, imageRect.height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = off_Image.createGraphics();

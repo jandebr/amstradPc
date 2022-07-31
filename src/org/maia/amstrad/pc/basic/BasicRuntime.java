@@ -66,29 +66,43 @@ public abstract class BasicRuntime {
 		keyboardEnter("", waitUntilTyped);
 	}
 
-	public void cls() {
-		cls(true);
+	public void CLS() {
+		CLS(true);
 	}
 
-	public void cls(boolean waitUntilTyped) {
-		keyboardEnter("CLS", waitUntilTyped);
+	public void CLS(boolean waitUntilEntered) {
+		keyboardEnter("CLS", waitUntilEntered);
 	}
 
-	public void list() {
-		list(true);
+	public void LIST() {
+		LIST(true);
 	}
 
-	public void list(boolean waitUntilTyped) {
-		keyboardEnter("LIST", waitUntilTyped);
+	public void LIST(boolean waitUntilEntered) {
+		keyboardEnter("LIST", waitUntilEntered);
 	}
 
-	public void run() {
-		run(true);
+	public void RUN() {
+		RUN(true);
 	}
 
-	public void run(boolean waitUntilTyped) {
-		keyboardEnter("RUN", waitUntilTyped);
+	public void RUN(boolean waitUntilEntered) {
+		keyboardEnter("RUN", waitUntilEntered);
 	}
+
+	public void NEW() {
+		NEW(true);
+	}
+
+	public void NEW(boolean waitUntilCompleted) {
+		if (!waitUntilCompleted) {
+			keyboardEnter("NEW", false);
+		} else {
+			reset();
+		}
+	}
+
+	protected abstract void reset();
 
 	public static boolean isBasicSourceFile(File file) {
 		return file.isFile() && file.getName().toLowerCase().endsWith(".bas");

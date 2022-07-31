@@ -141,7 +141,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		@Override
 		protected AmstradProgram readProgram() {
 			// TODO pass info file (if any)
-			return new FileBasedProgram(this);
+			return new FileBasedAmstradProgram(this);
 		}
 
 		public File getFile() {
@@ -150,17 +150,17 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 	}
 
-	private class FileBasedProgram extends AmstradProgram {
+	private class FileBasedAmstradProgram extends AmstradProgram {
 
 		private FileBasedProgramNode programNode;
 
 		private File infoFile;
 
-		public FileBasedProgram(FileBasedProgramNode programNode) {
+		public FileBasedAmstradProgram(FileBasedProgramNode programNode) {
 			this(programNode, null);
 		}
 
-		public FileBasedProgram(FileBasedProgramNode programNode, File infoFile) {
+		public FileBasedAmstradProgram(FileBasedProgramNode programNode, File infoFile) {
 			this.programNode = programNode;
 			this.infoFile = infoFile;
 		}
@@ -168,7 +168,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		@Override
 		public String getProgramName() {
 			String programName = getProgramNode().getName();
-			if (hasInfoFile()) {
+			if (hasInfo()) {
 				// TODO read from info
 			}
 			return programName;
@@ -177,10 +177,16 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		@Override
 		public AmstradMonitorMode getPreferredMonitorMode() {
 			AmstradMonitorMode mode = getDefaultMonitorMode();
-			if (hasInfoFile()) {
+			if (hasInfo()) {
 				// TODO read from info
 			}
 			return mode;
+		}
+
+		@Override
+		public boolean hasInfo() {
+			// TODO return getInfoFile() != null;
+			return true;
 		}
 
 		@Override
@@ -191,10 +197,6 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			} catch (Exception e) {
 				throw new AmstradProgramException("Could not load as Basic source file: " + sourceCodeFile.getPath(), e);
 			}
-		}
-
-		private boolean hasInfoFile() {
-			return getInfoFile() != null;
 		}
 
 		private File getInfoFile() {

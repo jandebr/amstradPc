@@ -35,6 +35,7 @@ import org.maia.amstrad.pc.basic.BasicCompilationException;
 import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.display.AmstradGraphicsContext;
+import org.maia.amstrad.pc.display.AmstradKeyboardController;
 import org.maia.amstrad.pc.display.AmstradSystemColors;
 
 public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener,
@@ -99,7 +100,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			} else {
 				getBasicRuntime().loadByteCodeFromFile(file);
 			}
-			getBasicRuntime().run();
+			getBasicRuntime().RUN();
 		} else if (isSnapshotFile(file)) {
 			if (!isStarted()) {
 				start(true);
@@ -182,6 +183,9 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public synchronized void terminate() {
 		if (!isTerminated()) {
 			if (isStarted()) {
+				if (getCurrentAlternativeDisplaySource() != null) {
+					resetDisplaySource();
+				}
 				Autotype.clearText();
 				getJemuInstance().quit();
 			}
@@ -325,7 +329,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		if (displaySource != null) {
 			getJemuInstance().getDisplay().installSecondaryDisplaySource(
 					new JemuSecondaryDisplaySourceBridge(displaySource));
-			Switches.blockKeyboard = true;
 			fireDisplaySourceChangedEvent();
 		} else {
 			resetDisplaySource();
@@ -337,7 +340,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkStarted();
 		checkNotTerminated();
 		getJemuInstance().getDisplay().uninstallSecondaryDisplaySource();
-		Switches.blockKeyboard = false;
 		fireDisplaySourceChangedEvent();
 	}
 
@@ -361,15 +363,17 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		System.out.println("Wait until Basic runtime is Ready");
 		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
 		AmstradContext.sleep(minWaitTimeMs);
-		BufferedImage image = makeScreenshot(false);
-		double s = (image.getWidth() + 28.0) / 384.0;
-		int cursorX = (int) Math.round(s * 34 + (s - 1) * 2);
-		int cursorY = (int) Math.round(s * 108 + (s - 1) * 6);
+		Display display = getJemuInstance().getDisplay();
+		BufferedImage image = display.getRawPrimaryImage();
+		double sx = image.getWidth() / 384.0;
+		double sy = image.getHeight() / 272.0;
+		int cursorX = (int) Math.round(sx * (32 + 4));
+		int cursorY = (int) Math.round(sy * (40 + 68));
 		Color color = new Color(image.getRGB(cursorX, cursorY));
 		while (color.getGreen() < 100 && System.currentTimeMillis() < timeout) {
 			AmstradContext.sleep(100L);
 			System.out.println("Checking if Basic runtime is Ready");
-			image = makeScreenshot(false);
+			image = display.getRawPrimaryImage();
 			color = new Color(image.getRGB(cursorX, cursorY));
 		}
 		if (System.currentTimeMillis() >= timeout) {
@@ -487,6 +491,13 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 					AmstradContext.sleep(100L);
 				}
 			}
+		}
+
+		@Override
+		protected void reset() {
+			keyboardEnter("INK 0,1:INK 1,24:BORDER 1:PAPER 0:PEN 1:CLS:LOCATE 1,9:NEW");
+			waitUntilReady();
+			CLS();
 		}
 
 		@Override
@@ -755,13 +766,25 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 		private AmstradAlternativeDisplaySource source;
 
+		private AmstradMonitorMode rememberedMonitorMode;
+
+		private boolean rememberedMonitorEffect;
+
+		private boolean rememberedMonitorScanLinesEffect;
+
+		private boolean rememberedMonitorBilinearEffect;
+
 		public JemuSecondaryDisplaySourceBridge(AmstradAlternativeDisplaySource source) {
 			this.source = source;
 		}
 
 		@Override
 		public void init(JComponent displayComponent) {
-			getSource().init(displayComponent, getGraphicsContext());
+			rememberedMonitorMode = getMonitorMode();
+			rememberedMonitorEffect = isMonitorEffectOn();
+			rememberedMonitorScanLinesEffect = isMonitorScanLinesEffectOn();
+			rememberedMonitorBilinearEffect = isMonitorBilinearEffectOn();
+			getSource().init(displayComponent, getGraphicsContext(), new AmstradKeyboardControllerImpl());
 		}
 
 		@Override
@@ -772,10 +795,32 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		@Override
 		public void dispose(JComponent displayComponent) {
 			getSource().dispose(displayComponent);
+			if (getSource().shouldRestoreMonitorSettingsOnDispose()) {
+				restoreMonitorSettings();
+			}
+		}
+
+		private void restoreMonitorSettings() {
+			setMonitorMode(rememberedMonitorMode);
+			setMonitorEffect(rememberedMonitorEffect);
+			setMonitorScanLinesEffect(rememberedMonitorScanLinesEffect);
+			setMonitorBilinearEffect(rememberedMonitorBilinearEffect);
 		}
 
 		private AmstradAlternativeDisplaySource getSource() {
 			return source;
+		}
+
+	}
+
+	private class AmstradKeyboardControllerImpl implements AmstradKeyboardController {
+
+		public AmstradKeyboardControllerImpl() {
+		}
+
+		@Override
+		public void sendKeyboardEventsToComputer(boolean sendToComputer) {
+			Switches.blockKeyboard = !sendToComputer;
 		}
 
 	}
