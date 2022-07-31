@@ -313,7 +313,7 @@ public abstract class AmstradDisplayCanvas {
 		return getGraphicsContext().getSystemColors().getColor(colorIndex);
 	}
 
-	private int getBorderColorIndex() {
+	protected int getBorderColorIndex() {
 		return borderColorIndex;
 	}
 
@@ -321,7 +321,7 @@ public abstract class AmstradDisplayCanvas {
 		this.borderColorIndex = borderColorIndex;
 	}
 
-	private int getPaperColorIndex() {
+	protected int getPaperColorIndex() {
 		return paperColorIndex;
 	}
 
@@ -329,7 +329,7 @@ public abstract class AmstradDisplayCanvas {
 		this.paperColorIndex = paperColorIndex;
 	}
 
-	private int getPenColorIndex() {
+	protected int getPenColorIndex() {
 		return penColorIndex;
 	}
 

@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.maia.amstrad.pc.AmstradPc;
-
 public abstract class AmstradProgramRepository {
 
 	protected AmstradProgramRepository() {
@@ -86,6 +84,10 @@ public abstract class AmstradProgramRepository {
 			return sb.toString();
 		}
 
+		public boolean isEmpty() {
+			return getChildNodes().isEmpty();
+		}
+
 		@Override
 		public boolean isFolder() {
 			return true;
@@ -109,7 +111,7 @@ public abstract class AmstradProgramRepository {
 
 	public static abstract class ProgramNode extends Node {
 
-		private AmstradProgramInfo programInfo;
+		private AmstradProgram program;
 
 		protected ProgramNode(String name) {
 			super(name);
@@ -122,23 +124,16 @@ public abstract class AmstradProgramRepository {
 
 		@Override
 		public void refresh() {
-			programInfo = null;
+			program = null;
 		}
 
-		protected abstract AmstradProgramInfo readProgramInfo() throws AmstradProgramException;
+		protected abstract AmstradProgram readProgram();
 
-		public AmstradProgramInfo getProgramInfo() throws AmstradProgramException {
-			if (programInfo == null) {
-				programInfo = readProgramInfo();
+		public AmstradProgram getProgram() {
+			if (program == null) {
+				program = readProgram();
 			}
-			return programInfo;
-		}
-
-		public abstract void loadInto(AmstradPc amstradPc) throws AmstradProgramException;
-
-		public void runWith(AmstradPc amstradPc) throws AmstradProgramException {
-			loadInto(amstradPc);
-			amstradPc.getBasicRuntime().run();
+			return program;
 		}
 
 	}

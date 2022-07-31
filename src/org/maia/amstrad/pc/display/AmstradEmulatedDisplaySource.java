@@ -79,6 +79,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		updateDisplayCanvasBounds(displayBounds, borderInsets);
 		Graphics2D drawingSurface = deriveDrawingSurface(display, displayBounds, borderInsets, graphicsContext);
 		canvas.updateDrawingSurface(drawingSurface);
+		canvas.rememberColors();
 		canvas.cls();
 		renderContent(canvas);
 		if (getOffscreenImage() != null) {
@@ -88,6 +89,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 			renderBorder(display, displayBounds, borderInsets);
 		}
 		drawingSurface.dispose();
+		canvas.restoreColors();
 	}
 
 	private Insets deriveBorderInsets(Dimension size) {
@@ -428,6 +430,12 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 		private Rectangle boundsOnDisplayComponent;
 
+		private int rememberedBorderColorIndex;
+
+		private int rememberedPaperColorIndex;
+
+		private int rememberedPenColorIndex;
+
 		public AmstradEmulatedDisplayCanvas(AmstradGraphicsContext graphicsContext) {
 			super(graphicsContext);
 		}
@@ -461,6 +469,18 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 			int xLeft = (cursorX - 1) * charWidth;
 			int yTop = (cursorY - 1) * charHeight;
 			return new Rectangle(xLeft, yTop, charWidth, charHeight);
+		}
+
+		public void rememberColors() {
+			rememberedBorderColorIndex = getBorderColorIndex();
+			rememberedPaperColorIndex = getPaperColorIndex();
+			rememberedPenColorIndex = getPenColorIndex();
+		}
+
+		public void restoreColors() {
+			border(rememberedBorderColorIndex);
+			paper(rememberedPaperColorIndex);
+			pen(rememberedPenColorIndex);
 		}
 
 	}

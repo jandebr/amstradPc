@@ -1,6 +1,8 @@
 package org.maia.amstrad.pc.browser.repo;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -12,11 +14,50 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 	private FileBasedFolderNode rootNode;
 
+	private boolean folderPerProgram;
+
+	private AmstradMonitorMode defaultMonitorMode;
+
 	public FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram,
-			AmstradMonitorMode preferredMonitorMode) {
+			AmstradMonitorMode defaultMonitorMode) {
 		if (!rootFolder.isDirectory())
 			throw new IllegalArgumentException("The root must be a directory");
-		this.rootNode = new FileBasedFolderNode(rootFolder, folderPerProgram, preferredMonitorMode);
+		this.rootNode = new FileBasedFolderNode(rootFolder);
+		this.folderPerProgram = folderPerProgram;
+		this.defaultMonitorMode = defaultMonitorMode;
+	}
+
+	private static boolean containsSubFolders(File folder) {
+		boolean result = false;
+		File[] files = folder.listFiles();
+		int i = 0;
+		while (!result && i < files.length)
+			result = files[i++].isDirectory();
+		return result;
+	}
+
+	private static boolean isProgramFile(File file) {
+		return BasicRuntime.isBasicSourceFile(file);
+	}
+
+	private static boolean isRemasteredProgramFile(File file) {
+		return isProgramFile(file) && file.getName().toLowerCase().contains("remastered");
+	}
+
+	private static File selectProgramFileInFolder(File folder) {
+		File result = null;
+		File[] files = folder.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			File file = files[i];
+			if (isProgramFile(file)) {
+				if (result == null) {
+					result = file;
+				} else if (isRemasteredProgramFile(file) && !isRemasteredProgramFile(result)) {
+					result = file;
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -24,80 +65,53 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return rootNode;
 	}
 
-	private static class FileBasedFolderNode extends FolderNode {
+	public boolean isFolderPerProgram() {
+		return folderPerProgram;
+	}
+
+	public AmstradMonitorMode getDefaultMonitorMode() {
+		return defaultMonitorMode;
+	}
+
+	private class FileBasedFolderNode extends FolderNode {
 
 		private File folder;
 
-		private boolean folderPerProgram;
-
-		private AmstradMonitorMode preferredMonitorMode;
-
-		public FileBasedFolderNode(File folder, boolean folderPerProgram, AmstradMonitorMode preferredMonitorMode) {
+		public FileBasedFolderNode(File folder) {
 			super(folder.getName());
 			this.folder = folder;
-			this.folderPerProgram = folderPerProgram;
-			this.preferredMonitorMode = preferredMonitorMode;
-		}
-
-		private static boolean containsSubFolders(File folder) {
-			boolean result = false;
-			File[] files = folder.listFiles();
-			int i = 0;
-			while (!result && i < files.length)
-				result = files[i++].isDirectory();
-			return result;
-		}
-
-		private static boolean isProgramFile(File file) {
-			return BasicRuntime.isBasicSourceFile(file);
-		}
-
-		private static boolean isRemasteredProgramFile(File file) {
-			return isProgramFile(file) && file.getName().toLowerCase().contains("remastered");
-		}
-
-		private static File selectProgramFileInFolder(File folder) {
-			File result = null;
-			File[] files = folder.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				File file = files[i];
-				if (isProgramFile(file)) {
-					if (result == null) {
-						result = file;
-					} else if (isRemasteredProgramFile(file) && !isRemasteredProgramFile(result)) {
-						result = file;
-					}
-				}
-			}
-			return result;
 		}
 
 		@Override
 		protected List<Node> listChildNodes() {
-			AmstradMonitorMode mode = getPreferredMonitorMode();
-			List<Node> childNodes = new Vector<Node>();
-			File[] files = getFolder().listFiles();
-			for (int i = 0; i < files.length; i++) {
-				File file = files[i];
+			List<FileBasedFolderNode> childFolderNodes = new Vector<FileBasedFolderNode>();
+			List<FileBasedProgramNode> childProgramNodes = new Vector<FileBasedProgramNode>();
+			List<File> files = Arrays.asList(getFolder().listFiles());
+			Collections.sort(files);
+			for (File file : files) {
 				if (isFolderPerProgram()) {
 					if (file.isDirectory()) {
 						if (!containsSubFolders(file)) {
 							File pf = selectProgramFileInFolder(file);
 							if (pf != null) {
-								childNodes.add(new FileBasedProgramNode(file.getName(), pf, mode));
+								childProgramNodes.add(new FileBasedProgramNode(file.getName(), pf));
 							}
 						} else {
-							childNodes.add(new FileBasedFolderNode(file, isFolderPerProgram(), mode));
+							childFolderNodes.add(new FileBasedFolderNode(file));
 						}
 					}
 				} else {
 					if (file.isDirectory()) {
-						childNodes.add(new FileBasedFolderNode(file, isFolderPerProgram(), mode));
+						childFolderNodes.add(new FileBasedFolderNode(file));
 					} else if (isProgramFile(file)) {
-						childNodes.add(new FileBasedProgramNode(file.getName(), file, mode));
+						childProgramNodes.add(new FileBasedProgramNode(file.getName(), file));
 					}
 				}
 			}
+			// Sort: folders first
+			List<Node> childNodes = new Vector<Node>(childFolderNodes.size() + childProgramNodes.size());
+			childNodes.addAll(childFolderNodes);
+			childNodes.addAll(childProgramNodes);
 			return childNodes;
 		}
 
@@ -105,26 +119,15 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			return folder;
 		}
 
-		public boolean isFolderPerProgram() {
-			return folderPerProgram;
-		}
-
-		public AmstradMonitorMode getPreferredMonitorMode() {
-			return preferredMonitorMode;
-		}
-
 	}
 
-	private static class FileBasedProgramNode extends ProgramNode {
+	private class FileBasedProgramNode extends ProgramNode {
 
 		private File file;
 
-		private AmstradMonitorMode preferredMonitorMode;
-
-		public FileBasedProgramNode(String name, File file, AmstradMonitorMode preferredMonitorMode) {
+		public FileBasedProgramNode(String name, File file) {
 			super(name);
 			this.file = file;
-			this.preferredMonitorMode = preferredMonitorMode;
 		}
 
 		@Override
@@ -136,41 +139,28 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		}
 
 		@Override
-		protected AmstradProgramInfo readProgramInfo() {
+		protected AmstradProgram readProgram() {
 			// TODO pass info file (if any)
-			return new FileBasedProgramInfo(this);
-		}
-
-		@Override
-		public void loadInto(AmstradPc amstradPc) throws AmstradProgramException {
-			try {
-				amstradPc.getBasicRuntime().loadSourceCodeFromFile(getFile());
-			} catch (Exception e) {
-				throw new AmstradProgramException("Could not load as Basic source file: " + file.getPath(), e);
-			}
+			return new FileBasedProgram(this);
 		}
 
 		public File getFile() {
 			return file;
 		}
 
-		public AmstradMonitorMode getPreferredMonitorMode() {
-			return preferredMonitorMode;
-		}
-
 	}
 
-	private static class FileBasedProgramInfo extends AmstradProgramInfo {
+	private class FileBasedProgram extends AmstradProgram {
 
 		private FileBasedProgramNode programNode;
 
 		private File infoFile;
 
-		public FileBasedProgramInfo(FileBasedProgramNode programNode) {
+		public FileBasedProgram(FileBasedProgramNode programNode) {
 			this(programNode, null);
 		}
 
-		public FileBasedProgramInfo(FileBasedProgramNode programNode, File infoFile) {
+		public FileBasedProgram(FileBasedProgramNode programNode, File infoFile) {
 			this.programNode = programNode;
 			this.infoFile = infoFile;
 		}
@@ -186,15 +176,21 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 		@Override
 		public AmstradMonitorMode getPreferredMonitorMode() {
-			AmstradMonitorMode mode = getProgramNode().getPreferredMonitorMode();
+			AmstradMonitorMode mode = getDefaultMonitorMode();
 			if (hasInfoFile()) {
 				// TODO read from info
 			}
 			return mode;
 		}
 
-		private FileBasedProgramNode getProgramNode() {
-			return programNode;
+		@Override
+		public void loadInto(AmstradPc amstradPc) throws AmstradProgramException {
+			File sourceCodeFile = getProgramNode().getFile();
+			try {
+				amstradPc.getBasicRuntime().loadSourceCodeFromFile(sourceCodeFile);
+			} catch (Exception e) {
+				throw new AmstradProgramException("Could not load as Basic source file: " + sourceCodeFile.getPath(), e);
+			}
 		}
 
 		private boolean hasInfoFile() {
@@ -203,6 +199,10 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 		private File getInfoFile() {
 			return infoFile;
+		}
+
+		private FileBasedProgramNode getProgramNode() {
+			return programNode;
 		}
 
 	}
