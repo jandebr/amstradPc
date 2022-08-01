@@ -100,7 +100,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			} else {
 				getBasicRuntime().loadByteCodeFromFile(file);
 			}
-			getBasicRuntime().RUN();
+			getBasicRuntime().run();
 		} else if (isSnapshotFile(file)) {
 			if (!isStarted()) {
 				start(true);
@@ -491,13 +491,6 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 					AmstradContext.sleep(100L);
 				}
 			}
-		}
-
-		@Override
-		protected void reset() {
-			keyboardEnter("INK 0,1:INK 1,24:BORDER 1:PAPER 0:PEN 1:CLS:LOCATE 1,9:NEW");
-			waitUntilReady();
-			CLS();
 		}
 
 		@Override

@@ -18,7 +18,7 @@ public abstract class AmstradProgram {
 
 	public void runWith(AmstradPc amstradPc) throws AmstradProgramException {
 		loadInto(amstradPc);
-		amstradPc.getBasicRuntime().RUN();
+		amstradPc.getBasicRuntime().run();
 	}
 
 }

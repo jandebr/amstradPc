@@ -686,7 +686,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 					AmstradPc amstradPc = getAmstradPc();
 					try {
 						releaseKeyboard();
-						amstradPc.getBasicRuntime().NEW();
+						amstradPc.reboot(true);
 						program.loadInto(amstradPc);
 						closeModalWindow();
 						close(); // restores monitor settings
@@ -715,7 +715,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 					AmstradPc amstradPc = getAmstradPc();
 					try {
 						releaseKeyboard();
-						amstradPc.getBasicRuntime().NEW();
+						amstradPc.reboot(true);
 						program.runWith(amstradPc);
 						closeModalWindow();
 						close(); // restores monitor settings
