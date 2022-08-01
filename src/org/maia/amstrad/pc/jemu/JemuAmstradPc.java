@@ -86,14 +86,14 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public void launch(File file) throws IOException, BasicCompilationException {
+	public void launch(File file, boolean silent) throws IOException, BasicCompilationException {
 		checkNotTerminated();
 		System.out.println("Launching from " + file.getPath());
 		if (BasicRuntime.isBasicSourceFile(file) || BasicRuntime.isBasicByteCodeFile(file)) {
 			if (!isStarted()) {
-				start(true);
+				start(true, silent);
 			} else {
-				reboot(true);
+				reboot(true, silent);
 			}
 			if (BasicRuntime.isBasicSourceFile(file)) {
 				getBasicRuntime().loadSourceCodeFromFile(file);
@@ -103,7 +103,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			getBasicRuntime().run();
 		} else if (isSnapshotFile(file)) {
 			if (!isStarted()) {
-				start(true);
+				start(true, silent);
 			}
 			getJemuInstance().doAutoOpen(file);
 		} else {
@@ -123,10 +123,13 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	@Override
-	public synchronized void start(boolean waitUntilReady) {
+	public synchronized void start(boolean waitUntilReady, boolean silent) {
 		checkNoInstanceRunning();
 		checkNotStarted();
 		checkNotTerminated();
+		boolean floppySound = Switches.FloppySound;
+		if (silent)
+			Switches.FloppySound = false;
 		JEMU jemu = getJemuInstance();
 		jemu.init();
 		jemu.start();
@@ -139,20 +142,25 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		setStarted(true);
 		setInstanceRunning(true);
 		fireStartedEvent();
-		if (waitUntilReady) {
+		if (waitUntilReady)
 			waitUntilReady();
-		}
+		if (silent)
+			Switches.FloppySound = floppySound;
 	}
 
 	@Override
-	public synchronized void reboot(boolean waitUntilReady) {
+	public synchronized void reboot(boolean waitUntilReady, boolean silent) {
 		checkStarted();
 		checkNotTerminated();
+		boolean floppySound = Switches.FloppySound;
+		if (silent)
+			Switches.FloppySound = false;
 		getJemuInstance().reBoot();
 		fireRebootingEvent();
-		if (waitUntilReady) {
+		if (waitUntilReady)
 			waitUntilReady();
-		}
+		if (silent)
+			Switches.FloppySound = floppySound;
 	}
 
 	@Override

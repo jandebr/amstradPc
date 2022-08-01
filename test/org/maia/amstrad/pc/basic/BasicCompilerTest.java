@@ -55,9 +55,9 @@ public class BasicCompilerTest {
 
 	private static void loadFileWithoutCompiler(File basicFile, AmstradPc amstradPc) throws IOException {
 		if (amstradPc.isStarted()) {
-			amstradPc.reboot(true);
+			amstradPc.reboot(true, true);
 		} else {
-			amstradPc.start(true);
+			amstradPc.start(true, true);
 		}
 		amstradPc.getBasicRuntime().keyboardTypeFileContents(basicFile);
 	}

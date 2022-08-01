@@ -38,13 +38,13 @@ public abstract class AmstradPc {
 
 	public abstract boolean isTerminated();
 
-	public abstract void launch(File file) throws Exception;
+	public abstract void launch(File file, boolean silent) throws Exception;
 
 	public abstract void saveSnapshot(File file) throws IOException;
 
-	public abstract void start(boolean waitUntilReady);
+	public abstract void start(boolean waitUntilReady, boolean silent);
 
-	public abstract void reboot(boolean waitUntilReady);
+	public abstract void reboot(boolean waitUntilReady, boolean silent);
 
 	public abstract void pause();
 

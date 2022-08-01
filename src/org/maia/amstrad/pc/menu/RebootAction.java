@@ -16,7 +16,7 @@ public class RebootAction extends AmstradPcAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		getAmstradPc().reboot(false);
+		getAmstradPc().reboot(false, false);
 	}
 
 }

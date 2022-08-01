@@ -9,9 +9,9 @@ public class AmstradMain {
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		frame.installMenuBar();
 		if (args.length == 0) {
-			amstradPc.start(true);
+			amstradPc.start(true, false);
 		} else if (args.length == 1) {
-			amstradPc.launch(new File(args[0]));
+			amstradPc.launch(new File(args[0]), false);
 		} else {
 			System.err.println("Invalid startup arguments");
 		}
