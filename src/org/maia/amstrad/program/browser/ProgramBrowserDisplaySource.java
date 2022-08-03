@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.browser.ui;
+package org.maia.amstrad.program.browser;
 
 import java.awt.Cursor;
 import java.awt.Point;
@@ -10,13 +10,13 @@ import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.browser.repo.AmstradProgram;
-import org.maia.amstrad.pc.browser.repo.AmstradProgramException;
-import org.maia.amstrad.pc.browser.repo.AmstradProgramRepository;
-import org.maia.amstrad.pc.browser.repo.AmstradProgramRepository.FolderNode;
-import org.maia.amstrad.pc.browser.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.pc.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.display.AmstradEmulatedDisplaySource;
+import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 
 public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
@@ -130,8 +130,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			while (i < itemList.size() && ty < ty0 + itemList.getMaxItemsShowing()) {
 				Node item = itemList.getItem(i);
 				String label = fitLabel(item.getName(), LABEL_WIDTH);
-				boolean highlighted = itemList.getIndexOfSelectedItem() == i;
-				if (highlighted) {
+				if (itemList.getIndexOfSelectedItem() == i) {
 					if (hasFocus) {
 						canvas.pen(11).locate(1, 25).print(item.getName());
 						if (!isModalWindowOpen() && isItemListCursorBlinkOn()) {
@@ -208,14 +207,18 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		while (i < menu.size() && ty < ty0 + menu.getMaxItemsShowing()) {
 			ProgramMenuItem item = menu.getItem(i);
 			String label = fitLabel(item.getLabel(), LABEL_WIDTH);
-			boolean highlighted = menu.getIndexOfSelectedItem() == i;
-			if (highlighted) {
+			if (menu.getIndexOfSelectedItem() == i) {
 				if (isItemListCursorBlinkOn()) {
 					canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
 				}
 				canvas.paper(9);
 			}
-			canvas.pen(22).locate(tx0, ty).print(label);
+			if (item.isEnabled()) {
+				canvas.pen(22);
+			} else {
+				canvas.pen(13).paper(COLOR_MODAL_BACKGROUND);
+			}
+			canvas.locate(tx0, ty).print(label);
 			canvas.paper(COLOR_MODAL_BACKGROUND);
 			ty++;
 			i++;
@@ -230,8 +233,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		while (i < infoSheet.size() && ty < ty0 + infoSheet.getMaxItemsShowing()) {
 			ProgramInfoLine line = infoSheet.getLineItem(i);
 			String label = fitLabel(line.getText(), 32);
-			boolean highlighted = infoSheet.getIndexOfSelectedItem() == i;
-			if (highlighted) {
+			if (infoSheet.getIndexOfSelectedItem() == i) {
 				canvas.paper(1);
 			}
 			canvas.pen(25).locate(tx0, ty).print(label);
@@ -728,9 +730,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			AmstradProgram program = getProgram();
 			addMenuItem(new ProgramRunMenuItem(program));
 			addMenuItem(new ProgramLoadMenuItem(program));
-			if (program.hasInfo()) {
-				addMenuItem(new ProgramInfoMenuItem(program));
-			}
+			addMenuItem(new ProgramInfoMenuItem(program));
 			addMenuItem(new ProgramCloseMenuItem(program));
 		}
 
@@ -777,6 +777,10 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		}
 
 		protected abstract void execute();
+
+		protected boolean isEnabled() {
+			return true;
+		}
 
 		public AmstradProgram getProgram() {
 			return program;
@@ -867,9 +871,16 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 		@Override
 		protected void execute() {
-			setProgramInfoSheet(createProgramInfoSheet(getProgram()));
-			closeModalWindow();
-			setCurrentWindow(Window.PROGRAM_INFO);
+			if (isEnabled()) {
+				setProgramInfoSheet(createProgramInfoSheet(getProgram()));
+				closeModalWindow();
+				setCurrentWindow(Window.PROGRAM_INFO);
+			}
+		}
+
+		@Override
+		protected boolean isEnabled() {
+			return getProgram().hasDescriptiveInfo();
 		}
 
 	}

@@ -1,8 +1,10 @@
-package org.maia.amstrad.pc.browser.repo;
+package org.maia.amstrad.program.repo;
 
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.maia.amstrad.program.AmstradProgram;
 
 public abstract class AmstradProgramRepository {
 

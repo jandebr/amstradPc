@@ -1,6 +1,7 @@
-package org.maia.amstrad.pc.browser.repo;
+package org.maia.amstrad.program.repo;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +10,10 @@ import java.util.Vector;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.basic.BasicRuntime;
+import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramBuilder;
+import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.AmstradProgramType;
 
 public class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 
@@ -58,6 +63,40 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			}
 		}
 		return result;
+	}
+
+	private static boolean isMetaDataFile(File file) {
+		return file.isFile() && file.getName().toLowerCase().endsWith(".amd");
+	}
+
+	private static File selectMetaDataFileInFolder(File folder) {
+		return selectMetaDataFileInFolder(folder, null);
+	}
+
+	private static File selectMetaDataFileInFolder(File folder, File companionProgramFileInFolder) {
+		File result = null;
+		File[] files = folder.listFiles();
+		int i = 0;
+		while (i < files.length && result == null) {
+			File file = files[i++];
+			if (isMetaDataFile(file)) {
+				if (companionProgramFileInFolder == null
+						|| stripExtension(file).equals(stripExtension(companionProgramFileInFolder))) {
+					result = file;
+				}
+			}
+		}
+		return result;
+	}
+
+	private static File stripExtension(File file) {
+		String name = file.getName();
+		int i = name.lastIndexOf('.');
+		if (i > 0) {
+			return new File(file.getParentFile(), name.substring(0, i));
+		} else {
+			return file;
+		}
 	}
 
 	@Override
@@ -140,8 +179,26 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 		@Override
 		protected AmstradProgram readProgram() {
-			// TODO pass info file (if any)
-			return new FileBasedAmstradProgram(this);
+			AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(new FileBasedAmstradProgram(this));
+			try {
+				builder.loadAmstradMetaData(getCompanionMetaDataFile());
+			} catch (IOException e) {
+				System.err.println(e);
+			}
+			builder.withProgramType(AmstradProgramType.BASIC_SOURCE_CODE); // as per isProgramFile()
+			AmstradProgram program = builder.build();
+			if (program.getPreferredMonitorMode() == null) {
+				program.setPreferredMonitorMode(getDefaultMonitorMode());
+			}
+			return program;
+		}
+
+		public File getCompanionMetaDataFile() {
+			if (isFolderPerProgram()) {
+				return selectMetaDataFileInFolder(getFile().getParentFile());
+			} else {
+				return selectMetaDataFileInFolder(getFile().getParentFile(), getFile());
+			}
 		}
 
 		public File getFile() {
@@ -154,39 +211,9 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 		private FileBasedProgramNode programNode;
 
-		private File infoFile;
-
 		public FileBasedAmstradProgram(FileBasedProgramNode programNode) {
-			this(programNode, null);
-		}
-
-		public FileBasedAmstradProgram(FileBasedProgramNode programNode, File infoFile) {
+			super(programNode.getName());
 			this.programNode = programNode;
-			this.infoFile = infoFile;
-		}
-
-		@Override
-		public String getProgramName() {
-			String programName = getProgramNode().getName();
-			if (hasInfo()) {
-				// TODO read from info
-			}
-			return programName;
-		}
-
-		@Override
-		public AmstradMonitorMode getPreferredMonitorMode() {
-			AmstradMonitorMode mode = getDefaultMonitorMode();
-			if (hasInfo()) {
-				// TODO read from info
-			}
-			return mode;
-		}
-
-		@Override
-		public boolean hasInfo() {
-			// TODO return getInfoFile() != null;
-			return true;
 		}
 
 		@Override
@@ -197,10 +224,6 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			} catch (Exception e) {
 				throw new AmstradProgramException("Could not load as Basic source file: " + sourceCodeFile.getPath(), e);
 			}
-		}
-
-		private File getInfoFile() {
-			return infoFile;
 		}
 
 		private FileBasedProgramNode getProgramNode() {

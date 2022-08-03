@@ -6,10 +6,10 @@ import java.io.File;
 import jemu.settings.Settings;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.browser.repo.AmstradProgramRepository;
-import org.maia.amstrad.pc.browser.repo.FileBasedAmstradProgramRepository;
-import org.maia.amstrad.pc.browser.ui.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
 
 public class ProgramBrowserAction extends AmstradPcAction {
 

@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.browser.repo;
+package org.maia.amstrad.program;
 
 public class AmstradProgramException extends Exception {
 
