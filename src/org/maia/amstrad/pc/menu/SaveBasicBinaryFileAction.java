@@ -5,6 +5,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
@@ -24,7 +25,7 @@ public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					File file = getSelectedFileWithExtension(".bin");
+					File file = getSelectedFileWithExtension(AmstradFileType.BASIC_BYTE_CODE_FILE.getFileExtension());
 					try {
 						getAmstradPc().getBasicRuntime().exportByteCodeToFile(file);
 					} catch (Exception e) {

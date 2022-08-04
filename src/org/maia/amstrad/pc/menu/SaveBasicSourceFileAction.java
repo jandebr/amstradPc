@@ -5,6 +5,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class SaveBasicSourceFileAction extends BasicSourceFileAction {
@@ -24,7 +25,7 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					File file = getSelectedFileWithExtension(".bas");
+					File file = getSelectedFileWithExtension(AmstradFileType.BASIC_SOURCE_CODE_FILE.getFileExtension());
 					try {
 						getAmstradPc().getBasicRuntime().exportSourceCodeToFile(file);
 					} catch (Exception e) {

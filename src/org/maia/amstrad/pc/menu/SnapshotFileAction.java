@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.menu;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
 public abstract class SnapshotFileAction extends FileChooserAction {
@@ -15,7 +16,10 @@ public abstract class SnapshotFileAction extends FileChooserAction {
 	protected JFileChooser buildFileChooser() {
 		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
 		fileChooser.setDialogTitle(getName());
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Snapshot files (*.sna, *.snz)", "sna", "snz");
+		String extU = AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.getFileExtensionWithoutDot();
+		String extC = AmstradFileType.JAVACPC_SNAPSHOT_FILE_COMPRESSED.getFileExtensionWithoutDot();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Snapshot files (*." + extU + ", *." + extC + ")",
+				extU, extC);
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
 	}

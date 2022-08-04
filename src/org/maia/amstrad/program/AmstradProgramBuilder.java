@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
+import org.maia.amstrad.util.StringUtils;
 
 public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 
@@ -29,11 +31,6 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 
 	public AmstradProgramBuilder withProgramDescription(String programDescription) {
 		getProgram().setProgramDescription(programDescription);
-		return this;
-	}
-
-	public AmstradProgramBuilder withProgramType(AmstradProgramType programType) {
-		getProgram().setProgramType(programType);
 		return this;
 	}
 
@@ -85,7 +82,22 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 			props.load(reader);
 			withProgramName(props.getProperty(AMD_NAME, getProgram().getProgramName()));
 			withAuthor(props.getProperty(AMD_AUTHOR));
-			// TODO more
+			withProductionYear(StringUtils.toInt(props.getProperty(AMD_YEAR), 0));
+			withNameOfTape(props.getProperty(AMD_TAPE));
+			withBlocksOnTape(StringUtils.toInt(props.getProperty(AMD_BLOCKS), 0));
+			withPreferredMonitorMode(StringUtils.toMonitorMode(props.getProperty(AMD_MONITOR), null));
+			withProgramDescription(props.getProperty(AMD_DESCRIPTION));
+			// User controls
+			List<UserControl> userControls = new Vector<UserControl>();
+			int i = 1;
+			String key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
+			while (key != null) {
+				String desc = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_DESCRIPTION);
+				userControls.add(new UserControl(key, desc));
+				i++;
+				key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
+			}
+			withUserControls(userControls);
 		}
 		return this;
 	}

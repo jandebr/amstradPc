@@ -13,10 +13,12 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.display.AmstradEmulatedDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.util.StringUtils;
 
 public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
@@ -61,6 +63,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		getAmstradPc().setMonitorBilinearEffect(false);
 		getAmstradPc().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
+		canvas.symbol(254, 255, 129, 129, 129, 255, 24, 126, 0); // monitor
 		canvas.symbol(255, 24, 60, 126, 255, 126, 110, 110, 124); // home
 	}
 
@@ -129,7 +132,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			int i = itemList.getIndexOfFirstItemShowing();
 			while (i < itemList.size() && ty < ty0 + itemList.getMaxItemsShowing()) {
 				Node item = itemList.getItem(i);
-				String label = fitLabel(item.getName(), LABEL_WIDTH);
+				String label = StringUtils.fitWidth(item.getName(), LABEL_WIDTH);
 				if (itemList.getIndexOfSelectedItem() == i) {
 					if (hasFocus) {
 						canvas.pen(11).locate(1, 25).print(item.getName());
@@ -185,28 +188,13 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		}
 	}
 
-	private String fitLabel(String label, int width) {
-		int n = label.length();
-		if (n == width) {
-			return label;
-		} else if (n > width) {
-			return label.substring(0, width - 2) + "..";
-		} else {
-			StringBuilder sb = new StringBuilder(width);
-			sb.append(label);
-			for (int i = 0; i < width - n; i++)
-				sb.append(' ');
-			return sb.toString();
-		}
-	}
-
 	private void renderProgramMenu(ProgramMenu menu, AmstradDisplayCanvas canvas) {
 		renderModalWindow(8, 8, 33, 18, menu.getProgram().getProgramName(), canvas);
 		int tx0 = 10, ty0 = 12, ty = ty0;
 		int i = menu.getIndexOfFirstItemShowing();
 		while (i < menu.size() && ty < ty0 + menu.getMaxItemsShowing()) {
 			ProgramMenuItem item = menu.getItem(i);
-			String label = fitLabel(item.getLabel(), LABEL_WIDTH);
+			String label = StringUtils.fitWidth(item.getLabel(), LABEL_WIDTH);
 			if (menu.getIndexOfSelectedItem() == i) {
 				if (isItemListCursorBlinkOn()) {
 					canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
@@ -228,22 +216,25 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	private void renderProgramInfoSheet(ProgramInfoSheet infoSheet, AmstradDisplayCanvas canvas) {
 		renderModalWindow(4, 5, 37, 22, infoSheet.getProgram().getProgramName(), canvas);
-		int tx0 = 5, ty0 = 9, ty = ty0;
+		int tx0 = 6, ty0 = 8, ty = ty0;
 		int i = infoSheet.getIndexOfFirstItemShowing();
 		while (i < infoSheet.size() && ty < ty0 + infoSheet.getMaxItemsShowing()) {
+			canvas.locate(tx0, ty);
 			ProgramInfoLine line = infoSheet.getLineItem(i);
-			String label = fitLabel(line.getText(), 32);
-			if (infoSheet.getIndexOfSelectedItem() == i) {
-				canvas.paper(1);
+			for (ProgramInfoTextSpan span : line.getTextSpans()) {
+				canvas.paper(span.getPaperColorIndex()).pen(span.getPenColorIndex());
+				canvas.print(span.getText());
 			}
-			canvas.pen(25).locate(tx0, ty).print(label);
 			canvas.paper(COLOR_MODAL_BACKGROUND);
+			if (infoSheet.getIndexOfSelectedItem() == i) {
+				canvas.pen(13).locate(tx0 - 1, ty).printChr(133);
+			}
 			ty++;
 			i++;
 		}
 		// top extent hint
 		if (infoSheet.getIndexOfFirstItemShowing() > 0) {
-			canvas.pen(13).move(560, 271).drawChr(196);
+			canvas.pen(13).move(560, 287).drawChr(196);
 		}
 		// bottom extent hint
 		if (infoSheet.getIndexOfLastItemShowing() < infoSheet.size() - 1) {
@@ -263,7 +254,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	private void renderModalWindowTitle(int tx1, int ty1, int tx2, int ty2, String windowTitle,
 			AmstradDisplayCanvas canvas) {
 		int maxTitleWidth = tx2 - tx1 - 1;
-		canvas.pen(23).locate(tx1 + 1, ty1 + 1).print(fitLabel(windowTitle, maxTitleWidth));
+		canvas.pen(23).locate(tx1 + 1, ty1 + 1).print(StringUtils.fitWidth(windowTitle, maxTitleWidth));
 		canvas.locate(tx1 + 1, ty1 + 2);
 		for (int i = 0; i < maxTitleWidth; i++)
 			canvas.printChr(216);
@@ -404,7 +395,74 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	private ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {
-		return new ProgramInfoSheet(program, 13);
+		ProgramInfoSheet sheet = new ProgramInfoSheet(program, 14);
+		int bg = COLOR_MODAL_BACKGROUND;
+		int maxWidth = 30;
+		AmstradMonitorMode mode = program.getPreferredMonitorMode();
+		if (mode != null) {
+			if (mode.equals(AmstradMonitorMode.GREEN)) {
+				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
+						new ProgramInfoTextSpan("\u00FE GREEN", 0, 9)));
+			} else if (mode.equals(AmstradMonitorMode.GRAY)) {
+				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 5), bg, bg),
+						new ProgramInfoTextSpan("\u00FE GRAY", 0, 13)));
+			} else if (mode.equals(AmstradMonitorMode.COLOR)) {
+				ProgramInfoLine line = new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 6),
+						bg, bg), new ProgramInfoTextSpan("\u00FE ", 0, 25));
+				for (int i = 0; i < 5; i++)
+					line.add(new ProgramInfoTextSpan(String.valueOf("COLOR".charAt(i)), 0, 14 + i));
+				sheet.add(line);
+			}
+		}
+		if (!StringUtils.isEmpty(program.getAuthor())) {
+			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("Author", bg, 25)));
+			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getAuthor(), maxWidth)) {
+				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 26)));
+			}
+		}
+		if (program.getProductionYear() > 0) {
+			if (!sheet.isEmpty())
+				sheet.add(new ProgramInfoLine());
+			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("Year", bg, 25)));
+			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(String.valueOf(program.getProductionYear()), bg, 26)));
+		}
+		if (!StringUtils.isEmpty(program.getNameOfTape()) || program.getBlocksOnTape() > 0) {
+			if (!sheet.isEmpty())
+				sheet.add(new ProgramInfoLine());
+			String tape = !StringUtils.isEmpty(program.getNameOfTape()) ? program.getNameOfTape() : "?";
+			String blocks = program.getBlocksOnTape() > 0 ? String.valueOf(program.getBlocksOnTape()) : "?";
+			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth("Tape", 20) + " Blocks", bg, 25)));
+			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(tape, 20) + " ", bg, 26),
+					new ProgramInfoTextSpan(blocks, bg, 26)));
+		}
+		if (!StringUtils.isEmpty(program.getProgramDescription())) {
+			if (!sheet.isEmpty())
+				sheet.add(new ProgramInfoLine());
+			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getProgramDescription(), maxWidth)) {
+				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 17)));
+			}
+		}
+		if (!program.getUserControls().isEmpty()) {
+			if (!sheet.isEmpty()) {
+				sheet.add(new ProgramInfoLine());
+				sheet.add(new ProgramInfoLine());
+			}
+			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(
+					"\u00D6\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F\u00D7", bg, 7)));
+			for (UserControl ctr : program.getUserControls()) {
+				sheet.add(new ProgramInfoLine());
+				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(ctr.getKey(), maxWidth), bg,
+						16)));
+				for (String text : StringUtils.splitOnNewlinesAndWrap(ctr.getDescription(), maxWidth - 2)) {
+					sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(2) + text, bg, 26)));
+				}
+			}
+		}
+		sheet.add(new ProgramInfoLine());
+		if (mode != null) {
+			sheet.browseOneItemDown();
+		}
+		return sheet;
 	}
 
 	private boolean isModalWindowOpen() {
@@ -723,10 +781,10 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			super(maxItemsShowing);
 			this.program = program;
 			this.menuItems = new Vector<ProgramMenuItem>();
-			populateMenuItems();
+			populateMenu();
 		}
 
-		private void populateMenuItems() {
+		private void populateMenu() {
 			AmstradProgram program = getProgram();
 			addMenuItem(new ProgramRunMenuItem(program));
 			addMenuItem(new ProgramLoadMenuItem(program));
@@ -812,7 +870,9 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 						launchProgram();
 						closeModalWindow();
 						close(); // restores monitor settings
-						getAmstradPc().setMonitorMode(getProgram().getPreferredMonitorMode());
+						if (getProgram().getPreferredMonitorMode() != null) {
+							getAmstradPc().setMonitorMode(getProgram().getPreferredMonitorMode());
+						}
 					} catch (AmstradProgramException exc) {
 						System.err.println(exc);
 					} finally {
@@ -908,16 +968,9 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			super(maxItemsShowing);
 			this.program = program;
 			this.lineItems = new Vector<ProgramInfoLine>();
-			populateLineItems();
 		}
 
-		private void populateLineItems() {
-			for (int i = 1; i <= 500; i++) {
-				addLineItem(new ProgramInfoLine("Hello " + i));
-			}
-		}
-
-		private void addLineItem(ProgramInfoLine lineItem) {
+		public void add(ProgramInfoLine lineItem) {
 			getLineItems().add(lineItem);
 		}
 
@@ -940,16 +993,55 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	}
 
-	private class ProgramInfoLine {
+	private static class ProgramInfoLine {
+
+		private List<ProgramInfoTextSpan> textSpans;
+
+		public ProgramInfoLine() {
+			this.textSpans = new Vector<ProgramInfoTextSpan>();
+		}
+
+		public ProgramInfoLine(ProgramInfoTextSpan... textSpans) {
+			this();
+			for (int i = 0; i < textSpans.length; i++) {
+				add(textSpans[i]);
+			}
+		}
+
+		public void add(ProgramInfoTextSpan textSpan) {
+			getTextSpans().add(textSpan);
+		}
+
+		public List<ProgramInfoTextSpan> getTextSpans() {
+			return textSpans;
+		}
+
+	}
+
+	private static class ProgramInfoTextSpan {
 
 		private String text;
 
-		public ProgramInfoLine(String text) {
+		private int paperColorIndex;
+
+		private int penColorIndex;
+
+		public ProgramInfoTextSpan(String text, int paperColorIndex, int penColorIndex) {
 			this.text = text;
+			this.paperColorIndex = paperColorIndex;
+			this.penColorIndex = penColorIndex;
 		}
 
 		public String getText() {
 			return text;
+		}
+
+		public int getPaperColorIndex() {
+			return paperColorIndex;
+		}
+
+		public int getPenColorIndex() {
+			return penColorIndex;
 		}
 
 	}

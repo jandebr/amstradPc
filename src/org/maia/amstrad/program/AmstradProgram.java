@@ -12,8 +12,6 @@ public abstract class AmstradProgram {
 
 	private String programDescription;
 
-	private AmstradProgramType programType;
-
 	private String author;
 
 	private int productionYear;
@@ -29,6 +27,29 @@ public abstract class AmstradProgram {
 	protected AmstradProgram(String programName) {
 		this.programName = programName;
 		this.userControls = new Vector<UserControl>();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AmstradProgram [programName='");
+		builder.append(programName);
+		builder.append("', programDescription='");
+		builder.append(programDescription);
+		builder.append("', author='");
+		builder.append(author);
+		builder.append("', productionYear=");
+		builder.append(productionYear);
+		builder.append(", nameOfTape='");
+		builder.append(nameOfTape);
+		builder.append("', blocksOnTape=");
+		builder.append(blocksOnTape);
+		builder.append(", userControls=");
+		builder.append(userControls);
+		builder.append(", preferredMonitorMode=");
+		builder.append(preferredMonitorMode);
+		builder.append("]");
+		return builder.toString();
 	}
 
 	public abstract void loadInto(AmstradPc amstradPc) throws AmstradProgramException;
@@ -65,14 +86,6 @@ public abstract class AmstradProgram {
 
 	public void setProgramDescription(String programDescription) {
 		this.programDescription = programDescription;
-	}
-
-	public AmstradProgramType getProgramType() {
-		return programType;
-	}
-
-	public void setProgramType(AmstradProgramType programType) {
-		this.programType = programType;
 	}
 
 	public String getAuthor() {
@@ -124,6 +137,30 @@ public abstract class AmstradProgram {
 		private String key;
 
 		private String description;
+
+		public UserControl(String key, String description) {
+			this.key = key;
+			this.description = description;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("UserControl [key='");
+			builder.append(key);
+			builder.append("', description='");
+			builder.append(description);
+			builder.append("']");
+			return builder.toString();
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public String getDescription() {
+			return description;
+		}
 
 	}
 

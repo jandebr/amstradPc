@@ -7,13 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramType;
 
 public class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 
@@ -22,6 +21,10 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 	private boolean folderPerProgram;
 
 	private AmstradMonitorMode defaultMonitorMode;
+
+	public FileBasedAmstradProgramRepository(File rootFolder, AmstradMonitorMode defaultMonitorMode) {
+		this(rootFolder, couldBeFolderPerProgram(rootFolder), defaultMonitorMode);
+	}
 
 	public FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram,
 			AmstradMonitorMode defaultMonitorMode) {
@@ -32,6 +35,32 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		this.defaultMonitorMode = defaultMonitorMode;
 	}
 
+	private static boolean couldBeFolderPerProgram(File rootFolder) {
+		boolean result = true;
+		if (rootFolder.isDirectory()) {
+			if (containsSubFolders(rootFolder) && selectProgramFileInFolder(rootFolder) != null) {
+				result = false;
+			} else {
+				int programCount = 0;
+				File[] files = rootFolder.listFiles();
+				int i = 0;
+				while (i < files.length && result) {
+					File file = files[i++];
+					if (file.isDirectory()) {
+						result = couldBeFolderPerProgram(file);
+					} else {
+						if (isProgramFile(file) && !isRemasteredProgramFile(file)) {
+							programCount++;
+							if (programCount > 1)
+								result = false;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
 	private static boolean containsSubFolders(File folder) {
 		boolean result = false;
 		File[] files = folder.listFiles();
@@ -39,14 +68,6 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		while (!result && i < files.length)
 			result = files[i++].isDirectory();
 		return result;
-	}
-
-	private static boolean isProgramFile(File file) {
-		return BasicRuntime.isBasicSourceFile(file);
-	}
-
-	private static boolean isRemasteredProgramFile(File file) {
-		return isProgramFile(file) && file.getName().toLowerCase().contains("remastered");
 	}
 
 	private static File selectProgramFileInFolder(File folder) {
@@ -65,8 +86,16 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return result;
 	}
 
+	private static boolean isProgramFile(File file) {
+		return AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file);
+	}
+
+	private static boolean isRemasteredProgramFile(File file) {
+		return AmstradFileType.isRemasteredBasicSourceCodeFile(file);
+	}
+
 	private static boolean isMetaDataFile(File file) {
-		return file.isFile() && file.getName().toLowerCase().endsWith(".amd");
+		return AmstradFileType.AMSTRAD_METADATA_FILE.matches(file);
 	}
 
 	private static File selectMetaDataFileInFolder(File folder) {
@@ -185,7 +214,6 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			} catch (IOException e) {
 				System.err.println(e);
 			}
-			builder.withProgramType(AmstradProgramType.BASIC_SOURCE_CODE); // as per isProgramFile()
 			AmstradProgram program = builder.build();
 			if (program.getPreferredMonitorMode() == null) {
 				program.setPreferredMonitorMode(getDefaultMonitorMode());

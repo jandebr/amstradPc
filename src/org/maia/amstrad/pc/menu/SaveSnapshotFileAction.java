@@ -5,6 +5,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class SaveSnapshotFileAction extends SnapshotFileAction {
@@ -24,7 +25,9 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					File file = getSelectedFileWithExtension(".sna", ".snz");
+					File file = getSelectedFileWithExtension(
+							AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.getFileExtension(),
+							AmstradFileType.JAVACPC_SNAPSHOT_FILE_COMPRESSED.getFileExtension());
 					try {
 						getAmstradPc().saveSnapshot(file);
 					} catch (Exception e) {

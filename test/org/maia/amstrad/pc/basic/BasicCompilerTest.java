@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
@@ -35,7 +36,7 @@ public class BasicCompilerTest {
 			File file = files[i];
 			if (file.isDirectory()) {
 				testFilesInDirectory(file, amstradPc, compiler, out);
-			} else if (BasicRuntime.isBasicSourceFile(file)) {
+			} else if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file)) {
 				testFile(file, amstradPc, compiler, out);
 			}
 		}

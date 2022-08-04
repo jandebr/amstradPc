@@ -1,9 +1,9 @@
 package org.maia.amstrad.pc.menu;
 
-import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
 public abstract class BasicSourceFileAction extends FileChooserAction {
@@ -16,7 +16,8 @@ public abstract class BasicSourceFileAction extends FileChooserAction {
 	protected JFileChooser buildFileChooser() {
 		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
 		fileChooser.setDialogTitle(getName());
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Basic source files (*.bas)", "bas");
+		String ext = AmstradFileType.BASIC_SOURCE_CODE_FILE.getFileExtensionWithoutDot();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Basic source files (*." + ext + ")", ext);
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
 	}

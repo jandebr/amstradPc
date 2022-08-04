@@ -27,6 +27,7 @@ import jemu.ui.JEMU.PauseListener;
 import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
@@ -78,24 +79,24 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	private boolean isUncompressedSnapshotFile(File file) {
-		return file.isFile() && file.getName().toLowerCase().endsWith(".sna");
+		return AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.matches(file);
 	}
 
 	private boolean isCompressedSnapshotFile(File file) {
-		return file.isFile() && file.getName().toLowerCase().endsWith(".snz");
+		return AmstradFileType.JAVACPC_SNAPSHOT_FILE_COMPRESSED.matches(file);
 	}
 
 	@Override
 	public void launch(File file, boolean silent) throws IOException, BasicCompilationException {
 		checkNotTerminated();
 		System.out.println("Launching from " + file.getPath());
-		if (BasicRuntime.isBasicSourceFile(file) || BasicRuntime.isBasicByteCodeFile(file)) {
+		if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file) || AmstradFileType.BASIC_BYTE_CODE_FILE.matches(file)) {
 			if (!isStarted()) {
 				start(true, silent);
 			} else {
 				reboot(true, silent);
 			}
-			if (BasicRuntime.isBasicSourceFile(file)) {
+			if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file)) {
 				getBasicRuntime().loadSourceCodeFromFile(file);
 			} else {
 				getBasicRuntime().loadByteCodeFromFile(file);

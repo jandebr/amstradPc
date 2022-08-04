@@ -44,7 +44,7 @@ public class ProgramBrowserAction extends AmstradPcAction {
 
 	private AmstradProgramRepository getAmstradProgramRepository() {
 		File rootFolder = new File(Settings.get(Settings.PROGRAMS_DIR, "."));
-		return new FileBasedAmstradProgramRepository(rootFolder, true, getAmstradPc().getMonitorMode());
+		return new FileBasedAmstradProgramRepository(rootFolder, getAmstradPc().getMonitorMode());
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class AutoTypeFileAction extends FileChooserAction {
@@ -41,7 +42,10 @@ public class AutoTypeFileAction extends FileChooserAction {
 	protected JFileChooser buildFileChooser() {
 		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
 		fileChooser.setDialogTitle(getName());
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files (*.txt, *.bas)", "txt", "bas");
+		String extText = "txt";
+		String extBasic = AmstradFileType.BASIC_SOURCE_CODE_FILE.getFileExtensionWithoutDot();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files (*." + extText + ", *." + extBasic
+				+ ")", extText, extBasic);
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
 	}
