@@ -91,7 +91,6 @@ public class Settings {
 
 	public static final String SYSTEM_DIR = "system_dir";
 	public static final String SNAPSHOT_FILE = "snapshot_file";
-	public static final String PROGRAMS_DIR = "programs_dir";
 
 	/** Property for choosen system (String). */
 	public static final String SYSTEM = "system";

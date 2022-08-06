@@ -1,15 +1,15 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.awt.event.KeyEvent;
 
-import jemu.settings.Settings;
-
+import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.event.AmstradPcEvent;
+import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
 
 public class ProgramBrowserAction extends AmstradPcAction {
 
@@ -22,29 +22,37 @@ public class ProgramBrowserAction extends AmstradPcAction {
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		updateName();
+		amstradPc.addStateListener(this);
 		amstradPc.addMonitorListener(this);
+		amstradPc.addEventListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		if (NAME_OPEN.equals(getName())) {
-			getAmstradPc().swapDisplaySource(getDisplaySource());
-		} else {
-			getAmstradPc().resetDisplaySource();
-		}
+		toggleProgramBrowser();
 	}
 
-	private ProgramBrowserDisplaySource getDisplaySource() {
-		if (displaySource == null) {
-			AmstradProgramRepository repository = getAmstradProgramRepository();
-			displaySource = new ProgramBrowserDisplaySource(getAmstradPc(), repository);
-		}
-		return displaySource;
+	@Override
+	public void amstradPcPausing(AmstradPc amstradPc) {
+		super.amstradPcPausing(amstradPc);
+		setEnabled(false);
 	}
 
-	private AmstradProgramRepository getAmstradProgramRepository() {
-		File rootFolder = new File(Settings.get(Settings.PROGRAMS_DIR, "."));
-		return new FileBasedAmstradProgramRepository(rootFolder, getAmstradPc().getMonitorMode());
+	@Override
+	public void amstradPcResuming(AmstradPc amstradPc) {
+		super.amstradPcResuming(amstradPc);
+		setEnabled(true);
+	}
+
+	@Override
+	public void amstradPcEventDispatched(AmstradPcEvent event) {
+		super.amstradPcEventDispatched(event);
+		if (event instanceof AmstradPcKeyboardEvent) {
+			KeyEvent key = ((AmstradPcKeyboardEvent) event).getKeyPressed();
+			if (key.getKeyCode() == KeyEvent.VK_HOME) {
+				toggleProgramBrowser();
+			}
+		}
 	}
 
 	@Override
@@ -62,6 +70,25 @@ public class ProgramBrowserAction extends AmstradPcAction {
 			// program browser is showing
 			changeName(NAME_CLOSE);
 		}
+	}
+
+	private void toggleProgramBrowser() {
+		if (isEnabled()) {
+			if (NAME_OPEN.equals(getName())) {
+				getAmstradPc().swapDisplaySource(getDisplaySource());
+			} else {
+				getAmstradPc().resetDisplaySource();
+			}
+		}
+	}
+
+	private ProgramBrowserDisplaySource getDisplaySource() {
+		if (displaySource == null) {
+			AmstradProgramRepository repository = AmstradFactory.getInstance().getAmstradContext()
+					.getAmstradProgramRepository();
+			displaySource = new ProgramBrowserDisplaySource(getAmstradPc(), repository);
+		}
+		return displaySource;
 	}
 
 }

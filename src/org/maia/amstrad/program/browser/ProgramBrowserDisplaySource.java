@@ -343,13 +343,14 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		handleKeyboardKeyInItemList(e, stack.peek());
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_RIGHT) {
-			stack.browseRight();
+			stack.browseIntoSelectedItem();
 		} else if (keyCode == KeyEvent.VK_LEFT) {
-			stack.browseLeft();
+			stack.browseBack();
 		} else if (keyCode == KeyEvent.VK_ENTER) {
-			ProgramMenu menu = stack.createProgramMenu(6);
-			if (menu != null) {
-				setProgramMenu(menu);
+			if (stack.canBrowseIntoSelectedItem()) {
+				stack.browseIntoSelectedItem();
+			} else if (stack.canCreateProgramMenu()) {
+				setProgramMenu(stack.createProgramMenu(6));
 				setCurrentWindow(Window.PROGRAM_MENU);
 			}
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
@@ -415,6 +416,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			}
 		}
 		if (!StringUtils.isEmpty(program.getAuthor())) {
+			if (sheet.isEmpty())
+				sheet.add(new ProgramInfoLine());
 			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("Author", bg, 25)));
 			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getAuthor(), maxWidth)) {
 				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 26)));
@@ -572,35 +575,43 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			getStack().push(itemList);
 		}
 
-		public void browseRight() {
-			Node selectedItem = getStack().peek().getSelectedItem();
-			if (selectedItem != null && selectedItem.isFolder()) {
-				push(new FolderItemList(selectedItem.asFolder(), getMaxItemsShowing()));
+		public void browseIntoSelectedItem() {
+			if (canBrowseIntoSelectedItem()) {
+				push(new FolderItemList(getSelectedItem().asFolder(), getMaxItemsShowing()));
 			}
 		}
 
-		public void browseLeft() {
+		public void browseBack() {
 			if (size() > 1) {
 				pop();
 			}
 		}
 
-		public ProgramMenu createProgramMenu(int maxItemsShowing) {
-			ProgramMenu menu = null;
-			if (canExecute()) {
-				AmstradProgram program = getSelectedItem().asProgram().getProgram();
-				menu = new ProgramMenu(program, maxItemsShowing);
+		public boolean canBrowseIntoSelectedItem() {
+			Node selectedItem = getSelectedItem();
+			if (selectedItem != null) {
+				return selectedItem.isFolder();
+			} else {
+				return false;
 			}
-			return menu;
 		}
 
-		public boolean canExecute() {
+		public boolean canCreateProgramMenu() {
 			Node selectedItem = getSelectedItem();
 			if (selectedItem != null) {
 				return selectedItem.isProgram();
 			} else {
 				return false;
 			}
+		}
+
+		public ProgramMenu createProgramMenu(int maxItemsShowing) {
+			ProgramMenu menu = null;
+			if (canCreateProgramMenu()) {
+				AmstradProgram program = getSelectedItem().asProgram().getProgram();
+				menu = new ProgramMenu(program, maxItemsShowing);
+			}
+			return menu;
 		}
 
 		public Node getSelectedItem() {
@@ -864,14 +875,15 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					AmstradMonitorMode mode = getProgram().getPreferredMonitorMode();
 					try {
 						releaseKeyboard();
 						getAmstradPc().reboot(true, true);
 						launchProgram();
 						closeModalWindow();
 						close(); // restores monitor settings
-						if (getProgram().getPreferredMonitorMode() != null) {
-							getAmstradPc().setMonitorMode(getProgram().getPreferredMonitorMode());
+						if (mode != null) {
+							getAmstradPc().setMonitorMode(mode);
 						}
 					} catch (AmstradProgramException exc) {
 						System.err.println(exc);

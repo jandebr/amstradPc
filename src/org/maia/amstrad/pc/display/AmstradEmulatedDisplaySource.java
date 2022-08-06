@@ -261,7 +261,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	@Override
 	public final void mousePressed(MouseEvent e) {
 		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPosition != null) {
+		if (canvasPosition != null && !isPaused()) {
 			mousePressedOnCanvas(getDisplayCanvas(), canvasPosition);
 		}
 	}
@@ -269,7 +269,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	@Override
 	public final void mouseReleased(MouseEvent e) {
 		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPosition != null) {
+		if (canvasPosition != null && !isPaused()) {
 			mouseReleasedOnCanvas(getDisplayCanvas(), canvasPosition);
 		}
 	}
@@ -277,7 +277,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	@Override
 	public final void mouseClicked(MouseEvent e) {
 		Point canvasPosition = mapDisplayToCanvasCoordinates(e.getPoint());
-		if (canvasPosition != null) {
+		if (canvasPosition != null && !isPaused()) {
 			mouseClickedOnCanvas(getDisplayCanvas(), canvasPosition);
 		}
 	}
@@ -408,7 +408,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	@Override
 	public final synchronized void keyPressed(KeyEvent e) {
 		super.keyPressed(e);
-		if (isCatchKeyboardEvents()) {
+		if (isCatchKeyboardEvents() && !isPaused()) {
 			keyboardKeyPressed(e);
 		}
 	}
@@ -416,7 +416,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	@Override
 	public final synchronized void keyReleased(KeyEvent e) {
 		super.keyReleased(e);
-		if (isCatchKeyboardEvents()) {
+		if (isCatchKeyboardEvents() && !isPaused()) {
 			keyboardKeyReleased(e);
 		}
 	}
@@ -424,7 +424,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	@Override
 	public final synchronized void keyTyped(KeyEvent e) {
 		super.keyTyped(e);
-		if (isCatchKeyboardEvents()) {
+		if (isCatchKeyboardEvents() && !isPaused()) {
 			keyboardKeyTyped(e);
 		}
 	}
@@ -439,6 +439,10 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	protected void keyboardKeyTyped(KeyEvent e) {
 		// Subclasses may override this method
+	}
+
+	protected boolean isPaused() {
+		return getAmstradPc().isPaused();
 	}
 
 	protected AmstradPc getAmstradPc() {

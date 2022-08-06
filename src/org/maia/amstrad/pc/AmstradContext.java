@@ -7,7 +7,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
+
 public abstract class AmstradContext {
+
+	private static final String SETTING_PROGRAMS_DIR = "programs_dir";
 
 	protected AmstradContext() {
 	}
@@ -17,6 +22,11 @@ public abstract class AmstradContext {
 	public abstract PrintStream getConsoleOutputStream();
 
 	public abstract PrintStream getConsoleErrorStream();
+
+	public AmstradProgramRepository getAmstradProgramRepository() {
+		File rootFolder = new File(getUserSettings().get(SETTING_PROGRAMS_DIR, "."));
+		return new FileBasedAmstradProgramRepository(rootFolder);
+	}
 
 	public static void sleep(long milliseconds) {
 		if (milliseconds > 0L) {

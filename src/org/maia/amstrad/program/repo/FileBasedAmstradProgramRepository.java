@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.io.AmstradFileType;
-import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
@@ -20,19 +19,15 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 	private boolean folderPerProgram;
 
-	private AmstradMonitorMode defaultMonitorMode;
-
-	public FileBasedAmstradProgramRepository(File rootFolder, AmstradMonitorMode defaultMonitorMode) {
-		this(rootFolder, couldBeFolderPerProgram(rootFolder), defaultMonitorMode);
+	public FileBasedAmstradProgramRepository(File rootFolder) {
+		this(rootFolder, couldBeFolderPerProgram(rootFolder));
 	}
 
-	public FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram,
-			AmstradMonitorMode defaultMonitorMode) {
+	public FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram) {
 		if (!rootFolder.isDirectory())
 			throw new IllegalArgumentException("The root must be a directory");
 		this.rootNode = new FileBasedFolderNode(rootFolder);
 		this.folderPerProgram = folderPerProgram;
-		this.defaultMonitorMode = defaultMonitorMode;
 	}
 
 	private static boolean couldBeFolderPerProgram(File rootFolder) {
@@ -137,10 +132,6 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return folderPerProgram;
 	}
 
-	public AmstradMonitorMode getDefaultMonitorMode() {
-		return defaultMonitorMode;
-	}
-
 	private class FileBasedFolderNode extends FolderNode {
 
 		private File folder;
@@ -214,11 +205,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			} catch (IOException e) {
 				System.err.println(e);
 			}
-			AmstradProgram program = builder.build();
-			if (program.getPreferredMonitorMode() == null) {
-				program.setPreferredMonitorMode(getDefaultMonitorMode());
-			}
-			return program;
+			return builder.build();
 		}
 
 		public File getCompanionMetaDataFile() {

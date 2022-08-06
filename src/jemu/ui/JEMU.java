@@ -114,8 +114,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public int rendertimer = 0;
 
 	private JemuFrameAdapter frameAdapter;
-
 	private List<PauseListener> pauseListeners;
+	private boolean controlKeysEnabled = true;
+	private boolean mouseClickActionsEnabled = true;
 
 	protected boolean isbackground;
 	JInternalFrame intern = new JInternalFrame(null);
@@ -1614,350 +1615,250 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+		// Remember modifiers
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_CONTROL) {
 			ctrl = true;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+		} else if (keyCode == KeyEvent.VK_SHIFT) {
 			shift = true;
-		}
-		if (e.getKeyCode() == KeyEvent.VK_ALT) {
+		} else if (keyCode == KeyEvent.VK_ALT) {
 			alt = true;
 		}
-		if (executable) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER && (alt)) {
-				alt = false;
-				FullSize();
-				return;
-			}
-			/*
-			 * if (e.getKeyCode() == KeyEvent.VK_F1 && (alt)) { alt = false; setSimpleSized(); return; } if
-			 * (e.getKeyCode() == KeyEvent.VK_F2 && (alt)) { alt = false; setDoubleSized(true); return; } if
-			 * (e.getKeyCode() == KeyEvent.VK_F3 && (alt)) { alt = false; setTripleSized(true); return; } if
-			 * (e.getKeyCode() == KeyEvent.VK_F12 && (alt)) { alt = false; setFullSized(true); return; }
-			 */
-		}
 		if (!Switches.blockKeyboard) {
-			//
-			// ** locale settings **
-			//
-			// System.out.println(Util.hex(e.getKeyCode()));
-
-			// german keyboard mapping
-			if (localkeys.equals("DE_DE")) {
-				if (!keys.equals("German keyboard  ")) {
-					keys = "German keyboard  ";
-					Keys.setLabel(keys);
-				}
-				if (e.getKeyChar() == '\u00FC' || e.getKeyChar() == '\u00DC') {
-					e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
-				}
-				if (e.getKeyChar() == '\u00E4' || e.getKeyChar() == '\u00C4')
-					e.setKeyCode(KeyEvent.VK_QUOTE);
-				if (e.getKeyChar() == '\u00F6' || e.getKeyChar() == '\u00D6')
-					e.setKeyCode(KeyEvent.VK_SEMICOLON);
-				if (e.getKeyChar() == '\u00DF' || e.getKeyChar() == '\u003F')
-					e.setKeyCode(KeyEvent.VK_MINUS);
-				else if (e.getKeyCode() == 0x2d) // - content to /
-					e.setKeyCode(KeyEvent.VK_SLASH);
-
-				if (e.getKeyCode() == 0x81) // � content to ^
-					e.setKeyCode(KeyEvent.VK_EQUALS);
-				if (e.getKeyCode() == 0x99) // <> content to [
-					e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
-				if (e.getKeyCode() == 0x82) // ^ content to TAB
-					e.setKeyCode(KeyEvent.VK_TAB);
-				if (e.getKeyCode() == 0x208) // # content to \
-					e.setKeyCode(KeyEvent.VK_BACK_SLASH);
-				if (e.getKeyCode() == 0x209) // + content to ]
-					e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
-
-				if (e.getKeyCode() == KeyEvent.VK_Z) // change Z to Y
-					e.setKeyCode(KeyEvent.VK_Y);
-				else if (e.getKeyCode() == KeyEvent.VK_Y) // and Y to Z
-					e.setKeyCode(KeyEvent.VK_Z);
-			}
-			// german mapping end
-
-			// spanish keyboard mapping
-			if (localkeys.equals("ES_ES")) {
-				if (!keys.equals("Spanish keyboard  ")) {
-					keys = "Spanish keyboard  ";
-					Keys.setLabel(keys);
-				}
-				if (e.getKeyChar() == '\u00BA' || e.getKeyChar() == '\u00B2')
-					e.setKeyCode(KeyEvent.VK_TAB);
-				if (e.getKeyChar() == '\u00E7' || e.getKeyChar() == '\u00C7')
-					e.setKeyCode(KeyEvent.VK_BACK_SLASH);
-
-				if (e.getKeyChar() == '\u00D1' || e.getKeyChar() == '\u00F1')
-					e.setKeyCode(KeyEvent.VK_SEMICOLON);
-				else if (e.getKeyCode() == 0xde)
-					e.setKeyCode(KeyEvent.VK_MINUS);
-				else if (e.getKeyCode() == 0x2d) // - content to /
-					e.setKeyCode(KeyEvent.VK_SLASH);
-				else if (e.getKeyCode() == 0x81)
-					e.setKeyCode(KeyEvent.VK_QUOTE);
-				if (e.getKeyCode() == 0x209) // + content to ]
-					e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
-
-				if (e.getKeyCode() == 0x206)
-					e.setKeyCode(KeyEvent.VK_EQUALS);
-				if (e.getKeyCode() == 0x99)
-					e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
-				if (e.getKeyCode() == 0x80)
-					e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
-			}
-			// spanish mapping end
-
-			if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
-				for (int i = 0; i < 4; i++) {
-					computer.setCurrentDrive(i);
-					mediumeject();
-				}
-				computer.setCurrentDrive(0);
-			}
-
-			if (e.getKeyCode() == KeyEvent.VK_PAGE_UP) {
-				Switches.askDrive = true;
-				loaddata();
-			}
-
-			if (e.getKeyCode() == KeyEvent.VK_SCROLL_LOCK) {
-				autosavecheck();
-			}
-			if (e.getKeyCode() == KeyEvent.VK_PAUSE) {
-				pauseToggle();
-			}
-			if (e.getKeyCode() == KeyEvent.VK_HOME)
-				romsetter.setRoms();
-
-			if (e.getKeyCode() == KeyEvent.VK_F9) {
+			// Keyboard mapping
+			applyKeyboardMapping(e, true);
+			if (isControlKeysEnabled()) {
+				// Function keys
+				keyCode = e.getKeyCode();
 				if (ctrl) {
-					ctrl = false;
-					reset();
-					return;
-				}
-			}
-
-			if (e.getKeyCode() == KeyEvent.VK_F1)
-				if (ctrl) {
-					ctrl = false;
-					loadtitle = "Load DSK file to DF0";
-					computer.setCurrentDrive(0);
-					Switches.askDrive = false;
-					loaddata();
-					computer.setCurrentDrive(0);
-					loadtitle = "Load emulator file";
-					return;
-				}
-
-			if (e.getKeyCode() == KeyEvent.VK_F2)
-				if (ctrl) {
-					ctrl = false;
-					loadtitle = "Load DSK file to DF1";
-					computer.setCurrentDrive(1);
-					Switches.askDrive = false;
-					loaddata();
-					computer.setCurrentDrive(0);
-					loadtitle = "Load emulator file";
-					return;
-				}
-			if (e.getKeyCode() == KeyEvent.VK_F3)
-				if (ctrl) {
-					ctrl = false;
-					loadTape(false);
-					return;
-				}
-
-			if (e.getKeyCode() == KeyEvent.VK_F6)
-				if (ctrl) {
-					chooseSNA();
-					return;
-				}
-			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-				if (dialogsnap) {
-					snaChooser.dispose();
-					computer.start();
-					computer.reSync();
-					dialogsnap = false;
-					return;
-				}
-			}
-
-			if (e.getKeyCode() == KeyEvent.VK_F11) {
-				if (ctrl) {
-					ctrl = false;
-					screenshot();
-					return;
-				} else {
-					Autotype.PasteText();
-					return;
-				}
-			}
-
-			if (e.getKeyCode() == 107) {
-				applyAlwaysOnTop(false);
-				saveDsk();
-				applyAlwaysOnTop(onTop);
-			}
-
-			// if (skinned != true){
-			if (e.getKeyCode() == KeyEvent.VK_F10) {
-				if (ctrl) {
-					ctrl = false;
-					optionPanel.OptionPanel();
-					return;
-				}
-			}
-
-			if (e.getKeyCode() == KeyEvent.VK_F5) {
-				if (ctrl && alt) {
-					ctrl = false;
-					alt = false;
-					new EditIni();
-					return;
-				}
-
-			}
-
-			if (e.getKeyCode() == KeyEvent.VK_NUMPAD1 && KeyRec) {
-				if (ctrl) {
-					ctrl = false;
-					System.out.println("keyboard input recording...");
-					computer.stopKeys();
-					computer.recordKeys();
-					return;
-				}
-			}
-			if (e.getKeyCode() == KeyEvent.VK_NUMPAD2 && KeyRec) {
-				if (ctrl) {
-					ctrl = false;
-					System.out.println("keyboard input stopped...");
-					computer.stopKeys();
-					return;
-				}
-			}
-			if (e.getKeyCode() == KeyEvent.VK_NUMPAD3 && KeyRec) {
-				if (ctrl) {
-					ctrl = false;
-					System.out.println("keyboard input playing...");
-					computer.stopKeys();
-					computer.playKeys();
-					return;
-				}
-			}
-			if (e.getKeyCode() == KeyEvent.VK_F4) {
-				if (ctrl && shift) {
-					ctrl = false;
-					shift = false;
-					turboCheck();
-					return;
-				} else if (ctrl && !shift) {
-					ctrl = false;
-					loadTape(true);
-					return;
-				}
-
-			}
-
-			if (e.getKeyCode() == KeyEvent.VK_F5) {
-				if (ctrl && !shift) {
-					if (!jemu.system.cpc.CPC.tapedeck) {
-						jemu.system.cpc.CPC.TapeDrive.setVisible(true);
-						jemu.system.cpc.CPC.tapedeck = true;
-					} else {
-						jemu.system.cpc.CPC.TapeDrive.setVisible(false);
-						jemu.system.cpc.CPC.tapedeck = false;
+					if (keyCode == KeyEvent.VK_F1) {
+						ctrl = false;
+						loadtitle = "Load DSK file to DF0";
+						computer.setCurrentDrive(0);
+						Switches.askDrive = false;
+						loaddata();
+						computer.setCurrentDrive(0);
+						loadtitle = "Load emulator file";
+						return;
+					} else if (keyCode == KeyEvent.VK_F2) {
+						ctrl = false;
+						loadtitle = "Load DSK file to DF1";
+						computer.setCurrentDrive(1);
+						Switches.askDrive = false;
+						loaddata();
+						computer.setCurrentDrive(0);
+						loadtitle = "Load emulator file";
+						return;
+					} else if (keyCode == KeyEvent.VK_F3) {
+						ctrl = false;
+						loadTape(false);
+						return;
+					} else if (keyCode == KeyEvent.VK_F4) {
+						if (shift) {
+							ctrl = false;
+							shift = false;
+							turboCheck();
+							return;
+						} else {
+							ctrl = false;
+							loadTape(true);
+							return;
+						}
+					} else if (keyCode == KeyEvent.VK_F5) {
+						if (alt) {
+							ctrl = false;
+							alt = false;
+							new EditIni();
+							return;
+						} else if (!shift) {
+							if (!jemu.system.cpc.CPC.tapedeck) {
+								jemu.system.cpc.CPC.TapeDrive.setVisible(true);
+								jemu.system.cpc.CPC.tapedeck = true;
+							} else {
+								jemu.system.cpc.CPC.TapeDrive.setVisible(false);
+								jemu.system.cpc.CPC.tapedeck = false;
+							}
+							ctrl = false;
+							return;
+						}
+					} else if (keyCode == KeyEvent.VK_F6) {
+						ctrl = false;
+						chooseSNA();
+						return;
+					} else if (keyCode == KeyEvent.VK_F9) {
+						ctrl = false;
+						reset();
+						return;
+					} else if (keyCode == KeyEvent.VK_F10) {
+						ctrl = false;
+						optionPanel.OptionPanel();
+						return;
+					} else if (keyCode == KeyEvent.VK_F11) {
+						ctrl = false;
+						screenshot();
+						return;
+					} else if (keyCode == KeyEvent.VK_F12) {
+						ctrl = false;
+						MenuCheck();
+						return;
 					}
-					ctrl = false;
+				} else {
+					if (keyCode == KeyEvent.VK_F11) {
+						Autotype.PasteText();
+						return;
+					}
+				}
+				// Key recording
+				if (KeyRec && ctrl) {
+					if (keyCode == KeyEvent.VK_NUMPAD1) {
+						ctrl = false;
+						System.out.println("keyboard input recording...");
+						computer.stopKeys();
+						computer.recordKeys();
+						return;
+					} else if (keyCode == KeyEvent.VK_NUMPAD2) {
+						ctrl = false;
+						System.out.println("keyboard input stopped...");
+						computer.stopKeys();
+						return;
+					} else if (keyCode == KeyEvent.VK_NUMPAD3) {
+						ctrl = false;
+						System.out.println("keyboard input playing...");
+						computer.stopKeys();
+						computer.playKeys();
+						return;
+					}
+				}
+				// Misc
+				if (keyCode == KeyEvent.VK_ENTER && alt && executable) {
+					alt = false;
+					FullSize();
 					return;
+				} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
+					for (int i = 0; i < 4; i++) {
+						computer.setCurrentDrive(i);
+						mediumeject();
+					}
+					computer.setCurrentDrive(0);
+				} else if (keyCode == KeyEvent.VK_PAGE_UP) {
+					Switches.askDrive = true;
+					loaddata();
+				} else if (keyCode == KeyEvent.VK_SCROLL_LOCK) {
+					autosavecheck();
+				} else if (keyCode == KeyEvent.VK_PAUSE) {
+					pauseToggle();
+				} else if (keyCode == KeyEvent.VK_HOME) {
+					romsetter.setRoms();
+				} else if (keyCode == KeyEvent.VK_ESCAPE) {
+					if (dialogsnap) {
+						snaChooser.dispose();
+						computer.start();
+						computer.reSync();
+						dialogsnap = false;
+						return;
+					}
+				} else if (keyCode == KeyEvent.VK_ADD) {
+					applyAlwaysOnTop(false);
+					saveDsk();
+					applyAlwaysOnTop(onTop);
 				}
 			}
-
-			if (e.getKeyCode() == KeyEvent.VK_F12) {
-				if (ctrl) {
-					ctrl = false;
-					MenuCheck();
-					return;
-				}
+			// Pass key pressed to the computer
+			if (!e.isAltDown() && !e.isControlDown()) {
+				computer.processKeyEvent(e);
 			}
-
-			computer.processKeyEvent(e);
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
-		//
-		// ** locale settings **
-		//
-		// System.out.println(Util.hex(e.getKeyCode()));
-
-		// german keyboard mapping
-		if (localkeys.equals("DE_DE")) {
-			if (e.getKeyChar() == '\u00FC' || e.getKeyChar() == '\u00DC') {
-				e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
-			}
-			if (e.getKeyChar() == '\u00E4' || e.getKeyChar() == '\u00C4')
-				e.setKeyCode(KeyEvent.VK_QUOTE);
-			if (e.getKeyChar() == '\u00F6' || e.getKeyChar() == '\u00D6')
-				e.setKeyCode(KeyEvent.VK_SEMICOLON);
-			if (e.getKeyChar() == '\u00DF' || e.getKeyChar() == '\u003F')
-				e.setKeyCode(KeyEvent.VK_MINUS);
-			else if (e.getKeyCode() == 0x2d) // - content to /
-				e.setKeyCode(KeyEvent.VK_SLASH);
-
-			if (e.getKeyCode() == 0x81) // � content to ^
-				e.setKeyCode(KeyEvent.VK_EQUALS);
-			if (e.getKeyCode() == 0x99) // <> content to [
-				e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
-			if (e.getKeyCode() == 0x82) // ^ content to TAB
-				e.setKeyCode(KeyEvent.VK_TAB);
-			if (e.getKeyCode() == 0x208) // # content to \
-				e.setKeyCode(KeyEvent.VK_BACK_SLASH);
-			if (e.getKeyCode() == 0x209) // + content to ]
-				e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
-
-			if (e.getKeyCode() == KeyEvent.VK_Z) // change Z to Y
-				e.setKeyCode(KeyEvent.VK_Y);
-			else if (e.getKeyCode() == KeyEvent.VK_Y) // and Y to Z
-				e.setKeyCode(KeyEvent.VK_Z);
+		// Keyboard mapping
+		applyKeyboardMapping(e, false);
+		// Pass key released to the computer
+		if (!e.isAltDown() && !e.isControlDown()) {
+			computer.processKeyEvent(e);
 		}
-		// german mapping end
-
-		// spanish keyboard mapping
-		if (localkeys.equals("ES_ES")) {
-			if (e.getKeyChar() == '\u00BA' || e.getKeyChar() == '\u00B2')
-				e.setKeyCode(KeyEvent.VK_TAB);
-			if (e.getKeyChar() == '\u00E7' || e.getKeyChar() == '\u00C7')
-				e.setKeyCode(KeyEvent.VK_BACK_SLASH);
-
-			if (e.getKeyChar() == '\u00D1' || e.getKeyChar() == '\u00F1')
-				e.setKeyCode(KeyEvent.VK_SEMICOLON);
-			else if (e.getKeyCode() == 0xde)
-				e.setKeyCode(KeyEvent.VK_MINUS);
-			else if (e.getKeyCode() == 0x2d) // - content to /
-				e.setKeyCode(KeyEvent.VK_SLASH);
-			else if (e.getKeyCode() == 0x81)
-				e.setKeyCode(KeyEvent.VK_QUOTE);
-			if (e.getKeyCode() == 0x209) // + content to ]
-				e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
-
-			if (e.getKeyCode() == 0x206)
-				e.setKeyCode(KeyEvent.VK_EQUALS);
-			if (e.getKeyCode() == 0x99)
-				e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
-			if (e.getKeyCode() == 0x80)
-				e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
-		}
-		// spanish mapping end
-
-		computer.processKeyEvent(e);
-		if (e.getKeyCode() == KeyEvent.VK_CONTROL)
+		// Update modifiers
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_CONTROL) {
 			ctrl = false;
-		if (e.getKeyCode() == KeyEvent.VK_ALT)
+		} else if (keyCode == KeyEvent.VK_ALT) {
 			alt = false;
-		if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+		} else if (keyCode == KeyEvent.VK_SHIFT) {
 			shift = false;
+		}
+	}
+
+	private void applyKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+		if (localkeys.equals("DE_DE")) {
+			applyGermanKeyboardMapping(e, updateKeyboardLabel);
+		} else if (localkeys.equals("ES_ES")) {
+			applySpanishKeyboardMapping(e, updateKeyboardLabel);
+		}
+	}
+
+	private void applyGermanKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+		if (updateKeyboardLabel && !keys.equals("German keyboard  ")) {
+			keys = "German keyboard  ";
+			Keys.setLabel(keys);
+		}
+		int keyChar = e.getKeyChar();
+		if (keyChar == '\u00FC' || keyChar == '\u00DC') {
+			e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
+		} else if (keyChar == '\u00E4' || keyChar == '\u00C4') {
+			e.setKeyCode(KeyEvent.VK_QUOTE);
+		} else if (keyChar == '\u00F6' || keyChar == '\u00D6') {
+			e.setKeyCode(KeyEvent.VK_SEMICOLON);
+		} else if (keyChar == '\u00DF' || keyChar == '\u003F') {
+			e.setKeyCode(KeyEvent.VK_MINUS);
+		}
+		int keyCode = e.getKeyCode();
+		if (keyCode == 0x2d) { // - content to /
+			e.setKeyCode(KeyEvent.VK_SLASH);
+		} else if (keyCode == 0x81) { // � content to ^
+			e.setKeyCode(KeyEvent.VK_EQUALS);
+		} else if (keyCode == 0x99) { // <> content to [
+			e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
+		} else if (keyCode == 0x82) { // ^ content to TAB
+			e.setKeyCode(KeyEvent.VK_TAB);
+		} else if (keyCode == 0x208) { // # content to \
+			e.setKeyCode(KeyEvent.VK_BACK_SLASH);
+		} else if (keyCode == 0x209) { // + content to ]
+			e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
+		} else if (keyCode == KeyEvent.VK_Z) { // change Z to Y
+			e.setKeyCode(KeyEvent.VK_Y);
+		} else if (keyCode == KeyEvent.VK_Y) { // and Y to Z
+			e.setKeyCode(KeyEvent.VK_Z);
+		}
+	}
+
+	private void applySpanishKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+		if (updateKeyboardLabel && !keys.equals("Spanish keyboard  ")) {
+			keys = "Spanish keyboard  ";
+			Keys.setLabel(keys);
+		}
+		int keyChar = e.getKeyChar();
+		if (keyChar == '\u00BA' || keyChar == '\u00B2') {
+			e.setKeyCode(KeyEvent.VK_TAB);
+		} else if (keyChar == '\u00E7' || keyChar == '\u00C7') {
+			e.setKeyCode(KeyEvent.VK_BACK_SLASH);
+		} else if (keyChar == '\u00D1' || keyChar == '\u00F1') {
+			e.setKeyCode(KeyEvent.VK_SEMICOLON);
+		}
+		int keyCode = e.getKeyCode();
+		if (keyCode == 0xde) {
+			e.setKeyCode(KeyEvent.VK_MINUS);
+		} else if (keyCode == 0x2d) { // - content to /
+			e.setKeyCode(KeyEvent.VK_SLASH);
+		} else if (keyCode == 0x81) {
+			e.setKeyCode(KeyEvent.VK_QUOTE);
+		} else if (keyCode == 0x209) { // + content to ]
+			e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
+		} else if (keyCode == 0x206) {
+			e.setKeyCode(KeyEvent.VK_EQUALS);
+		} else if (keyCode == 0x99) {
+			e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
+		} else if (keyCode == 0x80) {
+			e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
 		}
 	}
 
@@ -1991,26 +1892,25 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void mouseClicked(MouseEvent e) {
-
-		if (mousejoy == false && !Switches.lightGun) {
+		if (isMouseClickActionsEnabled() && mousejoy == false && !Switches.lightGun) {
 			if (e.getClickCount() == 2) {
 				if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
-					// new Autotype();
 					Autotype.typeconsole.setVisible(true);
-				} else
+				} else {
 					MenuCheck();
+				}
 			}
 		}
 	}
 
 	public void mousePressed(MouseEvent e) {
 		if (mousejoy) {
-			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
 				computer.MouseFire1();
-			else
+			} else {
 				computer.MouseFire2();
+			}
 		}
-
 		if (Switches.lightGun) {
 			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
 				System.out.println("X = " + e.getX() + " Y = " + e.getY());
@@ -2019,8 +1919,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				if (display.processGun()) {
 					System.out.println("Fire possible");
 					computer.MouseFire1();
-				} else
+				} else {
 					System.out.println("No fire possible");
+				}
 			}
 		}
 		display.requestFocus();
@@ -2028,14 +1929,16 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void mouseReleased(MouseEvent e) {
 		if (mousejoy) {
-			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
 				computer.MouseReleaseFire1();
-			else
+			} else {
 				computer.MouseReleaseFire2();
+			}
 		}
 		if (Switches.lightGun) {
-			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
 				computer.MouseReleaseFire1();
+			}
 		}
 	}
 
@@ -2454,6 +2357,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				computer = newComputer;
 				Settings.set(Settings.SYSTEM, name);
 				setFullSize(large);
+				computer.start();
 				computer.initialise();
 				Drive[] floppies = computer.getFloppyDrives();
 				if (floppies != null)
@@ -2564,7 +2468,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				Moniright.setVisible(true);
 			}
 		}
-		boolean running = computer.isRunning();
+		final boolean running = computer.isRunning();
 		computer.stop();
 		computer.setLarge(large);
 		display.setImageSize(computer.getDisplaySize(large), computer.getDisplayScale(large));
@@ -3854,6 +3758,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void FullSize() {
 		Switches.stretch = false;
+		final boolean running = computer.isRunning();
 		computer.stop();
 		if (togglesize) {
 			if (skinned) {
@@ -3888,6 +3793,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		setOutputSize();
 		checkFull.setState(fullscreen);
 		this.display.requestFocus();
+		if (running)
+			computer.start();
 		computer.reSync();
 	}
 
@@ -5051,9 +4958,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		computer.setLarge(large);
 		this.display.setImageSize(computer.getDisplaySize(large), computer.getDisplayScale(large));
 		computer.setDisplay(this.display);
-		if (running) {
+		if (running)
 			computer.start();
-		}
 		this.display.requestFocus();
 		Settings.setBoolean((Settings.LARGE), large);
 		Settings.setBoolean(Settings.DOUBLE, Switches.doublesize);
@@ -5096,9 +5002,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		computer.setLarge(large);
 		this.display.setImageSize(computer.getDisplaySize(large), computer.getDisplayScale(large));
 		computer.setDisplay(this.display);
-		if (running) {
+		if (running)
 			computer.start();
-		}
 		this.display.requestFocus();
 		Settings.setBoolean((Settings.LARGE), large);
 		Settings.setBoolean(Settings.DOUBLE, Switches.doublesize);
@@ -5141,9 +5046,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		computer.setLarge(large);
 		this.display.setImageSize(computer.getDisplaySize(large), computer.getDisplayScale(large));
 		computer.setDisplay(this.display);
-		if (running) {
+		if (running)
 			computer.start();
-		}
 		this.display.requestFocus();
 		Settings.setBoolean((Settings.LARGE), large);
 		Settings.setBoolean(Settings.DOUBLE, Switches.doublesize);
@@ -5175,7 +5079,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				Moniright.setVisible(true);
 			}
 		}
-		boolean running = computer.isRunning();
+		final boolean running = computer.isRunning();
 		computer.stop();
 		computer.setLarge(large);
 		display.setImageSize(computer.getDisplaySize(large), computer.getDisplayScale(large));
@@ -5188,20 +5092,21 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		Settings.setBoolean((Settings.LARGE), value);
 		Settings.setBoolean(Settings.DOUBLE, Switches.doublesize);
 		Settings.setBoolean(Settings.TRIPLE, Switches.triplesize);
-		if (large)
+		if (large) {
 			checkSimple.setState(false);
-		else
+		} else {
 			checkSimple.setState(true);
+		}
 		checkGate.setState(large);
-
 		setOutputSize();
 	}
 
-	public void setOutputSize() {
+	private void setOutputSize() {
 		GateArray.doRender = false;
 		rendertimer = 1;
 		if (executable) {
 			getFrameAdapter().removeMenuBar(JavaCPCMenu);
+			final boolean running = computer.isRunning();
 			computer.stop();
 			final Dimension p = Toolkit.getDefaultToolkit().getScreenSize();
 			int w = 384;
@@ -5225,8 +5130,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			if (fullscreen)
 				getFrameAdapter().setLocation((p.width - getFrameAdapter().getSize().width) / 2,
 						(p.height - getFrameAdapter().getSize().height) / 2);
-			computer.start();
-			computer.reSync();
+			if (running) {
+				computer.start();
+				computer.reSync();
+			}
 		}
 	}
 
@@ -5389,6 +5296,22 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public boolean isRunning() {
 		return computer.isRunning();
+	}
+
+	public boolean isControlKeysEnabled() {
+		return controlKeysEnabled;
+	}
+
+	public void setControlKeysEnabled(boolean controlKeysEnabled) {
+		this.controlKeysEnabled = controlKeysEnabled;
+	}
+
+	public boolean isMouseClickActionsEnabled() {
+		return mouseClickActionsEnabled;
+	}
+
+	public void setMouseClickActionsEnabled(boolean mouseClickActionsEnabled) {
+		this.mouseClickActionsEnabled = mouseClickActionsEnabled;
 	}
 
 	public void addPauseListener(PauseListener listener) {

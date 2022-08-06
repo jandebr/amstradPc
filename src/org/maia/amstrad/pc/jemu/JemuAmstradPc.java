@@ -9,6 +9,8 @@ import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.MenuBar;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,9 +40,10 @@ import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.display.AmstradKeyboardController;
 import org.maia.amstrad.pc.display.AmstradSystemColors;
+import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 
 public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener,
-		PrimaryDisplaySourceListener {
+		PrimaryDisplaySourceListener, KeyListener {
 
 	private JEMU jemuInstance;
 
@@ -61,6 +64,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public JemuAmstradPc() {
 		this.jemuInstance = new JEMU(new JemuFrameBridge());
 		this.jemuInstance.setStandalone(true);
+		this.jemuInstance.setControlKeysEnabled(false);
+		this.jemuInstance.setMouseClickActionsEnabled(false);
 		this.basicRuntime = new JemuBasicRuntimeImpl();
 		this.graphicsContext = new AmstradGraphicsContextImpl();
 	}
@@ -136,6 +141,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		jemu.start();
 		jemu.addAutotypeListener(this);
 		jemu.addPauseListener(this);
+		jemu.getDisplay().addKeyListener(this);
 		jemu.getDisplay().addPrimaryDisplaySourceListener(this);
 		getGraphicsContext().setPrimaryDisplaySourceResolution(
 				new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
@@ -147,6 +153,11 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			waitUntilReady();
 		if (silent)
 			Switches.FloppySound = floppySound;
+		if (isWindowFullscreen()) {
+			// forcing the display to nicely align in the middle
+			toggleWindowFullscreen();
+			toggleWindowFullscreen();
+		}
 	}
 
 	@Override
@@ -175,8 +186,11 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	@Override
 	public synchronized void resume() {
-		checkPaused();
-		getJemuInstance().pauseToggle();
+		checkStarted();
+		checkNotTerminated();
+		if (isPaused()) {
+			getJemuInstance().pauseToggle();
+		}
 	}
 
 	@Override
@@ -427,6 +441,21 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	@Override
 	public void primaryDisplaySourceResolutionChanged(Display display, Dimension resolution) {
 		getGraphicsContext().setPrimaryDisplaySourceResolution(resolution);
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (!getEventListeners().isEmpty()) {
+			fireEvent(new AmstradPcKeyboardEvent(this, e));
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
 	}
 
 	private static void checkNoInstanceRunning() {

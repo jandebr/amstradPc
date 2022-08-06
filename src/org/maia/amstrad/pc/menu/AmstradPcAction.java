@@ -8,9 +8,11 @@ import javax.swing.JOptionPane;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcMonitorListener;
 import org.maia.amstrad.pc.AmstradPcStateListener;
+import org.maia.amstrad.pc.event.AmstradPcEvent;
+import org.maia.amstrad.pc.event.AmstradPcEventListener;
 
 public abstract class AmstradPcAction extends AbstractAction implements AmstradPcStateListener,
-		AmstradPcMonitorListener {
+		AmstradPcMonitorListener, AmstradPcEventListener {
 
 	private AmstradPc amstradPc;
 
@@ -53,68 +55,73 @@ public abstract class AmstradPcAction extends AbstractAction implements AmstradP
 	}
 
 	@Override
-	public void amstradPcMonitorModeChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
-	public void amstradPcMonitorEffectChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
-	public void amstradPcMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
-	public void amstradPcMonitorBilinearEffectChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
-	public void amstradPcWindowFullscreenChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
-	public void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
-	public void amstradPcWindowTitleDynamicChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
-	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
-	}
-
-	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
+		// Subclasses may override after registering with amstradPc as AmstradPcStateListener
 	}
 
 	@Override
 	public void amstradPcPausing(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
+		// Subclasses may override after registering with amstradPc as AmstradPcStateListener
 	}
 
 	@Override
 	public void amstradPcResuming(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
+		// Subclasses may override after registering with amstradPc as AmstradPcStateListener
 	}
 
 	@Override
 	public void amstradPcRebooting(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
+		// Subclasses may override after registering with amstradPc as AmstradPcStateListener
 	}
 
 	@Override
 	public void amstradPcTerminated(AmstradPc amstradPc) {
-		// Subclasses may override this method when interested in this event
+		// Subclasses may override after registering with amstradPc as AmstradPcStateListener
+	}
+
+	@Override
+	public void amstradPcMonitorModeChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcMonitorEffectChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcMonitorBilinearEffectChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcWindowFullscreenChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcWindowTitleDynamicChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	}
+
+	@Override
+	public void amstradPcEventDispatched(AmstradPcEvent event) {
+		// Subclasses may override after registering with amstradPc as AmstradPcEventListener
 	}
 
 }

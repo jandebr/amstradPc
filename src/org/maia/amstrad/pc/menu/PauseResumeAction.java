@@ -1,8 +1,11 @@
 package org.maia.amstrad.pc.menu;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.event.AmstradPcEvent;
+import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 
 public class PauseResumeAction extends AmstradPcAction {
 
@@ -14,15 +17,12 @@ public class PauseResumeAction extends AmstradPcAction {
 		super(amstradPc, "");
 		updateName();
 		amstradPc.addStateListener(this);
+		amstradPc.addEventListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		if (getAmstradPc().isPaused()) {
-			getAmstradPc().resume();
-		} else {
-			getAmstradPc().pause();
-		}
+		togglePauseResume();
 	}
 
 	@Override
@@ -37,11 +37,30 @@ public class PauseResumeAction extends AmstradPcAction {
 		updateName();
 	}
 
+	@Override
+	public void amstradPcEventDispatched(AmstradPcEvent event) {
+		super.amstradPcEventDispatched(event);
+		if (event instanceof AmstradPcKeyboardEvent) {
+			KeyEvent key = ((AmstradPcKeyboardEvent) event).getKeyPressed();
+			if (key.getKeyCode() == KeyEvent.VK_PAUSE) {
+				togglePauseResume();
+			}
+		}
+	}
+
 	private void updateName() {
 		if (getAmstradPc().isPaused()) {
 			changeName(NAME_RESUME);
 		} else {
 			changeName(NAME_PAUSE);
+		}
+	}
+
+	private void togglePauseResume() {
+		if (getAmstradPc().isPaused()) {
+			getAmstradPc().resume();
+		} else {
+			getAmstradPc().pause();
 		}
 	}
 

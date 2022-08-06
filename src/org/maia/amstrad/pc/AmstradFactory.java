@@ -74,7 +74,9 @@ public class AmstradFactory {
 
 	private JMenu createFileMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("File");
-		menu.add(new JMenuItem(new ProgramBrowserAction(amstradPc)));
+		JMenuItem item = new JMenuItem(new ProgramBrowserAction(amstradPc));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0));
+		menu.add(item);
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new LoadBasicSourceFileAction(amstradPc)));
 		menu.add(new JMenuItem(new LoadBasicBinaryFileAction(amstradPc)));
@@ -84,7 +86,10 @@ public class AmstradFactory {
 		menu.add(new JMenuItem(new SaveBasicBinaryFileAction(amstradPc)));
 		menu.add(new JMenuItem(new SaveSnapshotFileAction(amstradPc)));
 		menu.add(new JSeparator());
-		menu.add(new JMenuItem(new QuitAction(amstradPc)));
+		item = new JMenuItem(new QuitAction(amstradPc));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK
+				| InputEvent.SHIFT_DOWN_MASK));
+		menu.add(item);
 		return menu;
 	}
 
@@ -92,7 +97,9 @@ public class AmstradFactory {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(new JMenuItem(new AutoTypeFileAction(amstradPc)));
 		menu.add(new JSeparator());
-		menu.add(new JMenuItem(new PauseResumeAction(amstradPc)));
+		JMenuItem item = new JMenuItem(new PauseResumeAction(amstradPc));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0));
+		menu.add(item);
 		menu.add(new JMenuItem(new RebootAction(amstradPc)));
 		return menu;
 	}
@@ -120,7 +127,7 @@ public class AmstradFactory {
 		WindowAlwaysOnTopMenuHelper.addToMenu(menu, amstradPc);
 		menu.add(new JSeparator());
 		JMenuItem item = new JMenuItem(new MonitorFullscreenAction(amstradPc));
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
 		menu.add(item);
 		return menu;
 	}

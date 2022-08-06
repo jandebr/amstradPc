@@ -9,6 +9,8 @@ import java.util.Vector;
 
 import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.event.AmstradPcEvent;
+import org.maia.amstrad.pc.event.AmstradPcEventListener;
 
 public abstract class AmstradPc {
 
@@ -16,9 +18,12 @@ public abstract class AmstradPc {
 
 	private List<AmstradPcMonitorListener> monitorListeners;
 
+	private List<AmstradPcEventListener> eventListeners;
+
 	protected AmstradPc() {
 		this.stateListeners = new Vector<AmstradPcStateListener>();
 		this.monitorListeners = new Vector<AmstradPcMonitorListener>();
+		this.eventListeners = new Vector<AmstradPcEventListener>();
 	}
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
@@ -104,11 +109,6 @@ public abstract class AmstradPc {
 			throw new IllegalStateException("This Amstrad PC is already started");
 	}
 
-	protected void checkPaused() {
-		if (!isPaused())
-			throw new IllegalStateException("This Amstrad PC is not paused");
-	}
-
 	protected void checkNotTerminated() {
 		if (isTerminated())
 			throw new IllegalStateException("This Amstrad PC was terminated");
@@ -128,6 +128,14 @@ public abstract class AmstradPc {
 
 	public void removeMonitorListener(AmstradPcMonitorListener listener) {
 		getMonitorListeners().remove(listener);
+	}
+
+	public void addEventListener(AmstradPcEventListener listener) {
+		getEventListeners().add(listener);
+	}
+
+	public void removeEventListener(AmstradPcEventListener listener) {
+		getEventListeners().remove(listener);
 	}
 
 	protected void fireStartedEvent() {
@@ -195,12 +203,21 @@ public abstract class AmstradPc {
 			listener.amstradPcDisplaySourceChanged(this);
 	}
 
+	protected void fireEvent(AmstradPcEvent event) {
+		for (AmstradPcEventListener listener : getEventListeners())
+			listener.amstradPcEventDispatched(event);
+	}
+
 	protected List<AmstradPcStateListener> getStateListeners() {
 		return stateListeners;
 	}
 
 	protected List<AmstradPcMonitorListener> getMonitorListeners() {
 		return monitorListeners;
+	}
+
+	protected List<AmstradPcEventListener> getEventListeners() {
+		return eventListeners;
 	}
 
 }
