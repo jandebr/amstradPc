@@ -49,7 +49,7 @@ public class ProgramBrowserAction extends AmstradPcAction {
 		super.amstradPcEventDispatched(event);
 		if (event instanceof AmstradPcKeyboardEvent) {
 			KeyEvent key = ((AmstradPcKeyboardEvent) event).getKeyPressed();
-			if (key.getKeyCode() == KeyEvent.VK_HOME) {
+			if (key.getKeyCode() == KeyEvent.VK_HOME && NAME_OPEN.equals(getName())) {
 				toggleProgramBrowser();
 			}
 		}
