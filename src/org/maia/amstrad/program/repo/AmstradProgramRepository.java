@@ -56,12 +56,11 @@ public abstract class AmstradProgramRepository {
 			return (ProgramNode) this;
 		}
 
-		public void refresh() {
-		}
-
 		public String getName() {
 			return name;
 		}
+
+		protected abstract void refresh();
 
 	}
 
@@ -95,11 +94,6 @@ public abstract class AmstradProgramRepository {
 			return true;
 		}
 
-		@Override
-		public void refresh() {
-			childNodes = null;
-		}
-
 		protected abstract List<Node> listChildNodes();
 
 		public List<Node> getChildNodes() {
@@ -107,6 +101,11 @@ public abstract class AmstradProgramRepository {
 				childNodes = new Vector<Node>(listChildNodes());
 			}
 			return childNodes;
+		}
+
+		@Override
+		protected void refresh() {
+			childNodes = null;
 		}
 
 	}
@@ -124,11 +123,6 @@ public abstract class AmstradProgramRepository {
 			return false;
 		}
 
-		@Override
-		public void refresh() {
-			program = null;
-		}
-
 		protected abstract AmstradProgram readProgram();
 
 		public AmstradProgram getProgram() {
@@ -136,6 +130,11 @@ public abstract class AmstradProgramRepository {
 				program = readProgram();
 			}
 			return program;
+		}
+
+		@Override
+		protected void refresh() {
+			program = null;
 		}
 
 	}

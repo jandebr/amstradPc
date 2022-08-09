@@ -51,7 +51,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	public ProgramBrowserDisplaySource(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
 		super(amstradPc);
 		this.programRepository = programRepository;
-		this.stackedFolderItemList = new StackedFolderItemList(programRepository, 20);
+		this.stackedFolderItemList = new StackedFolderItemList(20);
 		this.currentWindow = Window.MAIN;
 	}
 
@@ -354,7 +354,11 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 				setCurrentWindow(Window.PROGRAM_MENU);
 			}
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
-			close();
+			if (stack.size() > 1) {
+				stack.browseBack();
+			} else {
+				close();
+			}
 		}
 	}
 
@@ -562,17 +566,16 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 		private int maxItemsShowing;
 
-		public StackedFolderItemList(AmstradProgramRepository repository, int maxItemsShowing) {
+		public StackedFolderItemList(int maxItemsShowing) {
 			this.stack = new Stack<FolderItemList>();
 			this.maxItemsShowing = maxItemsShowing;
-			push(new FolderItemList(repository.getRootNode(), maxItemsShowing));
+			reset();
 		}
 
 		public void reset() {
-			FolderItemList itemList = getStack().get(0);
-			itemList.refresh();
+			getProgramRepository().refresh();
 			getStack().clear();
-			getStack().push(itemList);
+			getStack().push(new FolderItemList(getProgramRepository().getRootNode(), getMaxItemsShowing()));
 		}
 
 		public void browseIntoSelectedItem() {
@@ -664,13 +667,9 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			this.maxItemsShowing = maxItemsShowing;
 		}
 
-		public void refresh() {
+		public void browseHome() {
 			setIndexOfFirstItemShowing(0);
 			setIndexOfSelectedItem(0);
-		}
-
-		public void browseHome() {
-			refresh();
 		}
 
 		public void browseEnd() {
@@ -747,12 +746,6 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		public FolderItemList(FolderNode folderNode, int maxItemsShowing) {
 			super(maxItemsShowing);
 			this.folderNode = folderNode;
-		}
-
-		@Override
-		public void refresh() {
-			super.refresh();
-			getFolderNode().refresh();
 		}
 
 		@Override
