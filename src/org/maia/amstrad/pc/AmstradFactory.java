@@ -164,9 +164,9 @@ public class AmstradFactory {
 
 		public static void addModesToMenu(JMenu menu, AmstradPc amstradPc) {
 			JRadioButtonMenuItem colorMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.COLOR,
-					amstradPc, "Color monitor"));
+					amstradPc, "Color monitor (CTM640)"));
 			JRadioButtonMenuItem greenMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GREEN,
-					amstradPc, "Green monitor"));
+					amstradPc, "Green monitor (GT64)"));
 			JRadioButtonMenuItem grayMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GRAY,
 					amstradPc, "Gray monitor"));
 			menu.add(colorMode);
