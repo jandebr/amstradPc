@@ -1811,7 +1811,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			applyGermanKeyboardMapping(e, updateKeyboardLabel);
 		} else if (localkeys.equals("ES_ES")) {
 			applySpanishKeyboardMapping(e, updateKeyboardLabel);
-		} else if (localkeys.startsWith("EN_")) {
+		} else {
 			applyEnglishKeyboardMapping(e, updateKeyboardLabel);
 		}
 	}
