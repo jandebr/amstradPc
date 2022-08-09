@@ -115,6 +115,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	private JemuFrameAdapter frameAdapter;
 	private List<PauseListener> pauseListeners;
+
+	private boolean virtualShiftKey = false;
+	private KeyEvent virtualShiftKeyEventPressed = new KeyEvent(this, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_SHIFT,
+			KeyEvent.CHAR_UNDEFINED);
+	private KeyEvent virtualShiftKeyEventReleased = new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_SHIFT,
+			KeyEvent.CHAR_UNDEFINED);
+
 	private boolean controlKeysEnabled = true;
 	private boolean mouseClickActionsEnabled = true;
 
@@ -1626,10 +1633,11 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 		if (!Switches.blockKeyboard) {
 			// Keyboard mapping
+			virtualShiftKey = false;
 			applyKeyboardMapping(e, true);
+			keyCode = e.getKeyCode();
 			if (isControlKeysEnabled()) {
 				// Function keys
-				keyCode = e.getKeyCode();
 				if (ctrl) {
 					if (keyCode == KeyEvent.VK_F1) {
 						ctrl = false;
@@ -1764,21 +1772,31 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				}
 			}
 			// Pass key pressed to the computer
-			if (!e.isAltDown() && !e.isControlDown()) {
+			if (keyCode != KeyEvent.VK_ALT && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_UNDEFINED) {
+				if (virtualShiftKey) {
+					computer.processKeyEvent(virtualShiftKeyEventPressed);
+				}
 				computer.processKeyEvent(e);
 			}
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
-		// Keyboard mapping
-		applyKeyboardMapping(e, false);
-		// Pass key released to the computer
-		if (!e.isAltDown() && !e.isControlDown()) {
-			computer.processKeyEvent(e);
+		int keyCode = e.getKeyCode();
+		if (!Switches.blockKeyboard) {
+			// Keyboard mapping
+			virtualShiftKey = false;
+			applyKeyboardMapping(e, false);
+			keyCode = e.getKeyCode();
+			// Pass key released to the computer
+			if (keyCode != KeyEvent.VK_ALT && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_UNDEFINED) {
+				computer.processKeyEvent(e);
+				if (virtualShiftKey) {
+					computer.processKeyEvent(virtualShiftKeyEventReleased);
+				}
+			}
 		}
 		// Update modifiers
-		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_CONTROL) {
 			ctrl = false;
 		} else if (keyCode == KeyEvent.VK_ALT) {
@@ -1793,6 +1811,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			applyGermanKeyboardMapping(e, updateKeyboardLabel);
 		} else if (localkeys.equals("ES_ES")) {
 			applySpanishKeyboardMapping(e, updateKeyboardLabel);
+		} else if (localkeys.startsWith("EN_")) {
+			applyEnglishKeyboardMapping(e, updateKeyboardLabel);
 		}
 	}
 
@@ -1859,6 +1879,113 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
 		} else if (keyCode == 0x80) {
 			e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
+		}
+	}
+
+	private void applyEnglishKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+		if (updateKeyboardLabel && !keys.equals("English keyboard  ")) {
+			keys = "English keyboard  ";
+			Keys.setLabel(keys);
+		}
+		char keyChar = e.getKeyChar();
+		int keyCode = e.getKeyCode();
+		if ("²³°é§èçàùµ~¨".indexOf(keyChar) >= 0) {
+			e.setKeyCode(KeyEvent.VK_UNDEFINED);
+		} else if (keyCode == 48 && e.isShiftDown()) {
+			e.setKeyCode(123); // 0
+		} else if (keyCode >= 49 && keyCode <= 57 && e.isShiftDown()) {
+			e.setKeyCode(112 + keyCode - 49); // 1,2,...,9
+		} else if (keyCode == 106) {
+			virtualShiftKey = true;
+			e.setKeyCode(59); // numpad '*'
+		} else if (keyCode == 107) {
+			virtualShiftKey = true;
+			e.setKeyCode(222); // numpad '+'
+		} else if (keyCode == 109) {
+			e.setKeyCode(45); // numpad '-'
+		} else if (keyCode == 111) {
+			e.setKeyCode(47); // numpad '/'
+		} else if (keyChar == '&') {
+			virtualShiftKey = true;
+			e.setKeyCode(54);
+		} else if (keyChar == '|') {
+			virtualShiftKey = true;
+			e.setKeyCode(91);
+		} else if (keyChar == '"') {
+			virtualShiftKey = true;
+			e.setKeyCode(50);
+		} else if (keyChar == '#') {
+			virtualShiftKey = true;
+			e.setKeyCode(51);
+		} else if (keyChar == '\'') {
+			virtualShiftKey = true;
+			e.setKeyCode(55);
+		} else if (keyChar == '(') {
+			virtualShiftKey = true;
+			e.setKeyCode(56);
+		} else if (keyChar == '!') {
+			virtualShiftKey = true;
+			e.setKeyCode(49);
+		} else if (keyChar == '{') {
+			virtualShiftKey = true;
+			e.setKeyCode(65406);
+		} else if (keyChar == '}') {
+			virtualShiftKey = true;
+			e.setKeyCode(93);
+		} else if (keyChar == ')') {
+			virtualShiftKey = true;
+			e.setKeyCode(57);
+		} else if (keyChar == '$') {
+			virtualShiftKey = true;
+			e.setKeyCode(52);
+		} else if (keyChar == '´') {
+			virtualShiftKey = true;
+			e.setKeyCode(55);
+		} else if (keyChar == '`') {
+			virtualShiftKey = true;
+			e.setKeyCode(92);
+		} else if (keyChar == '<') {
+			virtualShiftKey = true;
+			e.setKeyCode(44);
+		} else if (keyChar == '=') {
+			virtualShiftKey = true;
+			e.setKeyCode(45);
+		} else if (keyChar == '@') {
+			e.setKeyCode(91);
+		} else if (keyChar == '-') {
+			e.setKeyCode(45);
+		} else if (keyChar == '^') {
+			e.setKeyCode(61);
+		} else if (keyChar == '[') {
+			e.setKeyCode(65406);
+		} else if (keyChar == ']') {
+			e.setKeyCode(93);
+		} else if (keyChar == '\\') {
+			e.setKeyCode(92);
+		} else if (keyChar == ',') {
+			e.setKeyCode(44);
+		} else if (keyChar == ';') {
+			e.setKeyCode(222);
+		} else if (keyChar == ':') {
+			e.setKeyCode(59);
+		} else if (keyChar == '/') {
+			e.setKeyCode(KeyEvent.VK_UNDEFINED); // cannot un-shift
+		} else if (keyChar == '_') {
+			e.setKeyCode(48);
+		} else if (keyChar == '*') {
+			e.setKeyCode(59);
+		} else if (keyChar == '%') {
+			e.setKeyCode(53);
+		} else if (keyChar == '£') {
+			e.setKeyCode(61);
+		} else if (keyChar == '>') {
+			e.setKeyCode(46);
+		} else if (keyChar == '?') {
+			e.setKeyCode(47);
+		} else if (keyChar == '.') {
+			e.setKeyCode(110);
+		} else if (keyChar == '+') {
+			e.setKeyCode(222);
 		}
 	}
 
