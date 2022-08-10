@@ -25,7 +25,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 	public FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram) {
 		if (!rootFolder.isDirectory())
-			throw new IllegalArgumentException("The root must be a directory");
+			throw new IllegalArgumentException("The root folder must be a directory");
 		this.rootNode = new FileBasedFolderNode(rootFolder);
 		this.folderPerProgram = folderPerProgram;
 	}

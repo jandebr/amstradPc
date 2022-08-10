@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.maia.amstrad.pc.AmstradContext;
+import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicDecompiler;
@@ -92,6 +93,7 @@ public abstract class BasicRuntime {
 
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {
 		loadSourceCode(AmstradContext.readTextFileContents(sourceCodeFile));
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
 		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
 	}
 
@@ -104,6 +106,7 @@ public abstract class BasicRuntime {
 
 	public void loadByteCodeFromFile(File byteCodeFile) throws IOException {
 		loadByteCode(AmstradContext.readBinaryFileContents(byteCodeFile));
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(byteCodeFile.getParentFile());
 		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
 	}
 
@@ -126,6 +129,7 @@ public abstract class BasicRuntime {
 		PrintWriter pw = new PrintWriter(file);
 		pw.print(exportSourceCode());
 		pw.close();
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
 		System.out.println("Exported source code to " + file.getPath());
 	}
 
@@ -138,6 +142,7 @@ public abstract class BasicRuntime {
 		FileOutputStream os = new FileOutputStream(file);
 		os.write(exportByteCode());
 		os.close();
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
 		System.out.println("Exported byte code to " + file.getPath());
 	}
 

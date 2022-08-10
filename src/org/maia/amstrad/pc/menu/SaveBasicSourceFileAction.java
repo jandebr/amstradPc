@@ -22,6 +22,7 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 	public void actionPerformed(ActionEvent event) {
 		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			updateCurrentDirectoryFromSelectedFile();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

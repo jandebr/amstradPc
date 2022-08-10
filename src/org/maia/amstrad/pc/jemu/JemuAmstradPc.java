@@ -31,6 +31,7 @@ import jemu.ui.Switches;
 
 import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradContext;
+import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
@@ -112,6 +113,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 				start(true, silent);
 			}
 			getJemuInstance().doAutoOpen(file);
+			AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
 		} else {
 			System.err.println("Unrecognized file format: " + file);
 		}
@@ -125,6 +127,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		Switches.uncompressed = isUncompressedSnapshotFile(file);
 		Switches.save64 = true; // 64k RAM memory dump
 		waitUntilSnapshotReady(file);
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
 		System.out.println("Saved snapshot to " + file.getPath());
 	}
 

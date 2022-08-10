@@ -23,6 +23,7 @@ public class AutoTypeFileAction extends FileChooserAction {
 	public void actionPerformed(ActionEvent event) {
 		int returnValue = getFileChooser().showOpenDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			updateCurrentDirectoryFromSelectedFile();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -39,8 +40,8 @@ public class AutoTypeFileAction extends FileChooserAction {
 	}
 
 	@Override
-	protected JFileChooser buildFileChooser() {
-		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
+	protected JFileChooser buildFileChooser(File currentDirectory) {
+		JFileChooser fileChooser = new JFileChooser(currentDirectory);
 		fileChooser.setDialogTitle(getName());
 		String extText = "txt";
 		String extBasic = AmstradFileType.BASIC_SOURCE_CODE_FILE.getFileExtensionWithoutDot();

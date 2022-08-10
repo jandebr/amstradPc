@@ -25,6 +25,7 @@ public class ScreenshotAction extends FileChooserAction {
 		BufferedImage image = getAmstradPc().makeScreenshot(includeMonitorEffect());
 		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			updateCurrentDirectoryFromSelectedFile();
 			File file = getSelectedFileWithExtension(".png");
 			try {
 				ImageIO.write(image, "png", file);
@@ -36,8 +37,8 @@ public class ScreenshotAction extends FileChooserAction {
 	}
 
 	@Override
-	protected JFileChooser buildFileChooser() {
-		JFileChooser fileChooser = new JFileChooser(getHomeDirectory());
+	protected JFileChooser buildFileChooser(File currentDirectory) {
+		JFileChooser fileChooser = new JFileChooser(currentDirectory);
 		fileChooser.setDialogTitle(getName());
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Screenshot files (*.png)", "png");
 		fileChooser.setFileFilter(filter);

@@ -4,6 +4,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 
 public abstract class FileChooserAction extends AmstradPcAction {
@@ -35,16 +36,33 @@ public abstract class FileChooserAction extends AmstradPcAction {
 	}
 
 	protected JFileChooser getFileChooser() {
+		File currentDir = getCurrentDirectory();
 		if (fileChooser == null) {
-			fileChooser = buildFileChooser();
+			fileChooser = buildFileChooser(currentDir);
+		} else {
+			File chooserCurrentDir = fileChooser.getCurrentDirectory();
+			if (chooserCurrentDir == null || !chooserCurrentDir.equals(currentDir)) {
+				fileChooser.setCurrentDirectory(currentDir);
+			}
 		}
 		return fileChooser;
 	}
 
-	protected abstract JFileChooser buildFileChooser();
+	protected abstract JFileChooser buildFileChooser(File currentDirectory);
 
-	protected File getHomeDirectory() {
-		return new File(".");
+	protected void updateCurrentDirectoryFromSelectedFile() {
+		File file = getSelectedFile();
+		if (file != null) {
+			setCurrentDirectory(file.getParentFile());
+		}
+	}
+
+	private File getCurrentDirectory() {
+		return AmstradFactory.getInstance().getAmstradContext().getCurrentDirectory();
+	}
+
+	private void setCurrentDirectory(File currentDirectory) {
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(currentDirectory);
 	}
 
 }
