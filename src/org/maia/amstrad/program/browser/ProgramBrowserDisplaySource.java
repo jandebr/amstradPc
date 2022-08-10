@@ -866,33 +866,40 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 		@Override
 		public void execute() {
-			executeStartTime = System.currentTimeMillis();
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					AmstradMonitorMode mode = getProgram().getPreferredMonitorMode();
-					try {
-						releaseKeyboard();
-						getAmstradPc().reboot(true, true);
-						launchProgram();
-						failed = false;
-						closeModalWindow();
-						close(); // restores monitor settings
-						if (mode != null) {
-							getAmstradPc().setMonitorMode(mode);
+			if (isEnabled()) {
+				executeStartTime = System.currentTimeMillis();
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						AmstradMonitorMode mode = getProgram().getPreferredMonitorMode();
+						try {
+							releaseKeyboard();
+							getAmstradPc().reboot(true, true);
+							launchProgram();
+							failed = false;
+							closeModalWindow();
+							close(); // restores monitor settings
+							if (mode != null) {
+								getAmstradPc().setMonitorMode(mode);
+							}
+						} catch (AmstradProgramException exc) {
+							System.err.println(exc);
+							acquireKeyboard();
+							failed = true;
+						} finally {
+							executeStartTime = 0L;
 						}
-					} catch (AmstradProgramException exc) {
-						System.err.println(exc);
-						acquireKeyboard();
-						failed = true;
-					} finally {
-						executeStartTime = 0L;
 					}
-				}
-			}).start();
+				}).start();
+			}
 		}
 
 		protected abstract void launchProgram() throws AmstradProgramException;
+
+		@Override
+		public boolean isEnabled() {
+			return !failed;
+		}
 
 		@Override
 		public String getLabel() {
