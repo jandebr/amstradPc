@@ -838,9 +838,9 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			this.label = label;
 		}
 
-		protected abstract void execute();
+		public abstract void execute();
 
-		protected boolean isEnabled() {
+		public boolean isEnabled() {
 			return true;
 		}
 
@@ -858,12 +858,14 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 		private long executeStartTime;
 
+		private boolean failed;
+
 		protected ProgramLaunchMenuItem(AmstradProgram program, String label) {
 			super(program, label);
 		}
 
 		@Override
-		protected void execute() {
+		public void execute() {
 			executeStartTime = System.currentTimeMillis();
 			new Thread(new Runnable() {
 				@Override
@@ -873,6 +875,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 						releaseKeyboard();
 						getAmstradPc().reboot(true, true);
 						launchProgram();
+						failed = false;
 						closeModalWindow();
 						close(); // restores monitor settings
 						if (mode != null) {
@@ -880,6 +883,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 						}
 					} catch (AmstradProgramException exc) {
 						System.err.println(exc);
+						acquireKeyboard();
+						failed = true;
 					} finally {
 						executeStartTime = 0L;
 					}
@@ -896,6 +901,9 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 				int t = (int) ((System.currentTimeMillis() - executeStartTime) / 100L);
 				label += ' ';
 				label += (char) (192 + t % 4);
+			} else if (failed) {
+				label += ' ';
+				label += (char) 225;
 			}
 			return label;
 		}
@@ -935,7 +943,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		}
 
 		@Override
-		protected void execute() {
+		public void execute() {
 			if (isEnabled()) {
 				setProgramInfoSheet(createProgramInfoSheet(getProgram()));
 				closeModalWindow();
@@ -944,7 +952,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		}
 
 		@Override
-		protected boolean isEnabled() {
+		public boolean isEnabled() {
 			return getProgram().hasDescriptiveInfo();
 		}
 
@@ -957,7 +965,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		}
 
 		@Override
-		protected void execute() {
+		public void execute() {
 			closeModalWindow();
 		}
 
