@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.menu;
+package org.maia.amstrad.pc.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -7,20 +7,20 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 
-public class QuitAction extends AmstradPcAction {
+public class MonitorFullscreenAction extends AmstradPcAction {
 
-	public QuitAction(AmstradPc amstradPc) {
-		this(amstradPc, "Quit");
+	public MonitorFullscreenAction(AmstradPc amstradPc) {
+		this(amstradPc, "Fullscreen switch");
 	}
 
-	public QuitAction(AmstradPc amstradPc, String name) {
+	public MonitorFullscreenAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 		amstradPc.addEventListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		quit();
+		toggleFullscreen();
 	}
 
 	@Override
@@ -28,14 +28,14 @@ public class QuitAction extends AmstradPcAction {
 		super.amstradPcEventDispatched(event);
 		if (event instanceof AmstradPcKeyboardEvent) {
 			KeyEvent key = ((AmstradPcKeyboardEvent) event).getKeyPressed();
-			if (key.getKeyCode() == KeyEvent.VK_Q && key.isControlDown() && key.isShiftDown()) {
-				quit();
+			if (key.getKeyCode() == KeyEvent.VK_F11) {
+				toggleFullscreen();
 			}
 		}
 	}
 
-	private void quit() {
-		getAmstradPc().terminate();
+	private void toggleFullscreen() {
+		getAmstradPc().toggleWindowFullscreen();
 	}
 
 }

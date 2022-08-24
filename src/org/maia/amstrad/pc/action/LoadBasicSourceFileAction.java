@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.menu;
+package org.maia.amstrad.pc.action;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -7,13 +7,13 @@ import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
+public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 
-	public LoadBasicBinaryFileAction(AmstradPc amstradPc) {
-		this(amstradPc, "Load Basic binary file...");
+	public LoadBasicSourceFileAction(AmstradPc amstradPc) {
+		this(amstradPc, "Load Basic source file...");
 	}
 
-	public LoadBasicBinaryFileAction(AmstradPc amstradPc, String name) {
+	public LoadBasicSourceFileAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
@@ -27,10 +27,10 @@ public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
 				public void run() {
 					File file = getSelectedFile();
 					try {
-						getAmstradPc().getBasicRuntime().loadByteCodeFromFile(file);
+						getAmstradPc().getBasicRuntime().loadSourceCodeFromFile(file);
 					} catch (Exception e) {
-						System.err.println("Failed to load Basic binary file: " + e.getMessage());
-						showErrorMessageDialog("Error loading Basic binary file", "Failed to load " + file.getName(), e);
+						System.err.println("Failed to load Basic source file: " + e.getMessage());
+						showErrorMessageDialog("Error loading Basic source file", "Failed to load " + file.getName(), e);
 					}
 				}
 			}).start();

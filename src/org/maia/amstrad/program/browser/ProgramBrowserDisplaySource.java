@@ -32,6 +32,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	private ProgramInfoSheet programInfoSheet;
 
+	private AmstradProgram lastLaunchedProgram;
+
 	private Rectangle modalWindowCloseButtonBounds;
 
 	private boolean mouseOverButton;
@@ -318,10 +320,19 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	public void closeModalWindow() {
 		setModalWindowCloseButtonBounds(null);
-		if (Window.PROGRAM_INFO.equals(getCurrentWindow())) {
+		if (Window.PROGRAM_INFO.equals(getCurrentWindow())
+				&& getProgramInfoSheet().getProgram().equals(getProgramMenu().getProgram())) {
 			setCurrentWindow(Window.PROGRAM_MENU);
 		} else {
 			setCurrentWindow(Window.MAIN);
+		}
+	}
+
+	public void showDescriptiveInfo(AmstradProgram program) {
+		if (program != null && program.hasDescriptiveInfo()) {
+			setProgramInfoSheet(createProgramInfoSheet(program));
+			closeModalWindow();
+			setCurrentWindow(Window.PROGRAM_INFO);
 		}
 	}
 
@@ -359,6 +370,8 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			} else {
 				close();
 			}
+		} else if (keyCode == KeyEvent.VK_F5) {
+			home();
 		}
 	}
 
@@ -556,6 +569,14 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	private void setProgramInfoSheet(ProgramInfoSheet programInfoSheet) {
 		this.programInfoSheet = programInfoSheet;
+	}
+
+	public AmstradProgram getLastLaunchedProgram() {
+		return lastLaunchedProgram;
+	}
+
+	private void setLastLaunchedProgram(AmstradProgram program) {
+		this.lastLaunchedProgram = program;
 	}
 
 	private boolean isItemListCursorBlinkOn() {
@@ -899,6 +920,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 							if (mode != null) {
 								getAmstradPc().setMonitorMode(mode);
 							}
+							setLastLaunchedProgram(getProgram());
 						} catch (AmstradProgramException exc) {
 							System.err.println(exc);
 							acquireKeyboard();
@@ -969,9 +991,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		@Override
 		public void execute() {
 			if (isEnabled()) {
-				setProgramInfoSheet(createProgramInfoSheet(getProgram()));
-				closeModalWindow();
-				setCurrentWindow(Window.PROGRAM_INFO);
+				showDescriptiveInfo(getProgram());
 			}
 		}
 

@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.menu;
+package org.maia.amstrad.pc.action;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
