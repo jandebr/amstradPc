@@ -138,6 +138,8 @@ public abstract class AmstradProgram {
 
 		private String description;
 
+		private String heading;
+
 		public UserControl(String key, String description) {
 			this.key = key;
 			this.description = description;
@@ -150,6 +152,8 @@ public abstract class AmstradProgram {
 			builder.append(key);
 			builder.append("', description='");
 			builder.append(description);
+			builder.append("', heading='");
+			builder.append(heading);
 			builder.append("']");
 			return builder.toString();
 		}
@@ -160,6 +164,14 @@ public abstract class AmstradProgram {
 
 		public String getDescription() {
 			return description;
+		}
+
+		public String getHeading() {
+			return heading;
+		}
+
+		public void setHeading(String heading) {
+			this.heading = heading;
 		}
 
 	}

@@ -93,7 +93,10 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 			String key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
 			while (key != null) {
 				String desc = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_DESCRIPTION);
-				userControls.add(new UserControl(key, desc));
+				String heading = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_HEADING);
+				UserControl control = new UserControl(key, desc);
+				control.setHeading(heading);
+				userControls.add(control);
 				i++;
 				key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
 			}

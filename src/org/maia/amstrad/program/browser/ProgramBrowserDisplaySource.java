@@ -455,12 +455,29 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 				sheet.add(new ProgramInfoLine());
 			}
 			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(
-					"\u00D6\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F\u00D7", bg, 7)));
-			for (UserControl ctr : program.getUserControls()) {
+					"\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F", bg, 7)));
+			for (UserControl uc : program.getUserControls()) {
 				sheet.add(new ProgramInfoLine());
-				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(ctr.getKey(), maxWidth), bg,
+				if (uc.getHeading() != null) {
+					List<String> hlines = StringUtils.splitOnNewlinesAndWrap(uc.getHeading(), maxWidth - 6);
+					for (int i = 0; i < hlines.size(); i++) {
+						String text = hlines.get(i);
+						if (hlines.size() == 1) {
+							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("\u00CF\u00DC " + text
+									+ " \u00DD\u00CF", bg, 7)));
+						} else if (i == 0) {
+							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("\u00CF\u00DC "
+									+ StringUtils.fitWidth(text, maxWidth - 6) + " \u00DD\u00CF", bg, 7)));
+						} else {
+							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("\u00CF  "
+									+ StringUtils.fitWidth(text, maxWidth - 6) + "  \u00CF", bg, 7)));
+						}
+					}
+					sheet.add(new ProgramInfoLine());
+				}
+				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(uc.getKey(), maxWidth), bg,
 						16)));
-				for (String text : StringUtils.splitOnNewlinesAndWrap(ctr.getDescription(), maxWidth - 2)) {
+				for (String text : StringUtils.splitOnNewlinesAndWrap(uc.getDescription(), maxWidth - 2)) {
 					sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(2) + text, bg, 26)));
 				}
 			}
