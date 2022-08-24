@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.maia.amstrad.util.AmstradUtils;
+
 public class AmstradSettingsImpl extends AmstradSettings {
 
 	private Properties properties;
@@ -138,7 +140,7 @@ public class AmstradSettingsImpl extends AmstradSettings {
 						saveProperties();
 					}
 				}
-				AmstradContext.sleep(50L);
+				AmstradUtils.sleep(50L);
 			}
 		}
 

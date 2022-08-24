@@ -30,7 +30,6 @@ import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
 
 import org.maia.amstrad.io.AmstradFileType;
-import org.maia.amstrad.pc.AmstradContext;
 import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
@@ -42,6 +41,7 @@ import org.maia.amstrad.pc.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.display.AmstradKeyboardController;
 import org.maia.amstrad.pc.display.AmstradSystemColors;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.util.AmstradUtils;
 
 public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener,
 		PrimaryDisplaySourceListener, KeyListener {
@@ -388,7 +388,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	private void waitUntilReady(long minWaitTimeMs, long maxWaitTimeMs) {
 		System.out.println("Wait until Basic runtime is Ready");
 		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
-		AmstradContext.sleep(minWaitTimeMs);
+		AmstradUtils.sleep(minWaitTimeMs);
 		Display display = getJemuInstance().getDisplay();
 		BufferedImage image = display.getRawPrimaryImage();
 		double sx = image.getWidth() / 384.0;
@@ -397,7 +397,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		int cursorY = (int) Math.round(sy * (40 + 68));
 		Color color = new Color(image.getRGB(cursorX, cursorY));
 		while (color.getGreen() < 100 && System.currentTimeMillis() < timeout) {
-			AmstradContext.sleep(100L);
+			AmstradUtils.sleep(100L);
 			System.out.println("Checking if Basic runtime is Ready");
 			image = display.getRawPrimaryImage();
 			color = new Color(image.getRGB(cursorX, cursorY));
@@ -415,7 +415,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	private void waitUntilSnapshotReady(File snapshotFile, long maxWaitTimeMs) {
 		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
 		while (snapshotFile.length() < 65536L + SNAPSHOT_HEADER_SIZE && System.currentTimeMillis() < timeout) {
-			AmstradContext.sleep(100L);
+			AmstradUtils.sleep(100L);
 		}
 	}
 
@@ -529,7 +529,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 				Autotype.typeText(text);
 				if (waitUntilTyped) {
 					waitUntilAutotypeEnded();
-					AmstradContext.sleep(100L);
+					AmstradUtils.sleep(100L);
 				}
 			}
 		}

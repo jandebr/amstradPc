@@ -12,6 +12,7 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.util.AmstradUtils;
 
 public class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 
@@ -105,7 +106,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			File file = files[i++];
 			if (isMetaDataFile(file)) {
 				if (companionProgramFileInFolder == null
-						|| stripExtension(file).equals(stripExtension(companionProgramFileInFolder))) {
+						|| equalFilenamesButExtension(file, companionProgramFileInFolder)) {
 					result = file;
 				}
 			}
@@ -113,14 +114,8 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return result;
 	}
 
-	private static File stripExtension(File file) {
-		String name = file.getName();
-		int i = name.lastIndexOf('.');
-		if (i > 0) {
-			return new File(file.getParentFile(), name.substring(0, i));
-		} else {
-			return file;
-		}
+	private static boolean equalFilenamesButExtension(File one, File other) {
+		return AmstradUtils.stripExtension(one).equals(AmstradUtils.stripExtension(other));
 	}
 
 	@Override
