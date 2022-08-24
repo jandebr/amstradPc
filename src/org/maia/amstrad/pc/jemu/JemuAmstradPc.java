@@ -40,6 +40,8 @@ import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.display.AmstradKeyboardController;
 import org.maia.amstrad.pc.display.AmstradSystemColors;
+import org.maia.amstrad.pc.event.AmstradPcEvent;
+import org.maia.amstrad.pc.event.AmstradPcEventListener;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 import org.maia.amstrad.util.AmstradUtils;
 
@@ -51,6 +53,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	private BasicRuntime basicRuntime;
 
 	private AmstradGraphicsContextImpl graphicsContext;
+
+	private AmstradKeyboardControllerImpl keyboardController;
 
 	private boolean started;
 
@@ -69,6 +73,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		this.jemuInstance.setMouseClickActionsEnabled(false);
 		this.basicRuntime = new JemuBasicRuntimeImpl();
 		this.graphicsContext = new AmstradGraphicsContextImpl();
+		this.keyboardController = new AmstradKeyboardControllerImpl();
 	}
 
 	@Override
@@ -455,10 +460,16 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		if (!getEventListeners().isEmpty()) {
+			fireEvent(new AmstradPcKeyboardEvent(this, e));
+		}
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+		if (!getEventListeners().isEmpty()) {
+			fireEvent(new AmstradPcKeyboardEvent(this, e));
+		}
 	}
 
 	private static void checkNoInstanceRunning() {
@@ -476,6 +487,10 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private AmstradGraphicsContextImpl getGraphicsContext() {
 		return graphicsContext;
+	}
+
+	private AmstradKeyboardControllerImpl getKeyboardController() {
+		return keyboardController;
 	}
 
 	@Override
@@ -818,7 +833,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			rememberedMonitorEffect = isMonitorEffectOn();
 			rememberedMonitorScanLinesEffect = isMonitorScanLinesEffectOn();
 			rememberedMonitorBilinearEffect = isMonitorBilinearEffectOn();
-			getSource().init(displayComponent, getGraphicsContext(), new AmstradKeyboardControllerImpl());
+			getSource().init(displayComponent, getGraphicsContext(), getKeyboardController());
 		}
 
 		@Override
@@ -847,14 +862,37 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	}
 
-	private class AmstradKeyboardControllerImpl implements AmstradKeyboardController {
+	private class AmstradKeyboardControllerImpl implements AmstradKeyboardController, AmstradPcEventListener {
+
+		private int lastKeyModifiers;
+
+		private boolean blockKeyboardPending;
 
 		public AmstradKeyboardControllerImpl() {
+			addEventListener(this);
 		}
 
 		@Override
-		public void sendKeyboardEventsToComputer(boolean sendToComputer) {
-			Switches.blockKeyboard = !sendToComputer;
+		public synchronized void sendKeyboardEventsToComputer(boolean sendToComputer) {
+			blockKeyboardPending = false;
+			if (sendToComputer) {
+				Switches.blockKeyboard = false;
+			} else if (lastKeyModifiers == 0) {
+				Switches.blockKeyboard = true;
+			} else {
+				blockKeyboardPending = true;
+			}
+		}
+
+		@Override
+		public synchronized void amstradPcEventDispatched(AmstradPcEvent event) {
+			if (event instanceof AmstradPcKeyboardEvent) {
+				lastKeyModifiers = ((AmstradPcKeyboardEvent) event).getKey().getModifiers();
+				if (blockKeyboardPending && lastKeyModifiers == 0) {
+					Switches.blockKeyboard = true;
+					blockKeyboardPending = false;
+				}
+			}
 		}
 
 	}

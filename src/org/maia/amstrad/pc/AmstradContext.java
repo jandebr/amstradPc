@@ -3,9 +3,6 @@ package org.maia.amstrad.pc;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
-
 public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAMS_DIR = "programs_dir";
@@ -21,15 +18,11 @@ public abstract class AmstradContext {
 
 	public abstract PrintStream getConsoleErrorStream();
 
-	public AmstradProgramRepository getAmstradProgramRepository() {
-		return new FileBasedAmstradProgramRepository(getAmstradProgramRepositoryRootFolder());
-	}
-
-	public File getAmstradProgramRepositoryRootFolder() {
+	public File getProgramRepositoryRootFolder() {
 		return new File(getUserSettings().get(SETTING_PROGRAMS_DIR, "."));
 	}
 
-	public void setAmstradProgramRepositoryRootFolder(File rootFolder) {
+	public void setProgramRepositoryRootFolder(File rootFolder) {
 		if (!rootFolder.isDirectory())
 			throw new IllegalArgumentException("The root folder must be a directory");
 		getUserSettings().set(SETTING_PROGRAMS_DIR, rootFolder.getAbsolutePath());
@@ -40,7 +33,7 @@ public abstract class AmstradContext {
 		if (dir != null) {
 			return new File(dir);
 		} else {
-			return getAmstradProgramRepositoryRootFolder();
+			return getProgramRepositoryRootFolder();
 		}
 	}
 

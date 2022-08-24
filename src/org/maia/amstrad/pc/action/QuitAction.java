@@ -27,8 +27,9 @@ public class QuitAction extends AmstradPcAction {
 	public void amstradPcEventDispatched(AmstradPcEvent event) {
 		super.amstradPcEventDispatched(event);
 		if (event instanceof AmstradPcKeyboardEvent) {
-			KeyEvent key = ((AmstradPcKeyboardEvent) event).getKeyPressed();
-			if (key.getKeyCode() == KeyEvent.VK_Q && key.isControlDown() && key.isShiftDown()) {
+			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
+			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_Q && keyEvent.isControlDown()
+					&& keyEvent.isShiftDown()) {
 				quit();
 			}
 		}

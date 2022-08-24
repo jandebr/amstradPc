@@ -6,15 +6,43 @@ import org.maia.amstrad.pc.AmstradPc;
 
 public class AmstradPcKeyboardEvent extends AmstradPcEvent {
 
-	private KeyEvent keyPressed;
+	private KeyEvent key;
 
-	public AmstradPcKeyboardEvent(AmstradPc source, KeyEvent keyPressed) {
+	public AmstradPcKeyboardEvent(AmstradPc source, KeyEvent key) {
 		super(source);
-		this.keyPressed = keyPressed;
+		this.key = key;
 	}
 
-	public KeyEvent getKeyPressed() {
-		return keyPressed;
+	public boolean isKeyPressed() {
+		return getKey().getID() == KeyEvent.KEY_PRESSED;
+	}
+
+	public boolean isKeyReleased() {
+		return getKey().getID() == KeyEvent.KEY_RELEASED;
+	}
+
+	public boolean isKeyTyped() {
+		return getKey().getID() == KeyEvent.KEY_TYPED;
+	}
+
+	public boolean isControlDown() {
+		return getKey().isControlDown();
+	}
+
+	public boolean isAltDown() {
+		return getKey().isAltDown();
+	}
+
+	public boolean isShiftDown() {
+		return getKey().isShiftDown();
+	}
+
+	public int getKeyCode() {
+		return getKey().getKeyCode();
+	}
+
+	public KeyEvent getKey() {
+		return key;
 	}
 
 }

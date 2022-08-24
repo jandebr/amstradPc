@@ -41,8 +41,8 @@ public class PauseResumeAction extends AmstradPcAction {
 	public void amstradPcEventDispatched(AmstradPcEvent event) {
 		super.amstradPcEventDispatched(event);
 		if (event instanceof AmstradPcKeyboardEvent) {
-			KeyEvent key = ((AmstradPcKeyboardEvent) event).getKeyPressed();
-			if (key.getKeyCode() == KeyEvent.VK_PAUSE) {
+			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
+			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_PAUSE) {
 				togglePauseResume();
 			}
 		}

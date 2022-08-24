@@ -36,6 +36,9 @@ import org.maia.amstrad.pc.action.WindowAlwaysOnTopAction;
 import org.maia.amstrad.pc.action.WindowDynamicTitleAction;
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
 import org.maia.amstrad.program.browser.ProgramBrowserAction;
+import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
 
 public class AmstradFactory {
 
@@ -75,7 +78,7 @@ public class AmstradFactory {
 	private JMenu createFileMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("File");
 		JMenuItem item = new JMenuItem(new ProgramBrowserAction(amstradPc));
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
 		menu.add(item);
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new LoadBasicSourceFileAction(amstradPc)));
@@ -130,6 +133,15 @@ public class AmstradFactory {
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
 		menu.add(item);
 		return menu;
+	}
+
+	public ProgramBrowserDisplaySource createProgramBrowserDisplaySource(AmstradPc amstradPc) {
+		AmstradProgramRepository repository = createProgramRepository();
+		return new ProgramBrowserDisplaySource(amstradPc, repository);
+	}
+
+	public AmstradProgramRepository createProgramRepository() {
+		return new FileBasedAmstradProgramRepository(getAmstradContext().getProgramRepositoryRootFolder());
 	}
 
 	public static AmstradFactory getInstance() {

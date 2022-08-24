@@ -1631,172 +1631,169 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else if (keyCode == KeyEvent.VK_ALT) {
 			alt = true;
 		}
-		if (!Switches.blockKeyboard) {
-			// Keyboard mapping
-			virtualShiftKey = false;
-			applyKeyboardMapping(e, true);
-			keyCode = e.getKeyCode();
-			if (isControlKeysEnabled()) {
-				// Function keys
-				if (ctrl) {
-					if (keyCode == KeyEvent.VK_F1) {
-						ctrl = false;
-						loadtitle = "Load DSK file to DF0";
-						computer.setCurrentDrive(0);
-						Switches.askDrive = false;
-						loaddata();
-						computer.setCurrentDrive(0);
-						loadtitle = "Load emulator file";
-						return;
-					} else if (keyCode == KeyEvent.VK_F2) {
-						ctrl = false;
-						loadtitle = "Load DSK file to DF1";
-						computer.setCurrentDrive(1);
-						Switches.askDrive = false;
-						loaddata();
-						computer.setCurrentDrive(0);
-						loadtitle = "Load emulator file";
-						return;
-					} else if (keyCode == KeyEvent.VK_F3) {
-						ctrl = false;
-						loadTape(false);
-						return;
-					} else if (keyCode == KeyEvent.VK_F4) {
-						if (shift) {
-							ctrl = false;
-							shift = false;
-							turboCheck();
-							return;
-						} else {
-							ctrl = false;
-							loadTape(true);
-							return;
-						}
-					} else if (keyCode == KeyEvent.VK_F5) {
-						if (alt) {
-							ctrl = false;
-							alt = false;
-							new EditIni();
-							return;
-						} else if (!shift) {
-							if (!jemu.system.cpc.CPC.tapedeck) {
-								jemu.system.cpc.CPC.TapeDrive.setVisible(true);
-								jemu.system.cpc.CPC.tapedeck = true;
-							} else {
-								jemu.system.cpc.CPC.TapeDrive.setVisible(false);
-								jemu.system.cpc.CPC.tapedeck = false;
-							}
-							ctrl = false;
-							return;
-						}
-					} else if (keyCode == KeyEvent.VK_F6) {
-						ctrl = false;
-						chooseSNA();
-						return;
-					} else if (keyCode == KeyEvent.VK_F9) {
-						ctrl = false;
-						reset();
-						return;
-					} else if (keyCode == KeyEvent.VK_F10) {
-						ctrl = false;
-						optionPanel.OptionPanel();
-						return;
-					} else if (keyCode == KeyEvent.VK_F11) {
-						ctrl = false;
-						screenshot();
-						return;
-					} else if (keyCode == KeyEvent.VK_F12) {
-						ctrl = false;
-						MenuCheck();
-						return;
-					}
-				} else {
-					if (keyCode == KeyEvent.VK_F11) {
-						Autotype.PasteText();
-						return;
-					}
-				}
-				// Key recording
-				if (KeyRec && ctrl) {
-					if (keyCode == KeyEvent.VK_NUMPAD1) {
-						ctrl = false;
-						System.out.println("keyboard input recording...");
-						computer.stopKeys();
-						computer.recordKeys();
-						return;
-					} else if (keyCode == KeyEvent.VK_NUMPAD2) {
-						ctrl = false;
-						System.out.println("keyboard input stopped...");
-						computer.stopKeys();
-						return;
-					} else if (keyCode == KeyEvent.VK_NUMPAD3) {
-						ctrl = false;
-						System.out.println("keyboard input playing...");
-						computer.stopKeys();
-						computer.playKeys();
-						return;
-					}
-				}
-				// Misc
-				if (keyCode == KeyEvent.VK_ENTER && alt && executable) {
-					alt = false;
-					FullSize();
-					return;
-				} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
-					for (int i = 0; i < 4; i++) {
-						computer.setCurrentDrive(i);
-						mediumeject();
-					}
+		// Keyboard mapping
+		e = cloneKeyEvent(e);
+		virtualShiftKey = false;
+		applyKeyboardMapping(e, true);
+		keyCode = e.getKeyCode();
+		// Control keys
+		if (isControlKeysEnabled()) {
+			if (ctrl) {
+				if (keyCode == KeyEvent.VK_F1) {
+					ctrl = false;
+					loadtitle = "Load DSK file to DF0";
 					computer.setCurrentDrive(0);
-				} else if (keyCode == KeyEvent.VK_PAGE_UP) {
-					Switches.askDrive = true;
+					Switches.askDrive = false;
 					loaddata();
-				} else if (keyCode == KeyEvent.VK_SCROLL_LOCK) {
-					autosavecheck();
-				} else if (keyCode == KeyEvent.VK_PAUSE) {
-					pauseToggle();
-				} else if (keyCode == KeyEvent.VK_HOME) {
-					romsetter.setRoms();
-				} else if (keyCode == KeyEvent.VK_ESCAPE) {
-					if (dialogsnap) {
-						snaChooser.dispose();
-						computer.start();
-						computer.reSync();
-						dialogsnap = false;
+					computer.setCurrentDrive(0);
+					loadtitle = "Load emulator file";
+					return;
+				} else if (keyCode == KeyEvent.VK_F2) {
+					ctrl = false;
+					loadtitle = "Load DSK file to DF1";
+					computer.setCurrentDrive(1);
+					Switches.askDrive = false;
+					loaddata();
+					computer.setCurrentDrive(0);
+					loadtitle = "Load emulator file";
+					return;
+				} else if (keyCode == KeyEvent.VK_F3) {
+					ctrl = false;
+					loadTape(false);
+					return;
+				} else if (keyCode == KeyEvent.VK_F4) {
+					if (shift) {
+						ctrl = false;
+						shift = false;
+						turboCheck();
+						return;
+					} else {
+						ctrl = false;
+						loadTape(true);
 						return;
 					}
-				} else if (keyCode == KeyEvent.VK_ADD) {
-					applyAlwaysOnTop(false);
-					saveDsk();
-					applyAlwaysOnTop(onTop);
+				} else if (keyCode == KeyEvent.VK_F5) {
+					if (alt) {
+						ctrl = false;
+						alt = false;
+						new EditIni();
+						return;
+					} else if (!shift) {
+						if (!jemu.system.cpc.CPC.tapedeck) {
+							jemu.system.cpc.CPC.TapeDrive.setVisible(true);
+							jemu.system.cpc.CPC.tapedeck = true;
+						} else {
+							jemu.system.cpc.CPC.TapeDrive.setVisible(false);
+							jemu.system.cpc.CPC.tapedeck = false;
+						}
+						ctrl = false;
+						return;
+					}
+				} else if (keyCode == KeyEvent.VK_F6) {
+					ctrl = false;
+					chooseSNA();
+					return;
+				} else if (keyCode == KeyEvent.VK_F9) {
+					ctrl = false;
+					reset();
+					return;
+				} else if (keyCode == KeyEvent.VK_F10) {
+					ctrl = false;
+					optionPanel.OptionPanel();
+					return;
+				} else if (keyCode == KeyEvent.VK_F11) {
+					ctrl = false;
+					screenshot();
+					return;
+				} else if (keyCode == KeyEvent.VK_F12) {
+					ctrl = false;
+					MenuCheck();
+					return;
+				}
+			} else {
+				if (keyCode == KeyEvent.VK_F11) {
+					Autotype.PasteText();
+					return;
 				}
 			}
-			// Pass key pressed to the computer
-			if (keyCode != KeyEvent.VK_ALT && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_UNDEFINED) {
-				if (virtualShiftKey) {
-					computer.processKeyEvent(virtualShiftKeyEventPressed);
+			// Key recording
+			if (KeyRec && ctrl) {
+				if (keyCode == KeyEvent.VK_NUMPAD1) {
+					ctrl = false;
+					System.out.println("keyboard input recording...");
+					computer.stopKeys();
+					computer.recordKeys();
+					return;
+				} else if (keyCode == KeyEvent.VK_NUMPAD2) {
+					ctrl = false;
+					System.out.println("keyboard input stopped...");
+					computer.stopKeys();
+					return;
+				} else if (keyCode == KeyEvent.VK_NUMPAD3) {
+					ctrl = false;
+					System.out.println("keyboard input playing...");
+					computer.stopKeys();
+					computer.playKeys();
+					return;
 				}
-				computer.processKeyEvent(e);
 			}
+			// Misc
+			if (keyCode == KeyEvent.VK_ENTER && alt && executable) {
+				alt = false;
+				FullSize();
+				return;
+			} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
+				for (int i = 0; i < 4; i++) {
+					computer.setCurrentDrive(i);
+					mediumeject();
+				}
+				computer.setCurrentDrive(0);
+			} else if (keyCode == KeyEvent.VK_PAGE_UP) {
+				Switches.askDrive = true;
+				loaddata();
+			} else if (keyCode == KeyEvent.VK_SCROLL_LOCK) {
+				autosavecheck();
+			} else if (keyCode == KeyEvent.VK_PAUSE) {
+				pauseToggle();
+			} else if (keyCode == KeyEvent.VK_HOME) {
+				romsetter.setRoms();
+			} else if (keyCode == KeyEvent.VK_ESCAPE) {
+				if (dialogsnap) {
+					snaChooser.dispose();
+					computer.start();
+					computer.reSync();
+					dialogsnap = false;
+					return;
+				}
+			} else if (keyCode == KeyEvent.VK_ADD) {
+				applyAlwaysOnTop(false);
+				saveDsk();
+				applyAlwaysOnTop(onTop);
+			}
+		}
+		// Pass key pressed to the computer
+		if (keyToProcessByComputer(e)) {
+			if (virtualShiftKey) {
+				computer.processKeyEvent(virtualShiftKeyEventPressed);
+			}
+			computer.processKeyEvent(e);
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		if (!Switches.blockKeyboard) {
-			// Keyboard mapping
-			virtualShiftKey = false;
-			applyKeyboardMapping(e, false);
-			keyCode = e.getKeyCode();
-			// Pass key released to the computer
-			if (keyCode != KeyEvent.VK_ALT && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_UNDEFINED) {
-				computer.processKeyEvent(e);
-				if (virtualShiftKey) {
-					computer.processKeyEvent(virtualShiftKeyEventReleased);
-				}
+		// Keyboard mapping
+		e = cloneKeyEvent(e);
+		virtualShiftKey = false;
+		applyKeyboardMapping(e, false);
+		// Pass key released to the computer
+		if (keyToProcessByComputer(e)) {
+			computer.processKeyEvent(e);
+			if (virtualShiftKey) {
+				computer.processKeyEvent(virtualShiftKeyEventReleased);
 			}
 		}
 		// Update modifiers
+		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_CONTROL) {
 			ctrl = false;
 		} else if (keyCode == KeyEvent.VK_ALT) {
@@ -1804,6 +1801,38 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else if (keyCode == KeyEvent.VK_SHIFT) {
 			shift = false;
 		}
+	}
+
+	private KeyEvent cloneKeyEvent(KeyEvent e) {
+		return new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(), e.getKeyCode(), e.getKeyChar(),
+				e.getKeyLocation());
+	}
+
+	private boolean keyToProcessByComputer(KeyEvent e) {
+		if (Switches.blockKeyboard)
+			return false;
+		if (isFunctionKey(e) && !e.isShiftDown())
+			return false;
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_UNDEFINED)
+			return false;
+		if (keyCode == KeyEvent.VK_CONTROL)
+			return false;
+		if (keyCode == KeyEvent.VK_ALT)
+			return false;
+		if (isAlphabeticKey(e) && (ctrl || alt))
+			return false;
+		return true;
+	}
+
+	private boolean isAlphabeticKey(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		return keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z;
+	}
+
+	private boolean isFunctionKey(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		return keyCode >= KeyEvent.VK_F1 && keyCode <= KeyEvent.VK_F12;
 	}
 
 	private void applyKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
