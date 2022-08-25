@@ -76,7 +76,7 @@ public class ProgramBrowserAction extends AmstradPcAction {
 		return altDisplaySource != null && altDisplaySource instanceof ProgramBrowserDisplaySource;
 	}
 
-	public ProgramBrowserDisplaySource getDisplaySource() {
+	ProgramBrowserDisplaySource getDisplaySource() {
 		if (displaySource == null) {
 			displaySource = AmstradFactory.getInstance().createProgramBrowserDisplaySource(getAmstradPc());
 		}

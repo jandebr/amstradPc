@@ -37,6 +37,7 @@ import org.maia.amstrad.pc.action.WindowDynamicTitleAction;
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
 import org.maia.amstrad.program.browser.ProgramBrowserAction;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.program.browser.ProgramInfoAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
 
@@ -77,8 +78,12 @@ public class AmstradFactory {
 
 	private JMenu createFileMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("File");
-		JMenuItem item = new JMenuItem(new ProgramBrowserAction(amstradPc));
+		ProgramBrowserAction browserAction = new ProgramBrowserAction(amstradPc);
+		JMenuItem item = new JMenuItem(browserAction);
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
+		menu.add(item);
+		item = new JMenuItem(new ProgramInfoAction(browserAction));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		menu.add(item);
 		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new LoadBasicSourceFileAction(amstradPc)));
