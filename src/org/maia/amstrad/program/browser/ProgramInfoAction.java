@@ -15,6 +15,10 @@ public class ProgramInfoAction extends AmstradPcAction {
 
 	private ProgramBrowserDisplaySource displaySource;
 
+	private boolean infoMode;
+
+	private boolean onPauseBeforeInfoMode;
+
 	private static String NAME_OPEN = "Show program info";
 
 	private static String NAME_CLOSE = "Hide program info";
@@ -64,7 +68,15 @@ public class ProgramInfoAction extends AmstradPcAction {
 	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
 		super.amstradPcDisplaySourceChanged(amstradPc);
 		updateName();
-		if (!isProgramBrowserShowing()) {
+		if (isProgramBrowserShowing()) {
+			infoMode = ((ProgramBrowserDisplaySource) amstradPc.getCurrentAlternativeDisplaySource())
+					.isStandaloneInfo();
+			setEnabled(infoMode);
+			if (infoMode) {
+				onPauseBeforeInfoMode = amstradPc.isPaused();
+				amstradPc.pause(); // auto-pause
+			}
+		} else {
 			if (hasProgramInfo()) {
 				if (getDisplaySource() == null || !getDisplaySource().getInfoSheetProgram().equals(getProgram())) {
 					setDisplaySource(createDisplaySource());
@@ -72,6 +84,12 @@ public class ProgramInfoAction extends AmstradPcAction {
 				setEnabled(true);
 			} else {
 				setEnabled(false);
+			}
+			if (infoMode) {
+				infoMode = false;
+				if (!onPauseBeforeInfoMode) {
+					amstradPc.resume(); // auto-resume
+				}
 			}
 		}
 	}

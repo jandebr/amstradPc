@@ -39,17 +39,27 @@ public class ProgramBrowserAction extends AmstradPcAction {
 	}
 
 	public void showProgramBrowser() {
-		getAmstradPc().swapDisplaySource(getDisplaySource());
+		if (isEnabled()) {
+			getAmstradPc().swapDisplaySource(getDisplaySource());
+		}
 	}
 
 	public void hideProgramBrowser() {
-		getAmstradPc().resetDisplaySource();
+		if (isEnabled()) {
+			getAmstradPc().resetDisplaySource();
+		}
 	}
 
 	@Override
 	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
 		super.amstradPcDisplaySourceChanged(amstradPc);
 		updateName();
+		if (isProgramBrowserShowing()) {
+			setEnabled(!((ProgramBrowserDisplaySource) amstradPc.getCurrentAlternativeDisplaySource())
+					.isStandaloneInfo());
+		} else {
+			setEnabled(true);
+		}
 	}
 
 	@Override

@@ -576,6 +576,10 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		this.programInfoSheet = programInfoSheet;
 	}
 
+	public boolean isStandaloneInfo() {
+		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
+	}
+
 	public AmstradProgram getInfoSheetProgram() {
 		return getProgramInfoSheet() != null ? getProgramInfoSheet().getProgram() : null;
 	}

@@ -56,6 +56,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private AmstradKeyboardControllerImpl keyboardController;
 
+	private AlternativeDisplaySourceRenderer alternativeDisplaySourceRenderer;
+
 	private boolean started;
 
 	private boolean terminated;
@@ -203,6 +205,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	@Override
 	public void pauseStateChanged(JEMU jemuInstance, boolean paused) {
+		handleAlternativeDisplaySourceRendering();
 		if (paused) {
 			firePausingEvent();
 		} else {
@@ -361,6 +364,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			getJemuInstance().getDisplay().installSecondaryDisplaySource(
 					new JemuSecondaryDisplaySourceBridge(displaySource));
 			fireDisplaySourceChangedEvent();
+			handleAlternativeDisplaySourceRendering();
 		} else {
 			resetDisplaySource();
 		}
@@ -372,6 +376,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkNotTerminated();
 		getJemuInstance().getDisplay().uninstallSecondaryDisplaySource();
 		fireDisplaySourceChangedEvent();
+		handleAlternativeDisplaySourceRendering();
 	}
 
 	@Override
@@ -384,6 +389,23 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			}
 		}
 		return altDisplaySource;
+	}
+
+	private synchronized void handleAlternativeDisplaySourceRendering() {
+		if (getCurrentAlternativeDisplaySource() != null && isPaused()) {
+			// When computer is paused, there is no vSync and we need to render ourselves
+			if (getAlternativeDisplaySourceRenderer() == null) {
+				AlternativeDisplaySourceRenderer renderer = new AlternativeDisplaySourceRenderer();
+				setAlternativeDisplaySourceRenderer(renderer);
+				renderer.start();
+			}
+		} else {
+			// Stop our own rendering
+			if (getAlternativeDisplaySourceRenderer() != null) {
+				getAlternativeDisplaySourceRenderer().stopRendering();
+				setAlternativeDisplaySourceRenderer(null);
+			}
+		}
 	}
 
 	private void waitUntilReady() {
@@ -491,6 +513,14 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 	private AmstradKeyboardControllerImpl getKeyboardController() {
 		return keyboardController;
+	}
+
+	private AlternativeDisplaySourceRenderer getAlternativeDisplaySourceRenderer() {
+		return alternativeDisplaySourceRenderer;
+	}
+
+	private void setAlternativeDisplaySourceRenderer(AlternativeDisplaySourceRenderer renderer) {
+		this.alternativeDisplaySourceRenderer = renderer;
 	}
 
 	@Override
@@ -893,6 +923,30 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 					blockKeyboardPending = false;
 				}
 			}
+		}
+
+	}
+
+	private class AlternativeDisplaySourceRenderer extends Thread {
+
+		private boolean stop;
+
+		public AlternativeDisplaySourceRenderer() {
+			setDaemon(true);
+		}
+
+		@Override
+		public void run() {
+			System.out.println("Alternative render thread started");
+			final Display display = getJemuInstance().getDisplay();
+			while (!stop) {
+				display.updateImage(true);
+			}
+			System.out.println("Alternative render thread stopped");
+		}
+
+		public void stopRendering() {
+			stop = true;
 		}
 
 	}
