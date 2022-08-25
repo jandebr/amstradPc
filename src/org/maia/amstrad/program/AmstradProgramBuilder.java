@@ -34,6 +34,11 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 		return this;
 	}
 
+	public AmstradProgramBuilder withAuthoringInformation(String authoringInformation) {
+		getProgram().setAuthoringInformation(authoringInformation);
+		return this;
+	}
+
 	public AmstradProgramBuilder withAuthor(String author) {
 		getProgram().setAuthor(author);
 		return this;
@@ -87,6 +92,7 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 			withBlocksOnTape(StringUtils.toInt(props.getProperty(AMD_BLOCKS), 0));
 			withPreferredMonitorMode(StringUtils.toMonitorMode(props.getProperty(AMD_MONITOR), null));
 			withProgramDescription(props.getProperty(AMD_DESCRIPTION));
+			withAuthoringInformation(props.getProperty(AMD_AUTHORING));
 			// User controls
 			List<UserControl> userControls = new Vector<UserControl>();
 			int i = 1;

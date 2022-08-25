@@ -13,6 +13,8 @@ public abstract class AmstradProgram {
 
 	private String programDescription;
 
+	private String authoringInformation;
+
 	private String author;
 
 	private int productionYear;
@@ -37,6 +39,8 @@ public abstract class AmstradProgram {
 		builder.append(programName);
 		builder.append("', programDescription='");
 		builder.append(programDescription);
+		builder.append("', authoringInformation='");
+		builder.append(authoringInformation);
 		builder.append("', author='");
 		builder.append(author);
 		builder.append("', productionYear=");
@@ -61,9 +65,9 @@ public abstract class AmstradProgram {
 	}
 
 	public boolean hasDescriptiveInfo() {
-		return !StringUtils.isEmpty(getProgramDescription()) || !StringUtils.isEmpty(getAuthor())
-				|| getProductionYear() > 0 || !StringUtils.isEmpty(getNameOfTape()) || getBlocksOnTape() > 0
-				|| !getUserControls().isEmpty();
+		return !StringUtils.isEmpty(getProgramDescription()) || !StringUtils.isEmpty(getAuthoringInformation())
+				|| !StringUtils.isEmpty(getAuthor()) || getProductionYear() > 0
+				|| !StringUtils.isEmpty(getNameOfTape()) || getBlocksOnTape() > 0 || !getUserControls().isEmpty();
 	}
 
 	public void clearUserControls() {
@@ -88,6 +92,14 @@ public abstract class AmstradProgram {
 
 	public void setProgramDescription(String programDescription) {
 		this.programDescription = programDescription;
+	}
+
+	public String getAuthoringInformation() {
+		return authoringInformation;
+	}
+
+	public void setAuthoringInformation(String authoringInformation) {
+		this.authoringInformation = authoringInformation;
 	}
 
 	public String getAuthor() {

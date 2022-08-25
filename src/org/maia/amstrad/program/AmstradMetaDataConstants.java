@@ -20,6 +20,8 @@ public interface AmstradMetaDataConstants {
 
 	String AMD_DESCRIPTION = "DESCRIPTION";
 
+	String AMD_AUTHORING = "AUTHORING";
+
 	String AMD_CONTROLS_PREFIX = "CONTROLS";
 
 	String AMD_CONTROLS_SUFFIX_HEADING = "HEADING";

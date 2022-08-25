@@ -467,6 +467,13 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 17)));
 			}
 		}
+		if (!StringUtils.isEmpty(program.getAuthoringInformation())) {
+			if (!sheet.isEmpty())
+				sheet.add(new ProgramInfoLine());
+			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getAuthoringInformation(), maxWidth)) {
+				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 4)));
+			}
+		}
 		if (!program.getUserControls().isEmpty()) {
 			if (!sheet.isEmpty()) {
 				sheet.add(new ProgramInfoLine());
