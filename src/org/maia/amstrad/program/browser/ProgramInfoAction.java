@@ -48,6 +48,8 @@ public class ProgramInfoAction extends AmstradPcAction {
 
 	public void showProgramInfo() {
 		if (isEnabled() && getDisplaySource() != null) {
+			onPauseBeforeInfoMode = getAmstradPc().isPaused();
+			getAmstradPc().pause(); // auto-pause
 			getAmstradPc().swapDisplaySource(getDisplaySource());
 		}
 	}
@@ -72,10 +74,6 @@ public class ProgramInfoAction extends AmstradPcAction {
 			infoMode = ((ProgramBrowserDisplaySource) amstradPc.getCurrentAlternativeDisplaySource())
 					.isStandaloneInfo();
 			setEnabled(infoMode);
-			if (infoMode) {
-				onPauseBeforeInfoMode = amstradPc.isPaused();
-				amstradPc.pause(); // auto-pause
-			}
 		} else {
 			if (hasProgramInfo()) {
 				if (getDisplaySource() == null || !getDisplaySource().getInfoSheetProgram().equals(getProgram())) {
