@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.util.StringUtils;
 
 public abstract class AmstradProgram {
 
@@ -60,8 +61,9 @@ public abstract class AmstradProgram {
 	}
 
 	public boolean hasDescriptiveInfo() {
-		return getProgramDescription() != null || getAuthor() != null || getProductionYear() > 0
-				|| getNameOfTape() != null || getBlocksOnTape() > 0 || !getUserControls().isEmpty();
+		return !StringUtils.isEmpty(getProgramDescription()) || !StringUtils.isEmpty(getAuthor())
+				|| getProductionYear() > 0 || !StringUtils.isEmpty(getNameOfTape()) || getBlocksOnTape() > 0
+				|| !getUserControls().isEmpty();
 	}
 
 	public void clearUserControls() {
