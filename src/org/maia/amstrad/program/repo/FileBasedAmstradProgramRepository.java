@@ -232,7 +232,8 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 			try {
 				amstradPc.getBasicRuntime().loadSourceCodeFromFile(sourceCodeFile);
 			} catch (Exception e) {
-				throw new AmstradProgramException("Could not load as Basic source file: " + sourceCodeFile.getPath(), e);
+				throw new AmstradProgramException(this, "Could not load as Basic source file: "
+						+ sourceCodeFile.getPath(), e);
 			}
 		}
 
