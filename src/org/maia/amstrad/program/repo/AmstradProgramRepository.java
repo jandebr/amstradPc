@@ -40,7 +40,7 @@ public abstract class AmstradProgramRepository {
 
 		public abstract boolean isFolder();
 
-		public boolean isProgram() {
+		public final boolean isProgram() {
 			return !isFolder();
 		}
 
@@ -90,7 +90,7 @@ public abstract class AmstradProgramRepository {
 		}
 
 		@Override
-		public boolean isFolder() {
+		public final boolean isFolder() {
 			return true;
 		}
 
@@ -119,7 +119,7 @@ public abstract class AmstradProgramRepository {
 		}
 
 		@Override
-		public boolean isFolder() {
+		public final boolean isFolder() {
 			return false;
 		}
 
