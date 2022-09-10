@@ -29,8 +29,8 @@ import jemu.ui.JEMU.PauseListener;
 import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
 
-import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradFactory;
+import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;

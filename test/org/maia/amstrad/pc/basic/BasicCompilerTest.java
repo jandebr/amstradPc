@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradFactory;
+import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.basic.BasicByteCodeComparator.ComparisonResult;

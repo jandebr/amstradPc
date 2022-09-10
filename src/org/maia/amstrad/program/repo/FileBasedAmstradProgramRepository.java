@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.io.AmstradFileType;
+import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
