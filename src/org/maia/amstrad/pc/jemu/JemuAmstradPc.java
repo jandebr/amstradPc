@@ -217,7 +217,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public synchronized void terminate() {
 		if (!isTerminated()) {
 			if (isStarted()) {
-				if (getCurrentAlternativeDisplaySource() != null) {
+				if (isAlternativeDisplaySourceShowing()) {
 					resetDisplaySource();
 				}
 				Autotype.clearText();
@@ -392,7 +392,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	}
 
 	private synchronized void handleAlternativeDisplaySourceRendering() {
-		if (getCurrentAlternativeDisplaySource() != null && isPaused()) {
+		if (isAlternativeDisplaySourceShowing() && isPaused()) {
 			// When computer is paused, there is no vSync and we need to render ourselves
 			if (getAlternativeDisplaySourceRenderer() == null) {
 				AlternativeDisplaySourceRenderer renderer = new AlternativeDisplaySourceRenderer();

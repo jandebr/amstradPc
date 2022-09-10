@@ -99,6 +99,14 @@ public abstract class AmstradPc {
 
 	public abstract AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource();
 
+	public boolean isAlternativeDisplaySourceShowing() {
+		return getCurrentAlternativeDisplaySource() != null;
+	}
+
+	public boolean isPrimaryDisplaySourceShowing() {
+		return !isAlternativeDisplaySourceShowing();
+	}
+
 	protected void checkStarted() {
 		if (!isStarted())
 			throw new IllegalStateException("This Amstrad PC has not been started");
