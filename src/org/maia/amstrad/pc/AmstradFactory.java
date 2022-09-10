@@ -16,6 +16,7 @@ import javax.swing.KeyStroke;
 
 import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.action.AutoTypeFileAction;
+import org.maia.amstrad.pc.action.DisplaySystemColorsAction;
 import org.maia.amstrad.pc.action.LoadBasicBinaryFileAction;
 import org.maia.amstrad.pc.action.LoadBasicSourceFileAction;
 import org.maia.amstrad.pc.action.LoadSnapshotFileAction;
@@ -70,7 +71,6 @@ public class AmstradFactory {
 		JMenuBar menubar = new JMenuBar();
 		menubar.add(createFileMenu(amstradPc));
 		menubar.add(createEmulatorMenu(amstradPc));
-		menubar.add(createCaptureMenu(amstradPc));
 		menubar.add(createMonitorMenu(amstradPc));
 		menubar.add(createWindowMenu(amstradPc));
 		return menubar;
@@ -112,17 +112,25 @@ public class AmstradFactory {
 		return menu;
 	}
 
-	private JMenu createCaptureMenu(AmstradPc amstradPc) {
-		JMenu menu = new JMenu("Capture");
+	private JMenu createMonitorMenu(AmstradPc amstradPc) {
+		JMenu menu = new JMenu("Monitor");
+		menu.add(new JMenuItem(new DisplaySystemColorsAction(amstradPc)));
+		menu.add(createMonitorModeMenu(amstradPc));
+		menu.add(createMonitorEffectsMenu(amstradPc));
+		menu.add(new JSeparator());
 		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
 		menu.add(new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc)));
 		return menu;
 	}
 
-	private JMenu createMonitorMenu(AmstradPc amstradPc) {
-		JMenu menu = new JMenu("Monitor");
+	private JMenu createMonitorModeMenu(AmstradPc amstradPc) {
+		JMenu menu = new JMenu("Monitor type");
 		MonitorModeMenuHelper.addModesToMenu(menu, amstradPc);
-		menu.add(new JSeparator());
+		return menu;
+	}
+
+	private JMenu createMonitorEffectsMenu(AmstradPc amstradPc) {
+		JMenu menu = new JMenu("Effects");
 		MonitorEffectMenuHelper.addToMenu(menu, amstradPc);
 		MonitorScanLinesEffectMenuHelper.addToMenu(menu, amstradPc);
 		MonitorBilinearEffectMenuHelper.addToMenu(menu, amstradPc);

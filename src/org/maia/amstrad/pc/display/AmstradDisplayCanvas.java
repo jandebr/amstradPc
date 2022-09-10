@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.display;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -117,6 +118,14 @@ public abstract class AmstradDisplayCanvas {
 	public AmstradDisplayCanvas plotr(int rx, int ry) {
 		Point p = getGraphicsPosition();
 		return plot(p.x + rx, p.y + ry);
+	}
+
+	public AmstradDisplayCanvas drawRect(Rectangle rect) {
+		return drawRect(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public AmstradDisplayCanvas drawRect(int xLeft, int yTop, int width, int height) {
+		return plot(xLeft, yTop).drawr(width, 0).drawr(0, -height).drawr(-width, 0).drawr(0, height);
 	}
 
 	public AmstradDisplayCanvas clearRect(Rectangle rect) {
@@ -295,6 +304,12 @@ public abstract class AmstradDisplayCanvas {
 		int yTop = Math.max(r1.y, r2.y);
 		int yBottom = Math.min(r1.y - r1.height + 1, r2.y - r2.height + 1);
 		return new Rectangle(xLeft, yTop, Math.abs(xRight - xLeft) + 1, Math.abs(yTop - yBottom) + 1);
+	}
+
+	public Dimension getTextAreaSizeOnCanvas(int charsWide, int charsHigh) {
+		int charWidth = getWidth() / getGraphicsContext().getTextColumns();
+		int charHeight = getHeight() / getGraphicsContext().getTextRows();
+		return new Dimension(charsWide * charWidth, charsHigh * charHeight);
 	}
 
 	public Color getBorderColor() {

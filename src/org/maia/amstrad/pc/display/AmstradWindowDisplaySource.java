@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.display;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.util.StringUtils;
@@ -132,6 +133,19 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			closeModalWindow();
 		} else if (isFocusOnWindowCloseButton(canvas)) {
 			close();
+		}
+	}
+
+	@Override
+	protected void keyboardKeyPressed(KeyEvent e) {
+		super.keyboardKeyPressed(e);
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_ESCAPE) {
+			if (isModalWindowOpen()) {
+				closeModalWindow();
+			} else {
+				close();
+			}
 		}
 	}
 

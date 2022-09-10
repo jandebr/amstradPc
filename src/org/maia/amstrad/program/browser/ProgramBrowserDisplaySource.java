@@ -244,10 +244,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		canvas.paper(COLOR_PAPER);
 	}
 
-	public void home() {
-		getStackedFolderItemList().reset();
-	}
-
 	@Override
 	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		super.mouseClickedOnCanvas(canvas, canvasPosition);
@@ -257,20 +253,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	@Override
-	protected void closeModalWindow() {
-		super.closeModalWindow();
-		if (isStandaloneInfo()) {
-			close();
-		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
-			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
-		} else {
-			setCurrentWindow(Window.MAIN);
-		}
-	}
-
-	@Override
 	protected void keyboardKeyPressed(KeyEvent e) {
-		super.keyboardKeyPressed(e);
 		resetItemListCursorBlinkOffsetTime();
 		if (!isModalWindowOpen()) {
 			handleKeyboardKeyInMainWindow(e);
@@ -342,6 +325,22 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (keyCode == KeyEvent.VK_END) {
 			itemList.browseEnd();
 		}
+	}
+
+	@Override
+	protected void closeModalWindow() {
+		super.closeModalWindow();
+		if (isStandaloneInfo()) {
+			close();
+		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
+			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
+		} else {
+			setCurrentWindow(Window.MAIN);
+		}
+	}
+
+	public void home() {
+		getStackedFolderItemList().reset();
 	}
 
 	private ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {
