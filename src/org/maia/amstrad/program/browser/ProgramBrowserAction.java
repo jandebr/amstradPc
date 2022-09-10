@@ -55,8 +55,9 @@ public class ProgramBrowserAction extends AmstradPcAction {
 		super.amstradPcDisplaySourceChanged(amstradPc);
 		updateName();
 		if (isProgramBrowserShowing()) {
-			setEnabled(!((ProgramBrowserDisplaySource) amstradPc.getCurrentAlternativeDisplaySource())
-					.isStandaloneInfo());
+			ProgramBrowserDisplaySource ds = (ProgramBrowserDisplaySource) amstradPc
+					.getCurrentAlternativeDisplaySource();
+			setEnabled(!ds.isStandaloneInfo());
 		} else {
 			setEnabled(true);
 		}

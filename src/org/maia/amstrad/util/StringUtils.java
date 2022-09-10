@@ -65,6 +65,19 @@ public class StringUtils {
 		}
 	}
 
+	public static String fitWidthCenterAlign(String str, int width) {
+		int n = str.length();
+		if (n == width) {
+			return str;
+		} else if (n > width) {
+			return str.substring(0, width - 2) + "..";
+		} else {
+			int spacesBefore = (width - n) / 2;
+			int spacesAfter = width - n - spacesBefore;
+			return spaces(spacesBefore) + str + spaces(spacesAfter);
+		}
+	}
+
 	public static List<String> splitOnNewlinesAndWrap(String str, int width) {
 		List<String> wrappedLines = new Vector<String>();
 		List<String> lines = splitOnNewlines(str);

@@ -1,8 +1,6 @@
 package org.maia.amstrad.program.browser;
 
-import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Stack;
@@ -11,7 +9,7 @@ import java.util.Vector;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.display.AmstradDisplayCanvas;
-import org.maia.amstrad.pc.display.AmstradEmulatedDisplaySource;
+import org.maia.amstrad.pc.display.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -20,7 +18,7 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.util.StringUtils;
 
-public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
+public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private AmstradProgramRepository programRepository;
 
@@ -33,10 +31,6 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	private ProgramInfoSheet programInfoSheet;
 
 	private AmstradProgram lastLaunchedProgram;
-
-	private Rectangle modalWindowCloseButtonBounds;
-
-	private boolean mouseOverButton;
 
 	private long itemListCursorBlinkOffsetTime;
 
@@ -51,7 +45,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	private static int LABEL_WIDTH = 18;
 
 	public ProgramBrowserDisplaySource(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
-		super(amstradPc);
+		super(amstradPc, "Program  Browser");
 		this.programRepository = programRepository;
 		this.stackedFolderItemList = new StackedFolderItemList(20);
 		this.currentWindow = Window.MAIN;
@@ -59,6 +53,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 
 	public ProgramBrowserDisplaySource createStandaloneInfoDisplaySource(AmstradProgram program) {
 		ProgramBrowserDisplaySource infoDS = new ProgramBrowserDisplaySource(getAmstradPc(), getProgramRepository());
+		infoDS.setWindowTitle(program.getProgramName());
 		infoDS.setCurrentWindow(Window.PROGRAM_INFO_STANDALONE);
 		infoDS.setProgramInfoSheet(createProgramInfoSheet(program));
 		return infoDS;
@@ -77,33 +72,15 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	@Override
-	protected void renderContent(AmstradDisplayCanvas canvas) {
-		setMouseOverButton(false);
-		if (Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow())) {
-			renderProgramInfoSheet(getProgramInfoSheet(), canvas);
-		} else {
-			renderTitle(canvas);
+	protected void renderWindowTitleBar(AmstradDisplayCanvas canvas) {
+		if (!isStandaloneInfo()) {
+			super.renderWindowTitleBar(canvas);
 			renderHomeButton(canvas);
-			renderCloseButton(canvas);
-			renderStack(getStackedFolderItemList(), canvas);
-			if (Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
-				renderProgramMenu(getProgramMenu(), canvas);
-			} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
-				renderProgramInfoSheet(getProgramInfoSheet(), canvas);
-			}
 		}
-		updateCursor();
-	}
-
-	private void renderTitle(AmstradDisplayCanvas canvas) {
-		canvas.pen(23).locate(12, 1).print("Program  Browser");
-		canvas.locate(1, 2);
-		for (int i = 0; i < 40; i++)
-			canvas.printChr(216);
 	}
 
 	private void renderHomeButton(AmstradDisplayCanvas canvas) {
-		if (!isModalWindowOpen() && isMouseOverHomeButton(canvas)) {
+		if (isFocusOnHomeButton(canvas)) {
 			setMouseOverButton(true);
 			canvas.paper(14).pen(24);
 		} else {
@@ -113,15 +90,26 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		canvas.move(8, 399).drawChr(255);
 	}
 
-	private void renderCloseButton(AmstradDisplayCanvas canvas) {
-		if (!isModalWindowOpen() && isMouseOverMainCloseButton(canvas)) {
-			setMouseOverButton(true);
-			canvas.paper(6).pen(24);
+	private boolean isFocusOnHomeButton(AmstradDisplayCanvas canvas) {
+		return !isModalWindowOpen() && isMouseOverHomeButton(canvas);
+	}
+
+	private boolean isMouseOverHomeButton(AmstradDisplayCanvas canvas) {
+		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(1, 1, 2, 1));
+	}
+
+	@Override
+	protected void renderWindowContent(AmstradDisplayCanvas canvas) {
+		if (isStandaloneInfo()) {
+			renderProgramInfoSheet(getProgramInfoSheet(), canvas);
 		} else {
-			canvas.paper(3).pen(26);
+			renderStack(getStackedFolderItemList(), canvas);
+			if (Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
+				renderProgramMenu(getProgramMenu(), canvas);
+			} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
+				renderProgramInfoSheet(getProgramInfoSheet(), canvas);
+			}
 		}
-		canvas.locate(39, 1).print("  ").paper(COLOR_PAPER);
-		canvas.move(616, 399).drawChr('x');
 	}
 
 	private void renderStack(StackedFolderItemList stack, AmstradDisplayCanvas canvas) {
@@ -202,7 +190,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	private void renderProgramMenu(ProgramMenu menu, AmstradDisplayCanvas canvas) {
-		renderModalWindow(8, 8, 33, 18, menu.getProgram().getProgramName(), canvas);
+		renderModalWindow(8, 8, 33, 18, menu.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
 		int tx0 = 10, ty0 = 12, ty = ty0;
 		int i = menu.getIndexOfFirstItemShowing();
 		while (i < menu.size() && ty < ty0 + menu.getMaxItemsShowing()) {
@@ -228,7 +216,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 	}
 
 	private void renderProgramInfoSheet(ProgramInfoSheet infoSheet, AmstradDisplayCanvas canvas) {
-		renderModalWindow(4, 5, 37, 22, infoSheet.getProgram().getProgramName(), canvas);
+		renderModalWindow(4, 5, 37, 22, infoSheet.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
 		int tx0 = 6, ty0 = 8, ty = ty0;
 		int i = infoSheet.getIndexOfFirstItemShowing();
 		while (i < infoSheet.size() && ty < ty0 + infoSheet.getMaxItemsShowing()) {
@@ -256,82 +244,22 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 		canvas.paper(COLOR_PAPER);
 	}
 
-	private void renderModalWindow(int tx1, int ty1, int tx2, int ty2, String windowTitle, AmstradDisplayCanvas canvas) {
-		canvas.paper(COLOR_MODAL_BACKGROUND);
-		canvas.clearRect(canvas.getTextAreaBoundsOnCanvas(tx1, ty1, tx2, ty2));
-		renderModalWindowTitle(tx1, ty1, tx2, ty2, windowTitle, canvas);
-		renderModalWindowBorder(tx1, ty1, tx2, ty2, canvas);
-		renderModalWindowCloseButton(tx1, ty1, tx2, ty2, canvas);
-	}
-
-	private void renderModalWindowTitle(int tx1, int ty1, int tx2, int ty2, String windowTitle,
-			AmstradDisplayCanvas canvas) {
-		int maxTitleWidth = tx2 - tx1 - 1;
-		canvas.pen(23).locate(tx1 + 1, ty1 + 1).print(StringUtils.fitWidth(windowTitle, maxTitleWidth));
-		canvas.locate(tx1 + 1, ty1 + 2);
-		for (int i = 0; i < maxTitleWidth; i++)
-			canvas.printChr(216);
-	}
-
-	private void renderModalWindowBorder(int tx1, int ty1, int tx2, int ty2, AmstradDisplayCanvas canvas) {
-		canvas.pen(14);
-		for (int i = tx1 + 1; i <= tx2 - 1; i++) {
-			canvas.locate(i, ty1).printChr(154).locate(i, ty2).printChr(154);
-		}
-		for (int i = ty1 + 1; i <= ty2 - 1; i++) {
-			canvas.locate(tx1, i).printChr(149).locate(tx2, i).printChr(149);
-		}
-		canvas.locate(tx1, ty1).printChr(150);
-		canvas.locate(tx2, ty1).printChr(156);
-		canvas.locate(tx1, ty2).printChr(147);
-		canvas.locate(tx2, ty2).printChr(153);
-	}
-
-	private void renderModalWindowCloseButton(int tx1, int ty1, int tx2, int ty2, AmstradDisplayCanvas canvas) {
-		Rectangle closeBounds = canvas.getTextAreaBoundsOnCanvas(tx2 - 1, ty1, tx2, ty1);
-		setModalWindowCloseButtonBounds(closeBounds);
-		if (isMouseOverModalWindowCloseButton()) {
-			setMouseOverButton(true);
-			canvas.paper(6).pen(24);
-		} else {
-			canvas.paper(3).pen(26);
-		}
-		canvas.locate(tx2 - 1, ty1).print("  ");
-		canvas.move(closeBounds.x + 8, closeBounds.y).drawChr('x');
-		canvas.paper(COLOR_MODAL_BACKGROUND);
-	}
-
-	private void updateCursor() {
-		if (isMouseOverButton()) {
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		} else {
-			resetCursor();
-		}
+	public void home() {
+		getStackedFolderItemList().reset();
 	}
 
 	@Override
 	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		super.mouseClickedOnCanvas(canvas, canvasPosition);
-		if (!isModalWindowOpen()) {
-			if (isMouseOverHomeButton(canvas)) {
-				home();
-			} else if (isMouseOverMainCloseButton(canvas)) {
-				close();
-			}
-		} else {
-			if (isMouseOverModalWindowCloseButton()) {
-				closeModalWindow();
-			}
+		if (isFocusOnHomeButton(canvas)) {
+			home();
 		}
 	}
 
-	public void home() {
-		getStackedFolderItemList().reset();
-	}
-
-	public void closeModalWindow() {
-		setModalWindowCloseButtonBounds(null);
-		if (Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow())) {
+	@Override
+	protected void closeModalWindow() {
+		super.closeModalWindow();
+		if (isStandaloneInfo()) {
 			close();
 		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
 			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
@@ -348,8 +276,7 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			handleKeyboardKeyInMainWindow(e);
 		} else if (Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
 			handleKeyboardKeyInProgramMenu(e);
-		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())
-				|| Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow())) {
+		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow()) || isStandaloneInfo()) {
 			handleKeyboardKeyInProgramInfoSheet(e);
 		}
 	}
@@ -512,43 +439,6 @@ public class ProgramBrowserDisplaySource extends AmstradEmulatedDisplaySource {
 			sheet.browseOneItemDown();
 		}
 		return sheet;
-	}
-
-	private boolean isModalWindowOpen() {
-		return !Window.MAIN.equals(getCurrentWindow());
-	}
-
-	private boolean isMouseOverHomeButton(AmstradDisplayCanvas canvas) {
-		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(1, 1, 2, 1));
-	}
-
-	private boolean isMouseOverMainCloseButton(AmstradDisplayCanvas canvas) {
-		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(39, 1, 40, 1));
-	}
-
-	private boolean isMouseOverModalWindowCloseButton() {
-		Rectangle bounds = getModalWindowCloseButtonBounds();
-		if (bounds != null) {
-			return isMouseInCanvasBounds(bounds);
-		} else {
-			return false;
-		}
-	}
-
-	private boolean isMouseOverButton() {
-		return mouseOverButton;
-	}
-
-	private void setMouseOverButton(boolean mouseOverButton) {
-		this.mouseOverButton = mouseOverButton;
-	}
-
-	private Rectangle getModalWindowCloseButtonBounds() {
-		return modalWindowCloseButtonBounds;
-	}
-
-	private void setModalWindowCloseButtonBounds(Rectangle bounds) {
-		this.modalWindowCloseButtonBounds = bounds;
 	}
 
 	public AmstradProgramRepository getProgramRepository() {

@@ -71,8 +71,9 @@ public class ProgramInfoAction extends AmstradPcAction {
 		super.amstradPcDisplaySourceChanged(amstradPc);
 		updateName();
 		if (isProgramBrowserShowing()) {
-			infoMode = ((ProgramBrowserDisplaySource) amstradPc.getCurrentAlternativeDisplaySource())
-					.isStandaloneInfo();
+			ProgramBrowserDisplaySource ds = (ProgramBrowserDisplaySource) amstradPc
+					.getCurrentAlternativeDisplaySource();
+			infoMode = ds.isStandaloneInfo();
 			setEnabled(infoMode);
 		} else {
 			if (hasProgramInfo()) {
