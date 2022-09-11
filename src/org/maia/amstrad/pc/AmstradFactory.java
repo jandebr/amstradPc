@@ -118,8 +118,13 @@ public class AmstradFactory {
 		menu.add(createMonitorModeMenu(amstradPc));
 		menu.add(createMonitorEffectsMenu(amstradPc));
 		menu.add(new JSeparator());
-		menu.add(new JMenuItem(new ScreenshotAction(amstradPc)));
-		menu.add(new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc)));
+		JMenuItem item = new JMenuItem(new ScreenshotAction(amstradPc));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
+		menu.add(item);
+		item = new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK
+				| InputEvent.SHIFT_DOWN_MASK));
+		menu.add(item);
 		return menu;
 	}
 

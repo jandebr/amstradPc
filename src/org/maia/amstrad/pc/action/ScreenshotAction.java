@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.action;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -9,6 +10,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.event.AmstradPcEvent;
+import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 
 public class ScreenshotAction extends FileChooserAction {
 
@@ -18,10 +21,31 @@ public class ScreenshotAction extends FileChooserAction {
 
 	public ScreenshotAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
+		amstradPc.addEventListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
+		makeScreenshot();
+	}
+
+	@Override
+	public void amstradPcEventDispatched(AmstradPcEvent event) {
+		super.amstradPcEventDispatched(event);
+		if (event instanceof AmstradPcKeyboardEvent) {
+			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
+			if (invokeOn(keyEvent)) {
+				makeScreenshot();
+			}
+		}
+	}
+
+	protected boolean invokeOn(AmstradPcKeyboardEvent keyEvent) {
+		return keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_I && keyEvent.isControlDown()
+				&& !keyEvent.isShiftDown();
+	}
+
+	private void makeScreenshot() {
 		BufferedImage image = getAmstradPc().makeScreenshot(includeMonitorEffect());
 		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
