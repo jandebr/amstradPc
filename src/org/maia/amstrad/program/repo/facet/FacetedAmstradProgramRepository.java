@@ -11,10 +11,9 @@ import java.util.Vector;
 
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
 
-public class FacetedAmstradProgramRepository extends AmstradProgramRepository {
-
-	private AmstradProgramRepository sourceRepository;
+public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
 	private FacetList facets;
 
@@ -25,7 +24,7 @@ public class FacetedAmstradProgramRepository extends AmstradProgramRepository {
 	private Set<FacetedProgramNode> allProgramNodes;
 
 	public FacetedAmstradProgramRepository(AmstradProgramRepository sourceRepository, FacetList facets) {
-		this.sourceRepository = sourceRepository;
+		super(sourceRepository);
 		this.facets = facets.clone();
 		buildIndex();
 	}
@@ -71,11 +70,12 @@ public class FacetedAmstradProgramRepository extends AmstradProgramRepository {
 
 	@Override
 	public void refresh() {
+		super.refresh();
 		buildIndex();
 	}
 
 	public AmstradProgramRepository getSourceRepository() {
-		return sourceRepository;
+		return getDelegate();
 	}
 
 	public FacetList getFacets() {

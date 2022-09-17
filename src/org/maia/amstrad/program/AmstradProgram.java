@@ -7,7 +7,7 @@ import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.util.StringUtils;
 
-public abstract class AmstradProgram {
+public abstract class AmstradProgram implements Cloneable {
 
 	private String programName;
 
@@ -55,6 +55,18 @@ public abstract class AmstradProgram {
 		builder.append(preferredMonitorMode);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public AmstradProgram clone() {
+		AmstradProgram clone = null;
+		try {
+			clone = (AmstradProgram) super.clone();
+			clone.setUserControls(new Vector<UserControl>(getUserControls()));
+		} catch (CloneNotSupportedException e) {
+			// not the case
+		}
+		return clone;
 	}
 
 	public abstract void loadInto(AmstradPc amstradPc) throws AmstradProgramException;
@@ -144,6 +156,10 @@ public abstract class AmstradProgram {
 
 	public List<UserControl> getUserControls() {
 		return userControls;
+	}
+
+	private void setUserControls(List<UserControl> userControls) {
+		this.userControls = userControls;
 	}
 
 	public static class UserControl {

@@ -41,6 +41,7 @@ import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.program.browser.ProgramInfoAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
+import org.maia.amstrad.program.repo.RenamingAmstradProgramRepository;
 
 public class AmstradFactory {
 
@@ -159,7 +160,10 @@ public class AmstradFactory {
 	}
 
 	public AmstradProgramRepository createProgramRepository() {
-		return new FileBasedAmstradProgramRepository(getAmstradContext().getProgramRepositoryRootFolder());
+		AmstradProgramRepository repository = new FileBasedAmstradProgramRepository(getAmstradContext()
+				.getProgramRepositoryRootFolder());
+		repository = RenamingAmstradProgramRepository.sequenceNumberStripping(repository);
+		return repository;
 	}
 
 	public static AmstradFactory getInstance() {
