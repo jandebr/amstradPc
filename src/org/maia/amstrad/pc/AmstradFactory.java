@@ -40,8 +40,10 @@ import org.maia.amstrad.program.browser.ProgramBrowserAction;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.program.browser.ProgramInfoAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.amstrad.program.repo.FileBasedAmstradProgramRepository;
-import org.maia.amstrad.program.repo.RenamingAmstradProgramRepository;
+import org.maia.amstrad.program.repo.AmstradProgramRepositoryConfiguration;
+import org.maia.amstrad.program.repo.facet.FacetedAmstradProgramRepository;
+import org.maia.amstrad.program.repo.file.FileBasedAmstradProgramRepository;
+import org.maia.amstrad.program.repo.filter.FilteredAmstradProgramRepository;
 
 public class AmstradFactory {
 
@@ -160,9 +162,14 @@ public class AmstradFactory {
 	}
 
 	public AmstradProgramRepository createProgramRepository() {
-		AmstradProgramRepository repository = new FileBasedAmstradProgramRepository(getAmstradContext()
-				.getProgramRepositoryRootFolder());
-		repository = RenamingAmstradProgramRepository.sequenceNumberStripping(repository);
+		AmstradProgramRepositoryConfiguration config = getAmstradContext().getProgramRepositoryConfiguration();
+		AmstradProgramRepository repository = new FileBasedAmstradProgramRepository(config.getRootFolder());
+		if (config.isSequenceNumberStripped()) {
+			repository = FilteredAmstradProgramRepository.sequenceNumberStripping(repository);
+		}
+		if (config.isFaceted()) {
+			repository = new FacetedAmstradProgramRepository(repository, config.getFacets());
+		}
 		return repository;
 	}
 

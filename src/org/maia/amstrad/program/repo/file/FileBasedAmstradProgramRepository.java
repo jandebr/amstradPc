@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.repo;
+package org.maia.amstrad.program.repo.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +12,10 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.amstrad.util.AmstradUtils;
 
 public class FileBasedAmstradProgramRepository extends AmstradProgramRepository {

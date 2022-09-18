@@ -19,10 +19,18 @@ public abstract class AmstradSettings {
 		}
 		return mode;
 	}
-	
+
 	public abstract String get(String key, String defaultValue);
 
+	public boolean getBool(String key, boolean defaultValue) {
+		return Boolean.parseBoolean(get(key, String.valueOf(defaultValue)));
+	}
+
 	public abstract void set(String key, String value);
+
+	public void setBool(String key, boolean value) {
+		set(key, String.valueOf(value));
+	}
 
 	public abstract void reset();
 

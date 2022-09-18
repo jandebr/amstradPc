@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.repo;
+package org.maia.amstrad.program.repo.filter;
 
 import java.util.List;
 import java.util.Vector;
@@ -6,22 +6,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
-public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRepository {
+public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
-	private RenamedFolderNode rootNode;
+	private FilteredFolderNode rootNode;
 
 	private boolean sequenceNumberStripped;
 
 	private static Pattern sequenceNumberPattern = Pattern.compile("\\d+[\\s\\._]");
 
-	private RenamingAmstradProgramRepository(AmstradProgramRepository sourceRepository) {
+	private FilteredAmstradProgramRepository(AmstradProgramRepository sourceRepository) {
 		super(sourceRepository);
-		this.rootNode = new RenamedFolderNode(sourceRepository.getRootNode()); // root node is never renamed
+		this.rootNode = new FilteredFolderNode(sourceRepository.getRootNode()); // no rename of root node
 	}
 
-	public static RenamingAmstradProgramRepository sequenceNumberStripping(AmstradProgramRepository sourceRepository) {
-		RenamingAmstradProgramRepository repository = new RenamingAmstradProgramRepository(sourceRepository);
+	public static FilteredAmstradProgramRepository sequenceNumberStripping(AmstradProgramRepository sourceRepository) {
+		FilteredAmstradProgramRepository repository = new FilteredAmstradProgramRepository(sourceRepository);
 		repository.setSequenceNumberStripped(true);
 		return repository;
 	}
@@ -39,15 +44,15 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 		this.sequenceNumberStripped = stripped;
 	}
 
-	private class RenamedFolderNode extends FolderNode {
+	private class FilteredFolderNode extends FolderNode {
 
 		private FolderNode delegate;
 
-		public RenamedFolderNode(FolderNode delegate) {
+		public FilteredFolderNode(FolderNode delegate) {
 			this(delegate.getName(), delegate);
 		}
 
-		public RenamedFolderNode(String name, FolderNode delegate) {
+		public FilteredFolderNode(String name, FolderNode delegate) {
 			super(name);
 			this.delegate = delegate;
 		}
@@ -64,8 +69,8 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 					if (!strippedName.isEmpty())
 						name = strippedName;
 				}
-				Node childNode = node.isFolder() ? new RenamedFolderNode(name, node.asFolder())
-						: new RenamedProgramNode(name, node.asProgram());
+				Node childNode = node.isFolder() ? new FilteredFolderNode(name, node.asFolder())
+						: new FilteredProgramNode(name, node.asProgram());
 				childNodes.add(childNode);
 			}
 			return childNodes;
@@ -96,11 +101,11 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 
 	}
 
-	private class RenamedProgramNode extends ProgramNode {
+	private class FilteredProgramNode extends ProgramNode {
 
 		private ProgramNode delegate;
 
-		public RenamedProgramNode(String name, ProgramNode delegate) {
+		public FilteredProgramNode(String name, ProgramNode delegate) {
 			super(name);
 			this.delegate = delegate;
 		}
@@ -115,15 +120,12 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 		}
 
 		private boolean shouldRenameDelegateProgram() {
-			if (getName().equals(getDelegate().getName())) {
-				return false;
-			} else {
-				String programName = getDelegate().getProgram().getProgramName();
-				if (isSequenceNumberStripped() && sequenceNumberPattern.matcher(programName).lookingAt()) {
-					return true;
-				}
-				return false;
-			}
+			String delegateName = getDelegate().getName();
+			if (getName().equals(delegateName))
+				return false; // no renaming
+			if (!getDelegate().getProgram().getProgramName().equals(delegateName))
+				return false; // keep distinct program name
+			return true; // propagate rename
 		}
 
 		private AmstradProgram getRenamedDelegateProgram() {
