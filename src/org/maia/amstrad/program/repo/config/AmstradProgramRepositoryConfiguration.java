@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.repo;
+package org.maia.amstrad.program.repo.config;
 
 import java.io.File;
 

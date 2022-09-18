@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create runnable Jar for project AmstradPc">
-    <target name="create_run_jar">
-        <jar destfile="dist/amstradPc.jar">
+<project default="export jar" name="AmstradPc">
+    <target name="export jar">
+        <jar destfile="${libraries.home}/amstradPc/amstradPc.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.maia.amstrad.pc.AmstradMain"/>
                 <attribute name="Class-Path" value="."/>
             	<attribute name="SplashScreen-Image" value="images/amstrad1.png"/>
             </manifest>
+			<zipfileset src="${libraries.home}/maiaSwing/maiaSwing.jar" />
             <fileset dir="bin"/>
 			<fileset dir="resources">
 				<include name="images/*" />

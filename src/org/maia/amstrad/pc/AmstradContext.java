@@ -3,7 +3,7 @@ package org.maia.amstrad.pc;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.maia.amstrad.program.repo.AmstradProgramRepositoryConfiguration;
+import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 
 public abstract class AmstradContext {
