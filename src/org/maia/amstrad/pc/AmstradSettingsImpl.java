@@ -58,6 +58,7 @@ public class AmstradSettingsImpl extends AmstradSettings {
 				t.setDaemon(true);
 				t.start();
 			}
+			System.out.println("User setting '" + key + "' changed to '" + value + "'");
 		}
 	}
 

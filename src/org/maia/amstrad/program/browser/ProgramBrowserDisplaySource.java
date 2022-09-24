@@ -30,7 +30,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private ProgramInfoSheet programInfoSheet;
 
-	private AmstradProgram lastLaunchedProgram;
+	private List<ProgramBrowserListener> browserListeners;
 
 	private long itemListCursorBlinkOffsetTime;
 
@@ -44,19 +44,33 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private static int LABEL_WIDTH = 18;
 
-	public ProgramBrowserDisplaySource(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
-		super(amstradPc, "Program  Browser");
-		this.programRepository = programRepository;
-		this.stackedFolderItemList = new StackedFolderItemList(20);
-		this.currentWindow = Window.MAIN;
+	private ProgramBrowserDisplaySource(AmstradPc amstradPc, String windowTitle, Window initialWindow) {
+		super(amstradPc, windowTitle);
+		this.currentWindow = initialWindow;
+		this.browserListeners = new Vector<ProgramBrowserListener>();
 	}
 
-	public ProgramBrowserDisplaySource createStandaloneInfoDisplaySource(AmstradProgram program) {
-		ProgramBrowserDisplaySource infoDS = new ProgramBrowserDisplaySource(getAmstradPc(), getProgramRepository());
-		infoDS.setWindowTitle(program.getProgramName());
-		infoDS.setCurrentWindow(Window.PROGRAM_INFO_STANDALONE);
-		infoDS.setProgramInfoSheet(createProgramInfoSheet(program));
-		return infoDS;
+	public static ProgramBrowserDisplaySource createProgramRepositoryBrowser(AmstradPc amstradPc,
+			AmstradProgramRepository programRepository) {
+		ProgramBrowserDisplaySource ds = new ProgramBrowserDisplaySource(amstradPc, "Program  Browser", Window.MAIN);
+		ds.setProgramRepository(programRepository);
+		ds.setStackedFolderItemList(ds.createStackedFolderItemList(20));
+		return ds;
+	}
+
+	public static ProgramBrowserDisplaySource createProgramInfo(AmstradPc amstradPc, AmstradProgram program) {
+		ProgramBrowserDisplaySource ds = new ProgramBrowserDisplaySource(amstradPc, program.getProgramName(),
+				Window.PROGRAM_INFO_STANDALONE);
+		ds.setProgramInfoSheet(ds.createProgramInfoSheet(program));
+		return ds;
+	}
+
+	public void addListener(ProgramBrowserListener listener) {
+		getBrowserListeners().add(listener);
+	}
+
+	public void removeListener(ProgramBrowserListener listener) {
+		getBrowserListeners().remove(listener);
 	}
 
 	@Override
@@ -128,6 +142,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			AmstradDisplayCanvas canvas) {
 		if (itemList.isEmpty()) {
 			canvas.pen(13).locate(tx0, ty0).print("<empty>");
+			if (!isModalWindowOpen() && isItemListCursorBlinkOn()) {
+				canvas.locate(tx0 - 1, ty0).printChr(133);
+			}
 		} else {
 			int ty = ty0;
 			int i = itemList.getIndexOfFirstItemShowing();
@@ -136,9 +153,14 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				String label = StringUtils.fitWidth(item.getName(), LABEL_WIDTH);
 				if (itemList.getIndexOfSelectedItem() == i) {
 					if (hasFocus) {
-						canvas.pen(11).locate(1, 25).print(item.getName());
 						if (!isModalWindowOpen() && isItemListCursorBlinkOn()) {
 							canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
+						}
+						if (item.isProgram()) {
+							String desc = item.asProgram().getProgram().getProgramDescription();
+							if (desc != null) {
+								canvas.pen(11).locate(1, 25).print(StringUtils.fitWidth(desc, 40));
+							}
 						}
 						canvas.paper(2);
 					} else {
@@ -198,7 +220,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			String label = StringUtils.fitWidth(item.getLabel(), LABEL_WIDTH);
 			if (menu.getIndexOfSelectedItem() == i) {
 				if (isItemListCursorBlinkOn()) {
-					canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
+					canvas.pen(item.isEnabled() ? 24 : 13).locate(tx0 - 1, ty).printChr(133);
 				}
 				canvas.paper(9);
 			}
@@ -440,12 +462,24 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return sheet;
 	}
 
+	private StackedFolderItemList createStackedFolderItemList(int maxItemsShowing) {
+		return new StackedFolderItemList(maxItemsShowing);
+	}
+
 	public AmstradProgramRepository getProgramRepository() {
 		return programRepository;
 	}
 
+	private void setProgramRepository(AmstradProgramRepository programRepository) {
+		this.programRepository = programRepository;
+	}
+
 	private StackedFolderItemList getStackedFolderItemList() {
 		return stackedFolderItemList;
+	}
+
+	private void setStackedFolderItemList(StackedFolderItemList stackedFolderItemList) {
+		this.stackedFolderItemList = stackedFolderItemList;
 	}
 
 	private Window getCurrentWindow() {
@@ -472,20 +506,16 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		this.programInfoSheet = programInfoSheet;
 	}
 
-	public boolean isStandaloneInfo() {
-		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
-	}
-
 	public AmstradProgram getInfoSheetProgram() {
 		return getProgramInfoSheet() != null ? getProgramInfoSheet().getProgram() : null;
 	}
 
-	public AmstradProgram getLastLaunchedProgram() {
-		return lastLaunchedProgram;
+	public boolean isStandaloneInfo() {
+		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
 	}
 
-	private void setLastLaunchedProgram(AmstradProgram program) {
-		this.lastLaunchedProgram = program;
+	private List<ProgramBrowserListener> getBrowserListeners() {
+		return browserListeners;
 	}
 
 	private boolean isItemListCursorBlinkOn() {
@@ -825,7 +855,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 							releaseKeyboard();
 							getAmstradPc().reboot(true, true);
 							launchProgram();
-							setLastLaunchedProgram(getProgram());
 							failed = false;
 							closeModalWindow();
 							close(); // restores monitor settings
@@ -876,6 +905,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		@Override
 		protected void launchProgram() throws AmstradProgramException {
 			getProgram().loadInto(getAmstradPc());
+			for (ProgramBrowserListener listener : getBrowserListeners()) {
+				listener.programLoadedFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
+			}
 		}
 
 	}
@@ -889,6 +921,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		@Override
 		protected void launchProgram() throws AmstradProgramException {
 			getProgram().runWith(getAmstradPc());
+			for (ProgramBrowserListener listener : getBrowserListeners()) {
+				listener.programRunFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
+			}
 		}
 
 	}

@@ -14,6 +14,8 @@ import org.maia.amstrad.pc.event.AmstradPcEventListener;
 
 public abstract class AmstradPc {
 
+	private AmstradPcFrame frame;
+
 	private List<AmstradPcStateListener> stateListeners;
 
 	private List<AmstradPcMonitorListener> monitorListeners;
@@ -29,6 +31,7 @@ public abstract class AmstradPc {
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
 		checkNotTerminated();
 		AmstradPcFrame frame = new AmstradPcFrame(this, exitOnClose);
+		setFrame(frame);
 		if (isStarted()) {
 			frame.amstradPcStarted(this);
 		}
@@ -214,6 +217,14 @@ public abstract class AmstradPc {
 	protected void fireEvent(AmstradPcEvent event) {
 		for (AmstradPcEventListener listener : getEventListeners())
 			listener.amstradPcEventDispatched(event);
+	}
+
+	public AmstradPcFrame getFrame() {
+		return frame;
+	}
+
+	private void setFrame(AmstradPcFrame frame) {
+		this.frame = frame;
 	}
 
 	protected List<AmstradPcStateListener> getStateListeners() {

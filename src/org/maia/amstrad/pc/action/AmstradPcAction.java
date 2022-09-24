@@ -5,6 +5,8 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
+import org.maia.amstrad.pc.AmstradContext;
+import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcMonitorListener;
 import org.maia.amstrad.pc.AmstradPcStateListener;
@@ -48,6 +50,10 @@ public abstract class AmstradPcAction extends AbstractAction implements AmstradP
 
 	protected String getName() {
 		return getValue(Action.NAME).toString();
+	}
+
+	protected AmstradContext getAmstradContext() {
+		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
 	public AmstradPc getAmstradPc() {

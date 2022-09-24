@@ -36,8 +36,10 @@ import org.maia.amstrad.pc.action.ScreenshotWithMonitorEffectAction;
 import org.maia.amstrad.pc.action.WindowAlwaysOnTopAction;
 import org.maia.amstrad.pc.action.WindowDynamicTitleAction;
 import org.maia.amstrad.pc.jemu.JemuAmstradPc;
+import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.ProgramBrowserAction;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.program.browser.ProgramBrowserSetupAction;
 import org.maia.amstrad.program.browser.ProgramInfoAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
@@ -84,6 +86,10 @@ public class AmstradFactory {
 		ProgramBrowserAction browserAction = new ProgramBrowserAction(amstradPc);
 		JMenuItem item = new JMenuItem(browserAction);
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
+		menu.add(item);
+		item = new JMenuItem(new ProgramBrowserSetupAction(browserAction));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK
+				| InputEvent.SHIFT_DOWN_MASK));
 		menu.add(item);
 		item = new JMenuItem(new ProgramInfoAction(browserAction));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -156,21 +162,25 @@ public class AmstradFactory {
 		return menu;
 	}
 
-	public ProgramBrowserDisplaySource createProgramBrowserDisplaySource(AmstradPc amstradPc) {
-		AmstradProgramRepository repository = createProgramRepository();
-		return new ProgramBrowserDisplaySource(amstradPc, repository);
-	}
-
 	public AmstradProgramRepository createProgramRepository() {
 		AmstradProgramRepositoryConfiguration config = getAmstradContext().getProgramRepositoryConfiguration();
 		AmstradProgramRepository repository = new FileBasedAmstradProgramRepository(config.getRootFolder());
-		if (config.isSequenceNumberStripped()) {
-			repository = FilteredAmstradProgramRepository.sequenceNumberStripping(repository);
+		if (config.isSequenceNumberFiltered()) {
+			repository = FilteredAmstradProgramRepository.sequenceNumberFilter(repository);
 		}
 		if (config.isFaceted()) {
 			repository = new FacetedAmstradProgramRepository(repository, config.getFacets());
 		}
 		return repository;
+	}
+
+	public ProgramBrowserDisplaySource createProgramRepositoryBrowser(AmstradPc amstradPc) {
+		AmstradProgramRepository repository = createProgramRepository();
+		return ProgramBrowserDisplaySource.createProgramRepositoryBrowser(amstradPc, repository);
+	}
+
+	public ProgramBrowserDisplaySource createProgramInfo(AmstradPc amstradPc, AmstradProgram program) {
+		return ProgramBrowserDisplaySource.createProgramInfo(amstradPc, program);
 	}
 
 	public static AmstradFactory getInstance() {

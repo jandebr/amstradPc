@@ -2,6 +2,8 @@ package org.maia.amstrad.program.browser;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
@@ -9,10 +11,13 @@ import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.program.AmstradProgram;
 
-public class ProgramBrowserAction extends AmstradPcAction {
+public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrowserListener {
 
 	private ProgramBrowserDisplaySource displaySource;
+
+	private List<ProgramBrowserListener> browserListeners;
 
 	private static String NAME_OPEN = "Open program browser";
 
@@ -20,6 +25,7 @@ public class ProgramBrowserAction extends AmstradPcAction {
 
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
+		this.browserListeners = new Vector<ProgramBrowserListener>();
 		updateName();
 		amstradPc.addMonitorListener(this);
 		amstradPc.addEventListener(this);
@@ -28,6 +34,17 @@ public class ProgramBrowserAction extends AmstradPcAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		toggleProgramBrowser();
+	}
+
+	@Override
+	public void amstradPcEventDispatched(AmstradPcEvent event) {
+		super.amstradPcEventDispatched(event);
+		if (event instanceof AmstradPcKeyboardEvent) {
+			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
+			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_B && keyEvent.isControlDown()) {
+				toggleProgramBrowser();
+			}
+		}
 	}
 
 	public void toggleProgramBrowser() {
@@ -50,28 +67,17 @@ public class ProgramBrowserAction extends AmstradPcAction {
 		}
 	}
 
-	@Override
-	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
-		super.amstradPcDisplaySourceChanged(amstradPc);
-		updateName();
+	public void reset() {
+		invalidateDisplaySource();
 		if (isProgramBrowserShowing()) {
-			ProgramBrowserDisplaySource ds = (ProgramBrowserDisplaySource) amstradPc
-					.getCurrentAlternativeDisplaySource();
-			setEnabled(!ds.isStandaloneInfo());
-		} else {
-			setEnabled(true);
+			getAmstradPc().swapDisplaySource(getDisplaySource());
 		}
 	}
 
 	@Override
-	public void amstradPcEventDispatched(AmstradPcEvent event) {
-		super.amstradPcEventDispatched(event);
-		if (event instanceof AmstradPcKeyboardEvent) {
-			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
-			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_B && keyEvent.isControlDown()) {
-				toggleProgramBrowser();
-			}
-		}
+	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
+		super.amstradPcDisplaySourceChanged(amstradPc);
+		updateName();
 	}
 
 	private void updateName() {
@@ -84,14 +90,52 @@ public class ProgramBrowserAction extends AmstradPcAction {
 
 	public boolean isProgramBrowserShowing() {
 		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getCurrentAlternativeDisplaySource();
-		return altDisplaySource != null && altDisplaySource instanceof ProgramBrowserDisplaySource;
+		if (altDisplaySource == null)
+			return false;
+		if (!(altDisplaySource instanceof ProgramBrowserDisplaySource))
+			return false;
+		return !((ProgramBrowserDisplaySource) altDisplaySource).isStandaloneInfo();
 	}
 
-	ProgramBrowserDisplaySource getDisplaySource() {
+	public void addListener(ProgramBrowserListener listener) {
+		getBrowserListeners().add(listener);
+	}
+
+	public void removeListener(ProgramBrowserListener listener) {
+		getBrowserListeners().remove(listener);
+	}
+
+	@Override
+	public void programLoadedFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
+		for (ProgramBrowserListener listener : getBrowserListeners()) {
+			listener.programLoadedFromBrowser(displaySource, program);
+		}
+	}
+
+	@Override
+	public void programRunFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
+		for (ProgramBrowserListener listener : getBrowserListeners()) {
+			listener.programRunFromBrowser(displaySource, program);
+		}
+	}
+
+	private void invalidateDisplaySource() {
+		if (displaySource != null) {
+			displaySource.removeListener(this);
+			displaySource = null;
+		}
+	}
+
+	private ProgramBrowserDisplaySource getDisplaySource() {
 		if (displaySource == null) {
-			displaySource = AmstradFactory.getInstance().createProgramBrowserDisplaySource(getAmstradPc());
+			displaySource = AmstradFactory.getInstance().createProgramRepositoryBrowser(getAmstradPc());
+			displaySource.addListener(this);
 		}
 		return displaySource;
+	}
+
+	private List<ProgramBrowserListener> getBrowserListeners() {
+		return browserListeners;
 	}
 
 }

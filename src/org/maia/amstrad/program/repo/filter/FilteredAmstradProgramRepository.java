@@ -8,15 +8,12 @@ import java.util.regex.Pattern;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
 	private FilteredFolderNode rootNode;
 
-	private boolean sequenceNumberStripped;
+	private boolean sequenceNumberFiltered;
 
 	private static Pattern sequenceNumberPattern = Pattern.compile("\\d+[\\s\\._]");
 
@@ -25,9 +22,9 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 		this.rootNode = new FilteredFolderNode(sourceRepository.getRootNode()); // no rename of root node
 	}
 
-	public static FilteredAmstradProgramRepository sequenceNumberStripping(AmstradProgramRepository sourceRepository) {
+	public static FilteredAmstradProgramRepository sequenceNumberFilter(AmstradProgramRepository sourceRepository) {
 		FilteredAmstradProgramRepository repository = new FilteredAmstradProgramRepository(sourceRepository);
-		repository.setSequenceNumberStripped(true);
+		repository.setSequenceNumberFiltered(true);
 		return repository;
 	}
 
@@ -36,12 +33,12 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 		return rootNode;
 	}
 
-	public boolean isSequenceNumberStripped() {
-		return sequenceNumberStripped;
+	public boolean isSequenceNumberFiltered() {
+		return sequenceNumberFiltered;
 	}
 
-	private void setSequenceNumberStripped(boolean stripped) {
-		this.sequenceNumberStripped = stripped;
+	private void setSequenceNumberFiltered(boolean filtered) {
+		this.sequenceNumberFiltered = filtered;
 	}
 
 	private class FilteredFolderNode extends FolderNode {
@@ -61,13 +58,13 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 		protected List<Node> listChildNodes() {
 			List<Node> delegateChildNodes = getDelegate().getChildNodes();
 			List<Node> childNodes = new Vector<Node>(delegateChildNodes.size());
-			boolean sequenceNumbers = isSequenceNumberStripped() && hasSequenceNumbers(delegateChildNodes);
+			boolean sequenceNumbers = isSequenceNumberFiltered() && hasSequenceNumbers(delegateChildNodes);
 			for (Node node : delegateChildNodes) {
 				String name = node.getName();
 				if (sequenceNumbers) {
-					String strippedName = stripSequenceNumber(name);
-					if (!strippedName.isEmpty())
-						name = strippedName;
+					String modifiedName = stripSequenceNumber(name);
+					if (!modifiedName.isEmpty())
+						name = modifiedName;
 				}
 				Node childNode = node.isFolder() ? new FilteredFolderNode(name, node.asFolder())
 						: new FilteredProgramNode(name, node.asProgram());

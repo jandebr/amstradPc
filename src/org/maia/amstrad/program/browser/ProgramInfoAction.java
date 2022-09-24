@@ -3,21 +3,23 @@ package org.maia.amstrad.program.browser;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
+import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 import org.maia.amstrad.program.AmstradProgram;
 
-public class ProgramInfoAction extends AmstradPcAction {
+public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowserListener {
 
-	private ProgramBrowserAction browserAction;
+	private AmstradProgram program;
 
 	private ProgramBrowserDisplaySource displaySource;
 
 	private boolean infoMode;
 
-	private boolean onPauseBeforeInfoMode;
+	private boolean resumeAfterInfoMode;
 
 	private static String NAME_OPEN = "Show program info";
 
@@ -25,72 +27,39 @@ public class ProgramInfoAction extends AmstradPcAction {
 
 	public ProgramInfoAction(ProgramBrowserAction browserAction) {
 		super(browserAction.getAmstradPc(), "");
-		this.browserAction = browserAction;
-		updateName();
+		browserAction.addListener(this);
 		getAmstradPc().addStateListener(this);
 		getAmstradPc().addMonitorListener(this);
 		getAmstradPc().addEventListener(this);
+		updateName();
 		setEnabled(false);
+	}
+
+	@Override
+	public void programLoadedFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
+		updateProgram(program);
+	}
+
+	@Override
+	public void programRunFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
+		updateProgram(program);
+	}
+
+	private void updateProgram(AmstradProgram program) {
+		if (program != null && program.hasDescriptiveInfo()) {
+			setProgram(program);
+			setDisplaySource(AmstradFactory.getInstance().createProgramInfo(getAmstradPc(), program));
+			setEnabled(true);
+		} else {
+			setProgram(null);
+			setDisplaySource(null);
+			setEnabled(false);
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		toggleProgramInfo();
-	}
-
-	public void toggleProgramInfo() {
-		if (NAME_OPEN.equals(getName())) {
-			showProgramInfo();
-		} else {
-			hideProgramInfo();
-		}
-	}
-
-	public void showProgramInfo() {
-		if (isEnabled() && getDisplaySource() != null) {
-			onPauseBeforeInfoMode = getAmstradPc().isPaused();
-			getAmstradPc().pause(); // auto-pause
-			getAmstradPc().swapDisplaySource(getDisplaySource());
-		}
-	}
-
-	public void hideProgramInfo() {
-		if (isEnabled()) {
-			getAmstradPc().resetDisplaySource();
-		}
-	}
-
-	@Override
-	public void amstradPcRebooting(AmstradPc amstradPc) {
-		super.amstradPcRebooting(amstradPc);
-		setEnabled(false);
-	}
-
-	@Override
-	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
-		super.amstradPcDisplaySourceChanged(amstradPc);
-		updateName();
-		if (isProgramBrowserShowing()) {
-			ProgramBrowserDisplaySource ds = (ProgramBrowserDisplaySource) amstradPc
-					.getCurrentAlternativeDisplaySource();
-			infoMode = ds.isStandaloneInfo();
-			setEnabled(infoMode);
-		} else {
-			if (hasProgramInfo()) {
-				if (getDisplaySource() == null || !getDisplaySource().getInfoSheetProgram().equals(getProgram())) {
-					setDisplaySource(createDisplaySource());
-				}
-				setEnabled(true);
-			} else {
-				setEnabled(false);
-			}
-			if (infoMode) {
-				infoMode = false;
-				if (!onPauseBeforeInfoMode) {
-					amstradPc.resume(); // auto-resume
-				}
-			}
-		}
 	}
 
 	@Override
@@ -104,37 +73,77 @@ public class ProgramInfoAction extends AmstradPcAction {
 		}
 	}
 
+	public void toggleProgramInfo() {
+		if (NAME_OPEN.equals(getName())) {
+			showProgramInfo();
+		} else {
+			hideProgramInfo();
+		}
+	}
+
+	public void showProgramInfo() {
+		if (isEnabled()) {
+			resumeAfterInfoMode = !getAmstradPc().isPaused();
+			getAmstradPc().pause(); // auto-pause
+			getAmstradPc().swapDisplaySource(getDisplaySource());
+		}
+	}
+
+	public void hideProgramInfo() {
+		if (isEnabled()) {
+			getAmstradPc().resetDisplaySource();
+		}
+	}
+
+	@Override
+	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
+		super.amstradPcDisplaySourceChanged(amstradPc);
+		updateName();
+		if (amstradPc.isPrimaryDisplaySourceShowing()) {
+			if (infoMode) {
+				infoMode = false; // exit info screen
+				if (resumeAfterInfoMode) {
+					amstradPc.resume(); // auto-resume
+				}
+			}
+		} else if (isProgramInfoShowing()) {
+			infoMode = true;
+		}
+	}
+
+	@Override
+	public void amstradPcRebooting(AmstradPc amstradPc) {
+		super.amstradPcRebooting(amstradPc);
+		if (isProgramInfoShowing()) {
+			resumeAfterInfoMode = false;
+			hideProgramInfo();
+		}
+		updateProgram(null);
+	}
+
 	private void updateName() {
-		if (isProgramBrowserShowing()) {
+		if (isProgramInfoShowing()) {
 			changeName(NAME_CLOSE);
 		} else {
 			changeName(NAME_OPEN);
 		}
 	}
 
-	public boolean hasProgramInfo() {
-		AmstradProgram program = getProgram();
-		return program != null && program.hasDescriptiveInfo();
+	public boolean isProgramInfoShowing() {
+		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getCurrentAlternativeDisplaySource();
+		if (altDisplaySource == null)
+			return false;
+		if (!(altDisplaySource instanceof ProgramBrowserDisplaySource))
+			return false;
+		return ((ProgramBrowserDisplaySource) altDisplaySource).isStandaloneInfo();
 	}
 
 	public AmstradProgram getProgram() {
-		return getBrowserAction().getDisplaySource().getLastLaunchedProgram();
+		return program;
 	}
 
-	private boolean isProgramBrowserShowing() {
-		return getBrowserAction().isProgramBrowserShowing();
-	}
-
-	private ProgramBrowserAction getBrowserAction() {
-		return browserAction;
-	}
-
-	private ProgramBrowserDisplaySource createDisplaySource() {
-		ProgramBrowserDisplaySource ds = null;
-		if (hasProgramInfo()) {
-			ds = getBrowserAction().getDisplaySource().createStandaloneInfoDisplaySource(getProgram());
-		}
-		return ds;
+	private void setProgram(AmstradProgram program) {
+		this.program = program;
 	}
 
 	private ProgramBrowserDisplaySource getDisplaySource() {

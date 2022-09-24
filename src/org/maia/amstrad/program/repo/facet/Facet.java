@@ -10,6 +10,10 @@ public abstract class Facet {
 	protected Facet() {
 	}
 
+	public String getLabel() {
+		return toExternalForm();
+	}
+
 	public final String valueOf(AmstradProgram program) {
 		String value = extractValueFrom(program);
 		if (StringUtils.isEmpty(value)) {

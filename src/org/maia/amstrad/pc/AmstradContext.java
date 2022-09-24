@@ -42,11 +42,21 @@ public abstract class AmstradContext {
 		getUserSettings().set(SETTING_CURRENT_DIR, currentDirectory.getAbsolutePath());
 	}
 
+	public File getProgramRepositoryRootFolder() {
+		return new File(getUserSettings().get(SETTING_PROGRAM_REPO_DIR, "."));
+	}
+
+	public void setProgramRepositoryRootFolder(File rootFolder) {
+		if (!rootFolder.isDirectory())
+			throw new IllegalArgumentException("The root folder must be a directory");
+		getUserSettings().set(SETTING_PROGRAM_REPO_DIR, rootFolder.getAbsolutePath());
+	}
+
 	public AmstradProgramRepositoryConfiguration getProgramRepositoryConfiguration() {
 		AmstradSettings settings = getUserSettings();
 		AmstradProgramRepositoryConfiguration configuration = new AmstradProgramRepositoryConfiguration();
-		configuration.setRootFolder(new File(settings.get(SETTING_PROGRAM_REPO_DIR, ".")));
-		configuration.setSequenceNumberStripped(settings.getBool(SETTING_PROGRAM_REPO_SEQNR_FILTER, true));
+		configuration.setRootFolder(getProgramRepositoryRootFolder());
+		configuration.setSequenceNumberFiltered(settings.getBool(SETTING_PROGRAM_REPO_SEQNR_FILTER, true));
 		configuration.setFaceted(settings.getBool(SETTING_PROGRAM_REPO_FACETED, false));
 		configuration.setFacets(FacetFactory.getInstance().fromExternalForm(
 				settings.get(SETTING_PROGRAM_REPO_FACETS, "")));
@@ -54,9 +64,9 @@ public abstract class AmstradContext {
 	}
 
 	public void setProgramRepositoryConfiguration(AmstradProgramRepositoryConfiguration configuration) {
+		setProgramRepositoryRootFolder(configuration.getRootFolder());
 		AmstradSettings settings = getUserSettings();
-		settings.set(SETTING_PROGRAM_REPO_DIR, configuration.getRootFolder().getAbsolutePath());
-		settings.setBool(SETTING_PROGRAM_REPO_SEQNR_FILTER, configuration.isSequenceNumberStripped());
+		settings.setBool(SETTING_PROGRAM_REPO_SEQNR_FILTER, configuration.isSequenceNumberFiltered());
 		settings.setBool(SETTING_PROGRAM_REPO_FACETED, configuration.isFaceted());
 		settings.set(SETTING_PROGRAM_REPO_FACETS, FacetFactory.getInstance().toExternalForm(configuration.getFacets()));
 	}
