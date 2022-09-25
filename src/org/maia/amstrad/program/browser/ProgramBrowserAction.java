@@ -41,7 +41,8 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		super.amstradPcEventDispatched(event);
 		if (event instanceof AmstradPcKeyboardEvent) {
 			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
-			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_B && keyEvent.isControlDown()) {
+			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_B && keyEvent.isControlDown()
+					&& !keyEvent.isShiftDown()) {
 				toggleProgramBrowser();
 			}
 		}

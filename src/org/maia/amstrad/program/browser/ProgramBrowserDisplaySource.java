@@ -1,6 +1,8 @@
 package org.maia.amstrad.program.browser;
 
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Stack;
@@ -11,11 +13,13 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.display.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.amstrad.util.StringUtils;
 
 public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
@@ -29,6 +33,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private ProgramMenu programMenu;
 
 	private ProgramInfoSheet programInfoSheet;
+
+	private ProgramImageGallery programImageGallery;
 
 	private List<ProgramBrowserListener> browserListeners;
 
@@ -71,6 +77,11 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	public void removeListener(ProgramBrowserListener listener) {
 		getBrowserListeners().remove(listener);
+	}
+
+	@Override
+	protected boolean followPrimaryDisplaySourceResolution() {
+		return false;
 	}
 
 	@Override
@@ -122,6 +133,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				renderProgramMenu(getProgramMenu(), canvas);
 			} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
 				renderProgramInfoSheet(getProgramInfoSheet(), canvas);
+			} else if (Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())) {
+				renderProgramImageGallery(getProgramImageGallery(), canvas);
 			}
 		}
 	}
@@ -157,10 +170,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 							canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
 						}
 						if (item.isProgram()) {
-							String desc = item.asProgram().getProgram().getProgramDescription();
-							if (desc != null) {
-								canvas.pen(11).locate(1, 25).print(StringUtils.fitWidth(desc, 40));
-							}
+							renderFocusedProgramHint(item.asProgram(), canvas);
 						}
 						canvas.paper(2);
 					} else {
@@ -181,6 +191,23 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				renderItemListTopExtentHint(itemList, tx0, ty0, canvas);
 				renderItemListBottomExtentHint(itemList, tx0, ty0, canvas);
 			}
+		}
+	}
+
+	private void renderFocusedProgramHint(ProgramNode node, AmstradDisplayCanvas canvas) {
+		AmstradProgram program = node.getProgram();
+		String desc = program.getProgramDescription();
+		if (desc != null) {
+			int pen = 11;
+			AmstradMonitorMode mode = program.getPreferredMonitorMode();
+			if (AmstradMonitorMode.GREEN.equals(mode)) {
+				pen = 9;
+			} else if (AmstradMonitorMode.GRAY.equals(mode)) {
+				pen = 13;
+			} else if (AmstradMonitorMode.COLOR.equals(mode)) {
+				pen = 11;
+			}
+			canvas.pen(pen).locate(1, 25).print(StringUtils.fitWidth(desc, 40));
 		}
 	}
 
@@ -266,6 +293,16 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		canvas.paper(COLOR_PAPER);
 	}
 
+	private void renderProgramImageGallery(ProgramImageGallery gallery, AmstradDisplayCanvas canvas) {
+		renderModalWindow(4, 5, 37, 22, gallery.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
+		Rectangle rect = canvas.getTextAreaBoundsOnCanvas(5, 8, 36, 21);
+		Image image = gallery.getCurrentImage().getVisual();
+		double ratio = image.getWidth(null) / (double) image.getHeight(null);
+		int height = rect.height;
+		int width = (int) Math.round(ratio * height);
+		canvas.drawImage(image, rect.x, rect.y, width, height);
+	}
+
 	@Override
 	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		super.mouseClickedOnCanvas(canvas, canvasPosition);
@@ -283,6 +320,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			handleKeyboardKeyInProgramMenu(e);
 		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow()) || isStandaloneInfo()) {
 			handleKeyboardKeyInProgramInfoSheet(e);
+		} else if (Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())) {
+			handleKeyboardKeyInProgramImageGallery(e);
 		}
 	}
 
@@ -332,6 +371,13 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
+	private void handleKeyboardKeyInProgramImageGallery(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_ESCAPE) {
+			closeModalWindow();
+		}
+	}
+
 	private void handleKeyboardKeyInItemList(KeyEvent e, ItemList itemList) {
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_DOWN) {
@@ -354,7 +400,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		super.closeModalWindow();
 		if (isStandaloneInfo()) {
 			close();
-		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
+		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())
+				|| Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())) {
 			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
 		} else {
 			setCurrentWindow(Window.MAIN);
@@ -466,6 +513,10 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return new StackedFolderItemList(maxItemsShowing);
 	}
 
+	private AmstradProgram getCurrentProgram() {
+		return getProgramMenu().getProgram();
+	}
+
 	public AmstradProgramRepository getProgramRepository() {
 		return programRepository;
 	}
@@ -506,8 +557,12 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		this.programInfoSheet = programInfoSheet;
 	}
 
-	public AmstradProgram getInfoSheetProgram() {
-		return getProgramInfoSheet() != null ? getProgramInfoSheet().getProgram() : null;
+	private ProgramImageGallery getProgramImageGallery() {
+		return programImageGallery;
+	}
+
+	private void setProgramImageGallery(ProgramImageGallery programImageGallery) {
+		this.programImageGallery = programImageGallery;
 	}
 
 	public boolean isStandaloneInfo() {
@@ -535,7 +590,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 		PROGRAM_INFO_MODAL,
 
-		PROGRAM_INFO_STANDALONE;
+		PROGRAM_INFO_STANDALONE,
+
+		PROGRAM_IMAGE_GALLERY_MODAL;
 
 	}
 
@@ -772,6 +829,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			addMenuItem(new ProgramRunMenuItem(program));
 			addMenuItem(new ProgramLoadMenuItem(program));
 			addMenuItem(new ProgramInfoMenuItem(program));
+			addMenuItem(new ProgramImagesMenuItem(program));
 			addMenuItem(new ProgramCloseMenuItem(program));
 		}
 
@@ -950,6 +1008,28 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	}
 
+	private class ProgramImagesMenuItem extends ProgramMenuItem {
+
+		public ProgramImagesMenuItem(AmstradProgram program) {
+			super(program, "Images");
+		}
+
+		@Override
+		public void execute() {
+			if (isEnabled()) {
+				setProgramImageGallery(new ProgramImageGallery(getProgram()));
+				closeModalWindow();
+				setCurrentWindow(Window.PROGRAM_IMAGE_GALLERY_MODAL);
+			}
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return !getProgram().getImages().isEmpty();
+		}
+
+	}
+
 	private class ProgramCloseMenuItem extends ProgramMenuItem {
 
 		public ProgramCloseMenuItem(AmstradProgram program) {
@@ -1047,6 +1127,30 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 		public int getPenColorIndex() {
 			return penColorIndex;
+		}
+
+	}
+
+	private class ProgramImageGallery extends ItemList {
+
+		private AmstradProgram program;
+
+		public ProgramImageGallery(AmstradProgram program) {
+			super(1);
+			this.program = program;
+		}
+
+		public ProgramImage getCurrentImage() {
+			return getProgram().getImages().get(getIndexOfSelectedItem());
+		}
+
+		@Override
+		public int size() {
+			return getProgram().getImages().size();
+		}
+
+		public AmstradProgram getProgram() {
+			return program;
 		}
 
 	}

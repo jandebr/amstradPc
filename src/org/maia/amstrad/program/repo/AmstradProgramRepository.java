@@ -8,6 +8,8 @@ import org.maia.amstrad.program.AmstradProgram;
 
 public abstract class AmstradProgramRepository {
 
+	private static AmstradProgramCache programCache = new AmstradProgramCache(10);
+
 	protected AmstradProgramRepository() {
 	}
 
@@ -60,7 +62,8 @@ public abstract class AmstradProgramRepository {
 			return name;
 		}
 
-		protected abstract void refresh();
+		protected void refresh() {
+		}
 
 	}
 
@@ -105,14 +108,13 @@ public abstract class AmstradProgramRepository {
 
 		@Override
 		protected void refresh() {
+			super.refresh();
 			childNodes = null;
 		}
 
 	}
 
 	public static abstract class ProgramNode extends Node {
-
-		private AmstradProgram program;
 
 		protected ProgramNode(String name) {
 			super(name);
@@ -126,15 +128,81 @@ public abstract class AmstradProgramRepository {
 		protected abstract AmstradProgram readProgram();
 
 		public AmstradProgram getProgram() {
-			if (program == null) {
-				program = readProgram();
+			AmstradProgram program = null;
+			synchronized (programCache) {
+				program = programCache.fetchFromCache(this);
+				if (program == null) {
+					program = readProgram();
+					programCache.storeInCache(this, program);
+				}
 			}
 			return program;
 		}
 
-		@Override
-		protected void refresh() {
-			program = null;
+	}
+
+	private static class AmstradProgramCache {
+
+		private int capacity;
+
+		private List<ProgramNode> recentProgramNodes;
+
+		private List<AmstradProgram> recentPrograms;
+
+		public AmstradProgramCache(int capacity) {
+			this.capacity = capacity;
+			this.recentProgramNodes = new Vector<ProgramNode>(capacity);
+			this.recentPrograms = new Vector<AmstradProgram>(capacity);
+		}
+
+		public int size() {
+			return getRecentProgramNodes().size();
+		}
+
+		public synchronized void clear() {
+			getRecentProgramNodes().clear();
+			getRecentPrograms().clear();
+		}
+
+		public synchronized void storeInCache(ProgramNode node, AmstradProgram program) {
+			if (!getRecentProgramNodes().contains(node)) {
+				if (size() == getCapacity()) {
+					evictOne();
+				}
+				getRecentProgramNodes().add(node);
+				getRecentPrograms().add(program);
+			}
+		}
+
+		public synchronized AmstradProgram fetchFromCache(ProgramNode node) {
+			AmstradProgram program = null;
+			int index = getRecentProgramNodes().indexOf(node);
+			if (index >= 0) {
+				program = getRecentPrograms().get(index);
+				if (index < size() - 1) {
+					// move to front
+					getRecentProgramNodes().add(getRecentProgramNodes().remove(index));
+					getRecentPrograms().add(getRecentPrograms().remove(index));
+				}
+			}
+			return program;
+		}
+
+		private void evictOne() {
+			getRecentProgramNodes().remove(0);
+			getRecentPrograms().remove(0).flush();
+		}
+
+		public int getCapacity() {
+			return capacity;
+		}
+
+		private List<ProgramNode> getRecentProgramNodes() {
+			return recentProgramNodes;
+		}
+
+		private List<AmstradProgram> getRecentPrograms() {
+			return recentPrograms;
 		}
 
 	}

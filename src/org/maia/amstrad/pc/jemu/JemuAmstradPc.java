@@ -904,13 +904,17 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 
 		@Override
 		public synchronized void sendKeyboardEventsToComputer(boolean sendToComputer) {
-			blockKeyboardPending = false;
 			if (sendToComputer) {
 				Switches.blockKeyboard = false;
-			} else if (lastKeyModifiers == 0) {
-				Switches.blockKeyboard = true;
+				blockKeyboardPending = false;
+				lastKeyModifiers = 0;
 			} else {
-				blockKeyboardPending = true;
+				if (lastKeyModifiers == 0) {
+					Switches.blockKeyboard = true;
+					blockKeyboardPending = false;
+				} else {
+					blockKeyboardPending = true;
+				}
 			}
 		}
 

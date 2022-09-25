@@ -1,5 +1,6 @@
 package org.maia.amstrad.program;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,7 +9,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+
 import org.maia.amstrad.pc.AmstradMonitorMode;
+import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.util.StringUtils;
 
@@ -72,16 +76,24 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 		return this;
 	}
 
+	public AmstradProgramBuilder withImages(List<ProgramImage> images) {
+		getProgram().clearImages();
+		for (ProgramImage image : images) {
+			getProgram().addImage(image);
+		}
+		return this;
+	}
+
 	public AmstradProgramBuilder loadAmstradMetaData(File file) throws IOException {
 		if (file != null) {
 			Reader reader = new FileReader(file);
-			loadAmstradMetaData(reader);
+			loadAmstradMetaData(reader, file.getParentFile());
 			reader.close();
 		}
 		return this;
 	}
 
-	public AmstradProgramBuilder loadAmstradMetaData(Reader reader) throws IOException {
+	public AmstradProgramBuilder loadAmstradMetaData(Reader reader, File relativePath) throws IOException {
 		if (reader != null) {
 			Properties props = new Properties();
 			props.load(reader);
@@ -107,6 +119,19 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 				key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
 			}
 			withUserControls(userControls);
+			// Images
+			List<ProgramImage> images = new Vector<ProgramImage>();
+			i = 1;
+			String fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
+			while (fileRef != null) {
+				File file = new File(relativePath, fileRef);
+				String desc = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_DESCRIPTION);
+				ProgramImage image = new FileReferenceProgramImage(file, desc);
+				images.add(image);
+				i++;
+				fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
+			}
+			withImages(images);
 		}
 		return this;
 	}
@@ -117,6 +142,32 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 
 	private AmstradProgram getProgram() {
 		return program;
+	}
+
+	private static class FileReferenceProgramImage extends ProgramImage {
+
+		private File file;
+
+		public FileReferenceProgramImage(File file, String description) {
+			super(description);
+			this.file = file;
+		}
+
+		@Override
+		protected Image loadVisual() {
+			Image image = null;
+			try {
+				image = ImageIO.read(getFile());
+			} catch (IOException e) {
+				System.err.println("Failed to load image from file '" + getFile().getAbsolutePath() + "'");
+			}
+			return image;
+		}
+
+		public File getFile() {
+			return file;
+		}
+
 	}
 
 }

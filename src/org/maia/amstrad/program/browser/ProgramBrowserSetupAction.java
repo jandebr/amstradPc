@@ -1,18 +1,15 @@
 package org.maia.amstrad.program.browser;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import org.maia.amstrad.pc.action.AmstradPcAction;
+import org.maia.amstrad.pc.action.ActionableDialogAction;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfigurator;
 import org.maia.swing.dialog.ActionableDialog;
-import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
-import org.maia.swing.dialog.ActionableDialogListener;
 
-public class ProgramBrowserSetupAction extends AmstradPcAction implements ActionableDialogListener {
+public class ProgramBrowserSetupAction extends ActionableDialogAction {
 
 	private ProgramBrowserAction browserAction;
 
@@ -27,11 +24,6 @@ public class ProgramBrowserSetupAction extends AmstradPcAction implements Action
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent event) {
-		openDialog();
-	}
-
-	@Override
 	public void amstradPcEventDispatched(AmstradPcEvent event) {
 		super.amstradPcEventDispatched(event);
 		if (event instanceof AmstradPcKeyboardEvent) {
@@ -43,24 +35,6 @@ public class ProgramBrowserSetupAction extends AmstradPcAction implements Action
 		}
 	}
 
-	public void openDialog() {
-		if (isEnabled()) {
-			setEnabled(false);
-			AmstradProgramRepositoryConfiguration cfg = getAmstradContext().getProgramRepositoryConfiguration();
-			ActionableDialog dialog = AmstradProgramRepositoryConfigurator.createDialog(getAmstradPc().getFrame(), cfg);
-			dialog.addListener(this);
-			dialog.setVisible(true);
-		}
-	}
-
-	@Override
-	public void dialogButtonClicked(ActionableDialog dialog, ActionableDialogButton button) {
-	}
-
-	@Override
-	public void dialogCancelled(ActionableDialog dialog) {
-	}
-
 	@Override
 	public void dialogConfirmed(ActionableDialog dialog) {
 		AmstradProgramRepositoryConfiguration cfg = ((AmstradProgramRepositoryConfigurator) dialog.getMainComponent())
@@ -70,8 +44,9 @@ public class ProgramBrowserSetupAction extends AmstradPcAction implements Action
 	}
 
 	@Override
-	public void dialogClosed(ActionableDialog dialog) {
-		setEnabled(true);
+	protected ActionableDialog createDialog() {
+		AmstradProgramRepositoryConfiguration cfg = getAmstradContext().getProgramRepositoryConfiguration();
+		return AmstradProgramRepositoryConfigurator.createDialog(getAmstradPc().getFrame(), cfg);
 	}
 
 	private ProgramBrowserAction getBrowserAction() {

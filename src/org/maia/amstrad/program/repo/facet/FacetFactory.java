@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.Icon;
+
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.swing.util.SwingUtils;
 
 public class FacetFactory {
 
@@ -74,6 +77,11 @@ public class FacetFactory {
 		}
 
 		@Override
+		public Icon getIcon() {
+			return SwingUtils.getIcon("amstrad.facet", "author24.png");
+		}
+
+		@Override
 		protected String extractValueFrom(AmstradProgram program) {
 			return program.getAuthor();
 		}
@@ -88,6 +96,11 @@ public class FacetFactory {
 	private static class YearFacet extends Facet {
 
 		public YearFacet() {
+		}
+
+		@Override
+		public Icon getIcon() {
+			return SwingUtils.getIcon("amstrad.facet", "year24.png");
 		}
 
 		@Override
@@ -109,6 +122,11 @@ public class FacetFactory {
 		}
 
 		@Override
+		public Icon getIcon() {
+			return SwingUtils.getIcon("amstrad.facet", "tape24.png");
+		}
+
+		@Override
 		protected String extractValueFrom(AmstradProgram program) {
 			return program.getNameOfTape();
 		}
@@ -123,6 +141,11 @@ public class FacetFactory {
 	private static class BlocksFacet extends Facet {
 
 		public BlocksFacet() {
+		}
+
+		@Override
+		public Icon getIcon() {
+			return SwingUtils.getIcon("amstrad.facet", "blocks24.png");
 		}
 
 		@Override
@@ -144,6 +167,11 @@ public class FacetFactory {
 		}
 
 		@Override
+		public Icon getIcon() {
+			return SwingUtils.getIcon("amstrad.facet", "monitor24.png");
+		}
+
+		@Override
 		protected String extractValueFrom(AmstradProgram program) {
 			AmstradMonitorMode mode = program.getPreferredMonitorMode();
 			return mode != null ? mode.name() : null;
@@ -151,7 +179,7 @@ public class FacetFactory {
 
 		@Override
 		String toExternalForm() {
-			return "monitor";
+			return "color";
 		}
 
 	}

@@ -9,7 +9,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -25,7 +24,6 @@ import org.maia.swing.cards.CardsOfChoicePanel;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.file.FileFolderInputField;
 import org.maia.swing.file.FileFolderInputFieldListener;
-import org.maia.swing.util.SwingUtils;
 
 public class AmstradProgramRepositoryConfigurator extends Box {
 
@@ -141,6 +139,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		CardsInOrderPanel panel = new CardsInOrderPanel(400, 100);
 		panel.setAlignmentX(LEFT_ALIGNMENT);
 		panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+		panel.setCardsMinimumWidth(90);
 		panel.setEmptyMessage("Click facets to add and reorder by dragging");
 		panel.setEnabled(getState().isFaceted());
 		panel.addListener(new CardsInOrderListener() {
@@ -181,7 +180,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		panel.setEnabled(getState().isFaceted());
 		FacetList facets = getState().getFacets();
 		for (int i = 0; i < facets.size(); i++) {
-			orderPanel.addCard(createFacetCard(facets.getFacet(i)));
+			orderPanel.addCard(new FacetCard(facets.getFacet(i)));
 		}
 		return panel;
 	}
@@ -189,14 +188,9 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 	private List<Card> createAllFacetCards() {
 		List<Card> cards = new Vector<Card>();
 		for (Facet facet : FacetFactory.getInstance().getAllFacets()) {
-			cards.add(createFacetCard(facet));
+			cards.add(new FacetCard(facet));
 		}
 		return cards;
-	}
-
-	private Card createFacetCard(Facet facet) {
-		Icon icon = SwingUtils.getIcon("edit32.png");
-		return new FacetCard(facet, icon);
 	}
 
 	public AmstradProgramRepositoryConfiguration getState() {
@@ -227,8 +221,8 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 
 		private Facet facet;
 
-		public FacetCard(Facet facet, Icon icon) {
-			super(facet.getLabel(), icon, Color.WHITE);
+		public FacetCard(Facet facet) {
+			super(facet.getLabel(), facet.getIcon(), Color.WHITE);
 			this.facet = facet;
 		}
 

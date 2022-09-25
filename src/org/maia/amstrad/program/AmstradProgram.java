@@ -1,5 +1,6 @@
 package org.maia.amstrad.program;
 
+import java.awt.Image;
 import java.util.List;
 import java.util.Vector;
 
@@ -25,11 +26,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private List<UserControl> userControls;
 
+	private List<ProgramImage> images;
+
 	private AmstradMonitorMode preferredMonitorMode;
 
 	protected AmstradProgram(String programName) {
 		this.programName = programName;
 		this.userControls = new Vector<UserControl>();
+		this.images = new Vector<ProgramImage>();
 	}
 
 	@Override
@@ -51,6 +55,8 @@ public abstract class AmstradProgram implements Cloneable {
 		builder.append(blocksOnTape);
 		builder.append(", userControls=");
 		builder.append(userControls);
+		builder.append(", images=");
+		builder.append(images);
 		builder.append(", preferredMonitorMode=");
 		builder.append(preferredMonitorMode);
 		builder.append("]");
@@ -63,10 +69,17 @@ public abstract class AmstradProgram implements Cloneable {
 		try {
 			clone = (AmstradProgram) super.clone();
 			clone.setUserControls(new Vector<UserControl>(getUserControls()));
+			clone.setImages(new Vector<ProgramImage>(getImages()));
 		} catch (CloneNotSupportedException e) {
 			// not the case
 		}
 		return clone;
+	}
+
+	public void flush() {
+		for (ProgramImage image : getImages()) {
+			image.flush();
+		}
 	}
 
 	public abstract void loadInto(AmstradPc amstradPc) throws AmstradProgramException;
@@ -88,6 +101,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	public void addUserControl(UserControl userControl) {
 		getUserControls().add(userControl);
+	}
+
+	public void clearImages() {
+		getImages().clear();
+	}
+
+	public void addImage(ProgramImage image) {
+		getImages().add(image);
 	}
 
 	public String getProgramName() {
@@ -162,6 +183,14 @@ public abstract class AmstradProgram implements Cloneable {
 		this.userControls = userControls;
 	}
 
+	public List<ProgramImage> getImages() {
+		return images;
+	}
+
+	private void setImages(List<ProgramImage> images) {
+		this.images = images;
+	}
+
 	public static class UserControl {
 
 		private String key;
@@ -202,6 +231,47 @@ public abstract class AmstradProgram implements Cloneable {
 
 		public void setHeading(String heading) {
 			this.heading = heading;
+		}
+
+	}
+
+	public static abstract class ProgramImage {
+
+		private Image visual;
+
+		private String description;
+
+		protected ProgramImage(String description) {
+			this.description = description;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("ProgramImage [description=");
+			builder.append(description);
+			builder.append("]");
+			return builder.toString();
+		}
+
+		public void flush() {
+			if (visual != null) {
+				visual.flush();
+				visual = null;
+			}
+		}
+
+		protected abstract Image loadVisual();
+
+		public Image getVisual() {
+			if (visual == null) {
+				visual = loadVisual();
+			}
+			return visual;
+		}
+
+		public String getDescription() {
+			return description;
 		}
 
 	}

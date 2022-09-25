@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.display;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -152,6 +153,20 @@ public abstract class AmstradDisplayCanvas {
 		Graphics2D g2 = getGraphics2D();
 		g2.setColor(getSystemColor(colorIndex));
 		g2.fillRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1);
+		return this;
+	}
+
+	public AmstradDisplayCanvas drawImage(Image image, int xLeft, int yTop) {
+		int x = projectX(xLeft);
+		int y = projectY(yTop);
+		getGraphics2D().drawImage(image, x, y, null);
+		return this;
+	}
+
+	public AmstradDisplayCanvas drawImage(Image image, int xLeft, int yTop, int width, int height) {
+		int x = projectX(xLeft);
+		int y = projectY(yTop);
+		getGraphics2D().drawImage(image, x, y, width, height, null);
 		return this;
 	}
 
