@@ -44,6 +44,9 @@ import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcEventListener;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
 import org.maia.amstrad.util.AmstradUtils;
+import org.maia.swing.dialog.ActionableDialog;
+import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
+import org.maia.swing.dialog.ActionableDialogListener;
 
 public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener,
 		PrimaryDisplaySourceListener, KeyListener {
@@ -84,6 +87,12 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		getFrameBridge().setFrame(frame);
 		getJemuInstance().alwaysOnTopCheck();
 		return frame;
+	}
+
+	@Override
+	public void showActionableDialog(ActionableDialog dialog) {
+		dialog.addListener(new ActionableDialogHandler());
+		super.showActionableDialog(dialog);
 	}
 
 	@Override
@@ -907,7 +916,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 			if (sendToComputer) {
 				Switches.blockKeyboard = false;
 				blockKeyboardPending = false;
-				lastKeyModifiers = 0;
+				resetKeyModifiers(); // essential to sync modifiers with JEMU's computer
 			} else {
 				if (lastKeyModifiers == 0) {
 					Switches.blockKeyboard = true;
@@ -927,6 +936,45 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 					blockKeyboardPending = false;
 				}
 			}
+		}
+
+		public synchronized void resetKeyModifiers() {
+			lastKeyModifiers = 0;
+			getJemuInstance().resetKeyModifiers();
+		}
+
+	}
+
+	private class ActionableDialogHandler implements ActionableDialogListener {
+
+		public ActionableDialogHandler() {
+		}
+
+		@Override
+		public void dialogButtonClicked(ActionableDialog dialog, ActionableDialogButton button) {
+			if (button.isClosingDialog()) {
+				resetKeyModifiers();
+			}
+		}
+
+		@Override
+		public void dialogCancelled(ActionableDialog dialog) {
+		}
+
+		@Override
+		public void dialogConfirmed(ActionableDialog dialog) {
+		}
+
+		@Override
+		public void dialogClosed(ActionableDialog dialog) {
+			resetKeyModifiers();
+		}
+
+		private void resetKeyModifiers() {
+			// A dialog catches key events when in focus. When the dialog is invoked by a key combination involving
+			// modifiers, this may leave the JEMU instance and JEMU computer in an obsolete key modifier state causing
+			// artefacts when resuming focus. To prevent this, we reset modifiers when a dialog is closed.
+			getKeyboardController().resetKeyModifiers();
 		}
 
 	}

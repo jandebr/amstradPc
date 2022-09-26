@@ -11,6 +11,7 @@ import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcEventListener;
+import org.maia.swing.dialog.ActionableDialog;
 
 public abstract class AmstradPc {
 
@@ -36,6 +37,10 @@ public abstract class AmstradPc {
 			frame.amstradPcStarted(this);
 		}
 		return frame;
+	}
+
+	public void showActionableDialog(ActionableDialog dialog) {
+		dialog.setVisible(true);
 	}
 
 	public abstract boolean isSnapshotFile(File file);

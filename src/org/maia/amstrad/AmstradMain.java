@@ -1,6 +1,10 @@
-package org.maia.amstrad.pc;
+package org.maia.amstrad;
 
 import java.io.File;
+
+import org.maia.amstrad.pc.AmstradFactory;
+import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcFrame;
 
 public class AmstradMain {
 

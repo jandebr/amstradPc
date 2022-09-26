@@ -1796,11 +1796,18 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_CONTROL) {
 			ctrl = false;
-		} else if (keyCode == KeyEvent.VK_ALT) {
-			alt = false;
 		} else if (keyCode == KeyEvent.VK_SHIFT) {
 			shift = false;
+		} else if (keyCode == KeyEvent.VK_ALT) {
+			alt = false;
 		}
+	}
+
+	public void resetKeyModifiers() {
+		char cUnd = KeyEvent.CHAR_UNDEFINED;
+		keyReleased(new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_CONTROL, cUnd));
+		keyReleased(new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_SHIFT, cUnd));
+		keyReleased(new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_ALT, cUnd));
 	}
 
 	private KeyEvent cloneKeyEvent(KeyEvent e) {
