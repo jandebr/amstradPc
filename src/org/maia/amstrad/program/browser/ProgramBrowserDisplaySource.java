@@ -169,7 +169,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 						if (!isModalWindowOpen() && isItemListCursorBlinkOn()) {
 							canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
 						}
-						if (item.isProgram()) {
+						if (item.isProgram()
+								&& (!isModalWindowOpen() || Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow()))) {
 							renderFocusedProgramHint(item.asProgram(), canvas);
 						}
 						canvas.paper(2);
@@ -265,8 +266,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private void renderProgramInfoSheet(ProgramInfoSheet infoSheet, AmstradDisplayCanvas canvas) {
-		renderModalWindow(4, 5, 37, 22, infoSheet.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
-		int tx0 = 6, ty0 = 8, ty = ty0;
+		renderModalWindow(4, 3, 37, 24, infoSheet.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
+		int tx0 = 6, ty0 = 6, ty = ty0;
 		int i = infoSheet.getIndexOfFirstItemShowing();
 		while (i < infoSheet.size() && ty < ty0 + infoSheet.getMaxItemsShowing()) {
 			canvas.locate(tx0, ty);
@@ -284,18 +285,18 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 		// top extent hint
 		if (infoSheet.getIndexOfFirstItemShowing() > 0) {
-			canvas.pen(13).move(560, 287).drawChr(196);
+			canvas.pen(13).move(560, 319).drawChr(196);
 		}
 		// bottom extent hint
 		if (infoSheet.getIndexOfLastItemShowing() < infoSheet.size() - 1) {
-			canvas.pen(13).move(560, 79).drawChr(198);
+			canvas.pen(13).move(560, 47).drawChr(198);
 		}
 		canvas.paper(COLOR_PAPER);
 	}
 
 	private void renderProgramImageGallery(ProgramImageGallery gallery, AmstradDisplayCanvas canvas) {
-		renderModalWindow(4, 5, 37, 22, gallery.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
-		Rectangle rect = canvas.getTextAreaBoundsOnCanvas(5, 8, 36, 21);
+		renderModalWindow(4, 3, 37, 24, gallery.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
+		Rectangle rect = canvas.getTextAreaBoundsOnCanvas(5, 6, 36, 23);
 		Image image = gallery.getCurrentImage().getVisual();
 		double ratio = image.getWidth(null) / (double) image.getHeight(null);
 		int height = rect.height;
@@ -413,7 +414,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {
-		ProgramInfoSheet sheet = new ProgramInfoSheet(program, 14);
+		ProgramInfoSheet sheet = new ProgramInfoSheet(program, 18);
 		int bg = COLOR_MODAL_BACKGROUND;
 		int maxWidth = 30;
 		AmstradMonitorMode mode = program.getPreferredMonitorMode();

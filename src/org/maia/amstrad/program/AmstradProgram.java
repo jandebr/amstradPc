@@ -239,17 +239,17 @@ public abstract class AmstradProgram implements Cloneable {
 
 		private Image visual;
 
-		private String description;
+		private String caption;
 
-		protected ProgramImage(String description) {
-			this.description = description;
+		protected ProgramImage(String caption) {
+			this.caption = caption;
 		}
 
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
-			builder.append("ProgramImage [description=");
-			builder.append(description);
+			builder.append("ProgramImage [caption=");
+			builder.append(caption);
 			builder.append("]");
 			return builder.toString();
 		}
@@ -270,8 +270,8 @@ public abstract class AmstradProgram implements Cloneable {
 			return visual;
 		}
 
-		public String getDescription() {
-			return description;
+		public String getCaption() {
+			return caption;
 		}
 
 	}

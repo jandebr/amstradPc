@@ -125,8 +125,8 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 			String fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
 			while (fileRef != null) {
 				File file = new File(relativePath, fileRef);
-				String desc = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_DESCRIPTION);
-				ProgramImage image = new FileReferenceProgramImage(file, desc);
+				String caption = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_CAPTION);
+				ProgramImage image = new FileReferenceProgramImage(file, caption);
 				images.add(image);
 				i++;
 				fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
@@ -148,8 +148,8 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 
 		private File file;
 
-		public FileReferenceProgramImage(File file, String description) {
-			super(description);
+		public FileReferenceProgramImage(File file, String caption) {
+			super(caption);
 			this.file = file;
 		}
 

@@ -34,6 +34,6 @@ public interface AmstradMetaDataConstants {
 
 	String AMD_IMAGES_SUFFIX_FILEREF = "FILEREF";
 
-	String AMD_IMAGES_SUFFIX_DESCRIPTION = "DESCRIPTION";
+	String AMD_IMAGES_SUFFIX_CAPTION = "CAPTION";
 
 }
