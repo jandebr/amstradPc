@@ -199,7 +199,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		AmstradProgram program = node.getProgram();
 		String desc = program.getProgramDescription();
 		if (desc != null) {
-			int pen = 11;
+			int pen = 0;
 			AmstradMonitorMode mode = program.getPreferredMonitorMode();
 			if (AmstradMonitorMode.GREEN.equals(mode)) {
 				pen = 9;
@@ -296,12 +296,65 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private void renderProgramImageGallery(ProgramImageGallery gallery, AmstradDisplayCanvas canvas) {
 		renderModalWindow(4, 3, 37, 24, gallery.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
-		Rectangle rect = canvas.getTextAreaBoundsOnCanvas(5, 6, 36, 23);
-		Image image = gallery.getCurrentImage().getVisual();
-		double ratio = image.getWidth(null) / (double) image.getHeight(null);
-		int height = rect.height;
-		int width = (int) Math.round(ratio * height);
-		canvas.drawImage(image, rect.x, rect.y, width, height);
+		// Visual
+		Rectangle bounds = deriveProgramImageVisualBounds(gallery, canvas);
+		ProgramImage image = gallery.getCurrentImage();
+		renderProgramImageVisual(image, canvas, bounds);
+		// Index
+		boolean hasCaptions = gallery.hasCaptions();
+		int yt = hasCaptions ? 22 : 23;
+		int i = gallery.getIndexOfSelectedItem();
+		int n = gallery.size();
+		if (n > 32) {
+			canvas.pen(17).locate(5, yt);
+			canvas.print(StringUtils.fitWidthCenterAlign((i + 1) + " of " + n, 32));
+		} else if (n > 1) {
+			canvas.move(320 - n * 8, canvas.getTextCursorBoundsOnCanvas(5, yt).y + 4);
+			for (int j = 0; j < n; j++) {
+				canvas.pen(j == i ? 8 : 17).drawChr(j == i ? 233 : 232);
+			}
+		}
+		// Caption
+		if (!StringUtils.isEmpty(image.getCaption())) {
+			canvas.pen(14).locate(5, 23);
+			canvas.print(StringUtils.fitWidthCenterAlign(image.getCaption(), 32));
+		}
+	}
+
+	private void renderProgramImageVisual(ProgramImage image, AmstradDisplayCanvas canvas, Rectangle bounds) {
+		Image visual = image.getVisual();
+		if (visual != null) {
+			int vWidth = visual.getWidth(null);
+			int vHeight = visual.getHeight(null);
+			double sx = Math.min(bounds.width / (double) vWidth, 1.0);
+			double sy = Math.min(bounds.height / (double) vHeight, 1.0);
+			double s = Math.min(sx, sy); // scaling factor
+			int iWidth = (int) Math.floor(s * vWidth);
+			int iHeight = (int) Math.floor(s * vHeight);
+			int ix0 = bounds.x + (bounds.width - iWidth) / 2; // center
+			int iy0 = bounds.y - (bounds.height - iHeight) / 2; // center
+			canvas.drawImage(visual, ix0, iy0, iWidth, iHeight);
+		} else {
+			canvas.move(312, bounds.y - bounds.height / 2 + 8);
+			canvas.pen(13).drawChr(225);
+		}
+	}
+
+	private Rectangle deriveProgramImageVisualBounds(ProgramImageGallery gallery, AmstradDisplayCanvas canvas) {
+		int y1 = 6;
+		int y2 = 23;
+		int padding = 2;
+		if (gallery.hasCaptions()) {
+			y2--;
+			padding = 8;
+		}
+		if (gallery.size() > 1) {
+			y2--;
+			padding = 8;
+		}
+		Rectangle rect = canvas.getTextAreaBoundsOnCanvas(5, y1, 36, y2);
+		rect.height -= padding;
+		return rect;
 	}
 
 	@Override
@@ -373,8 +426,17 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private void handleKeyboardKeyInProgramImageGallery(KeyEvent e) {
+		ProgramImageGallery gallery = getProgramImageGallery();
 		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_ESCAPE) {
+		if (keyCode == KeyEvent.VK_RIGHT) {
+			gallery.browseOneItemDown();
+		} else if (keyCode == KeyEvent.VK_LEFT) {
+			gallery.browseOneItemUp();
+		} else if (keyCode == KeyEvent.VK_HOME) {
+			gallery.browseHome();
+		} else if (keyCode == KeyEvent.VK_END) {
+			gallery.browseEnd();
+		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			closeModalWindow();
 		}
 	}
@@ -916,7 +978,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 							launchProgram();
 							failed = false;
 							closeModalWindow();
-							close(); // restores monitor settings
+							close(); // restores monitor mode & settings
 							if (mode != null) {
 								getAmstradPc().setMonitorMode(mode);
 							}
@@ -1142,12 +1204,24 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 
 		public ProgramImage getCurrentImage() {
-			return getProgram().getImages().get(getIndexOfSelectedItem());
+			return getImage(getIndexOfSelectedItem());
+		}
+
+		public ProgramImage getImage(int index) {
+			return getProgram().getImages().get(index);
 		}
 
 		@Override
 		public int size() {
 			return getProgram().getImages().size();
+		}
+
+		public boolean hasCaptions() {
+			for (int i = 0; i < size(); i++) {
+				if (!StringUtils.isEmpty(getImage(i).getCaption()))
+					return true;
+			}
+			return false;
 		}
 
 		public AmstradProgram getProgram() {

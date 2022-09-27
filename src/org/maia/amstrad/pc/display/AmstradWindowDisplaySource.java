@@ -48,6 +48,8 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		if (isFocusOnWindowCloseButton(canvas)) {
 			setMouseOverButton(true);
 			canvas.paper(6).pen(24);
+		} else if (isModalWindowOpen()) {
+			canvas.paper(3).pen(13);
 		} else {
 			canvas.paper(3).pen(26);
 		}

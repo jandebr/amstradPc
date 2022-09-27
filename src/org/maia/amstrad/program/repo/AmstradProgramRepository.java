@@ -21,6 +21,7 @@ public abstract class AmstradProgramRepository {
 	public abstract FolderNode getRootNode();
 
 	public void refresh() {
+		programCache.clear();
 		getRootNode().refresh();
 	}
 
