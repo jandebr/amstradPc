@@ -3,7 +3,7 @@
     <target name="export jar">
         <jar destfile="${libraries.home}/amstradPc/amstradPc.jar">
             <manifest>
-                <attribute name="Main-Class" value="org.maia.amstrad.pc.AmstradMain"/>
+                <attribute name="Main-Class" value="org.maia.amstrad.AmstradMain"/>
                 <attribute name="Class-Path" value="."/>
             	<attribute name="SplashScreen-Image" value="images/amstrad1.png"/>
             </manifest>
