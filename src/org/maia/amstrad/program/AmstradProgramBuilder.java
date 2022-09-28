@@ -154,14 +154,8 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 		}
 
 		@Override
-		protected Image loadVisual() {
-			Image image = null;
-			try {
-				image = ImageIO.read(getFile());
-			} catch (IOException e) {
-				System.err.println("Failed to load image from file '" + getFile().getAbsolutePath() + "'");
-			}
-			return image;
+		protected Image loadVisual() throws IOException {
+			return ImageIO.read(getFile());
 		}
 
 		public File getFile() {

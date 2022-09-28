@@ -239,6 +239,8 @@ public abstract class AmstradProgram implements Cloneable {
 
 		private Image visual;
 
+		private boolean visualFailedLoading;
+
 		private String caption;
 
 		protected ProgramImage(String caption) {
@@ -261,11 +263,16 @@ public abstract class AmstradProgram implements Cloneable {
 			}
 		}
 
-		protected abstract Image loadVisual();
+		protected abstract Image loadVisual() throws Exception;
 
 		public Image getVisual() {
-			if (visual == null) {
-				visual = loadVisual();
+			if (visual == null && !visualFailedLoading) {
+				try {
+					visual = loadVisual();
+				} catch (Exception e) {
+					visualFailedLoading = true;
+					System.err.println("Failed to load program image: " + e.toString());
+				}
 			}
 			return visual;
 		}
