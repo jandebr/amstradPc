@@ -13,9 +13,6 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.amstrad.util.AmstradUtils;
 
 public class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
@@ -35,14 +32,14 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		this.folderPerProgram = folderPerProgram;
 	}
 
-	private static boolean couldBeFolderPerProgram(File rootFolder) {
+	private static boolean couldBeFolderPerProgram(File parentFolder) {
 		boolean result = true;
-		if (rootFolder.isDirectory()) {
-			if (containsSubFolders(rootFolder) && selectProgramFileInFolder(rootFolder) != null) {
+		if (parentFolder.isDirectory()) {
+			if (containsSubFolders(parentFolder) && selectProgramFileInFolder(parentFolder) != null) {
 				result = false;
 			} else {
 				int programCount = 0;
-				File[] files = rootFolder.listFiles();
+				File[] files = parentFolder.listFiles();
 				int i = 0;
 				while (i < files.length && result) {
 					File file = files[i++];
@@ -144,25 +141,32 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		protected List<Node> listChildNodes() {
 			List<FileBasedFolderNode> childFolderNodes = new Vector<FileBasedFolderNode>();
 			List<FileBasedProgramNode> childProgramNodes = new Vector<FileBasedProgramNode>();
-			List<File> files = Arrays.asList(getFolder().listFiles());
-			Collections.sort(files);
-			for (File file : files) {
-				if (isFolderPerProgram()) {
-					if (file.isDirectory()) {
-						if (!containsSubFolders(file)) {
-							File pf = selectProgramFileInFolder(file);
-							if (pf != null) {
-								childProgramNodes.add(new FileBasedProgramNode(file.getName(), pf));
+			if (isFolderPerProgram() && !containsSubFolders(getFolder())) {
+				File pf = selectProgramFileInFolder(getFolder());
+				if (pf != null) {
+					childProgramNodes.add(new FileBasedProgramNode(getFolder().getName(), pf));
+				}
+			} else {
+				List<File> files = Arrays.asList(getFolder().listFiles());
+				Collections.sort(files);
+				for (File file : files) {
+					if (isFolderPerProgram()) {
+						if (file.isDirectory()) {
+							if (!containsSubFolders(file)) {
+								File pf = selectProgramFileInFolder(file);
+								if (pf != null) {
+									childProgramNodes.add(new FileBasedProgramNode(file.getName(), pf));
+								}
+							} else {
+								childFolderNodes.add(new FileBasedFolderNode(file));
 							}
-						} else {
-							childFolderNodes.add(new FileBasedFolderNode(file));
 						}
-					}
-				} else {
-					if (file.isDirectory()) {
-						childFolderNodes.add(new FileBasedFolderNode(file));
-					} else if (isProgramFile(file)) {
-						childProgramNodes.add(new FileBasedProgramNode(file.getName(), file));
+					} else {
+						if (file.isDirectory()) {
+							childFolderNodes.add(new FileBasedFolderNode(file));
+						} else if (isProgramFile(file)) {
+							childProgramNodes.add(new FileBasedProgramNode(file.getName(), file));
+						}
 					}
 				}
 			}
