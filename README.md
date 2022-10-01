@@ -49,4 +49,5 @@ Emulated Amstrad PC
 ![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/amstradPc.png)
 
 Integrated program browser
-![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/program-browser.png)
+![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/program-browser-menu.png)
+![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/program-browser-info.png)
