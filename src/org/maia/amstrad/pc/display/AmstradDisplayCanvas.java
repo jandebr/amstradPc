@@ -2,6 +2,7 @@ package org.maia.amstrad.pc.display;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -221,18 +222,36 @@ public abstract class AmstradDisplayCanvas {
 		return this;
 	}
 
-	public AmstradDisplayCanvas drawStr(String str) {
+	public AmstradDisplayCanvas drawStrProportional(String str) {
+		return drawStrProportional(str, 1.0f);
+	}
+
+	public AmstradDisplayCanvas drawStrProportional(String str, float scale) {
+		Point p = getGraphicsPosition();
+		Font font = getGraphicsContext().getSystemFont();
+		if (scale != 1.0f) {
+			float fontSize = getWidth() / getGraphicsContext().getTextColumns() * scale;
+			font = font.deriveFont(fontSize);
+		}
+		Graphics2D g2 = getGraphics2D();
+		g2.setFont(font);
+		g2.setColor(getPenColor());
+		g2.drawString(str, projectX(p.x), projectY(p.y) + g2.getFontMetrics().getAscent() - 1);
+		return mover(g2.getFontMetrics().stringWidth(str), 0);
+	}
+
+	public AmstradDisplayCanvas drawStrMonospaced(String str) {
 		for (int i = 0; i < str.length(); i++) {
-			drawChr(str.charAt(i));
+			drawChrMonospaced(str.charAt(i));
 		}
 		return this;
 	}
 
-	public AmstradDisplayCanvas drawChr(int code) {
-		return drawChr((char) code);
+	public AmstradDisplayCanvas drawChrMonospaced(int code) {
+		return drawChrMonospaced((char) code);
 	}
 
-	public AmstradDisplayCanvas drawChr(char c) {
+	public AmstradDisplayCanvas drawChrMonospaced(char c) {
 		printAsciiSymbolAtGraphicsPosition(c, true);
 		return mover(getWidth() / getGraphicsContext().getTextColumns(), 0);
 	}

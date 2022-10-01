@@ -59,8 +59,8 @@ public class AmstradSystemColorsDisplaySource extends AmstradWindowDisplaySource
 		Dimension labelSize = canvas.getTextAreaSizeOnCanvas(label.length(), 1);
 		int x = (cellSize.width - labelSize.width) / 2;
 		int y = (cellSize.height + labelSize.height) / 2;
-		canvas.pen(0).move(x + 2, y - 2).drawStr(label);
-		canvas.pen(26).move(x, y).drawStr(label);
+		canvas.pen(0).move(x + 2, y - 2).drawStrMonospaced(label);
+		canvas.pen(26).move(x, y).drawStrMonospaced(label);
 	}
 
 }

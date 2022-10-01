@@ -112,7 +112,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			canvas.paper(5).pen(26);
 		}
 		canvas.locate(1, 1).print("  ").paper(COLOR_PAPER);
-		canvas.move(8, 399).drawChr(255);
+		canvas.move(8, 399).drawChrMonospaced(255);
 	}
 
 	private boolean isFocusOnHomeButton(AmstradDisplayCanvas canvas) {
@@ -171,7 +171,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 						}
 						if (item.isProgram()
 								&& (!isModalWindowOpen() || Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow()))) {
-							renderFocusedProgramHint(item.asProgram(), canvas);
+							renderFocusedProgramMiniInfo(item.asProgram(), canvas);
 						}
 						canvas.paper(2);
 					} else {
@@ -195,20 +195,32 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
-	private void renderFocusedProgramHint(ProgramNode node, AmstradDisplayCanvas canvas) {
+	private void renderFocusedProgramMiniInfo(ProgramNode node, AmstradDisplayCanvas canvas) {
 		AmstradProgram program = node.getProgram();
-		String desc = program.getProgramDescription();
-		if (desc != null) {
-			int pen = 0;
-			AmstradMonitorMode mode = program.getPreferredMonitorMode();
-			if (AmstradMonitorMode.GREEN.equals(mode)) {
-				pen = 9;
-			} else if (AmstradMonitorMode.GRAY.equals(mode)) {
-				pen = 13;
-			} else if (AmstradMonitorMode.COLOR.equals(mode)) {
-				pen = 11;
-			}
-			canvas.pen(pen).locate(1, 25).print(StringUtils.fitWidth(desc, 40));
+		AmstradMonitorMode mode = program.getPreferredMonitorMode();
+		int c1 = 11, c2 = 20;
+		if (AmstradMonitorMode.GREEN.equals(mode)) {
+			c1 = 9;
+			c2 = 22;
+		} else if (AmstradMonitorMode.GRAY.equals(mode)) {
+			c1 = 13;
+			c2 = 12;
+		} else if (AmstradMonitorMode.COLOR.equals(mode)) {
+			c1 = 8;
+			c2 = 17;
+		}
+		canvas.move(0, 15).pen(c2).drawStrProportional(program.getProgramName(), 0.5f);
+		if (!StringUtils.isEmpty(program.getAuthor())) {
+			canvas.pen(c1).drawStrProportional(" by ", 0.5f);
+			canvas.pen(c2).drawStrProportional(program.getAuthor(), 0.5f);
+		}
+		if (program.getProductionYear() > 0) {
+			canvas.pen(c1).drawStrProportional(", ", 0.5f);
+			canvas.pen(c2).drawStrProportional(String.valueOf(program.getProductionYear()), 0.5f);
+		}
+		if (!StringUtils.isEmpty(program.getProgramDescription())) {
+			String desc = StringUtils.splitOnNewlines(program.getProgramDescription()).get(0);
+			canvas.move(0, 7).pen(c1).drawStrProportional(desc, 0.5f);
 		}
 	}
 
@@ -285,11 +297,11 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 		// top extent hint
 		if (infoSheet.getIndexOfFirstItemShowing() > 0) {
-			canvas.pen(13).move(560, 319).drawChr(196);
+			canvas.pen(13).move(560, 319).drawChrMonospaced(196);
 		}
 		// bottom extent hint
 		if (infoSheet.getIndexOfLastItemShowing() < infoSheet.size() - 1) {
-			canvas.pen(13).move(560, 47).drawChr(198);
+			canvas.pen(13).move(560, 47).drawChrMonospaced(198);
 		}
 		canvas.paper(COLOR_PAPER);
 	}
@@ -311,7 +323,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (n > 1) {
 			canvas.move(320 - n * 8, canvas.getTextCursorBoundsOnCanvas(5, yt).y + 4);
 			for (int j = 0; j < n; j++) {
-				canvas.pen(j == i ? 8 : 17).drawChr(j == i ? 233 : 232);
+				canvas.pen(j == i ? 8 : 17).drawChrMonospaced(j == i ? 233 : 232);
 			}
 		}
 		// Caption
@@ -336,7 +348,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			canvas.drawImage(visual, ix0, iy0, iWidth, iHeight);
 		} else {
 			canvas.move(312, bounds.y - bounds.height / 2 + 8);
-			canvas.pen(13).drawChr(225);
+			canvas.pen(13).drawChrMonospaced(225);
 		}
 	}
 

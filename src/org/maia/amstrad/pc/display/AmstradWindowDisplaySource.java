@@ -54,7 +54,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			canvas.paper(3).pen(26);
 		}
 		canvas.locate(39, 1).print("  ");
-		canvas.move(616, 399).drawChr('x');
+		canvas.move(616, 399).drawChrMonospaced('x');
 	}
 
 	private boolean isFocusOnWindowCloseButton(AmstradDisplayCanvas canvas) {
@@ -112,7 +112,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			canvas.paper(3).pen(26);
 		}
 		canvas.locate(tx2 - 1, ty1).print("  ");
-		canvas.move(closeBounds.x + 8, closeBounds.y).drawChr('x');
+		canvas.move(closeBounds.x + 8, closeBounds.y).drawChrMonospaced('x');
 	}
 
 	private boolean isFocusOnModalWindowCloseButton() {
