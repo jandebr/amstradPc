@@ -50,4 +50,6 @@ Emulated Amstrad PC
 
 Integrated program browser
 ![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/program-browser-menu.png)
+
+Program info
 ![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/program-browser-info.png)
