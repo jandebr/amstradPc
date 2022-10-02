@@ -236,7 +236,7 @@ public abstract class AmstradDisplayCanvas {
 		Graphics2D g2 = getGraphics2D();
 		g2.setFont(font);
 		g2.setColor(getPenColor());
-		g2.drawString(str, projectX(p.x), projectY(p.y) + g2.getFontMetrics().getAscent() - 1);
+		g2.drawString(str, projectX(p.x), projectY(p.y) + g2.getFontMetrics().getAscent());
 		return mover(g2.getFontMetrics().stringWidth(str), 0);
 	}
 

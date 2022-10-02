@@ -19,7 +19,6 @@ import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.amstrad.util.StringUtils;
 
 public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
