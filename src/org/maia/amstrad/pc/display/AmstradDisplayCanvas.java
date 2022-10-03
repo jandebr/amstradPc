@@ -85,6 +85,10 @@ public abstract class AmstradDisplayCanvas {
 		return this;
 	}
 
+	public AmstradDisplayCanvas move(Point location) {
+		return move(location.x, location.y);
+	}
+
 	public AmstradDisplayCanvas move(int x, int y) {
 		getGraphicsPosition().setLocation(x, y);
 		return this;

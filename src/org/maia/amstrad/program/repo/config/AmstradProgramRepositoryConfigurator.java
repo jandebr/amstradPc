@@ -12,6 +12,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.repo.facet.Facet;
@@ -33,6 +36,10 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 
 	private JCheckBox hideSequenceNumbersOption;
 
+	private JCheckBox searchByProgramNameOption;
+
+	private JTextField searchStringField;
+
 	private JCheckBox facetedOption;
 
 	private CardsInOrderPanel facetCardsInOrderPanel;
@@ -44,6 +51,8 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		this.state = state;
 		this.rootFolderField = createRootFolderField();
 		this.hideSequenceNumbersOption = createHideSequenceNumbersOption();
+		this.searchByProgramNameOption = createSearchByProgramNameOption();
+		this.searchStringField = createSearchStringField();
 		this.facetedOption = createFacetedOption();
 		this.facetCardsInOrderPanel = createFacetCardsInOrderPanel();
 		this.facetCardsOfChoicePanel = createFacetCardsOfChoicePanel(getFacetCardsInOrderPanel());
@@ -60,6 +69,8 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 	private void buildUI() {
 		add(createGeneralComponent());
 		add(Box.createVerticalStrut(16));
+		add(createSearchComponent());
+		add(Box.createVerticalStrut(16));
 		add(createFacetsComponent());
 	}
 
@@ -70,6 +81,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		comp.add(createRootFolderComponent());
 		comp.add(Box.createVerticalStrut(4));
 		comp.add(getHideSequenceNumbersOption());
+		comp.add(Box.createVerticalStrut(4));
 		return comp;
 	}
 
@@ -80,6 +92,26 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		label.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 8));
 		comp.add(label);
 		comp.add(getRootFolderField());
+		return comp;
+	}
+
+	private JComponent createSearchComponent() {
+		Box comp = new Box(BoxLayout.Y_AXIS);
+		comp.setAlignmentX(LEFT_ALIGNMENT);
+		comp.setBorder(BorderFactory.createTitledBorder("Search"));
+		comp.add(getSearchByProgramNameOption());
+		comp.add(createSearchFieldComponent());
+		comp.add(Box.createVerticalStrut(8));
+		return comp;
+	}
+
+	private JComponent createSearchFieldComponent() {
+		Box comp = new Box(BoxLayout.X_AXIS);
+		comp.setAlignmentX(LEFT_ALIGNMENT);
+		JLabel label = new JLabel("Contains:");
+		label.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 8));
+		comp.add(label);
+		comp.add(getSearchStringField());
 		return comp;
 	}
 
@@ -117,6 +149,49 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 			}
 		});
 		return option;
+	}
+
+	private JCheckBox createSearchByProgramNameOption() {
+		JCheckBox option = new JCheckBox("Search by program name", getState().isSearchByProgramName());
+		option.setAlignmentX(LEFT_ALIGNMENT);
+		option.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				boolean selected = getSearchByProgramNameOption().isSelected();
+				getState().setSearchByProgramName(selected);
+				getSearchStringField().setEditable(selected);
+			}
+		});
+		return option;
+	}
+
+	private JTextField createSearchStringField() {
+		JTextField field = new JTextField(getState().getSearchString(), 20);
+		field.setAlignmentX(LEFT_ALIGNMENT);
+		field.setEditable(getState().isSearchByProgramName());
+		field.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				textChanged(e);
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				textChanged(e);
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				textChanged(e);
+			}
+
+			private void textChanged(DocumentEvent e) {
+				getState().setSearchString(getSearchStringField().getText().trim());
+			}
+		});
+		return field;
 	}
 
 	private JCheckBox createFacetedOption() {
@@ -203,6 +278,14 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 
 	private JCheckBox getHideSequenceNumbersOption() {
 		return hideSequenceNumbersOption;
+	}
+
+	private JCheckBox getSearchByProgramNameOption() {
+		return searchByProgramNameOption;
+	}
+
+	private JTextField getSearchStringField() {
+		return searchStringField;
 	}
 
 	private JCheckBox getFacetedOption() {

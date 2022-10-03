@@ -153,4 +153,14 @@ public class StringUtils {
 		return result;
 	}
 
+	public static boolean containsIgnoringCase(String str, String substring) {
+		if (str == null || substring == null)
+			return false;
+		if (substring.isEmpty())
+			return true;
+		if (substring.length() > str.length())
+			return false;
+		return str.toLowerCase().contains(substring.toLowerCase());
+	}
+
 }

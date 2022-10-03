@@ -10,6 +10,10 @@ public class AmstradProgramRepositoryConfiguration {
 
 	private boolean hideSequenceNumbers;
 
+	private boolean searchByProgramName;
+
+	private String searchString;
+
 	private boolean faceted;
 
 	private FacetList facets;
@@ -33,6 +37,22 @@ public class AmstradProgramRepositoryConfiguration {
 
 	public void setHideSequenceNumbers(boolean hide) {
 		this.hideSequenceNumbers = hide;
+	}
+
+	public boolean isSearchByProgramName() {
+		return searchByProgramName;
+	}
+
+	public void setSearchByProgramName(boolean byName) {
+		this.searchByProgramName = byName;
+	}
+
+	public String getSearchString() {
+		return searchString;
+	}
+
+	public void setSearchString(String str) {
+		this.searchString = str;
 	}
 
 	public boolean isFaceted() {

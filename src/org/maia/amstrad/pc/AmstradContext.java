@@ -14,6 +14,10 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAM_REPO_HIDE_SEQNR = "program_repo.rename.hide_seqnr";
 
+	private static final String SETTING_PROGRAM_REPO_SEARCH_BY_NAME = "program_repo.search.by_name";
+
+	private static final String SETTING_PROGRAM_REPO_SEARCH_STRING = "program_repo.search.string";
+
 	private static final String SETTING_PROGRAM_REPO_FACETED = "program_repo.facet.enable";
 
 	private static final String SETTING_PROGRAM_REPO_FACETS = "program_repo.facet.facets";
@@ -57,6 +61,8 @@ public abstract class AmstradContext {
 		AmstradProgramRepositoryConfiguration configuration = new AmstradProgramRepositoryConfiguration();
 		configuration.setRootFolder(getProgramRepositoryRootFolder());
 		configuration.setHideSequenceNumbers(settings.getBool(SETTING_PROGRAM_REPO_HIDE_SEQNR, true));
+		configuration.setSearchByProgramName(settings.getBool(SETTING_PROGRAM_REPO_SEARCH_BY_NAME, false));
+		configuration.setSearchString(settings.get(SETTING_PROGRAM_REPO_SEARCH_STRING, ""));
 		configuration.setFaceted(settings.getBool(SETTING_PROGRAM_REPO_FACETED, false));
 		configuration.setFacets(FacetFactory.getInstance().fromExternalForm(
 				settings.get(SETTING_PROGRAM_REPO_FACETS, "")));
@@ -67,6 +73,8 @@ public abstract class AmstradContext {
 		setProgramRepositoryRootFolder(configuration.getRootFolder());
 		AmstradSettings settings = getUserSettings();
 		settings.setBool(SETTING_PROGRAM_REPO_HIDE_SEQNR, configuration.isHideSequenceNumbers());
+		settings.setBool(SETTING_PROGRAM_REPO_SEARCH_BY_NAME, configuration.isSearchByProgramName());
+		settings.set(SETTING_PROGRAM_REPO_SEARCH_STRING, configuration.getSearchString());
 		settings.setBool(SETTING_PROGRAM_REPO_FACETED, configuration.isFaceted());
 		settings.set(SETTING_PROGRAM_REPO_FACETS, FacetFactory.getInstance().toExternalForm(configuration.getFacets()));
 	}

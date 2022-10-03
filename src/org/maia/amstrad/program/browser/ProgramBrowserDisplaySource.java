@@ -228,18 +228,20 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private void renderItemListTopExtentHint(ItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
 		if (itemList.getIndexOfFirstItemShowing() > 0) {
-			canvas.pen(13).locate(tx0, ty0 - 1);
-			for (int i = 0; i < LABEL_WIDTH; i += 2) {
-				canvas.printChr(196).printChr(' ');
+			canvas.pen(13).move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 - 1).getLocation()).mover(0, -2);
+			for (int i = 0; i < (LABEL_WIDTH + 1) / 2; i++) {
+				canvas.drawChrMonospaced(196).mover(16, 0);
 			}
 		}
 	}
 
 	private void renderItemListBottomExtentHint(ItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
 		if (itemList.getIndexOfLastItemShowing() < itemList.size() - 1) {
-			canvas.pen(13).locate(tx0, ty0 + itemList.getMaxItemsShowing());
-			for (int i = 0; i < LABEL_WIDTH; i += 2) {
-				canvas.printChr(198).printChr(' ');
+			canvas.pen(13)
+					.move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 + itemList.getMaxItemsShowing()).getLocation())
+					.mover(0, 4);
+			for (int i = 0; i < (LABEL_WIDTH + 1) / 2; i++) {
+				canvas.drawChrMonospaced(198).mover(16, 0);
 			}
 		}
 	}
@@ -247,7 +249,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private void renderStackLeftExtentHint(StackedFolderItemList stack, int tx0, int ty0, AmstradDisplayCanvas canvas) {
 		if (stack.size() > 2) {
 			canvas.pen(13);
-			for (int i = 0; i < stack.getMaxItemsShowing(); i += 3) {
+			for (int i = 0; i < stack.getMaxItemsShowing(); i += 2) {
 				canvas.locate(tx0 - 1, ty0 + i).printChr(199);
 			}
 		}
