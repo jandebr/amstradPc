@@ -12,7 +12,7 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAM_REPO_DIR = "program_repo.file.dir";
 
-	private static final String SETTING_PROGRAM_REPO_SEQNR_FILTER = "program_repo.filter.seqnr";
+	private static final String SETTING_PROGRAM_REPO_HIDE_SEQNR = "program_repo.rename.hide_seqnr";
 
 	private static final String SETTING_PROGRAM_REPO_FACETED = "program_repo.facet.enable";
 
@@ -56,7 +56,7 @@ public abstract class AmstradContext {
 		AmstradSettings settings = getUserSettings();
 		AmstradProgramRepositoryConfiguration configuration = new AmstradProgramRepositoryConfiguration();
 		configuration.setRootFolder(getProgramRepositoryRootFolder());
-		configuration.setSequenceNumberFiltered(settings.getBool(SETTING_PROGRAM_REPO_SEQNR_FILTER, true));
+		configuration.setHideSequenceNumbers(settings.getBool(SETTING_PROGRAM_REPO_HIDE_SEQNR, true));
 		configuration.setFaceted(settings.getBool(SETTING_PROGRAM_REPO_FACETED, false));
 		configuration.setFacets(FacetFactory.getInstance().fromExternalForm(
 				settings.get(SETTING_PROGRAM_REPO_FACETS, "")));
@@ -66,7 +66,7 @@ public abstract class AmstradContext {
 	public void setProgramRepositoryConfiguration(AmstradProgramRepositoryConfiguration configuration) {
 		setProgramRepositoryRootFolder(configuration.getRootFolder());
 		AmstradSettings settings = getUserSettings();
-		settings.setBool(SETTING_PROGRAM_REPO_SEQNR_FILTER, configuration.isSequenceNumberFiltered());
+		settings.setBool(SETTING_PROGRAM_REPO_HIDE_SEQNR, configuration.isHideSequenceNumbers());
 		settings.setBool(SETTING_PROGRAM_REPO_FACETED, configuration.isFaceted());
 		settings.set(SETTING_PROGRAM_REPO_FACETS, FacetFactory.getInstance().toExternalForm(configuration.getFacets()));
 	}

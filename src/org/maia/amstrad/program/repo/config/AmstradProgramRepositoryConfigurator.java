@@ -31,7 +31,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 
 	private FileFolderInputField rootFolderField;
 
-	private JCheckBox sequenceNumberFilterOption;
+	private JCheckBox hideSequenceNumbersOption;
 
 	private JCheckBox facetedOption;
 
@@ -43,7 +43,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		super(BoxLayout.Y_AXIS);
 		this.state = state;
 		this.rootFolderField = createRootFolderField();
-		this.sequenceNumberFilterOption = createSequenceNumberFilterOption();
+		this.hideSequenceNumbersOption = createHideSequenceNumbersOption();
 		this.facetedOption = createFacetedOption();
 		this.facetCardsInOrderPanel = createFacetCardsInOrderPanel();
 		this.facetCardsOfChoicePanel = createFacetCardsOfChoicePanel(getFacetCardsInOrderPanel());
@@ -69,7 +69,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		comp.setBorder(BorderFactory.createTitledBorder("General"));
 		comp.add(createRootFolderComponent());
 		comp.add(Box.createVerticalStrut(4));
-		comp.add(getSequenceNumberFilterOption());
+		comp.add(getHideSequenceNumbersOption());
 		return comp;
 	}
 
@@ -106,14 +106,14 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		return field;
 	}
 
-	private JCheckBox createSequenceNumberFilterOption() {
-		JCheckBox option = new JCheckBox("Hide sequence numbers", getState().isSequenceNumberFiltered());
+	private JCheckBox createHideSequenceNumbersOption() {
+		JCheckBox option = new JCheckBox("Hide sequence numbers", getState().isHideSequenceNumbers());
 		option.setAlignmentX(LEFT_ALIGNMENT);
 		option.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				getState().setSequenceNumberFiltered(getSequenceNumberFilterOption().isSelected());
+				getState().setHideSequenceNumbers(getHideSequenceNumbersOption().isSelected());
 			}
 		});
 		return option;
@@ -201,8 +201,8 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		return rootFolderField;
 	}
 
-	private JCheckBox getSequenceNumberFilterOption() {
-		return sequenceNumberFilterOption;
+	private JCheckBox getHideSequenceNumbersOption() {
+		return hideSequenceNumbersOption;
 	}
 
 	private JCheckBox getFacetedOption() {

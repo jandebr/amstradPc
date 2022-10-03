@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.repo.filter;
+package org.maia.amstrad.program.repo.rename;
 
 import java.util.List;
 import java.util.Vector;
@@ -9,22 +9,22 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
 
-public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRepository {
+public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
-	private FilteredFolderNode rootNode;
+	private RenamingFolderNode rootNode;
 
-	private boolean sequenceNumberFiltered;
+	private boolean hideSequenceNumbers;
 
 	private static Pattern sequenceNumberPattern = Pattern.compile("\\d+[\\s\\._]");
 
-	private FilteredAmstradProgramRepository(AmstradProgramRepository sourceRepository) {
+	private RenamingAmstradProgramRepository(AmstradProgramRepository sourceRepository) {
 		super(sourceRepository);
-		this.rootNode = new FilteredFolderNode(sourceRepository.getRootNode()); // no rename of root node
+		this.rootNode = new RenamingFolderNode(sourceRepository.getRootNode()); // no rename of root node
 	}
 
-	public static FilteredAmstradProgramRepository sequenceNumberFilter(AmstradProgramRepository sourceRepository) {
-		FilteredAmstradProgramRepository repository = new FilteredAmstradProgramRepository(sourceRepository);
-		repository.setSequenceNumberFiltered(true);
+	public static RenamingAmstradProgramRepository withSequenceNumbersHidden(AmstradProgramRepository sourceRepository) {
+		RenamingAmstradProgramRepository repository = new RenamingAmstradProgramRepository(sourceRepository);
+		repository.setHideSequenceNumbers(true);
 		return repository;
 	}
 
@@ -33,23 +33,23 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 		return rootNode;
 	}
 
-	public boolean isSequenceNumberFiltered() {
-		return sequenceNumberFiltered;
+	public boolean isHideSequenceNumbers() {
+		return hideSequenceNumbers;
 	}
 
-	private void setSequenceNumberFiltered(boolean filtered) {
-		this.sequenceNumberFiltered = filtered;
+	private void setHideSequenceNumbers(boolean hide) {
+		this.hideSequenceNumbers = hide;
 	}
 
-	private class FilteredFolderNode extends FolderNode {
+	private class RenamingFolderNode extends FolderNode {
 
 		private FolderNode delegate;
 
-		public FilteredFolderNode(FolderNode delegate) {
+		public RenamingFolderNode(FolderNode delegate) {
 			this(delegate.getName(), delegate);
 		}
 
-		public FilteredFolderNode(String name, FolderNode delegate) {
+		public RenamingFolderNode(String name, FolderNode delegate) {
 			super(name);
 			this.delegate = delegate;
 		}
@@ -58,7 +58,7 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 		protected List<Node> listChildNodes() {
 			List<Node> delegateChildNodes = getDelegate().getChildNodes();
 			List<Node> childNodes = new Vector<Node>(delegateChildNodes.size());
-			boolean sequenceNumbers = isSequenceNumberFiltered() && hasSequenceNumbers(delegateChildNodes);
+			boolean sequenceNumbers = isHideSequenceNumbers() && hasSequenceNumbers(delegateChildNodes);
 			for (Node node : delegateChildNodes) {
 				String name = node.getName();
 				if (sequenceNumbers) {
@@ -66,8 +66,8 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 					if (!modifiedName.isEmpty())
 						name = modifiedName;
 				}
-				Node childNode = node.isFolder() ? new FilteredFolderNode(name, node.asFolder())
-						: new FilteredProgramNode(name, node.asProgram());
+				Node childNode = node.isFolder() ? new RenamingFolderNode(name, node.asFolder())
+						: new RenamingProgramNode(name, node.asProgram());
 				childNodes.add(childNode);
 			}
 			return childNodes;
@@ -98,11 +98,11 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 
 	}
 
-	private class FilteredProgramNode extends ProgramNode {
+	private class RenamingProgramNode extends ProgramNode {
 
 		private ProgramNode delegate;
 
-		public FilteredProgramNode(String name, ProgramNode delegate) {
+		public RenamingProgramNode(String name, ProgramNode delegate) {
 			super(name);
 			this.delegate = delegate;
 		}

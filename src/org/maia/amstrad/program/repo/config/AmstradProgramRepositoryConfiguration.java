@@ -8,7 +8,7 @@ public class AmstradProgramRepositoryConfiguration {
 
 	private File rootFolder;
 
-	private boolean sequenceNumberFiltered;
+	private boolean hideSequenceNumbers;
 
 	private boolean faceted;
 
@@ -27,12 +27,12 @@ public class AmstradProgramRepositoryConfiguration {
 		this.rootFolder = rootFolder;
 	}
 
-	public boolean isSequenceNumberFiltered() {
-		return sequenceNumberFiltered;
+	public boolean isHideSequenceNumbers() {
+		return hideSequenceNumbers;
 	}
 
-	public void setSequenceNumberFiltered(boolean filtered) {
-		this.sequenceNumberFiltered = filtered;
+	public void setHideSequenceNumbers(boolean hide) {
+		this.hideSequenceNumbers = hide;
 	}
 
 	public boolean isFaceted() {
