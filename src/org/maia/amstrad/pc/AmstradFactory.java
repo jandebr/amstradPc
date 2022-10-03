@@ -118,7 +118,10 @@ public class AmstradFactory {
 		JMenuItem item = new JMenuItem(new PauseResumeAction(amstradPc));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0));
 		menu.add(item);
-		menu.add(new JMenuItem(new RebootAction(amstradPc)));
+		item = new JMenuItem(new RebootAction(amstradPc));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK
+				| InputEvent.SHIFT_DOWN_MASK));
+		menu.add(item);
 		return menu;
 	}
 
