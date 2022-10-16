@@ -117,6 +117,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	private List<PauseListener> pauseListeners;
 
 	private boolean virtualShiftKey = false;
+	private boolean virtualUnshiftKey = false;
+	private boolean deferredShift = false;
+	private boolean skipUnshift = false;
 	private KeyEvent virtualShiftKeyEventPressed = new KeyEvent(this, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_SHIFT,
 			KeyEvent.CHAR_UNDEFINED);
 	private KeyEvent virtualShiftKeyEventReleased = new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_SHIFT,
@@ -1634,6 +1637,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		// Keyboard mapping
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;
+		virtualUnshiftKey = false;
 		applyKeyboardMapping(e, true);
 		keyCode = e.getKeyCode();
 		// Control keys
@@ -1773,10 +1777,17 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 		// Pass key pressed to the computer
 		if (keyToProcessByComputer(e)) {
-			if (virtualShiftKey) {
-				computer.processKeyEvent(virtualShiftKeyEventPressed);
+			if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+				deferredShift = true;
+			} else {
+				if ((deferredShift || virtualShiftKey) && !virtualUnshiftKey) {
+					computer.processKeyEvent(virtualShiftKeyEventPressed);
+				} else if (deferredShift) {
+					skipUnshift = true;
+				}
+				deferredShift = false;
+				computer.processKeyEvent(e);
 			}
-			computer.processKeyEvent(e);
 		}
 	}
 
@@ -1784,12 +1795,22 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		// Keyboard mapping
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;
+		virtualUnshiftKey = false;
 		applyKeyboardMapping(e, false);
 		// Pass key released to the computer
 		if (keyToProcessByComputer(e)) {
-			computer.processKeyEvent(e);
-			if (virtualShiftKey) {
-				computer.processKeyEvent(virtualShiftKeyEventReleased);
+			if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+				if (!deferredShift && !skipUnshift) {
+					computer.processKeyEvent(e);
+				} else {
+					deferredShift = false;
+					skipUnshift = false;
+				}
+			} else {
+				computer.processKeyEvent(e);
+				if (virtualShiftKey) {
+					computer.processKeyEvent(virtualShiftKeyEventReleased);
+				}
 			}
 		}
 		// Update modifiers
@@ -2005,7 +2026,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else if (keyChar == ':') {
 			e.setKeyCode(59);
 		} else if (keyChar == '/') {
-			e.setKeyCode(KeyEvent.VK_UNDEFINED); // cannot un-shift
+			virtualUnshiftKey = true;
+			e.setKeyCode(47);
 		} else if (keyChar == '_') {
 			e.setKeyCode(48);
 		} else if (keyChar == '*') {
