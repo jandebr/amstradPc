@@ -17,8 +17,8 @@ import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements AmstradAlternativeDisplaySource,
-		MouseListener, MouseMotionListener {
+public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
+		implements AmstradAlternativeDisplaySource, MouseListener, MouseMotionListener {
 
 	private AmstradPc amstradPc;
 
@@ -36,8 +36,14 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	private boolean catchKeyboardEvents;
 
+	private boolean restoreMonitorSettingsOnDispose;
+
+	private boolean followPrimaryDisplaySourceResolution;
+
 	protected AmstradEmulatedDisplaySource(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
+		setRestoreMonitorSettingsOnDispose(true);
+		setFollowPrimaryDisplaySourceResolution(true);
 	}
 
 	/**
@@ -136,7 +142,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	private Graphics2D deriveDrawingSurface(Graphics2D display, Rectangle displayBounds, Insets borderInsets,
 			AmstradGraphicsContext graphicsContext) {
-		if (followPrimaryDisplaySourceResolution() && primaryDisplaySourceIsScaled(displayBounds, graphicsContext)) {
+		if (isFollowPrimaryDisplaySourceResolution() && primaryDisplaySourceIsScaled(displayBounds, graphicsContext)) {
 			return deriveImageDrawingSurface(graphicsContext);
 		} else {
 			releaseOffscreenImage();
@@ -187,8 +193,8 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 		int paperHeight = displayBounds.height - borderInsets.top - borderInsets.bottom;
 		double scaleX = paperWidth / targetResolution.getWidth();
 		double scaleY = paperHeight / targetResolution.getHeight();
-		Graphics2D drawingSurface = (Graphics2D) display.create(displayBounds.x + borderInsets.left, displayBounds.y
-				+ borderInsets.top, paperWidth, paperHeight);
+		Graphics2D drawingSurface = (Graphics2D) display.create(displayBounds.x + borderInsets.left,
+				displayBounds.y + borderInsets.top, paperWidth, paperHeight);
 		drawingSurface.scale(scaleX, scaleY);
 		return drawingSurface;
 	}
@@ -196,33 +202,6 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 	private boolean primaryDisplaySourceIsScaled(Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
 		Dimension primary = graphicsContext.getPrimaryDisplaySourceResolution();
 		return primary.width != displayBounds.width || primary.height != displayBounds.height;
-	}
-
-	/**
-	 * Tells whether to follow the resolution of the primary display source
-	 * <p>
-	 * When <code>true</code> (the default), the resolution of this alternative display source matches the exact
-	 * resolution of the <code>AmstradPc</code>'s primary display source
-	 * </p>
-	 * <p>
-	 * When <code>false</code>, the resolution of this alternative display source matches the display window native
-	 * resolution, which may be higher and therefore leading to a more accurate and sharper presentation
-	 * </p>
-	 * <p>
-	 * Subclasses may override this method to choose the desired resolution
-	 * </p>
-	 * 
-	 * @return <code>true</code> when this display source follows the primary display source's resolution
-	 */
-	protected boolean followPrimaryDisplaySourceResolution() {
-		// Subclasses may override this method
-		return true;
-	}
-
-	@Override
-	public boolean shouldRestoreMonitorSettingsOnDispose() {
-		// Subclasses may override this method
-		return true;
 	}
 
 	protected void init(AmstradDisplayCanvas canvas) {
@@ -499,6 +478,39 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter implements
 
 	private void setCatchKeyboardEvents(boolean catchKeyboardEvents) {
 		this.catchKeyboardEvents = catchKeyboardEvents;
+	}
+
+	@Override
+	public boolean isRestoreMonitorSettingsOnDispose() {
+		return restoreMonitorSettingsOnDispose;
+	}
+
+	public void setRestoreMonitorSettingsOnDispose(boolean restore) {
+		this.restoreMonitorSettingsOnDispose = restore;
+	}
+
+	/**
+	 * Tells whether to follow the resolution of the primary display source
+	 * <p>
+	 * When <code>true</code> (the default), the resolution of this alternative display source matches the exact
+	 * resolution of the <code>AmstradPc</code>'s primary display source
+	 * </p>
+	 * <p>
+	 * When <code>false</code>, the resolution of this alternative display source matches the display window native
+	 * resolution, which may be higher and therefore leading to a more accurate and sharper presentation
+	 * </p>
+	 * <p>
+	 * Subclasses may override this method to choose the desired resolution
+	 * </p>
+	 * 
+	 * @return <code>true</code> when this display source follows the primary display source's resolution
+	 */
+	public boolean isFollowPrimaryDisplaySourceResolution() {
+		return followPrimaryDisplaySourceResolution;
+	}
+
+	public void setFollowPrimaryDisplaySourceResolution(boolean follow) {
+		this.followPrimaryDisplaySourceResolution = follow;
 	}
 
 	private static class AmstradEmulatedDisplayCanvas extends AmstradDisplayCanvas {

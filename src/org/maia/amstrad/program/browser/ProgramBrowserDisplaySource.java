@@ -79,13 +79,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	@Override
-	protected boolean followPrimaryDisplaySourceResolution() {
-		return false;
-	}
-
-	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
+		setFollowPrimaryDisplaySourceResolution(false);
 		resetItemListCursorBlinkOffsetTime();
 		getAmstradPc().setMonitorMode(AmstradMonitorMode.COLOR);
 		getAmstradPc().setMonitorBilinearEffect(false);
@@ -504,8 +500,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 5), bg, bg),
 						new ProgramInfoTextSpan("\u00FE GRAY", 0, 13)));
 			} else if (mode.equals(AmstradMonitorMode.COLOR)) {
-				ProgramInfoLine line = new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 6),
-						bg, bg), new ProgramInfoTextSpan("\u00FE ", 0, 25));
+				ProgramInfoLine line = new ProgramInfoLine(
+						new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
+						new ProgramInfoTextSpan("\u00FE ", 0, 25));
 				for (int i = 0; i < 5; i++)
 					line.add(new ProgramInfoTextSpan(String.valueOf("COLOR".charAt(i)), 0, 14 + i));
 				sheet.add(line);
@@ -523,14 +520,16 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			if (!sheet.isEmpty())
 				sheet.add(new ProgramInfoLine());
 			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("Year", bg, 25)));
-			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(String.valueOf(program.getProductionYear()), bg, 26)));
+			sheet.add(
+					new ProgramInfoLine(new ProgramInfoTextSpan(String.valueOf(program.getProductionYear()), bg, 26)));
 		}
 		if (!StringUtils.isEmpty(program.getNameOfTape()) || program.getBlocksOnTape() > 0) {
 			if (!sheet.isEmpty())
 				sheet.add(new ProgramInfoLine());
 			String tape = !StringUtils.isEmpty(program.getNameOfTape()) ? program.getNameOfTape() : "?";
 			String blocks = program.getBlocksOnTape() > 0 ? String.valueOf(program.getBlocksOnTape()) : "?";
-			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth("Tape", 20) + " Blocks", bg, 25)));
+			sheet.add(
+					new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth("Tape", 20) + " Blocks", bg, 25)));
 			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(tape, 20) + " ", bg, 26),
 					new ProgramInfoTextSpan(blocks, bg, 26)));
 		}
@@ -553,8 +552,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				sheet.add(new ProgramInfoLine());
 				sheet.add(new ProgramInfoLine());
 			}
-			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(
-					"\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F", bg, 7)));
+			sheet.add(new ProgramInfoLine(
+					new ProgramInfoTextSpan("\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F", bg, 7)));
 			for (UserControl uc : program.getUserControls()) {
 				sheet.add(new ProgramInfoLine());
 				if (uc.getHeading() != null) {
@@ -562,20 +561,21 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 					for (int i = 0; i < hlines.size(); i++) {
 						String text = hlines.get(i);
 						if (hlines.size() == 1) {
-							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("\u00CF\u00DC " + text
-									+ " \u00DD\u00CF", bg, 7)));
+							sheet.add(new ProgramInfoLine(
+									new ProgramInfoTextSpan("\u00CF\u00DC " + text + " \u00DD\u00CF", bg, 7)));
 						} else if (i == 0) {
-							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("\u00CF\u00DC "
-									+ StringUtils.fitWidth(text, maxWidth - 6) + " \u00DD\u00CF", bg, 7)));
+							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(
+									"\u00CF\u00DC " + StringUtils.fitWidth(text, maxWidth - 6) + " \u00DD\u00CF", bg,
+									7)));
 						} else {
-							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("\u00CF  "
-									+ StringUtils.fitWidth(text, maxWidth - 6) + "  \u00CF", bg, 7)));
+							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(
+									"\u00CF  " + StringUtils.fitWidth(text, maxWidth - 6) + "  \u00CF", bg, 7)));
 						}
 					}
 					sheet.add(new ProgramInfoLine());
 				}
-				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(uc.getKey(), maxWidth), bg,
-						16)));
+				sheet.add(new ProgramInfoLine(
+						new ProgramInfoTextSpan(StringUtils.fitWidth(uc.getKey(), maxWidth), bg, 16)));
 				for (String text : StringUtils.splitOnNewlinesAndWrap(uc.getDescription(), maxWidth - 2)) {
 					sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(2) + text, bg, 26)));
 				}

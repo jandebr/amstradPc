@@ -883,7 +883,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		@Override
 		public void dispose(JComponent displayComponent) {
 			getSource().dispose(displayComponent);
-			if (getSource().shouldRestoreMonitorSettingsOnDispose()) {
+			if (getSource().isRestoreMonitorSettingsOnDispose()) {
 				restoreMonitorSettings();
 			}
 		}

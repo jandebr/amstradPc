@@ -14,6 +14,6 @@ public interface AmstradAlternativeDisplaySource {
 
 	void dispose(JComponent displayComponent);
 
-	boolean shouldRestoreMonitorSettingsOnDispose();
+	boolean isRestoreMonitorSettingsOnDispose();
 
 }
