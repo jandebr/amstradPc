@@ -141,7 +141,6 @@ public class EMemory extends JComponent implements TimerListener {
   }
 
   //@Override
-  @SuppressWarnings("deprecation")
 public Dimension getPreferredSize() {
     FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(getFont());
     return new Dimension(fm.charWidth('0') * (66 + addressDigits),

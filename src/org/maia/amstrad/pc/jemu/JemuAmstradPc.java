@@ -930,7 +930,7 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		@Override
 		public synchronized void amstradPcEventDispatched(AmstradPcEvent event) {
 			if (event instanceof AmstradPcKeyboardEvent) {
-				lastKeyModifiers = ((AmstradPcKeyboardEvent) event).getKey().getModifiers();
+				lastKeyModifiers = ((AmstradPcKeyboardEvent) event).getKey().getModifiersEx();
 				if (blockKeyboardPending && lastKeyModifiers == 0) {
 					Switches.blockKeyboard = true;
 					blockKeyboardPending = false;
