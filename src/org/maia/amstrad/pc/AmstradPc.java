@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.pc.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcEventListener;

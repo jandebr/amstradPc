@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradMonitorMode;
-import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.util.StringUtils;
 
 public abstract class AmstradProgram implements Cloneable {
@@ -29,6 +28,8 @@ public abstract class AmstradProgram implements Cloneable {
 	private List<ProgramImage> images;
 
 	private AmstradMonitorMode preferredMonitorMode;
+
+	private AmstradProgramPayload payload;
 
 	protected AmstradProgram(String programName) {
 		this.programName = programName;
@@ -77,22 +78,16 @@ public abstract class AmstradProgram implements Cloneable {
 	}
 
 	public void flush() {
+		setPayload(null);
 		for (ProgramImage image : getImages()) {
 			image.flush();
 		}
 	}
 
-	public abstract void loadInto(AmstradPc amstradPc) throws AmstradProgramException;
-
-	public void runWith(AmstradPc amstradPc) throws AmstradProgramException {
-		loadInto(amstradPc);
-		amstradPc.getBasicRuntime().run();
-	}
-
 	public boolean hasDescriptiveInfo() {
 		return !StringUtils.isEmpty(getProgramDescription()) || !StringUtils.isEmpty(getAuthoringInformation())
-				|| !StringUtils.isEmpty(getAuthor()) || getProductionYear() > 0
-				|| !StringUtils.isEmpty(getNameOfTape()) || getBlocksOnTape() > 0 || !getUserControls().isEmpty();
+				|| !StringUtils.isEmpty(getAuthor()) || getProductionYear() > 0 || !StringUtils.isEmpty(getNameOfTape())
+				|| getBlocksOnTape() > 0 || !getUserControls().isEmpty();
 	}
 
 	public void clearUserControls() {
@@ -189,6 +184,19 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private void setImages(List<ProgramImage> images) {
 		this.images = images;
+	}
+
+	public AmstradProgramPayload getPayload() throws AmstradProgramException {
+		if (payload == null) {
+			payload = loadPayload();
+		}
+		return payload;
+	}
+
+	protected abstract AmstradProgramPayload loadPayload() throws AmstradProgramException;
+
+	public void setPayload(AmstradProgramPayload payload) {
+		this.payload = payload;
 	}
 
 	public static class UserControl {

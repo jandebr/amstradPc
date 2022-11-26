@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.maia.amstrad.basic.BasicCompilationException;
+import org.maia.amstrad.basic.BasicCompiler;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.basic.BasicByteCodeComparator.ComparisonResult;
-import org.maia.amstrad.pc.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.util.AmstradUtils;
 
 public class BasicCompilerTest {

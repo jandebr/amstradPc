@@ -18,24 +18,14 @@ import java.io.IOException;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import jemu.core.device.Computer;
-import jemu.core.device.ComputerAutotypeListener;
-import jemu.settings.Settings;
-import jemu.ui.Autotype;
-import jemu.ui.Display;
-import jemu.ui.Display.PrimaryDisplaySourceListener;
-import jemu.ui.JEMU;
-import jemu.ui.JEMU.PauseListener;
-import jemu.ui.SecondaryDisplaySource;
-import jemu.ui.Switches;
-
+import org.maia.amstrad.basic.BasicCompilationException;
+import org.maia.amstrad.basic.BasicProgramRuntime;
+import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
-import org.maia.amstrad.pc.basic.BasicCompilationException;
-import org.maia.amstrad.pc.basic.BasicRuntime;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.display.AmstradKeyboardController;
@@ -48,8 +38,19 @@ import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
 import org.maia.swing.dialog.ActionableDialogListener;
 
-public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener, PauseListener,
-		PrimaryDisplaySourceListener, KeyListener {
+import jemu.core.device.Computer;
+import jemu.core.device.ComputerAutotypeListener;
+import jemu.settings.Settings;
+import jemu.ui.Autotype;
+import jemu.ui.Display;
+import jemu.ui.Display.PrimaryDisplaySourceListener;
+import jemu.ui.JEMU;
+import jemu.ui.JEMU.PauseListener;
+import jemu.ui.SecondaryDisplaySource;
+import jemu.ui.Switches;
+
+public class JemuAmstradPc extends AmstradPc
+		implements ComputerAutotypeListener, PauseListener, PrimaryDisplaySourceListener, KeyListener {
 
 	private JEMU jemuInstance;
 
@@ -112,18 +113,18 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	public void launch(File file, boolean silent) throws IOException, BasicCompilationException {
 		checkNotTerminated();
 		System.out.println("Launching from " + file.getPath());
-		if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file) || AmstradFileType.BASIC_BYTE_CODE_FILE.matches(file)) {
+		if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file)
+				|| AmstradFileType.BASIC_BYTE_CODE_FILE.matches(file)) {
 			if (!isStarted()) {
 				start(true, silent);
 			} else {
 				reboot(true, silent);
 			}
 			if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file)) {
-				getBasicRuntime().loadSourceCodeFromFile(file);
+				getBasicRuntime().loadSourceCodeFromFile(file).run();
 			} else {
-				getBasicRuntime().loadByteCodeFromFile(file);
+				getBasicRuntime().loadByteCodeFromFile(file).run();
 			}
-			getBasicRuntime().run();
 		} else if (isSnapshotFile(file)) {
 			if (!isStarted()) {
 				start(true, silent);
@@ -370,8 +371,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		checkStarted();
 		checkNotTerminated();
 		if (displaySource != null) {
-			getJemuInstance().getDisplay().installSecondaryDisplaySource(
-					new JemuSecondaryDisplaySourceBridge(displaySource));
+			getJemuInstance().getDisplay()
+					.installSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
 			fireDisplaySourceChangedEvent();
 			handleAlternativeDisplaySourceRendering();
 		} else {
@@ -574,12 +575,11 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 	private class JemuBasicRuntimeImpl extends BasicRuntime {
 
 		public JemuBasicRuntimeImpl() {
-			super(JemuAmstradPc.this);
 		}
 
 		@Override
 		public void keyboardType(CharSequence text, boolean waitUntilTyped) {
-			synchronized (getAmstradPc()) {
+			synchronized (JemuAmstradPc.this) {
 				Autotype.typeText(text);
 				if (waitUntilTyped) {
 					waitUntilAutotypeEnded();
@@ -589,8 +589,8 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 		}
 
 		@Override
-		protected void loadFittedByteCode(byte[] byteCode) {
-			synchronized (getAmstradPc()) {
+		protected BasicProgramRuntime loadFittedByteCode(byte[] byteCode) {
+			synchronized (JemuAmstradPc.this) {
 				JEMU jemu = getJemuInstance();
 				// Pause
 				boolean running = jemu.isRunning();
@@ -614,15 +614,24 @@ public class JemuAmstradPc extends AmstradPc implements ComputerAutotypeListener
 					jemu.goComputer();
 				}
 			}
+			return new JemuBasicProgramRuntimeImpl(this);
 		}
 
 		@Override
 		protected byte[] exportFittedByteCode() {
-			synchronized (getAmstradPc()) {
+			synchronized (JemuAmstradPc.this) {
 				int len = MEMORY_POINTER_END_OF_PROGRAM - MEMORY_ADDRESS_START_OF_PROGRAM;
 				byte[] mem = getJemuInstance().readMemory(MEMORY_ADDRESS_START_OF_PROGRAM, len);
 				return fitByteCode(mem);
 			}
+		}
+
+	}
+
+	private class JemuBasicProgramRuntimeImpl extends BasicProgramRuntime {
+
+		public JemuBasicProgramRuntimeImpl(JemuBasicRuntimeImpl basicRuntime) {
+			super(basicRuntime);
 		}
 
 	}

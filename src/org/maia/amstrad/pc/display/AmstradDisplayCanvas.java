@@ -13,7 +13,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.maia.amstrad.pc.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicRuntime;
 
 public abstract class AmstradDisplayCanvas {
 

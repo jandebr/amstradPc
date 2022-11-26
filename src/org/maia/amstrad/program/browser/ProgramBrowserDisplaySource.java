@@ -1041,7 +1041,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 		@Override
 		protected void launchProgram() throws AmstradProgramException {
-			getProgram().loadInto(getAmstradPc());
+			getAmstradPc().getBasicRuntime().loadProgram(getProgram());
 			for (ProgramBrowserListener listener : getBrowserListeners()) {
 				listener.programLoadedFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
 			}
@@ -1057,7 +1057,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 		@Override
 		protected void launchProgram() throws AmstradProgramException {
-			getProgram().runWith(getAmstradPc());
+			getAmstradPc().getBasicRuntime().loadProgram(getProgram()).run();
 			for (ProgramBrowserListener listener : getBrowserListeners()) {
 				listener.programRunFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
 			}

@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradFileType;
-import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.AmstradProgramPayload;
+import org.maia.amstrad.program.AmstradProgramTextPayload;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.util.AmstradUtils;
 
@@ -235,13 +236,13 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		}
 
 		@Override
-		public void loadInto(AmstradPc amstradPc) throws AmstradProgramException {
+		protected AmstradProgramPayload loadPayload() throws AmstradProgramException {
 			File sourceCodeFile = getProgramNode().getFile();
 			try {
-				amstradPc.getBasicRuntime().loadSourceCodeFromFile(sourceCodeFile);
-			} catch (Exception e) {
-				throw new AmstradProgramException(this, "Could not load as Basic source file: "
-						+ sourceCodeFile.getPath(), e);
+				CharSequence sourceCode = AmstradUtils.readTextFileContents(sourceCodeFile);
+				return new AmstradProgramTextPayload(sourceCode);
+			} catch (IOException e) {
+				throw new AmstradProgramException(this, "Could not load payload of " + getProgramName(), e);
 			}
 		}
 
