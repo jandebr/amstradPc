@@ -82,15 +82,15 @@ public abstract class BasicRuntime {
 		keyboardEnter("LIST", waitUntilEntered);
 	}
 
-	public BasicProgramRuntime loadProgram(AmstradProgram program) throws AmstradProgramException {
+	public BasicProgramRuntime loadBasicProgram(AmstradProgram basicProgram) throws AmstradProgramException {
 		BasicProgramRuntime programRuntime = null;
-		AmstradProgramPayload payload = program.getPayload();
+		AmstradProgramPayload payload = basicProgram.getPayload();
 		if (payload.isText()) {
 			try {
 				programRuntime = loadSourceCode(payload.asTextPayload().getPayload());
 			} catch (BasicCompilationException e) {
-				throw new AmstradProgramException(program,
-						"Failed to compile source code of " + program.getProgramName(), e);
+				throw new AmstradProgramException(basicProgram,
+						"Failed to compile source code of " + basicProgram.getProgramName(), e);
 			}
 		} else if (payload.isBinary()) {
 			programRuntime = loadByteCode(payload.asBinaryPayload().getPayload());
