@@ -8,9 +8,6 @@ import java.io.PrintWriter;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicDecompiler;
 import org.maia.amstrad.pc.AmstradFactory;
-import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramPayload;
 import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class BasicRuntime {
@@ -80,22 +77,6 @@ public abstract class BasicRuntime {
 
 	public void list(boolean waitUntilEntered) {
 		keyboardEnter("LIST", waitUntilEntered);
-	}
-
-	public BasicProgramRuntime loadBasicProgram(AmstradProgram basicProgram) throws AmstradProgramException {
-		BasicProgramRuntime programRuntime = null;
-		AmstradProgramPayload payload = basicProgram.getPayload();
-		if (payload.isText()) {
-			try {
-				programRuntime = loadSourceCode(payload.asTextPayload().getPayload());
-			} catch (BasicCompilationException e) {
-				throw new AmstradProgramException(basicProgram,
-						"Failed to compile source code of " + basicProgram.getProgramName(), e);
-			}
-		} else if (payload.isBinary()) {
-			programRuntime = loadByteCode(payload.asBinaryPayload().getPayload());
-		}
-		return programRuntime;
 	}
 
 	public BasicProgramRuntime loadSourceCodeFromFile(File sourceCodeFile)

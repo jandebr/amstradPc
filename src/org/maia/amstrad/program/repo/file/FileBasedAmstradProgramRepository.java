@@ -13,6 +13,7 @@ import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramPayload;
 import org.maia.amstrad.program.AmstradProgramTextPayload;
+import org.maia.amstrad.program.AmstradProgramType;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.util.AmstradUtils;
 
@@ -203,7 +204,8 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 		@Override
 		protected AmstradProgram readProgram() {
-			AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(new FileBasedAmstradProgram(this));
+			AmstradProgramBuilder builder = AmstradProgramBuilder
+					.createFor(new FileBasedAmstradProgram(getName(), getFile()));
 			try {
 				builder.loadAmstradMetaData(getCompanionMetaDataFile());
 			} catch (IOException e) {
@@ -228,26 +230,25 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 	private class FileBasedAmstradProgram extends AmstradProgram {
 
-		private FileBasedProgramNode programNode;
+		private File sourceCodeFile;
 
-		public FileBasedAmstradProgram(FileBasedProgramNode programNode) {
-			super(programNode.getName());
-			this.programNode = programNode;
+		public FileBasedAmstradProgram(String programName, File sourceCodeFile) {
+			super(AmstradProgramType.BASIC_PROGRAM, programName);
+			this.sourceCodeFile = sourceCodeFile;
 		}
 
 		@Override
 		protected AmstradProgramPayload loadPayload() throws AmstradProgramException {
-			File sourceCodeFile = getProgramNode().getFile();
 			try {
-				CharSequence sourceCode = AmstradUtils.readTextFileContents(sourceCodeFile);
+				CharSequence sourceCode = AmstradUtils.readTextFileContents(getSourceCodeFile());
 				return new AmstradProgramTextPayload(sourceCode);
 			} catch (IOException e) {
 				throw new AmstradProgramException(this, "Could not load payload of " + getProgramName(), e);
 			}
 		}
 
-		private FileBasedProgramNode getProgramNode() {
-			return programNode;
+		public File getSourceCodeFile() {
+			return sourceCodeFile;
 		}
 
 	}

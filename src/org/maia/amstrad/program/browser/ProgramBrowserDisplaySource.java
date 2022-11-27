@@ -16,6 +16,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.loader.BasicProgramLoader;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
@@ -1041,7 +1042,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 		@Override
 		protected void launchProgram() throws AmstradProgramException {
-			getAmstradPc().getBasicRuntime().loadBasicProgram(getProgram());
+			new BasicProgramLoader(getAmstradPc().getBasicRuntime()).load(getProgram());
 			for (ProgramBrowserListener listener : getBrowserListeners()) {
 				listener.programLoadedFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
 			}
@@ -1057,7 +1058,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 		@Override
 		protected void launchProgram() throws AmstradProgramException {
-			getAmstradPc().getBasicRuntime().loadBasicProgram(getProgram()).run();
+			new BasicProgramLoader(getAmstradPc().getBasicRuntime()).load(getProgram()).run();
 			for (ProgramBrowserListener listener : getBrowserListeners()) {
 				listener.programRunFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
 			}

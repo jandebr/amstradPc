@@ -28,6 +28,11 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 		return new AmstradProgramBuilder(program);
 	}
 
+	public AmstradProgramBuilder withProgramType(AmstradProgramType programType) {
+		getProgram().setProgramType(programType);
+		return this;
+	}
+
 	public AmstradProgramBuilder withProgramName(String programName) {
 		getProgram().setProgramName(programName);
 		return this;
@@ -97,6 +102,9 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 		if (reader != null) {
 			Properties props = new Properties();
 			props.load(reader);
+			AmstradProgramType programType = parseProgramTypeFromMetaData(props.getProperty(AMD_TYPE));
+			if (programType != null)
+				withProgramType(programType);
 			withProgramName(props.getProperty(AMD_NAME, getProgram().getProgramName()));
 			withAuthor(props.getProperty(AMD_AUTHOR));
 			withProductionYear(StringUtils.toInt(props.getProperty(AMD_YEAR), 0));
@@ -134,6 +142,14 @@ public class AmstradProgramBuilder implements AmstradMetaDataConstants {
 			withImages(images);
 		}
 		return this;
+	}
+
+	private AmstradProgramType parseProgramTypeFromMetaData(String value) {
+		if (AMD_TYPE_BASIC_PROGRAM.equals(value)) {
+			return AmstradProgramType.BASIC_PROGRAM;
+		} else {
+			return null;
+		}
 	}
 
 	public AmstradProgram build() {

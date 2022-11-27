@@ -9,6 +9,8 @@ import org.maia.amstrad.util.StringUtils;
 
 public abstract class AmstradProgram implements Cloneable {
 
+	private AmstradProgramType programType;
+
 	private String programName;
 
 	private String programDescription;
@@ -31,7 +33,8 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private AmstradProgramPayload payload;
 
-	protected AmstradProgram(String programName) {
+	protected AmstradProgram(AmstradProgramType programType, String programName) {
+		this.programType = programType;
 		this.programName = programName;
 		this.userControls = new Vector<UserControl>();
 		this.images = new Vector<ProgramImage>();
@@ -40,7 +43,9 @@ public abstract class AmstradProgram implements Cloneable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("AmstradProgram [programName='");
+		builder.append("AmstradProgram [programType=");
+		builder.append(programType.name());
+		builder.append(", programName='");
 		builder.append(programName);
 		builder.append("', programDescription='");
 		builder.append(programDescription);
@@ -104,6 +109,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	public void addImage(ProgramImage image) {
 		getImages().add(image);
+	}
+
+	public AmstradProgramType getProgramType() {
+		return programType;
+	}
+
+	public void setProgramType(AmstradProgramType programType) {
+		this.programType = programType;
 	}
 
 	public String getProgramName() {
@@ -188,14 +201,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	public AmstradProgramPayload getPayload() throws AmstradProgramException {
 		if (payload == null) {
-			payload = loadPayload();
+			setPayload(loadPayload());
 		}
 		return payload;
 	}
 
 	protected abstract AmstradProgramPayload loadPayload() throws AmstradProgramException;
 
-	public void setPayload(AmstradProgramPayload payload) {
+	private void setPayload(AmstradProgramPayload payload) {
 		this.payload = payload;
 	}
 

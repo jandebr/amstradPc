@@ -1,6 +1,8 @@
 package org.maia.amstrad.basic;
 
-public abstract class BasicProgramRuntime {
+import org.maia.amstrad.program.loader.AmstradProgramRuntime;
+
+public abstract class BasicProgramRuntime implements AmstradProgramRuntime {
 
 	private BasicRuntime basicRuntime;
 
@@ -8,6 +10,7 @@ public abstract class BasicProgramRuntime {
 		this.basicRuntime = basicRuntime;
 	}
 
+	@Override
 	public void run() {
 		getBasicRuntime().keyboardEnter("RUN", true);
 	}
