@@ -7,12 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.pc.AmstradFileType;
+import org.maia.amstrad.io.AmstradFileType;
+import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 
@@ -104,7 +104,7 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 	}
 
 	private boolean equalFilenamesButExtension(File one, File other) {
-		return AmstradUtils.stripExtension(one).equals(AmstradUtils.stripExtension(other));
+		return AmstradIO.stripExtension(one).equals(AmstradIO.stripExtension(other));
 	}
 
 	protected abstract boolean isProgramFile(File file);

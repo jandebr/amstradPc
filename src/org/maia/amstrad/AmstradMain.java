@@ -13,9 +13,9 @@ public class AmstradMain {
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		frame.installMenuBar();
 		if (args.length == 0) {
-			amstradPc.start(true, false);
+			amstradPc.start();
 		} else if (args.length == 1) {
-			amstradPc.launch(new File(args[0]), false);
+			amstradPc.launch(new File(args[0]));
 		} else {
 			System.err.println("Invalid startup arguments");
 		}

@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicDecompiler;
+import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradFactory;
-import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class BasicRuntime {
 
@@ -44,7 +44,7 @@ public abstract class BasicRuntime {
 	}
 
 	public void keyboardTypeFileContents(File textFile, boolean waitUntilTyped) throws IOException {
-		keyboardType(AmstradUtils.readTextFileContents(textFile), waitUntilTyped);
+		keyboardType(AmstradIO.readTextFileContents(textFile), waitUntilTyped);
 	}
 
 	public void keyboardEnter(CharSequence text) {
@@ -81,7 +81,7 @@ public abstract class BasicRuntime {
 
 	public BasicProgramRuntime loadSourceCodeFromFile(File sourceCodeFile)
 			throws IOException, BasicCompilationException {
-		BasicProgramRuntime programRuntime = loadSourceCode(AmstradUtils.readTextFileContents(sourceCodeFile));
+		BasicProgramRuntime programRuntime = loadSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
 		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
 		return programRuntime;
@@ -97,7 +97,7 @@ public abstract class BasicRuntime {
 	}
 
 	public BasicProgramRuntime loadByteCodeFromFile(File byteCodeFile) throws IOException {
-		BasicProgramRuntime programRuntime = loadByteCode(AmstradUtils.readBinaryFileContents(byteCodeFile));
+		BasicProgramRuntime programRuntime = loadByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(byteCodeFile.getParentFile());
 		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
 		return programRuntime;

@@ -6,13 +6,12 @@ import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramType;
-import org.maia.amstrad.program.payload.AmstradProgramPayload;
 
-public class BasicProgramLoader implements AmstradProgramLoader {
+public abstract class BasicProgramLoader implements AmstradProgramLoader {
 
 	private BasicRuntime basicRuntime;
 
-	public BasicProgramLoader(BasicRuntime basicRuntime) {
+	protected BasicProgramLoader(BasicRuntime basicRuntime) {
 		this.basicRuntime = basicRuntime;
 	}
 
@@ -22,21 +21,32 @@ public class BasicProgramLoader implements AmstradProgramLoader {
 			throw new AmstradProgramException(program,
 					"Program " + program.getProgramName() + " is not a Basic program");
 		BasicProgramRuntime programRuntime = null;
-		AmstradProgramPayload payload = program.getPayload();
-		if (payload.isText()) {
+		if (program.getPayload().isText()) {
 			try {
-				programRuntime = getBasicRuntime().loadSourceCode(payload.asTextPayload().getPayload());
+				programRuntime = getBasicRuntime().loadSourceCode(getSourceCodeToLoad(program));
 			} catch (BasicCompilationException e) {
 				throw new AmstradProgramException(program,
 						"Failed to compile source code of " + program.getProgramName(), e);
 			}
-		} else if (payload.isBinary()) {
-			programRuntime = getBasicRuntime().loadByteCode(payload.asBinaryPayload().getPayload());
+		} else if (program.getPayload().isBinary()) {
+			programRuntime = getBasicRuntime().loadByteCode(getByteCodeToLoad(program));
 		}
 		return programRuntime;
 	}
 
-	public BasicRuntime getBasicRuntime() {
+	protected abstract CharSequence getSourceCodeToLoad(AmstradProgram program) throws AmstradProgramException;
+
+	protected abstract byte[] getByteCodeToLoad(AmstradProgram program) throws AmstradProgramException;
+
+	protected CharSequence getOriginalSourceCode(AmstradProgram program) throws AmstradProgramException {
+		return program.getPayload().asTextPayload().getPayload();
+	}
+
+	protected byte[] getOriginalByteCode(AmstradProgram program) throws AmstradProgramException {
+		return program.getPayload().asBinaryPayload().getPayload();
+	}
+
+	protected BasicRuntime getBasicRuntime() {
 		return basicRuntime;
 	}
 

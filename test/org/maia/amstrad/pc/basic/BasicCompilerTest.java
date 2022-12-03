@@ -7,12 +7,12 @@ import java.io.PrintWriter;
 import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
+import org.maia.amstrad.io.AmstradFileType;
+import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradFactory;
-import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.basic.BasicByteCodeComparator.ComparisonResult;
-import org.maia.amstrad.util.AmstradUtils;
 
 public class BasicCompilerTest {
 
@@ -50,7 +50,7 @@ public class BasicCompilerTest {
 		out.println(">> Testing " + basicFile.getPath());
 		loadFileWithoutCompiler(basicFile, amstradPc);
 		byte[] referenceByteCode = amstradPc.getBasicRuntime().exportByteCode();
-		byte[] compiledByteCode = compiler.compile(AmstradUtils.readTextFileContents(basicFile));
+		byte[] compiledByteCode = compiler.compile(AmstradIO.readTextFileContents(basicFile));
 		outputByteCodeComparison(referenceByteCode, compiledByteCode, out);
 		out.println();
 		out.flush();

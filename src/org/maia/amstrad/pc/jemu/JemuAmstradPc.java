@@ -13,19 +13,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicProgramRuntime;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradFactory;
-import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.AmstradPcSnapshotFile;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.display.AmstradKeyboardController;
@@ -97,51 +96,22 @@ public class JemuAmstradPc extends AmstradPc
 	}
 
 	@Override
-	public boolean isSnapshotFile(File file) {
-		return isUncompressedSnapshotFile(file) || isCompressedSnapshotFile(file);
-	}
-
-	private boolean isUncompressedSnapshotFile(File file) {
-		return AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.matches(file);
-	}
-
-	private boolean isCompressedSnapshotFile(File file) {
-		return AmstradFileType.JAVACPC_SNAPSHOT_FILE_COMPRESSED.matches(file);
-	}
-
-	@Override
-	public void launch(File file, boolean silent) throws IOException, BasicCompilationException {
-		checkNotTerminated();
-		System.out.println("Launching from " + file.getPath());
-		if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file)
-				|| AmstradFileType.BASIC_BYTE_CODE_FILE.matches(file)) {
-			if (!isStarted()) {
-				start(true, silent);
-			} else {
-				reboot(true, silent);
-			}
-			if (AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file)) {
-				getBasicRuntime().loadSourceCodeFromFile(file).run();
-			} else {
-				getBasicRuntime().loadByteCodeFromFile(file).run();
-			}
-		} else if (isSnapshotFile(file)) {
-			if (!isStarted()) {
-				start(true, silent);
-			}
-			getJemuInstance().doAutoOpen(file);
-			AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-		} else {
-			System.err.println("Unrecognized file format: " + file);
-		}
-	}
-
-	@Override
-	public void saveSnapshot(File file) throws IOException {
+	public void load(AmstradPcSnapshotFile snapshotFile) {
 		checkStarted();
 		checkNotTerminated();
+		File file = snapshotFile.getFile();
+		getJemuInstance().doAutoOpen(file);
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
+		System.out.println("Loaded snapshot from " + file.getPath());
+	}
+
+	@Override
+	public void save(AmstradPcSnapshotFile snapshotFile) {
+		checkStarted();
+		checkNotTerminated();
+		File file = snapshotFile.getFile();
 		Settings.set(Settings.SNAPSHOT_FILE, file.getAbsolutePath());
-		Switches.uncompressed = isUncompressedSnapshotFile(file);
+		Switches.uncompressed = AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.matches(file);
 		Switches.save64 = true; // 64k RAM memory dump
 		waitUntilSnapshotReady(file);
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());

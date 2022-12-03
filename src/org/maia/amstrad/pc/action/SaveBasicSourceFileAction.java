@@ -5,7 +5,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.pc.AmstradFileType;
+import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class SaveBasicSourceFileAction extends BasicSourceFileAction {

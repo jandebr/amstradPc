@@ -35,6 +35,10 @@ public abstract class AmstradProgram implements Cloneable {
 	private AmstradProgramPayload payload;
 
 	protected AmstradProgram(AmstradProgramType programType, String programName) {
+		if (programType == null)
+			throw new NullPointerException("Unidentified program type");
+		if (programName == null)
+			throw new NullPointerException("Unidentified program name");
 		this.programType = programType;
 		this.programName = programName;
 		this.userControls = new Vector<UserControl>();

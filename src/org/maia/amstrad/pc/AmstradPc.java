@@ -11,6 +11,11 @@ import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcEventListener;
+import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramRuntime;
+import org.maia.amstrad.program.AmstradProgramStoredInFile;
+import org.maia.amstrad.program.loader.AmstradProgramLoader;
+import org.maia.amstrad.program.loader.AmstradProgramLoaderFactory;
 import org.maia.swing.dialog.ActionableDialog;
 
 public abstract class AmstradPc {
@@ -43,19 +48,47 @@ public abstract class AmstradPc {
 		dialog.setVisible(true);
 	}
 
-	public abstract boolean isSnapshotFile(File file);
-
 	public abstract boolean isStarted();
 
 	public abstract boolean isPaused();
 
 	public abstract boolean isTerminated();
 
-	public abstract void launch(File file, boolean silent) throws Exception;
+	public void launch(File file) throws Exception {
+		launch(new AmstradProgramStoredInFile(file));
+	}
 
-	public abstract void saveSnapshot(File file) throws IOException;
+	public void launch(AmstradProgram program) throws Exception {
+		checkNotTerminated();
+		if (!isStarted()) {
+			start();
+		} else {
+			reboot();
+		}
+		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createLoaderFor(program, this);
+		if (loader != null) {
+			System.out.println("Loading program " + program.getProgramName());
+			AmstradProgramRuntime rt = loader.load(program);
+			System.out.println("Launching program " + program.getProgramName());
+			rt.run();
+		} else {
+			System.err.println("Cannot load program " + program.getProgramName());
+		}
+	}
+
+	public abstract void load(AmstradPcSnapshotFile snapshotFile) throws IOException;
+
+	public abstract void save(AmstradPcSnapshotFile snapshotFile) throws IOException;
+
+	public void start() {
+		start(true, false);
+	}
 
 	public abstract void start(boolean waitUntilReady, boolean silent);
+
+	public void reboot() {
+		reboot(true, false);
+	}
 
 	public abstract void reboot(boolean waitUntilReady, boolean silent);
 

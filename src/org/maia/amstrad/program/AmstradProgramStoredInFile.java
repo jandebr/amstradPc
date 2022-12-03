@@ -3,11 +3,11 @@ package org.maia.amstrad.program;
 import java.io.File;
 import java.io.IOException;
 
-import org.maia.amstrad.pc.AmstradFileType;
+import org.maia.amstrad.io.AmstradFileType;
+import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.program.payload.AmstradProgramBinaryPayload;
 import org.maia.amstrad.program.payload.AmstradProgramPayload;
 import org.maia.amstrad.program.payload.AmstradProgramTextPayload;
-import org.maia.amstrad.util.AmstradUtils;
 
 public class AmstradProgramStoredInFile extends AmstradProgram {
 
@@ -15,12 +15,16 @@ public class AmstradProgramStoredInFile extends AmstradProgram {
 
 	private boolean binaryFileData;
 
-	public AmstradProgramStoredInFile(AmstradProgramType programType, File file) {
-		this(programType, file, guessBinaryFileData(file));
+	public AmstradProgramStoredInFile(File file) {
+		this(file.getName(), file);
 	}
 
-	public AmstradProgramStoredInFile(AmstradProgramType programType, File file, boolean binaryFileData) {
-		this(programType, file.getName(), file, binaryFileData);
+	public AmstradProgramStoredInFile(String programName, File file) {
+		this(guessProgramType(file), programName, file);
+	}
+
+	public AmstradProgramStoredInFile(AmstradProgramType programType, File file) {
+		this(programType, file.getName(), file);
 	}
 
 	public AmstradProgramStoredInFile(AmstradProgramType programType, String programName, File file) {
@@ -32,6 +36,14 @@ public class AmstradProgramStoredInFile extends AmstradProgram {
 		super(programType, programName);
 		this.file = file;
 		this.binaryFileData = binaryFileData;
+	}
+
+	private static AmstradProgramType guessProgramType(File file) {
+		AmstradFileType type = AmstradFileType.guessFileType(file);
+		if (type != null)
+			return type.getProgramType();
+		else
+			return null;
 	}
 
 	private static boolean guessBinaryFileData(File file) {
@@ -47,9 +59,9 @@ public class AmstradProgramStoredInFile extends AmstradProgram {
 		AmstradProgramPayload payload = null;
 		try {
 			if (isBinaryFileData()) {
-				payload = new AmstradProgramBinaryPayload(AmstradUtils.readBinaryFileContents(getFile()));
+				payload = new AmstradProgramBinaryPayload(AmstradIO.readBinaryFileContents(getFile()));
 			} else {
-				payload = new AmstradProgramTextPayload(AmstradUtils.readTextFileContents(getFile()));
+				payload = new AmstradProgramTextPayload(AmstradIO.readTextFileContents(getFile()));
 			}
 		} catch (IOException e) {
 			throw new AmstradProgramException(this, "Could not load payload of " + getProgramName(), e);

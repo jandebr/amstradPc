@@ -12,7 +12,7 @@ public class AmstradPcSnapshotFile extends AmstradProgramStoredInFile {
 	}
 
 	public AmstradPcSnapshotFile(String programName, File file) {
-		super(AmstradProgramType.PC_SNAPSHOT, programName, file);
+		super(AmstradProgramType.CPC_SNAPSHOT, programName, file);
 	}
 
 }
