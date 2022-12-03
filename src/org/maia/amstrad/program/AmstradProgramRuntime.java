@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.loader;
+package org.maia.amstrad.program;
 
 public interface AmstradProgramRuntime {
 

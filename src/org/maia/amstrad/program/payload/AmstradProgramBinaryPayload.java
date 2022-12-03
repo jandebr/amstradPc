@@ -1,4 +1,4 @@
-package org.maia.amstrad.program;
+package org.maia.amstrad.program.payload;
 
 public class AmstradProgramBinaryPayload extends AmstradProgramPayload {
 

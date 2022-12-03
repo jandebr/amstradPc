@@ -10,31 +10,29 @@ import java.util.Vector;
 import org.maia.amstrad.pc.AmstradFileType;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
-import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramPayload;
-import org.maia.amstrad.program.AmstradProgramTextPayload;
-import org.maia.amstrad.program.AmstradProgramType;
+import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.util.AmstradUtils;
 
-public class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
+public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 
 	private FileBasedFolderNode rootNode;
 
 	private boolean folderPerProgram;
 
-	public FileBasedAmstradProgramRepository(File rootFolder) {
-		this(rootFolder, couldBeFolderPerProgram(rootFolder));
+	protected FileBasedAmstradProgramRepository(File rootFolder) {
+		this(rootFolder, false);
+		setFolderPerProgram(couldBeFolderPerProgram(rootFolder));
 	}
 
-	public FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram) {
+	protected FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram) {
 		if (!rootFolder.isDirectory())
 			throw new IllegalArgumentException("The root folder must be a directory");
-		this.rootNode = new FileBasedFolderNode(rootFolder);
-		this.folderPerProgram = folderPerProgram;
+		setRootNode(new FileBasedFolderNode(rootFolder));
+		setFolderPerProgram(folderPerProgram);
 	}
 
-	private static boolean couldBeFolderPerProgram(File parentFolder) {
+	private boolean couldBeFolderPerProgram(File parentFolder) {
 		boolean result = true;
 		if (parentFolder.isDirectory()) {
 			if (containsSubFolders(parentFolder) && selectProgramFileInFolder(parentFolder) != null) {
@@ -60,7 +58,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return result;
 	}
 
-	private static boolean containsSubFolders(File folder) {
+	private boolean containsSubFolders(File folder) {
 		boolean result = false;
 		File[] files = folder.listFiles();
 		int i = 0;
@@ -69,7 +67,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return result;
 	}
 
-	private static File selectProgramFileInFolder(File folder) {
+	private File selectProgramFileInFolder(File folder) {
 		File result = null;
 		File[] files = folder.listFiles();
 		for (int i = 0; i < files.length; i++) {
@@ -85,23 +83,11 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return result;
 	}
 
-	private static boolean isProgramFile(File file) {
-		return AmstradFileType.BASIC_SOURCE_CODE_FILE.matches(file);
-	}
-
-	private static boolean isRemasteredProgramFile(File file) {
-		return AmstradFileType.isRemasteredBasicSourceCodeFile(file);
-	}
-
-	private static boolean isMetaDataFile(File file) {
-		return AmstradFileType.AMSTRAD_METADATA_FILE.matches(file);
-	}
-
-	private static File selectMetaDataFileInFolder(File folder) {
+	private File selectMetaDataFileInFolder(File folder) {
 		return selectMetaDataFileInFolder(folder, null);
 	}
 
-	private static File selectMetaDataFileInFolder(File folder, File companionProgramFileInFolder) {
+	private File selectMetaDataFileInFolder(File folder, File companionProgramFileInFolder) {
 		File result = null;
 		File[] files = folder.listFiles();
 		int i = 0;
@@ -117,17 +103,35 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 		return result;
 	}
 
-	private static boolean equalFilenamesButExtension(File one, File other) {
+	private boolean equalFilenamesButExtension(File one, File other) {
 		return AmstradUtils.stripExtension(one).equals(AmstradUtils.stripExtension(other));
 	}
+
+	protected abstract boolean isProgramFile(File file);
+
+	protected abstract boolean isRemasteredProgramFile(File file);
+
+	protected boolean isMetaDataFile(File file) {
+		return AmstradFileType.AMSTRAD_METADATA_FILE.matches(file);
+	}
+
+	protected abstract AmstradProgramStoredInFile createProgram(String programName, File file);
 
 	@Override
 	public FolderNode getRootNode() {
 		return rootNode;
 	}
 
+	private void setRootNode(FileBasedFolderNode rootNode) {
+		this.rootNode = rootNode;
+	}
+
 	public boolean isFolderPerProgram() {
 		return folderPerProgram;
+	}
+
+	private void setFolderPerProgram(boolean folderPerProgram) {
+		this.folderPerProgram = folderPerProgram;
 	}
 
 	private class FileBasedFolderNode extends FolderNode {
@@ -204,8 +208,7 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 		@Override
 		protected AmstradProgram readProgram() {
-			AmstradProgramBuilder builder = AmstradProgramBuilder
-					.createFor(new FileBasedAmstradProgram(getName(), getFile()));
+			AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(createProgram(getName(), getFile()));
 			try {
 				builder.loadAmstradMetaData(getCompanionMetaDataFile());
 			} catch (IOException e) {
@@ -224,31 +227,6 @@ public class FileBasedAmstradProgramRepository extends AmstradProgramRepository 
 
 		public File getFile() {
 			return file;
-		}
-
-	}
-
-	private class FileBasedAmstradProgram extends AmstradProgram {
-
-		private File sourceCodeFile;
-
-		public FileBasedAmstradProgram(String programName, File sourceCodeFile) {
-			super(AmstradProgramType.BASIC_PROGRAM, programName);
-			this.sourceCodeFile = sourceCodeFile;
-		}
-
-		@Override
-		protected AmstradProgramPayload loadPayload() throws AmstradProgramException {
-			try {
-				CharSequence sourceCode = AmstradUtils.readTextFileContents(getSourceCodeFile());
-				return new AmstradProgramTextPayload(sourceCode);
-			} catch (IOException e) {
-				throw new AmstradProgramException(this, "Could not load payload of " + getProgramName(), e);
-			}
-		}
-
-		public File getSourceCodeFile() {
-			return sourceCodeFile;
 		}
 
 	}

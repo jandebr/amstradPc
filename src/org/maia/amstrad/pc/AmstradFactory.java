@@ -44,7 +44,7 @@ import org.maia.amstrad.program.browser.ProgramInfoAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetedAmstradProgramRepository;
-import org.maia.amstrad.program.repo.file.FileBasedAmstradProgramRepository;
+import org.maia.amstrad.program.repo.file.BasicProgramFileRepository;
 import org.maia.amstrad.program.repo.rename.RenamingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.search.SearchingAmstradProgramRepository;
 
@@ -89,8 +89,8 @@ public class AmstradFactory {
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
 		menu.add(item);
 		item = new JMenuItem(new ProgramBrowserSetupAction(browserAction));
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK
-				| InputEvent.SHIFT_DOWN_MASK));
+		item.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		menu.add(item);
 		item = new JMenuItem(new ProgramInfoAction(browserAction));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -105,8 +105,8 @@ public class AmstradFactory {
 		menu.add(new JMenuItem(new SaveSnapshotFileAction(amstradPc)));
 		menu.add(new JSeparator());
 		item = new JMenuItem(new QuitAction(amstradPc));
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK
-				| InputEvent.SHIFT_DOWN_MASK));
+		item.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		menu.add(item);
 		return menu;
 	}
@@ -119,8 +119,8 @@ public class AmstradFactory {
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0));
 		menu.add(item);
 		item = new JMenuItem(new RebootAction(amstradPc));
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK
-				| InputEvent.SHIFT_DOWN_MASK));
+		item.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		menu.add(item);
 		return menu;
 	}
@@ -135,8 +135,8 @@ public class AmstradFactory {
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
 		menu.add(item);
 		item = new JMenuItem(new ScreenshotWithMonitorEffectAction(amstradPc));
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK
-				| InputEvent.SHIFT_DOWN_MASK));
+		item.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		menu.add(item);
 		return menu;
 	}
@@ -168,13 +168,13 @@ public class AmstradFactory {
 
 	public AmstradProgramRepository createProgramRepository() {
 		AmstradProgramRepositoryConfiguration config = getAmstradContext().getProgramRepositoryConfiguration();
-		AmstradProgramRepository repository = new FileBasedAmstradProgramRepository(config.getRootFolder());
+		AmstradProgramRepository repository = new BasicProgramFileRepository(config.getRootFolder());
 		if (config.isHideSequenceNumbers()) {
 			repository = RenamingAmstradProgramRepository.withSequenceNumbersHidden(repository);
 		}
 		if (config.isSearchByProgramName()) {
-			repository = SearchingAmstradProgramRepository
-					.withSearchByProgramName(repository, config.getSearchString());
+			repository = SearchingAmstradProgramRepository.withSearchByProgramName(repository,
+					config.getSearchString());
 		}
 		if (config.isFaceted()) {
 			repository = new FacetedAmstradProgramRepository(repository, config.getFacets());
@@ -222,12 +222,12 @@ public class AmstradFactory {
 		}
 
 		public static void addModesToMenu(JMenu menu, AmstradPc amstradPc) {
-			JRadioButtonMenuItem colorMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.COLOR,
-					amstradPc, "Color monitor (CTM640)"));
-			JRadioButtonMenuItem greenMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GREEN,
-					amstradPc, "Green monitor (GT64)"));
-			JRadioButtonMenuItem grayMode = new JRadioButtonMenuItem(new MonitorModeAction(AmstradMonitorMode.GRAY,
-					amstradPc, "Gray monitor"));
+			JRadioButtonMenuItem colorMode = new JRadioButtonMenuItem(
+					new MonitorModeAction(AmstradMonitorMode.COLOR, amstradPc, "Color monitor (CTM640)"));
+			JRadioButtonMenuItem greenMode = new JRadioButtonMenuItem(
+					new MonitorModeAction(AmstradMonitorMode.GREEN, amstradPc, "Green monitor (GT64)"));
+			JRadioButtonMenuItem grayMode = new JRadioButtonMenuItem(
+					new MonitorModeAction(AmstradMonitorMode.GRAY, amstradPc, "Gray monitor"));
 			menu.add(colorMode);
 			menu.add(greenMode);
 			menu.add(grayMode);

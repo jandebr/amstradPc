@@ -5,8 +5,8 @@ import org.maia.amstrad.basic.BasicProgramRuntime;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramPayload;
 import org.maia.amstrad.program.AmstradProgramType;
+import org.maia.amstrad.program.payload.AmstradProgramPayload;
 
 public class BasicProgramLoader implements AmstradProgramLoader {
 
@@ -19,7 +19,8 @@ public class BasicProgramLoader implements AmstradProgramLoader {
 	@Override
 	public BasicProgramRuntime load(AmstradProgram program) throws AmstradProgramException {
 		if (!AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType()))
-			throw new IllegalArgumentException("This loader only supports Basic programs");
+			throw new AmstradProgramException(program,
+					"Program " + program.getProgramName() + " is not a Basic program");
 		BasicProgramRuntime programRuntime = null;
 		AmstradProgramPayload payload = program.getPayload();
 		if (payload.isText()) {

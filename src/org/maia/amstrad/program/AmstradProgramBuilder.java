@@ -16,7 +16,7 @@ import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.util.StringUtils;
 
-public class AmstradProgramBuilder implements AmstradMetaDataConstants {
+public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 
 	private AmstradProgram program;
 

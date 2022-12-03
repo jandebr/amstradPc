@@ -1,6 +1,6 @@
 package org.maia.amstrad.basic;
 
-import org.maia.amstrad.program.loader.AmstradProgramRuntime;
+import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public abstract class BasicProgramRuntime implements AmstradProgramRuntime {
 
