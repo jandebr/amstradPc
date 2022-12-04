@@ -19,7 +19,6 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 		if (!AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType()))
 			throw new AmstradProgramException(program,
 					"Program " + program.getProgramName() + " is not a Basic program");
-		BasicProgramRuntime programRuntime = null;
 		if (program.getPayload().isText()) {
 			try {
 				getBasicRuntime().loadSourceCode(getSourceCodeToLoad(program));

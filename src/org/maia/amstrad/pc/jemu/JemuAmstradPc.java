@@ -558,6 +558,16 @@ public class JemuAmstradPc extends AmstradPc
 		}
 
 		@Override
+		public byte peek(int memoryAddress) {
+			return getJemuInstance().peekMemory(memoryAddress);
+		}
+
+		@Override
+		public void poke(int memoryAddress, byte value) {
+			getJemuInstance().pokeMemory(memoryAddress, value);
+		}
+
+		@Override
 		protected void loadFittedByteCode(byte[] byteCode) {
 			synchronized (JemuAmstradPc.this) {
 				JEMU jemu = getJemuInstance();

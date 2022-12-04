@@ -483,6 +483,19 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		return null;
 	}
 
+	/*
+	 * Subclasses to override
+	 */
+	public byte peekMemory(int memoryAddress) {
+		return 0;
+	}
+
+	/*
+	 * Subclasses to override
+	 */
+	public void pokeMemory(int memoryAddress, byte value) {
+	}
+
 	public abstract Dimension getDisplaySize(boolean large);
 
 	public abstract void reSync();

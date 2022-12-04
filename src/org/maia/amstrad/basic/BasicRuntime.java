@@ -79,6 +79,10 @@ public abstract class BasicRuntime {
 		keyboardEnter("LIST", waitUntilEntered);
 	}
 
+	public abstract byte peek(int memoryAddress);
+
+	public abstract void poke(int memoryAddress, byte value);
+
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {
 		loadSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());

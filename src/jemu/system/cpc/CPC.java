@@ -191,27 +191,27 @@ public class CPC extends Computer {
 			0x4e, 0x47, 0x4f, 0x52, 0x42, 0x53, 0x5a, 0x59, 0x5b, 0x4a, 0x43, 0x4b, 0x54, 0x54, 0x54, 0x54 };
 
 	public int[] SCR_CODE = // Code to put to #C7D0
-	{ 0x3A, 0xD0, 0xD7, // LD A, (#D7D0)
-			0xCD, 0x1C, 0xBD, // CALL #BD1C
-			0x21, 0xD1, 0xD7, // LD HL, #D7D1
-			0x46, // LD B, (HL)
-			0x48, // LD C, B
-			0xCD, 0x38, 0xBC, // CALL #BC38
-			0xAF, // XOR A
-			0x21, 0xD1, 0xD7, // LD HL, #D7D1
-			0x46, // BCL: LD B, (HL)
-			0x48, // LD C, B
-			0xF5, // PUSH AF
-			0xE5, // PUSH HL
-			0xCD, 0x32, 0xBC, // CALL #BC32
-			0xE1, // POP HL
-			0xF1, // POP AF
-			0x23, // INC HL
-			0x3C, // INC A
-			0xFE, 0x10, // CP #10
-			0x20, 0xF1, // JR NZ,BCL
-			0xC3, 0x18, 0xBB // JP #BB18
-	};
+			{ 0x3A, 0xD0, 0xD7, // LD A, (#D7D0)
+					0xCD, 0x1C, 0xBD, // CALL #BD1C
+					0x21, 0xD1, 0xD7, // LD HL, #D7D1
+					0x46, // LD B, (HL)
+					0x48, // LD C, B
+					0xCD, 0x38, 0xBC, // CALL #BC38
+					0xAF, // XOR A
+					0x21, 0xD1, 0xD7, // LD HL, #D7D1
+					0x46, // BCL: LD B, (HL)
+					0x48, // LD C, B
+					0xF5, // PUSH AF
+					0xE5, // PUSH HL
+					0xCD, 0x32, 0xBC, // CALL #BC32
+					0xE1, // POP HL
+					0xF1, // POP AF
+					0x23, // INC HL
+					0x3C, // INC A
+					0xFE, 0x10, // CP #10
+					0x20, 0xF1, // JR NZ,BCL
+					0xC3, 0x18, 0xBB // JP #BB18
+			};
 
 	public static boolean FDCReset = false;
 	public CPCDiscImage dskImage;
@@ -225,39 +225,39 @@ public class CPC extends Computer {
 
 	String[] Palette = new String[33];
 	Color[] Palcols = {
-	/* R G B */
-	new Color(0x000000), /* 0 */
-	new Color(0x000060), /* 1 */
-	new Color(0x0000FF), /* 2 */
-	new Color(0x600000), /* 3 */
-	new Color(0x600060), /* 4 */
-	new Color(0x6000FF), /* 5 */
-	new Color(0xFF0000), /* 6 */
-	new Color(0xFF0060), /* 7 */
-	new Color(0xFF00FF), /* 8 */
-	new Color(0x006000), /* 9 */
-	new Color(0x006060), /* 10 */
-	new Color(0x0060FF), /* 11 */
-	new Color(0x606000), /* 12 */
-	new Color(0x606060), /* 13 */
-	new Color(0x6060FF), /* 14 */
-	new Color(0xFF6000), /* 15 */
-	new Color(0xFF6060), /* 16 */
-	new Color(0xFF60FF), /* 17 */
-	new Color(0x00FF00), /* 18 */
-	new Color(0x00FF60), /* 19 */
-	new Color(0x00FFFF), /* 20 */
-	new Color(0x60FF00), /* 21 */
-	new Color(0x60FF60), /* 22 */
-	new Color(0x60FFFF), /* 23 */
-	new Color(0xFFFF00), /* 24 */
-	new Color(0xFFFF60), /* 25 */
-	new Color(0xFFFFFF), /* 26 */
-	new Color(0x606060), /* 27 */
-	new Color(0xFF0060), /* 28 */
-	new Color(0xFFFF60), /* 29 */
-	new Color(0x000060), /* 30 */
-	new Color(0x00FF60) /* 31 */};
+			/* R G B */
+			new Color(0x000000), /* 0 */
+			new Color(0x000060), /* 1 */
+			new Color(0x0000FF), /* 2 */
+			new Color(0x600000), /* 3 */
+			new Color(0x600060), /* 4 */
+			new Color(0x6000FF), /* 5 */
+			new Color(0xFF0000), /* 6 */
+			new Color(0xFF0060), /* 7 */
+			new Color(0xFF00FF), /* 8 */
+			new Color(0x006000), /* 9 */
+			new Color(0x006060), /* 10 */
+			new Color(0x0060FF), /* 11 */
+			new Color(0x606000), /* 12 */
+			new Color(0x606060), /* 13 */
+			new Color(0x6060FF), /* 14 */
+			new Color(0xFF6000), /* 15 */
+			new Color(0xFF6060), /* 16 */
+			new Color(0xFF60FF), /* 17 */
+			new Color(0x00FF00), /* 18 */
+			new Color(0x00FF60), /* 19 */
+			new Color(0x00FFFF), /* 20 */
+			new Color(0x60FF00), /* 21 */
+			new Color(0x60FF60), /* 22 */
+			new Color(0x60FFFF), /* 23 */
+			new Color(0xFFFF00), /* 24 */
+			new Color(0xFFFF60), /* 25 */
+			new Color(0xFFFFFF), /* 26 */
+			new Color(0x606060), /* 27 */
+			new Color(0xFF0060), /* 28 */
+			new Color(0xFFFF60), /* 29 */
+			new Color(0x000060), /* 30 */
+			new Color(0x00FF60) /* 31 */ };
 
 	public int joyreader;
 	protected boolean turbo = false;
@@ -719,8 +719,9 @@ public class CPC extends Computer {
 		if (Switches.checksave) {
 			Frame dummy2 = new Frame();
 			if (df0mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF0 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF0 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.YES_OPTION)
 					AutoSave(0);
 			}
@@ -732,8 +733,9 @@ public class CPC extends Computer {
 		if (Switches.checksave) {
 			Frame dummy2 = new Frame();
 			if (df1mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF1 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF1 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.YES_OPTION)
 					AutoSave(1);
 			}
@@ -745,8 +747,9 @@ public class CPC extends Computer {
 		if (Switches.checksave) {
 			Frame dummy2 = new Frame();
 			if (df2mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF2 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF2 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.YES_OPTION)
 					AutoSave(2);
 			}
@@ -758,8 +761,9 @@ public class CPC extends Computer {
 		if (Switches.checksave) {
 			Frame dummy2 = new Frame();
 			if (df3mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF3 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF3 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.YES_OPTION)
 					AutoSave(3);
 			}
@@ -771,26 +775,30 @@ public class CPC extends Computer {
 		if (Switches.checksave) {
 			Frame dummy2 = new Frame();
 			if (df0mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF0 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF0 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df0mod = false;
 			}
 			if (df1mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF1 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF1 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df1mod = false;
 			}
 			if (df2mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF2 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF2 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df2mod = false;
 			}
 			if (df3mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF3 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF3 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df3mod = false;
 			}
@@ -803,26 +811,30 @@ public class CPC extends Computer {
 		if (Switches.checksave) {
 			Frame dummy2 = new Frame();
 			if (df0mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF0 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF0 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df0mod = false;
 			}
 			if (df1mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF1 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF1 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df1mod = false;
 			}
 			if (df2mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF2 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF2 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df2mod = false;
 			}
 			if (df3mod) {
-				int ok = JOptionPane.showConfirmDialog(dummy2, "Your DSK in drive DF3 has been modified.\n"
-						+ "Do you want to save it now?", "Please choose", JOptionPane.YES_NO_OPTION);
+				int ok = JOptionPane.showConfirmDialog(dummy2,
+						"Your DSK in drive DF3 has been modified.\n" + "Do you want to save it now?", "Please choose",
+						JOptionPane.YES_NO_OPTION);
 				if (ok == JOptionPane.NO_OPTION)
 					df3mod = false;
 			}
@@ -940,9 +952,8 @@ public class CPC extends Computer {
 
 							if (Switches.turbo == 1) {
 								AY_3_8910.digicount = 10;
-								if (psg.readRegister(7) != 0x3f
-										&& (psg.readRegister(8) != 0 || psg.readRegister(9) != 0 || psg
-												.readRegister(10) != 0))
+								if (psg.readRegister(7) != 0x3f && (psg.readRegister(8) != 0 || psg.readRegister(9) != 0
+										|| psg.readRegister(10) != 0))
 									AY_3_8910.digiblast = false;
 								else
 									AY_3_8910.digiblast = true;
@@ -953,9 +964,8 @@ public class CPC extends Computer {
 								if (turbocount == 20) {
 									turbocount = 0;
 									AY_3_8910.digicount = 1;
-									if (psg.readRegister(7) != 0x3f
-											&& (psg.readRegister(8) != 0 || psg.readRegister(9) != 0 || psg
-													.readRegister(10) != 0))
+									if (psg.readRegister(7) != 0x3f && (psg.readRegister(8) != 0
+											|| psg.readRegister(9) != 0 || psg.readRegister(10) != 0))
 										AY_3_8910.digiblast = false;
 									else
 										AY_3_8910.digiblast = true;
@@ -1616,28 +1626,28 @@ public class CPC extends Computer {
 					}
 				}
 			} else {
-				throw new RuntimeException("Unexpected Port Write: " + Util.hex((short) port) + " with "
-						+ Util.hex((byte) value));
+				throw new RuntimeException(
+						"Unexpected Port Write: " + Util.hex((short) port) + " with " + Util.hex((byte) value));
 			}
 		}
 	}
 
 	public void keyPressed(KeyEvent e) {
 		if (!Switches.blockKeyboard) {/*
-									 * if (Switches.FloppySound){ if (e.getKeyCode() == KeyEvent.VK_SPACE)
-									 * Samples.SPACE.play(); else if (e.getKeyCode() == KeyEvent.VK_ENTER)
-									 * Samples.ENTER.play(); else Samples.KEY.play(); }
-									 */
+										 * if (Switches.FloppySound){ if (e.getKeyCode() == KeyEvent.VK_SPACE)
+										 * Samples.SPACE.play(); else if (e.getKeyCode() == KeyEvent.VK_ENTER)
+										 * Samples.ENTER.play(); else Samples.KEY.play(); }
+										 */
 			getKeyboard().keyPressed(e.getKeyCode());
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
 		if (!Switches.blockKeyboard) {/*
-									 * if (Switches.FloppySound){ if (e.getKeyCode() == KeyEvent.VK_SPACE)
-									 * Samples.SPACE.stop(); else if (e.getKeyCode() == KeyEvent.VK_ENTER)
-									 * Samples.ENTER.stop(); else Samples.KEY.stop(); }
-									 */
+										 * if (Switches.FloppySound){ if (e.getKeyCode() == KeyEvent.VK_SPACE)
+										 * Samples.SPACE.stop(); else if (e.getKeyCode() == KeyEvent.VK_ENTER)
+										 * Samples.ENTER.stop(); else Samples.KEY.stop(); }
+										 */
 			/*
 			 * if (Switches.FloppySound){ if (e.getKeyCode() == KeyEvent.VK_SPACE) Samples.SPACE.play(); else if
 			 * (e.getKeyCode() == KeyEvent.VK_ENTER) Samples.ENTER.play(); else Samples.KEY.play(); }
@@ -2089,6 +2099,16 @@ public class CPC extends Computer {
 		return data;
 	}
 
+	@Override
+	public byte peekMemory(int memoryAddress) {
+		return memory.getMemory()[memoryAddress];
+	}
+
+	@Override
+	public void pokeMemory(int memoryAddress, byte value) {
+		memory.getMemory()[memoryAddress] = value;
+	}
+
 	public void SNK_Save() {
 		FileDialog filedia = new FileDialog((Frame) dummy, "Save SNK Snapshot File", FileDialog.SAVE);
 		if (Switches.uncompressed)
@@ -2501,8 +2521,8 @@ public class CPC extends Computer {
 				CNGBIN = true;
 			}
 			if (!CNG) {
-				result = JOptionPane.showInputDialog(dummy, "No AMSDOS header found...\n\n"
-						+ "Please enter start address:\n(Hexadecimal)\n");
+				result = JOptionPane.showInputDialog(dummy,
+						"No AMSDOS header found...\n\n" + "Please enter start address:\n(Hexadecimal)\n");
 			} else {
 				result = "100";
 			}
@@ -2521,8 +2541,8 @@ public class CPC extends Computer {
 		byte[] mem = memory.getMemory();
 		int memSize = data.length;
 		if ((start + (memSize - header)) >= 0x10001)
-			JOptionPane.showMessageDialog(null, "An error occured during importing file:\n"
-					+ "no or wrong start address entered...\n");
+			JOptionPane.showMessageDialog(null,
+					"An error occured during importing file:\n" + "no or wrong start address entered...\n");
 
 		else {
 			for (int i = header; i < data.length; i++) {
@@ -2547,8 +2567,8 @@ public class CPC extends Computer {
 						importBasic664(BasicEnd);
 					if (Switches.ROM.equals("CPC464"))
 						importBasic1_0(BasicEnd);
-					int ok = JOptionPane.showConfirmDialog(dummy, "Execute basic?\n(at your own risk)",
-							"Please choose", JOptionPane.YES_NO_OPTION);
+					int ok = JOptionPane.showConfirmDialog(dummy, "Execute basic?\n(at your own risk)", "Please choose",
+							JOptionPane.YES_NO_OPTION);
 					if (ok == JOptionPane.YES_OPTION)
 						executeBasic();
 					else
@@ -2795,7 +2815,8 @@ public class CPC extends Computer {
 		return floppies;
 	}
 
-	private GridBagConstraints getGridBagConstraints(int x, int y, double weightx, double weighty, int width, int fill) {
+	private GridBagConstraints getGridBagConstraints(int x, int y, double weightx, double weighty, int width,
+			int fill) {
 		if (this.gbcConstraints == null) {
 			this.gbcConstraints = new GridBagConstraints();
 		}
@@ -2866,11 +2887,10 @@ public class CPC extends Computer {
 		boolean RETURN = false;
 		AddressA.setText("4000");
 		AddressB.setText("C000");
-		Object[] object = {
-				"You can set the screen-mode and inks\n" + "with a CALL &C7D0 after you loaded\n"
-						+ "an exported screen.\n" + "Please choose now:\n"
-						+ "YES:\nWait for a key before return to BASIC", "NO:\nReturn to BASIC after a CALL &C7D0\n\n",
-				Overscan, "Start part A", AddressA, "Start part B", AddressB };
+		Object[] object = { "You can set the screen-mode and inks\n" + "with a CALL &C7D0 after you loaded\n"
+				+ "an exported screen.\n" + "Please choose now:\n" + "YES:\nWait for a key before return to BASIC",
+				"NO:\nReturn to BASIC after a CALL &C7D0\n\n", Overscan, "Start part A", AddressA, "Start part B",
+				AddressB };
 		int selectedValue = JOptionPane.showOptionDialog(dummy, object, "Please choose:",
 				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 		if (selectedValue == JOptionPane.NO_OPTION) {
@@ -3489,7 +3509,7 @@ public class CPC extends Computer {
 			YMAuthor.setText(author);
 			YMTitle.setText(title);
 			Object[] message = { "Song name", YMTitle, "Authors name", YMAuthor
-			// , YMInterleaved
+					// , YMInterleaved
 			};
 
 			JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION);
@@ -3665,8 +3685,8 @@ public class CPC extends Computer {
 			String loadname = filename;
 			SetByte.setText(("6F"));
 			Object[] object = { "Enter togglebyte-value", SetByte };
-			int selectedValue = JOptionPane.showOptionDialog(dummy, object, "Please enter:",
-					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+			int selectedValue = JOptionPane.showOptionDialog(dummy, object, "Please enter:", JOptionPane.DEFAULT_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, null, null);
 			if (selectedValue == JOptionPane.NO_OPTION) {
 				return;
 			}

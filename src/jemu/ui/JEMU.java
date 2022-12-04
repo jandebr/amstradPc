@@ -84,6 +84,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
+import org.maia.amstrad.pc.jemu.JemuFrameAdapter;
+
 import jemu.core.Util;
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerAutotypeListener;
@@ -101,8 +103,6 @@ import jemu.system.cpc.GateArray;
 import jemu.system.cpc.RomSetter;
 import jemu.ui.gfx.AnimatedGifEncoder;
 import jemu.util.hexeditor.HexEditor;
-
-import org.maia.amstrad.pc.jemu.JemuFrameAdapter;
 
 public class JEMU extends Applet implements KeyListener, MouseListener, ItemListener, ActionListener, FocusListener,
 		Runnable, DriveListener, MouseMotionListener {
@@ -307,7 +307,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	// The graphical part of JEMU
 
-	private GridBagConstraints getGridBagConstraints(int x, int y, double weightx, double weighty, int width, int fill) {
+	private GridBagConstraints getGridBagConstraints(int x, int y, double weightx, double weighty, int width,
+			int fill) {
 		if (this.gbcConstraints == null) {
 			this.gbcConstraints = new GridBagConstraints();
 		}
@@ -430,10 +431,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 		boolean firstrun = Settings.getBoolean(Settings.FIRSTRUN, true);
 		if (firstrun) {
-			Object[] object = { "This is the first time you run JavaCPC.\n"
-					+ "JavaCPC wants to optimize performance now." + "\nthis can be changed later in Settings.\n"
-					+ "\nPlease choose PC-performance:" + "\nYes - Your CPU has about 3 ghz or more"
-					+ "\nNo  - Your CPU is slower than 3 ghz" };
+			Object[] object = {
+					"This is the first time you run JavaCPC.\n" + "JavaCPC wants to optimize performance now."
+							+ "\nthis can be changed later in Settings.\n" + "\nPlease choose PC-performance:"
+							+ "\nYes - Your CPU has about 3 ghz or more" + "\nNo  - Your CPU is slower than 3 ghz" };
 
 			int selectedValue = JOptionPane.showOptionDialog(this, object, "Please choose:", JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE, null, null, null);
@@ -765,11 +766,11 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			if (labelwidth <= 0)
 				labelwidth = 0;
 			int[] pixelsc = new int[1 * labelheight];
-			Image topdistance = Toolkit.getDefaultToolkit().createImage(
-					new MemoryImageSource(1, labelheight, pixelsc, 0, labelheight));
+			Image topdistance = Toolkit.getDefaultToolkit()
+					.createImage(new MemoryImageSource(1, labelheight, pixelsc, 0, labelheight));
 			int[] pixelsf = new int[labelwidth * 1];
-			Image leftdistance = Toolkit.getDefaultToolkit().createImage(
-					new MemoryImageSource(labelwidth, 1, pixelsf, 0, 1));
+			Image leftdistance = Toolkit.getDefaultToolkit()
+					.createImage(new MemoryImageSource(labelwidth, 1, pixelsf, 0, 1));
 			toplabel = new JLabel(new ImageIcon(topdistance));
 			downlabel = new JLabel(new ImageIcon(topdistance));
 			leftlabel = new JLabel(new ImageIcon(leftdistance));
@@ -2262,6 +2263,14 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		return data;
 	}
 
+	public byte peekMemory(int memoryAddress) {
+		return computer.peekMemory(memoryAddress);
+	}
+
+	public void pokeMemory(int memoryAddress, byte value) {
+		computer.pokeMemory(memoryAddress, value);
+	}
+
 	public void resetComputer() {
 		checkTurbo.setState(false);
 		computer.reset();
@@ -2383,8 +2392,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			Settings.setBoolean(Settings.JOYSTICK, true);
 			Display.automessage = "Joystick is ON";
 			Display.showauto = 150;
-			System.out
-					.println("Joystick emulation enabled\nuse seperate number-block with NUM-Lock on\n4, 8, 6, 2 - directions, 5, 0 - fire-buttons");
+			System.out.println(
+					"Joystick emulation enabled\nuse seperate number-block with NUM-Lock on\n4, 8, 6, 2 - directions, 5, 0 - fire-buttons");
 		}
 	}
 
@@ -4041,7 +4050,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	Menu menue6 = new Menu("Edit");
 	Menu compName = new Menu("Computername");
 	Menu extra = new Menu("Extras");
-	// public static Menu menue7 = new Menu("  ");
+	// public static Menu menue7 = new Menu(" ");
 
 	Menu drives = new Menu("Drives");
 	Menu dskhandling = new Menu("DSK-Handling");
@@ -4857,8 +4866,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void saveShot() {
 		File file;
-		FileDialog shotdia = getFrameAdapter().createFileDialog(
-				"Save Screenshot (Please add PNG,BMP,GIF or JPG extension)", FileDialog.SAVE);
+		FileDialog shotdia = getFrameAdapter()
+				.createFileDialog("Save Screenshot (Please add PNG,BMP,GIF or JPG extension)", FileDialog.SAVE);
 		shotdia.setFile("*.bmp; *.png; *.jpg; *.gif");
 		shotdia.setVisible(true);
 		String filename = shotdia.getFile();
@@ -4919,21 +4928,24 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else {
 
 			if (beta) {
-				JOptionPane.showMessageDialog(null, "Dear JavaCPC-user,\n" + "you are using untested beta version "
-						+ version + ".\n" + "Please visit http://cpc-live.com\n" + "and download official version "
-						+ update + ".");
+				JOptionPane.showMessageDialog(null,
+						"Dear JavaCPC-user,\n" + "you are using untested beta version " + version + ".\n"
+								+ "Please visit http://cpc-live.com\n" + "and download official version " + update
+								+ ".");
 				return;
 			} else if (updateno < versionno) {
-				JOptionPane.showMessageDialog(null, "Dear JavaCPC-user,\n" + "you are using version " + version
-						+ " of JavaCPC.\n" + "Latest version on server is " + update + ".\n"
-						+ "Your copy is newer than version on server.");
+				JOptionPane.showMessageDialog(null,
+						"Dear JavaCPC-user,\n" + "you are using version " + version + " of JavaCPC.\n"
+								+ "Latest version on server is " + update + ".\n"
+								+ "Your copy is newer than version on server.");
 				return;
 
 			} else if (!version.equals(update)) {
 				System.out.println("Please update your copy of JavaCPC...");
-				JOptionPane.showMessageDialog(null, "Dear JavaCPC-user,\n" + "you are using version " + version
-						+ " of JavaCPC.\n" + "Please visit http://cpc-live.com\n" + "and download JavaCPC version "
-						+ update + ".");
+				JOptionPane.showMessageDialog(null,
+						"Dear JavaCPC-user,\n" + "you are using version " + version + " of JavaCPC.\n"
+								+ "Please visit http://cpc-live.com\n" + "and download JavaCPC version " + update
+								+ ".");
 				try {
 					ShowInfo();
 				} catch (Exception e) {
@@ -5099,8 +5111,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		snaChooser.pack();
 		snaChooser.setAlwaysOnTop(true);
 		final Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		snaChooser
-				.setLocation((d.width - snaChooser.getSize().width) / 2, (d.height - snaChooser.getSize().height) / 2);
+		snaChooser.setLocation((d.width - snaChooser.getSize().width) / 2,
+				(d.height - snaChooser.getSize().height) / 2);
 		snaChooser.addKeyListener(this);
 		snaChooser.setVisible(true);
 		dialogsnap = true;
