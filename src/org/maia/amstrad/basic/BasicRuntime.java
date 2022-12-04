@@ -79,35 +79,28 @@ public abstract class BasicRuntime {
 		keyboardEnter("LIST", waitUntilEntered);
 	}
 
-	public BasicProgramRuntime loadSourceCodeFromFile(File sourceCodeFile)
-			throws IOException, BasicCompilationException {
-		BasicProgramRuntime programRuntime = loadSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
+	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {
+		loadSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
 		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
-		return programRuntime;
 	}
 
-	public BasicProgramRuntime loadSourceCode(CharSequence sourceCode) throws BasicCompilationException {
+	public void loadSourceCode(CharSequence sourceCode) throws BasicCompilationException {
 		if (sourceCode != null) {
 			BasicCompiler compiler = new LocomotiveBasicCompiler();
-			return loadByteCode(compiler.compile(sourceCode));
-		} else {
-			return null;
+			loadByteCode(compiler.compile(sourceCode));
 		}
 	}
 
-	public BasicProgramRuntime loadByteCodeFromFile(File byteCodeFile) throws IOException {
-		BasicProgramRuntime programRuntime = loadByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
+	public void loadByteCodeFromFile(File byteCodeFile) throws IOException {
+		loadByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(byteCodeFile.getParentFile());
 		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
-		return programRuntime;
 	}
 
-	public BasicProgramRuntime loadByteCode(byte[] byteCode) {
+	public void loadByteCode(byte[] byteCode) {
 		if (byteCode != null) {
-			return loadFittedByteCode(fitByteCode(byteCode));
-		} else {
-			return null;
+			loadFittedByteCode(fitByteCode(byteCode));
 		}
 	}
 
@@ -117,9 +110,8 @@ public abstract class BasicRuntime {
 	 * @param byteCode
 	 *            The Basic bytecode to load. The bytecode is <em>fitted</em>, meaning it starts right at the first byte
 	 *            of the Basic program and ends with the word 0x0000 for the next (void) line length
-	 * @return The runtime for the Basic program that got loaded
 	 */
-	protected abstract BasicProgramRuntime loadFittedByteCode(byte[] byteCode);
+	protected abstract void loadFittedByteCode(byte[] byteCode);
 
 	public void exportSourceCodeToFile(File file) throws IOException, BasicDecompilationException {
 		PrintWriter pw = new PrintWriter(file);

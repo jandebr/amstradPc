@@ -12,6 +12,7 @@ import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcEventListener;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.program.loader.AmstradProgramLoader;
@@ -54,11 +55,11 @@ public abstract class AmstradPc {
 
 	public abstract boolean isTerminated();
 
-	public void launch(File file) throws Exception {
+	public void launch(File file) throws AmstradProgramException {
 		launch(new AmstradProgramStoredInFile(file));
 	}
 
-	public void launch(AmstradProgram program) throws Exception {
+	public void launch(AmstradProgram program) throws AmstradProgramException {
 		checkNotTerminated();
 		if (!isStarted()) {
 			start();

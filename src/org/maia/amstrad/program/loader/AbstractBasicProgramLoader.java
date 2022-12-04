@@ -3,16 +3,15 @@ package org.maia.amstrad.program.loader;
 import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicProgramRuntime;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramType;
 
-public abstract class BasicProgramLoader implements AmstradProgramLoader {
+public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 
-	private BasicRuntime basicRuntime;
-
-	protected BasicProgramLoader(BasicRuntime basicRuntime) {
-		this.basicRuntime = basicRuntime;
+	protected AbstractBasicProgramLoader(AmstradPc amstradPc) {
+		super(amstradPc);
 	}
 
 	@Override
@@ -23,15 +22,15 @@ public abstract class BasicProgramLoader implements AmstradProgramLoader {
 		BasicProgramRuntime programRuntime = null;
 		if (program.getPayload().isText()) {
 			try {
-				programRuntime = getBasicRuntime().loadSourceCode(getSourceCodeToLoad(program));
+				getBasicRuntime().loadSourceCode(getSourceCodeToLoad(program));
 			} catch (BasicCompilationException e) {
 				throw new AmstradProgramException(program,
 						"Failed to compile source code of " + program.getProgramName(), e);
 			}
 		} else if (program.getPayload().isBinary()) {
-			programRuntime = getBasicRuntime().loadByteCode(getByteCodeToLoad(program));
+			getBasicRuntime().loadByteCode(getByteCodeToLoad(program));
 		}
-		return programRuntime;
+		return new BasicProgramRuntime(program, getAmstradPc());
 	}
 
 	protected abstract CharSequence getSourceCodeToLoad(AmstradProgram program) throws AmstradProgramException;
@@ -47,7 +46,7 @@ public abstract class BasicProgramLoader implements AmstradProgramLoader {
 	}
 
 	protected BasicRuntime getBasicRuntime() {
-		return basicRuntime;
+		return getAmstradPc().getBasicRuntime();
 	}
 
 }

@@ -14,7 +14,7 @@ public class AmstradProgramLoaderFactory {
 	public AmstradProgramLoader createLoaderFor(AmstradProgram program, AmstradPc amstradPc) {
 		AmstradProgramLoader loader = null;
 		if (AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType())) {
-			loader = new OriginalBasicProgramLoader(amstradPc.getBasicRuntime());
+			loader = new OriginalBasicProgramLoader(amstradPc);
 		} else if (AmstradProgramType.CPC_SNAPSHOT.equals(program.getProgramType())) {
 			loader = new AmstradPcSnapshotLoader(amstradPc);
 		}

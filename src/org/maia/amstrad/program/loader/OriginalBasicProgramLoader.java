@@ -1,13 +1,13 @@
 package org.maia.amstrad.program.loader;
 
-import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 
-public class OriginalBasicProgramLoader extends BasicProgramLoader {
+public class OriginalBasicProgramLoader extends AbstractBasicProgramLoader {
 
-	public OriginalBasicProgramLoader(BasicRuntime basicRuntime) {
-		super(basicRuntime);
+	public OriginalBasicProgramLoader(AmstradPc amstradPc) {
+		super(amstradPc);
 	}
 
 	@Override

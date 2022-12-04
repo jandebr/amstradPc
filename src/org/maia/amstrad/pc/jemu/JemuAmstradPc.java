@@ -17,7 +17,6 @@ import java.io.File;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import org.maia.amstrad.basic.BasicProgramRuntime;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradFactory;
@@ -559,7 +558,7 @@ public class JemuAmstradPc extends AmstradPc
 		}
 
 		@Override
-		protected BasicProgramRuntime loadFittedByteCode(byte[] byteCode) {
+		protected void loadFittedByteCode(byte[] byteCode) {
 			synchronized (JemuAmstradPc.this) {
 				JEMU jemu = getJemuInstance();
 				// Pause
@@ -584,7 +583,6 @@ public class JemuAmstradPc extends AmstradPc
 					jemu.goComputer();
 				}
 			}
-			return new JemuBasicProgramRuntimeImpl(this);
 		}
 
 		@Override
@@ -594,14 +592,6 @@ public class JemuAmstradPc extends AmstradPc
 				byte[] mem = getJemuInstance().readMemory(MEMORY_ADDRESS_START_OF_PROGRAM, len);
 				return fitByteCode(mem);
 			}
-		}
-
-	}
-
-	private class JemuBasicProgramRuntimeImpl extends BasicProgramRuntime {
-
-		public JemuBasicProgramRuntimeImpl(JemuBasicRuntimeImpl basicRuntime) {
-			super(basicRuntime);
 		}
 
 	}
