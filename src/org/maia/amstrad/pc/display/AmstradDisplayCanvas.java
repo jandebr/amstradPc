@@ -275,8 +275,9 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	private void printAsciiSymbolInBounds(char c, Rectangle bounds, boolean transparentBackground) {
-		Graphics2D g2 = (Graphics2D) getGraphics2D().create(bounds.x, bounds.y, bounds.width, bounds.height);
 		double scale = getWidth() / getGraphicsContext().getTextColumns() / 8.0;
+		Graphics2D g2 = (Graphics2D) getGraphics2D().create();
+		g2.translate(bounds.x, bounds.y);
 		g2.scale(scale, scale);
 		g2.setBackground(transparentBackground ? null : getPaperColor());
 		g2.setColor(getPenColor());
