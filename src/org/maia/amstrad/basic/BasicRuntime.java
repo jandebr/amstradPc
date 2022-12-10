@@ -56,27 +56,19 @@ public abstract class BasicRuntime {
 	}
 
 	public void keyboardEnter() {
-		keyboardEnter(true);
-	}
-
-	public void keyboardEnter(boolean waitUntilTyped) {
-		keyboardEnter("", waitUntilTyped);
+		keyboardEnter("", true);
 	}
 
 	public void cls() {
-		cls(true);
-	}
-
-	public void cls(boolean waitUntilEntered) {
-		keyboardEnter("CLS", waitUntilEntered);
+		keyboardEnter("CLS", true);
 	}
 
 	public void list() {
-		list(true);
+		keyboardEnter("LIST", true);
 	}
 
-	public void list(boolean waitUntilEntered) {
-		keyboardEnter("LIST", waitUntilEntered);
+	public void run() {
+		keyboardEnter("RUN", true);
 	}
 
 	public abstract byte peek(int memoryAddress);

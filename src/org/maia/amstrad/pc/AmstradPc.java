@@ -29,10 +29,13 @@ public abstract class AmstradPc {
 
 	private List<AmstradPcEventListener> eventListeners;
 
+	private List<AmstradPcProgramListener> programListeners;
+
 	protected AmstradPc() {
 		this.stateListeners = new Vector<AmstradPcStateListener>();
 		this.monitorListeners = new Vector<AmstradPcMonitorListener>();
 		this.eventListeners = new Vector<AmstradPcEventListener>();
+		this.programListeners = new Vector<AmstradPcProgramListener>();
 	}
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
@@ -188,8 +191,16 @@ public abstract class AmstradPc {
 		getEventListeners().remove(listener);
 	}
 
+	public void addProgramListener(AmstradPcProgramListener listener) {
+		getProgramListeners().add(listener);
+	}
+
+	public void removeProgramListener(AmstradPcProgramListener listener) {
+		getProgramListeners().remove(listener);
+	}
+
 	protected void fireStartedEvent() {
-		for (AmstradPcStateListener listener : getStateListeners())
+		for (AmstradPcStateListener listener : getStateListenersFixedList())
 			listener.amstradPcStarted(this);
 	}
 
@@ -204,12 +215,12 @@ public abstract class AmstradPc {
 	}
 
 	protected void fireRebootingEvent() {
-		for (AmstradPcStateListener listener : getStateListeners())
+		for (AmstradPcStateListener listener : getStateListenersFixedList())
 			listener.amstradPcRebooting(this);
 	}
 
 	protected void fireTerminatedEvent() {
-		for (AmstradPcStateListener listener : getStateListeners())
+		for (AmstradPcStateListener listener : getStateListenersFixedList())
 			listener.amstradPcTerminated(this);
 	}
 
@@ -258,12 +269,26 @@ public abstract class AmstradPc {
 			listener.amstradPcEventDispatched(event);
 	}
 
+	protected void fireProgramLoaded() {
+		for (AmstradPcProgramListener listener : getProgramListenersFixedList())
+			listener.amstradProgramLoaded(this);
+	}
+
+	protected void fireDoubleEscapeKey() {
+		for (AmstradPcProgramListener listener : getProgramListenersFixedList())
+			listener.doubleEscapeKey(this);
+	}
+
 	public AmstradPcFrame getFrame() {
 		return frame;
 	}
 
 	private void setFrame(AmstradPcFrame frame) {
 		this.frame = frame;
+	}
+
+	private List<AmstradPcStateListener> getStateListenersFixedList() {
+		return new Vector<AmstradPcStateListener>(getStateListeners());
 	}
 
 	protected List<AmstradPcStateListener> getStateListeners() {
@@ -276,6 +301,14 @@ public abstract class AmstradPc {
 
 	protected List<AmstradPcEventListener> getEventListeners() {
 		return eventListeners;
+	}
+
+	private List<AmstradPcProgramListener> getProgramListenersFixedList() {
+		return new Vector<AmstradPcProgramListener>(getProgramListeners());
+	}
+
+	protected List<AmstradPcProgramListener> getProgramListeners() {
+		return programListeners;
 	}
 
 }

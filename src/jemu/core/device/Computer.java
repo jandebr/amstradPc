@@ -120,8 +120,9 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	// Listeners for stopped emulation
 	protected Vector listeners = new Vector(1);
 
-	// Listeners for autotype
-	private List<ComputerAutotypeListener> autotypeListeners;
+	// Listeners for keyboard
+	private List<ComputerKeyboardListener> keyboardListeners;
+	private boolean escapeKeyMode = false;
 
 	@SuppressWarnings("unchecked")
 	public static Computer createComputer(Applet applet, String name) throws Exception {
@@ -139,7 +140,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		super("Computer: " + name);
 		this.applet = applet;
 		this.name = name;
-		this.autotypeListeners = new Vector<ComputerAutotypeListener>();
+		this.keyboardListeners = new Vector<ComputerKeyboardListener>();
 		thread.setPriority(Thread.MAX_PRIORITY);
 		thread.start();
 	}
@@ -421,6 +422,13 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		if (mode == RUN) {
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
 				keyPressed(e);
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					escapeKeyMode = true;
+					firePressEscapeKey();
+				} else if (escapeKeyMode) {
+					escapeKeyMode = false;
+					fireSuppressEscapeKey();
+				}
 			} else if (e.getID() == KeyEvent.KEY_RELEASED)
 				keyReleased(e);
 		}
@@ -660,8 +668,9 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 						if (iName == -1)
 							iName = line.length();
 						String names = line.substring(iDesc + 1, iName).trim();
-						String instructions = iName < line.length() ? line.substring(iName + 1).trim()
-								.replace('|', '\n') : "";
+						String instructions = iName < line.length()
+								? line.substring(iName + 1).trim().replace('|', '\n')
+								: "";
 						files.addElement(new FileDescriptor(desc, names, instructions));
 					}
 				}
@@ -787,26 +796,36 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		currentDrive = drive;
 	}
 
-	public void addAutotypeListener(ComputerAutotypeListener listener) {
-		getAutotypeListeners().add(listener);
+	public void addKeyboardListener(ComputerKeyboardListener listener) {
+		getKeyboardListeners().add(listener);
 	}
 
-	public void removeAutotypeListener(ComputerAutotypeListener listener) {
-		getAutotypeListeners().remove(listener);
+	public void removeKeyboardListener(ComputerKeyboardListener listener) {
+		getKeyboardListeners().remove(listener);
 	}
 
-	public List<ComputerAutotypeListener> getAutotypeListeners() {
-		return autotypeListeners;
+	public List<ComputerKeyboardListener> getKeyboardListeners() {
+		return keyboardListeners;
+	}
+
+	protected void firePressEscapeKey() {
+		for (ComputerKeyboardListener listener : getKeyboardListeners())
+			listener.computerPressEscapeKey(this);
+	}
+
+	protected void fireSuppressEscapeKey() {
+		for (ComputerKeyboardListener listener : getKeyboardListeners())
+			listener.computerSuppressEscapeKey(this);
 	}
 
 	protected void fireAutotypeStarted() {
-		for (ComputerAutotypeListener listener : getAutotypeListeners())
-			listener.autotypeStarted(this);
+		for (ComputerKeyboardListener listener : getKeyboardListeners())
+			listener.computerAutotypeStarted(this);
 	}
 
 	protected void fireAutotypeEnded() {
-		for (ComputerAutotypeListener listener : getAutotypeListeners())
-			listener.autotypeEnded(this);
+		for (ComputerKeyboardListener listener : getKeyboardListeners())
+			listener.computerAutotypeEnded(this);
 	}
 
 }

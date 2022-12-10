@@ -88,7 +88,7 @@ import org.maia.amstrad.pc.jemu.JemuFrameAdapter;
 
 import jemu.core.Util;
 import jemu.core.device.Computer;
-import jemu.core.device.ComputerAutotypeListener;
+import jemu.core.device.ComputerKeyboardListener;
 import jemu.core.device.FileDescriptor;
 import jemu.core.device.floppy.DiscImage;
 import jemu.core.device.floppy.Drive;
@@ -1292,12 +1292,12 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		computer.reSync();
 	}
 
-	public void addAutotypeListener(ComputerAutotypeListener listener) {
-		computer.addAutotypeListener(listener);
+	public void addComputerKeyboardListener(ComputerKeyboardListener listener) {
+		computer.addKeyboardListener(listener);
 	}
 
-	public void removeAutotypeListener(ComputerAutotypeListener listener) {
-		computer.removeAutotypeListener(listener);
+	public void removeComputerKeyboardListener(ComputerKeyboardListener listener) {
+		computer.removeKeyboardListener(listener);
 	}
 
 	public void quit() {
@@ -2536,9 +2536,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 						for (int i = 0; i < floppies.length; i++)
 							if (floppies[i] != null)
 								floppies[i].setActiveListener(null);
-					for (ComputerAutotypeListener listener : computer.getAutotypeListeners()) {
-						computer.removeAutotypeListener(listener);
-						newComputer.addAutotypeListener(listener);
+					for (ComputerKeyboardListener listener : computer.getKeyboardListeners()) {
+						computer.removeKeyboardListener(listener);
+						newComputer.addKeyboardListener(listener);
 					}
 					computer.dispose();
 					computer = null;

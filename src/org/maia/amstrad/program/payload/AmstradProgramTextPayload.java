@@ -2,10 +2,10 @@ package org.maia.amstrad.program.payload;
 
 public class AmstradProgramTextPayload extends AmstradProgramPayload {
 
-	private CharSequence payload;
+	private CharSequence text;
 
-	public AmstradProgramTextPayload(CharSequence payload) {
-		this.payload = payload;
+	public AmstradProgramTextPayload(CharSequence text) {
+		this.text = text;
 	}
 
 	@Override
@@ -23,8 +23,8 @@ public class AmstradProgramTextPayload extends AmstradProgramPayload {
 		return this;
 	}
 
-	public CharSequence getPayload() {
-		return payload;
+	public CharSequence getText() {
+		return text;
 	}
 
 }

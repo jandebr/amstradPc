@@ -37,11 +37,11 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 	protected abstract byte[] getByteCodeToLoad(AmstradProgram program) throws AmstradProgramException;
 
 	protected CharSequence getOriginalSourceCode(AmstradProgram program) throws AmstradProgramException {
-		return program.getPayload().asTextPayload().getPayload();
+		return program.getPayload().asTextPayload().getText();
 	}
 
 	protected byte[] getOriginalByteCode(AmstradProgram program) throws AmstradProgramException {
-		return program.getPayload().asBinaryPayload().getPayload();
+		return program.getPayload().asBinaryPayload().getBytes();
 	}
 
 	protected BasicRuntime getBasicRuntime() {

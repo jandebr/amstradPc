@@ -11,12 +11,8 @@ public class BasicProgramRuntime extends AmstradProgramRuntime {
 	}
 
 	@Override
-	public void run() {
-		getBasicRuntime().keyboardEnter("RUN", true);
-	}
-
-	public BasicRuntime getBasicRuntime() {
-		return getAmstradPc().getBasicRuntime();
+	protected void doRun() {
+		getBasicRuntime().run();
 	}
 
 }

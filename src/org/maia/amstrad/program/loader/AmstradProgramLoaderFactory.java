@@ -16,7 +16,7 @@ public class AmstradProgramLoaderFactory {
 		if (AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType())) {
 			loader = new OriginalBasicProgramLoader(amstradPc);
 		} else if (AmstradProgramType.CPC_SNAPSHOT.equals(program.getProgramType())) {
-			loader = new AmstradPcSnapshotLoader(amstradPc);
+			loader = new AmstradSnapshotLoader(amstradPc);
 		}
 		return loader;
 	}

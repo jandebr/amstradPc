@@ -2,10 +2,10 @@ package org.maia.amstrad.program.payload;
 
 public class AmstradProgramBinaryPayload extends AmstradProgramPayload {
 
-	private byte[] payload;
+	private byte[] bytes;
 
-	public AmstradProgramBinaryPayload(byte[] payload) {
-		this.payload = payload;
+	public AmstradProgramBinaryPayload(byte[] bytes) {
+		this.bytes = bytes;
 	}
 
 	@Override
@@ -23,8 +23,8 @@ public class AmstradProgramBinaryPayload extends AmstradProgramPayload {
 		return null;
 	}
 
-	public byte[] getPayload() {
-		return payload;
+	public byte[] getBytes() {
+		return bytes;
 	}
 
 }

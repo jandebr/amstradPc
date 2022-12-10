@@ -37,7 +37,7 @@ import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
 import org.maia.swing.dialog.ActionableDialogListener;
 
 import jemu.core.device.Computer;
-import jemu.core.device.ComputerAutotypeListener;
+import jemu.core.device.ComputerKeyboardListener;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
 import jemu.ui.Display;
@@ -48,7 +48,7 @@ import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
 
 public class JemuAmstradPc extends AmstradPc
-		implements ComputerAutotypeListener, PauseListener, PrimaryDisplaySourceListener, KeyListener {
+		implements ComputerKeyboardListener, PauseListener, PrimaryDisplaySourceListener, KeyListener {
 
 	private JEMU jemuInstance;
 
@@ -65,6 +65,8 @@ public class JemuAmstradPc extends AmstradPc
 	private boolean terminated;
 
 	private boolean autotyping;
+
+	private int escapeKeyCounter;
 
 	private static boolean instanceRunning; // maximum 1 running Jemu instance in JVM
 
@@ -102,6 +104,7 @@ public class JemuAmstradPc extends AmstradPc
 		getJemuInstance().doAutoOpen(file);
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
 		System.out.println("Loaded snapshot from " + file.getPath());
+		fireProgramLoaded();
 	}
 
 	@Override
@@ -128,7 +131,7 @@ public class JemuAmstradPc extends AmstradPc
 		JEMU jemu = getJemuInstance();
 		jemu.init();
 		jemu.start();
-		jemu.addAutotypeListener(this);
+		jemu.addComputerKeyboardListener(this);
 		jemu.addPauseListener(this);
 		jemu.getDisplay().addKeyListener(this);
 		jemu.getDisplay().addPrimaryDisplaySourceListener(this);
@@ -137,6 +140,7 @@ public class JemuAmstradPc extends AmstradPc
 		getFrameBridge().pack();
 		setStarted(true);
 		setInstanceRunning(true);
+		resetEscapeKeyCounter();
 		fireStartedEvent();
 		if (waitUntilReady)
 			waitUntilReady();
@@ -157,6 +161,7 @@ public class JemuAmstradPc extends AmstradPc
 		if (silent)
 			Switches.FloppySound = false;
 		getJemuInstance().reBoot();
+		resetEscapeKeyCounter();
 		fireRebootingEvent();
 		if (waitUntilReady)
 			waitUntilReady();
@@ -436,12 +441,24 @@ public class JemuAmstradPc extends AmstradPc
 	}
 
 	@Override
-	public void autotypeStarted(Computer computer) {
+	public void computerPressEscapeKey(Computer computer) {
+		if (++escapeKeyCounter == 2) {
+			fireDoubleEscapeKey();
+		}
+	}
+
+	@Override
+	public void computerSuppressEscapeKey(Computer computer) {
+		resetEscapeKeyCounter();
+	}
+
+	@Override
+	public void computerAutotypeStarted(Computer computer) {
 		System.out.println("Autotype started");
 	}
 
 	@Override
-	public synchronized void autotypeEnded(Computer computer) {
+	public synchronized void computerAutotypeEnded(Computer computer) {
 		System.out.println("Autotype ended");
 		setAutotyping(false);
 		notifyAll();
@@ -533,6 +550,10 @@ public class JemuAmstradPc extends AmstradPc
 		this.autotyping = autotyping;
 	}
 
+	private void resetEscapeKeyCounter() {
+		escapeKeyCounter = 0;
+	}
+
 	private static boolean isInstanceRunning() {
 		return instanceRunning;
 	}
@@ -550,6 +571,7 @@ public class JemuAmstradPc extends AmstradPc
 		public void keyboardType(CharSequence text, boolean waitUntilTyped) {
 			synchronized (JemuAmstradPc.this) {
 				Autotype.typeText(text);
+				resetEscapeKeyCounter();
 				if (waitUntilTyped) {
 					waitUntilAutotypeEnded();
 					AmstradUtils.sleep(100L);
@@ -593,6 +615,7 @@ public class JemuAmstradPc extends AmstradPc
 					jemu.goComputer();
 				}
 			}
+			fireProgramLoaded();
 		}
 
 		@Override

@@ -8,9 +8,9 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 
-public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
+public class AmstradSnapshotLoader extends AmstradProgramLoader {
 
-	public AmstradPcSnapshotLoader(AmstradPc amstradPc) {
+	public AmstradSnapshotLoader(AmstradPc amstradPc) {
 		super(amstradPc);
 	}
 
@@ -20,7 +20,7 @@ public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
 			AmstradPcSnapshotFile snapshotFile = (AmstradPcSnapshotFile) program;
 			try {
 				getAmstradPc().load(snapshotFile);
-				return new AmstradPcSnapshotRuntime(snapshotFile, getAmstradPc());
+				return new AmstradSnapshotRuntime(snapshotFile, getAmstradPc());
 			} catch (IOException e) {
 				throw new AmstradProgramException(program, "Failed to load snapshot file " + program.getProgramName(),
 						e);
@@ -30,14 +30,14 @@ public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
 		}
 	}
 
-	private static class AmstradPcSnapshotRuntime extends AmstradProgramRuntime {
+	private static class AmstradSnapshotRuntime extends AmstradProgramRuntime {
 
-		public AmstradPcSnapshotRuntime(AmstradPcSnapshotFile snapshotFile, AmstradPc amstradPc) {
+		public AmstradSnapshotRuntime(AmstradPcSnapshotFile snapshotFile, AmstradPc amstradPc) {
 			super(snapshotFile, amstradPc);
 		}
 
 		@Override
-		public void run() {
+		protected void doRun() {
 			// a snapshot resumes from loading, no run needed
 		}
 
