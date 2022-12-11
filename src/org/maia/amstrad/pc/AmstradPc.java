@@ -161,6 +161,8 @@ public abstract class AmstradPc {
 
 	public synchronized void addMemoryTrap(int memoryAddress, byte memoryValueOff, boolean resetBeforeAdding,
 			AmstradPcMemoryTrapHandler handler) {
+		checkStarted();
+		checkNotTerminated();
 		MemoryTrap memoryTrap = new MemoryTrap(memoryAddress, memoryValueOff, handler);
 		if (resetBeforeAdding) {
 			memoryTrap.reset();

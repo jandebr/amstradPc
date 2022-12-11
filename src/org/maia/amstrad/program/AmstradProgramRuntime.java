@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcProgramListener;
-import org.maia.amstrad.pc.AmstradPcStateAdapter;
 
-public abstract class AmstradProgramRuntime extends AmstradPcStateAdapter implements AmstradPcProgramListener {
+public abstract class AmstradProgramRuntime {
 
 	private AmstradProgram program;
 
@@ -23,8 +21,6 @@ public abstract class AmstradProgramRuntime extends AmstradPcStateAdapter implem
 		this.program = program;
 		this.amstradPc = amstradPc;
 		this.listeners = new Vector<AmstradProgramRuntimeListener>();
-		amstradPc.addStateListener(this);
-		amstradPc.addProgramListener(this);
 	}
 
 	public void addListener(AmstradProgramRuntimeListener listener) {
@@ -50,35 +46,11 @@ public abstract class AmstradProgramRuntime extends AmstradPcStateAdapter implem
 		dispose(false);
 	}
 
-	private void dispose(boolean programRemainsLoaded) {
+	public void dispose(boolean programRemainsLoaded) {
 		setDisposed(true);
-		getAmstradPc().removeStateListener(this);
-		getAmstradPc().removeProgramListener(this);
 		for (AmstradProgramRuntimeListener listener : getListeners()) {
 			listener.amstradProgramIsDisposed(this, programRemainsLoaded);
 		}
-	}
-
-	@Override
-	public void amstradProgramLoaded(AmstradPc amstradPc) {
-		dispose(false); // another program got loaded
-	}
-
-	@Override
-	public void doubleEscapeKey(AmstradPc amstradPc) {
-		if (isRun()) {
-			dispose(true);
-		}
-	}
-
-	@Override
-	public void amstradPcRebooting(AmstradPc amstradPc) {
-		dispose(false);
-	}
-
-	@Override
-	public void amstradPcTerminated(AmstradPc amstradPc) {
-		dispose(false);
 	}
 
 	protected void checkNotDisposed() {

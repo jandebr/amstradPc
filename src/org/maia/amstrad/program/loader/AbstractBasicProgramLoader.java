@@ -6,6 +6,7 @@ import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.AmstradProgramType;
 
 public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
@@ -15,7 +16,7 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 	}
 
 	@Override
-	public BasicProgramRuntime load(AmstradProgram program) throws AmstradProgramException {
+	protected AmstradProgramRuntime doLoad(AmstradProgram program) throws AmstradProgramException {
 		if (!AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType()))
 			throw new AmstradProgramException(program,
 					"Program " + program.getProgramName() + " is not a Basic program");

@@ -15,7 +15,7 @@ public class AmstradSnapshotLoader extends AmstradProgramLoader {
 	}
 
 	@Override
-	public AmstradProgramRuntime load(AmstradProgram program) throws AmstradProgramException {
+	protected AmstradProgramRuntime doLoad(AmstradProgram program) throws AmstradProgramException {
 		if (program instanceof AmstradPcSnapshotFile) {
 			AmstradPcSnapshotFile snapshotFile = (AmstradPcSnapshotFile) program;
 			try {
