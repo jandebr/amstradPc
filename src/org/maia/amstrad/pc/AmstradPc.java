@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,11 +18,16 @@ import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.program.loader.AmstradProgramLoader;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderFactory;
+import org.maia.amstrad.util.AmstradUtils;
 import org.maia.swing.dialog.ActionableDialog;
 
 public abstract class AmstradPc {
 
 	private AmstradPcFrame frame;
+
+	private List<MemoryTrap> memoryTraps;
+
+	private MemoryTrapTracker memoryTrapTracker;
 
 	private List<AmstradPcStateListener> stateListeners;
 
@@ -32,6 +38,7 @@ public abstract class AmstradPc {
 	private List<AmstradPcProgramListener> programListeners;
 
 	protected AmstradPc() {
+		this.memoryTraps = new Vector<MemoryTrap>();
 		this.stateListeners = new Vector<AmstradPcStateListener>();
 		this.monitorListeners = new Vector<AmstradPcMonitorListener>();
 		this.eventListeners = new Vector<AmstradPcEventListener>();
@@ -150,6 +157,45 @@ public abstract class AmstradPc {
 
 	public boolean isPrimaryDisplaySourceShowing() {
 		return !isAlternativeDisplaySourceShowing();
+	}
+
+	public synchronized void addMemoryTrap(int memoryAddress, byte memoryValueOff, boolean resetBeforeAdding,
+			AmstradPcMemoryTrapHandler handler) {
+		MemoryTrap memoryTrap = new MemoryTrap(memoryAddress, memoryValueOff, handler);
+		if (resetBeforeAdding) {
+			memoryTrap.reset();
+		}
+		getMemoryTraps().add(memoryTrap);
+		trackMemoryTrapsAsNeeded();
+	}
+
+	public synchronized void removeMemoryTrapsAt(int memoryAddress) {
+		Iterator<MemoryTrap> it = getMemoryTraps().iterator();
+		while (it.hasNext()) {
+			if (it.next().getMemoryAddress() == memoryAddress)
+				it.remove();
+		}
+		trackMemoryTrapsAsNeeded();
+	}
+
+	public synchronized void removeAllMemoryTraps() {
+		getMemoryTraps().clear();
+		trackMemoryTrapsAsNeeded();
+	}
+
+	private synchronized void trackMemoryTrapsAsNeeded() {
+		if (hasMemoryTraps()) {
+			if (getMemoryTrapTracker() == null) {
+				MemoryTrapTracker tracker = new MemoryTrapTracker();
+				setMemoryTrapTracker(tracker);
+				tracker.start();
+			}
+		} else {
+			if (getMemoryTrapTracker() != null) {
+				getMemoryTrapTracker().stopTracking();
+				setMemoryTrapTracker(null);
+			}
+		}
 	}
 
 	protected void checkStarted() {
@@ -287,6 +333,22 @@ public abstract class AmstradPc {
 		this.frame = frame;
 	}
 
+	private boolean hasMemoryTraps() {
+		return !getMemoryTraps().isEmpty();
+	}
+
+	private List<MemoryTrap> getMemoryTraps() {
+		return memoryTraps;
+	}
+
+	private MemoryTrapTracker getMemoryTrapTracker() {
+		return memoryTrapTracker;
+	}
+
+	private void setMemoryTrapTracker(MemoryTrapTracker tracker) {
+		this.memoryTrapTracker = tracker;
+	}
+
 	private List<AmstradPcStateListener> getStateListenersFixedList() {
 		return new Vector<AmstradPcStateListener>(getStateListeners());
 	}
@@ -309,6 +371,91 @@ public abstract class AmstradPc {
 
 	protected List<AmstradPcProgramListener> getProgramListeners() {
 		return programListeners;
+	}
+
+	private class MemoryTrap {
+
+		private int memoryAddress;
+
+		private byte memoryValueOff;
+
+		private AmstradPcMemoryTrapHandler handler;
+
+		public MemoryTrap(int memoryAddress, byte memoryValueOff, AmstradPcMemoryTrapHandler handler) {
+			this.memoryAddress = memoryAddress;
+			this.memoryValueOff = memoryValueOff;
+			this.handler = handler;
+		}
+
+		public boolean isOn() {
+			return getMemoryValue() != getMemoryValueOff();
+		}
+
+		public void reset() {
+			getBasicRuntime().poke(getMemoryAddress(), getMemoryValueOff());
+		}
+
+		public int getMemoryAddress() {
+			return memoryAddress;
+		}
+
+		public byte getMemoryValueOff() {
+			return memoryValueOff;
+		}
+
+		public byte getMemoryValue() {
+			return getBasicRuntime().peek(getMemoryAddress());
+		}
+
+		public AmstradPcMemoryTrapHandler getHandler() {
+			return handler;
+		}
+
+	}
+
+	private class MemoryTrapTracker extends Thread {
+
+		private boolean stop;
+
+		public MemoryTrapTracker() {
+			setDaemon(true);
+		}
+
+		@Override
+		public void run() {
+			System.out.println("Memorytrap tracker thread started");
+			while (!stop && !isTerminated()) {
+				if (isStarted() && hasMemoryTraps()) {
+					track(new Vector<MemoryTrap>(getMemoryTraps()));
+				}
+				AmstradUtils.sleep(200L);
+			}
+			System.out.println("Memorytrap tracker thread stopped");
+		}
+
+		private void track(List<MemoryTrap> memoryTraps) {
+			for (MemoryTrap memoryTrap : memoryTraps) {
+				if (memoryTrap.isOn()) {
+					byte value = memoryTrap.getMemoryValue();
+					memoryTrap.reset();
+					handleInSeparateThread(memoryTrap, value);
+				}
+			}
+		}
+
+		private void handleInSeparateThread(final MemoryTrap memoryTrap, final byte value) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					memoryTrap.getHandler().handleMemoryTrap(AmstradPc.this, memoryTrap.getMemoryAddress(), value);
+				}
+			}).start();
+		}
+
+		public void stopTracking() {
+			stop = true;
+		}
+
 	}
 
 }

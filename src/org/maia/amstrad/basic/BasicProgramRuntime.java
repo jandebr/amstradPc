@@ -12,7 +12,7 @@ public class BasicProgramRuntime extends AmstradProgramRuntime {
 
 	@Override
 	protected void doRun() {
-		getBasicRuntime().run();
+		getAmstradPc().getBasicRuntime().run();
 	}
 
 }
