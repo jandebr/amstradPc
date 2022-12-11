@@ -6,6 +6,24 @@ import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicCompiler;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
+import org.maia.amstrad.basic.locomotive.source.BasicKeywordToken;
+import org.maia.amstrad.basic.locomotive.source.FloatingPointNumberToken;
+import org.maia.amstrad.basic.locomotive.source.FloatingPointTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.source.InstructionSeparatorToken;
+import org.maia.amstrad.basic.locomotive.source.Integer16BitBinaryToken;
+import org.maia.amstrad.basic.locomotive.source.Integer16BitDecimalToken;
+import org.maia.amstrad.basic.locomotive.source.Integer16BitHexadecimalToken;
+import org.maia.amstrad.basic.locomotive.source.Integer8BitDecimalToken;
+import org.maia.amstrad.basic.locomotive.source.IntegerTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.source.LineNumberToken;
+import org.maia.amstrad.basic.locomotive.source.LiteralToken;
+import org.maia.amstrad.basic.locomotive.source.OperatorToken;
+import org.maia.amstrad.basic.locomotive.source.SingleDigitDecimalToken;
+import org.maia.amstrad.basic.locomotive.source.SourceLineScanner;
+import org.maia.amstrad.basic.locomotive.source.SourceToken;
+import org.maia.amstrad.basic.locomotive.source.SourceTokenVisitor;
+import org.maia.amstrad.basic.locomotive.source.StringTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.source.UntypedVariableToken;
 
 public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements BasicCompiler {
 
@@ -16,14 +34,15 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 	public byte[] compile(CharSequence sourceCode) throws BasicCompilationException {
 		int maxBytes = BasicRuntime.MEMORY_POINTER_END_OF_PROGRAM - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM;
 		ByteBuffer byteBuffer = new ByteBuffer(maxBytes);
+		ByteCodeGenerator byteCodeGenerator = new ByteCodeGenerator(byteBuffer);
 		StringTokenizer st = new StringTokenizer(sourceCode.toString(), "\n\r");
 		int lineIndex = 0;
 		while (st.hasMoreTokens()) {
-			SourceLineScanner scanner = new SourceLineScanner(st.nextToken(), lineIndex++);
+			SourceLineScanner scanner = new SourceLineScanner(st.nextToken(), getBasicKeywords());
 			if (!scanner.isEmpty()) {
 				int i0 = byteBuffer.getSize();
 				byteBuffer.appendWord(0); // placeholder for line length
-				compileLine(scanner, byteBuffer);
+				compileLine(scanner, byteBuffer, byteCodeGenerator);
 				byteBuffer.replaceWordAt(i0, byteBuffer.getSize() - i0); // substitute actual line length
 			}
 		}
@@ -31,30 +50,24 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		return byteBuffer.getData();
 	}
 
-	private void compileLine(SourceLineScanner scanner, ByteBuffer byteBuffer) throws BasicCompilationException {
+	private void compileLine(SourceLineScanner scanner, ByteBuffer byteBuffer, ByteCodeGenerator byteCodeGenerator)
+			throws BasicCompilationException {
 		int lineNumber = scanner.scanLineNumber();
 		byteBuffer.appendWord(lineNumber);
-		compileLineBody(scanner, byteBuffer);
+		compileLineBody(scanner, byteBuffer, byteCodeGenerator);
 		byteBuffer.appendByte((byte) 0); // end of line
 	}
 
-	private void compileLineBody(SourceLineScanner scanner, ByteBuffer byteBuffer) throws BasicCompilationException {
+	private void compileLineBody(SourceLineScanner scanner, ByteBuffer byteBuffer, ByteCodeGenerator byteCodeGenerator)
+			throws BasicCompilationException {
 		while (!scanner.atEndOfText()) {
 			SourceToken token = scanner.scanToken();
 			if (token == null) {
-				throw new LocomotiveBasicCompilationException("Syntax error", scanner);
+				throw new BasicCompilationException("Syntax error", scanner.getText(), scanner.getPosition());
 			} else {
-				token.appendByteCodeTo(byteBuffer);
+				token.invite(byteCodeGenerator); // appends the token's byte code to the buffer
 			}
 		}
-	}
-
-	private static class LocomotiveBasicCompilationException extends BasicCompilationException {
-
-		public LocomotiveBasicCompilationException(String message, SourceLineScanner scanner) {
-			super(message, scanner.getText(), scanner.getLineIndex(), scanner.getPosition());
-		}
-
 	}
 
 	private static class ByteBuffer {
@@ -118,444 +131,63 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 	}
 
-	private class SourceLineScanner {
+	private static class ByteCodeGenerator implements SourceTokenVisitor {
 
-		private String text;
+		private ByteBuffer byteBuffer;
 
-		private int lineIndex;
-
-		private int position;
-
-		private boolean lineNumberCanFollow;
-
-		private boolean insideRemark;
-
-		private boolean insideData;
-
-		public SourceLineScanner(String text, int lineIndex) {
-			this.text = text;
-			this.lineIndex = lineIndex;
-		}
-
-		public boolean isEmpty() {
-			return getText().trim().isEmpty();
-		}
-
-		public int scanLineNumber() throws BasicCompilationException {
-			int p0 = getPosition();
-			while (!atEndOfText() && isDecimalDigit(getCurrentChar()))
-				advancePosition();
-			int p1 = getPosition();
-			if (!atEndOfText() && isWhitespace(getCurrentChar()))
-				advancePosition();
-			try {
-				return Integer.parseInt(subText(p0, p1));
-			} catch (NumberFormatException e) {
-				setPosition(p0);
-				throw new LocomotiveBasicCompilationException("Could not parse line number", this);
-			}
-		}
-
-		public SourceToken scanToken() throws BasicCompilationException {
-			SourceToken token = null;
-			char c = getCurrentChar();
-			if (c >= 0x20 && c <= 0x7e) {
-				if (insideRemark || (insideData && c != InstructionSeparatorToken.SEPARATOR)) {
-					token = new LiteralToken(String.valueOf(c));
-					advancePosition();
-				} else {
-					if (c == InstructionSeparatorToken.SEPARATOR) {
-						token = new InstructionSeparatorToken();
-						advancePosition();
-						lineNumberCanFollow = false;
-						insideData = false;
-					} else if (c == BasicKeywordToken.REMARK_SHORTHAND) {
-						String symbol = String.valueOf(c);
-						BasicKeyword keyword = getBasicKeywords().getKeyword(symbol);
-						token = new BasicKeywordToken(symbol, keyword);
-						advancePosition();
-						insideRemark = true;
-					} else if (c == NumericToken.AMPERSAND) {
-						token = scanAmpersandNumericToken();
-					} else if (isDecimalDigit(c)) {
-						token = scanNumericToken();
-					} else if ("<=>+-*/^\\".indexOf(c) >= 0) {
-						token = scanNumericOperator();
-					} else if (isLetter(c)) {
-						String symbol = scanSymbol();
-						String usymbol = symbol.toUpperCase();
-						if (usymbol.equals("AND") || usymbol.equals("MOD") || usymbol.equals("OR")
-								|| usymbol.equals("XOR") || usymbol.equals("NOT")) {
-							token = new OperatorToken(symbol);
-							lineNumberCanFollow = false;
-						} else if (getBasicKeywords().hasKeyword(usymbol)) {
-							BasicKeyword keyword = getBasicKeywords().getKeyword(usymbol);
-							token = new BasicKeywordToken(symbol, keyword);
-							lineNumberCanFollow = keyword.canBeFollowedByLineNumber();
-							insideRemark = keyword.isRemark();
-							insideData = keyword.isData();
-						} else {
-							// Variable
-							if (symbol.endsWith("%")) {
-								token = new IntegerTypedVariableToken(symbol);
-							} else if (symbol.endsWith("$")) {
-								token = new StringTypedVariableToken(symbol);
-							} else if (symbol.endsWith("!")) {
-								token = new FloatingPointTypedVariableToken(symbol);
-							} else {
-								token = new UntypedVariableToken(symbol);
-							}
-							lineNumberCanFollow = false;
-						}
-					} else if (c == LiteralToken.QUOTE) {
-						token = scanQuotedLiteralToken();
-						lineNumberCanFollow = false;
-					} else {
-						token = new LiteralToken(String.valueOf(c));
-						advancePosition();
-					}
-				}
-			}
-			return token;
-		}
-
-		private NumericToken scanAmpersandNumericToken() throws BasicCompilationException {
-			int p0 = getPosition();
-			advancePosition();
-			char c = getCurrentChar();
-			if (c == 'X') {
-				// binary
-				advancePosition();
-				while (!atEndOfText() && isBinaryDigit(getCurrentChar()))
-					advancePosition();
-				return new Integer16BitBinaryToken(subText(p0, getPosition()));
-			} else {
-				// hexadecimal
-				if (c == 'H')
-					advancePosition();
-				while (!atEndOfText() && isHexadecimalDigit(getCurrentChar()))
-					advancePosition();
-				return new Integer16BitHexadecimalToken(subText(p0, getPosition()));
-			}
-		}
-
-		private NumericToken scanNumericToken() throws BasicCompilationException {
-			int p0 = getPosition();
-			advancePosition();
-			boolean point = false;
-			boolean exponent = false;
-			boolean stop = false;
-			while (!atEndOfText() && !stop) {
-				char c = getCurrentChar();
-				if (c == '.') {
-					if (point || exponent) {
-						stop = true;
-					} else {
-						point = true;
-						advancePosition();
-					}
-				} else if (c == 'e' || c == 'E') {
-					if (exponent) {
-						stop = true;
-					} else {
-						exponent = true;
-						advancePosition();
-						if (!atEndOfText() && getCurrentChar() == '-')
-							advancePosition();
-					}
-				} else if (isDecimalDigit(c)) {
-					advancePosition();
-				} else {
-					stop = true;
-				}
-			}
-			String sourceFragment = subText(p0, getPosition());
-			if (point || exponent) {
-				return new FloatingPointNumberToken(sourceFragment);
-			} else {
-				int value = Integer.parseInt(sourceFragment);
-				if (lineNumberCanFollow) {
-					return new LineNumberToken(sourceFragment);
-				} else {
-					if (value < 10) {
-						return new SingleDigitDecimalToken(sourceFragment);
-					} else if (value <= 0xff) {
-						return new Integer8BitDecimalToken(sourceFragment);
-					} else if (value <= 0x7fff) {
-						return new Integer16BitDecimalToken(sourceFragment);
-					} else {
-						return new FloatingPointNumberToken(sourceFragment);
-					}
-				}
-			}
-		}
-
-		private OperatorToken scanNumericOperator() throws BasicCompilationException {
-			int p0 = getPosition();
-			char c0 = getCurrentChar();
-			advancePosition();
-			if (!atEndOfText()) {
-				char c1 = getCurrentChar();
-				if (c0 == '<' && (c1 == '>' || c1 == '=')) {
-					advancePosition();
-				} else if (c0 == '>' && c1 == '=') {
-					advancePosition();
-				}
-			}
-			return new OperatorToken(subText(p0, getPosition()));
-		}
-
-		private LiteralToken scanQuotedLiteralToken() throws BasicCompilationException {
-			int p0 = getPosition();
-			advancePosition();
-			while (!atEndOfText() && getCurrentChar() != LiteralToken.QUOTE)
-				advancePosition();
-			if (!atEndOfText())
-				advancePosition();
-			return new LiteralToken(subText(p0, getPosition()));
-		}
-
-		private String scanSymbol() throws BasicCompilationException {
-			int p0 = getPosition();
-			advancePosition();
-			while (!atEndOfText() && isSymbolCharacter(getCurrentChar()))
-				advancePosition();
-			return subText(p0, getPosition());
-		}
-
-		private void advancePosition() {
-			advancePosition(1);
-		}
-
-		private void advancePosition(int n) {
-			setPosition(getPosition() + n);
-		}
-
-		private int charsRemaining() {
-			return getText().length() - getPosition();
-		}
-
-		private char getCurrentChar() throws BasicCompilationException {
-			checkEndOfText();
-			return getText().charAt(getPosition());
-		}
-
-		private boolean isWhitespace(char c) {
-			return Character.isWhitespace(c);
-		}
-
-		private boolean isDecimalDigit(char c) {
-			return c >= '0' && c <= '9';
-		}
-
-		private boolean isBinaryDigit(char c) {
-			return c >= '0' && c <= '1';
-		}
-
-		private boolean isHexadecimalDigit(char c) {
-			return isDecimalDigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
-		}
-
-		private boolean isLetter(char c) {
-			return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-		}
-
-		private boolean isSymbolCharacter(char c) {
-			return isDecimalDigit(c) || isLetter(c) || "%$!._".indexOf(c) >= 0;
-		}
-
-		private String subText(int fromPosition, int toPosition) {
-			return getText().substring(fromPosition, toPosition);
-		}
-
-		private void checkEndOfText() throws BasicCompilationException {
-			if (atEndOfText())
-				throw new LocomotiveBasicCompilationException("Unfinished line", this);
-		}
-
-		public boolean atEndOfText() {
-			return getPosition() >= getText().length();
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		public int getLineIndex() {
-			return lineIndex;
-		}
-
-		public int getPosition() {
-			return position;
-		}
-
-		private void setPosition(int position) {
-			this.position = position;
-		}
-
-	}
-
-	private static abstract class SourceToken {
-
-		private String sourceFragment;
-
-		protected SourceToken(String sourceFragment) {
-			this.sourceFragment = sourceFragment;
-		}
-
-		public abstract void appendByteCodeTo(ByteBuffer byteBuffer);
-
-		protected String getSourceFragment() {
-			return sourceFragment;
-		}
-
-	}
-
-	private static class InstructionSeparatorToken extends SourceToken {
-
-		public static final char SEPARATOR = ':';
-
-		public InstructionSeparatorToken() {
-			super(String.valueOf(SEPARATOR));
+		public ByteCodeGenerator(ByteBuffer byteBuffer) {
+			this.byteBuffer = byteBuffer;
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			byteBuffer.appendByte((byte) 0x01);
-		}
-
-	}
-
-	private static abstract class NumericToken extends SourceToken {
-
-		public static final char AMPERSAND = '&';
-
-		protected NumericToken(String sourceFragment) {
-			super(sourceFragment);
-		}
-
-		protected int parseAsInt() {
-			return Integer.parseInt(getSourceFragment());
-		}
-
-		protected double parseAsDouble() {
-			return Double.parseDouble(getSourceFragment());
-		}
-
-	}
-
-	private static class SingleDigitDecimalToken extends NumericToken {
-
-		public SingleDigitDecimalToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitInstructionSeparator(InstructionSeparatorToken token) {
+			getByteBuffer().appendByte((byte) 0x01);
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			int n = parseAsInt();
-			byteBuffer.appendByte((byte) (0x0e + n));
-		}
-
-	}
-
-	private static class Integer8BitDecimalToken extends NumericToken {
-
-		public Integer8BitDecimalToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitSingleDigitDecimal(SingleDigitDecimalToken token) {
+			int n = token.parseAsInt();
+			getByteBuffer().appendByte((byte) (0x0e + n));
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			int n = parseAsInt();
-			byteBuffer.appendByte((byte) 0x19);
-			byteBuffer.appendByte((byte) n);
-		}
-
-	}
-
-	private static class Integer16BitDecimalToken extends NumericToken {
-
-		public Integer16BitDecimalToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitInteger8BitDecimal(Integer8BitDecimalToken token) {
+			int n = token.parseAsInt();
+			getByteBuffer().appendByte((byte) 0x19);
+			getByteBuffer().appendByte((byte) n);
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			int n = parseAsInt();
-			byteBuffer.appendByte((byte) 0x1a);
-			byteBuffer.appendWord(n);
-		}
-
-	}
-
-	private static class Integer16BitBinaryToken extends NumericToken {
-
-		public Integer16BitBinaryToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitInteger16BitDecimal(Integer16BitDecimalToken token) {
+			int n = token.parseAsInt();
+			getByteBuffer().appendByte((byte) 0x1a);
+			getByteBuffer().appendWord(n);
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			int n = parseAsInt();
-			byteBuffer.appendByte((byte) 0x1b);
-			byteBuffer.appendWord(n);
+		public void visitInteger16BitBinary(Integer16BitBinaryToken token) {
+			int n = token.parseAsInt();
+			getByteBuffer().appendByte((byte) 0x1b);
+			getByteBuffer().appendWord(n);
 		}
 
 		@Override
-		protected int parseAsInt() {
-			return Integer.parseInt(getSourceFragment().substring(2), 2); // ex. &X11010
-		}
-
-	}
-
-	private static class Integer16BitHexadecimalToken extends NumericToken {
-
-		public Integer16BitHexadecimalToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitInteger16BitHexadecimal(Integer16BitHexadecimalToken token) {
+			int n = token.parseAsInt();
+			getByteBuffer().appendByte((byte) 0x1c);
+			getByteBuffer().appendWord(n);
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			int n = parseAsInt();
-			byteBuffer.appendByte((byte) 0x1c);
-			byteBuffer.appendWord(n);
+		public void visitLineNumber(LineNumberToken token) {
+			int n = token.parseAsInt();
+			getByteBuffer().appendByte((byte) 0x1e);
+			getByteBuffer().appendWord(n);
 		}
 
 		@Override
-		protected int parseAsInt() {
-			if (getSourceFragment().toUpperCase().startsWith("&H")) {
-				return Integer.parseInt(getSourceFragment().substring(2), 16); // ex. &H7A1D
-			} else {
-				return Integer.parseInt(getSourceFragment().substring(1), 16); // ex. &7A1D
-			}
-		}
-
-	}
-
-	private static class LineNumberToken extends Integer16BitDecimalToken {
-
-		public LineNumberToken(String sourceFragment) {
-			super(sourceFragment);
-		}
-
-		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			int n = parseAsInt();
-			byteBuffer.appendByte((byte) 0x1e);
-			byteBuffer.appendWord(n);
-		}
-
-	}
-
-	private static class FloatingPointNumberToken extends NumericToken {
-
-		public FloatingPointNumberToken(String sourceFragment) {
-			super(sourceFragment);
-		}
-
-		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			double value = parseAsDouble(); // assuming this is a positive number
+		public void visitFloatingPointNumber(FloatingPointNumberToken token) {
+			double value = token.parseAsDouble(); // assuming this is a positive number
 			double fractionalPart = value % 1;
 			long integralPart = (long) (value - fractionalPart);
 			int[] mantissaBits = new int[32];
@@ -605,6 +237,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 				exponent = 0;
 			}
 			// Output
+			ByteBuffer byteBuffer = getByteBuffer();
 			byteBuffer.appendByte((byte) 0x1f);
 			byteBuffer.appendByte((byte) m1);
 			byteBuffer.appendByte((byte) m2);
@@ -613,150 +246,42 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			byteBuffer.appendByte((byte) exponent);
 		}
 
-		private int bitsToInteger(int[] bits, int fromIndex, int toIndex) {
-			int value = 0;
-			int f = 1;
-			for (int i = 0; i < toIndex - fromIndex; i++) {
-				value += f * bits[toIndex - 1 - i];
-				f *= 2;
-			}
-			return value;
-		}
-
-	}
-
-	private static abstract class VariableToken extends SourceToken {
-
-		protected VariableToken(String sourceFragment) {
-			super(sourceFragment);
+		@Override
+		public void visitIntegerTypedVariable(IntegerTypedVariableToken token) {
+			appendByteCodeForTypedVariable((byte) 0x02, token.getVariableNameWithoutTypeIndicator());
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			byteBuffer.appendByte(getVariableTypeCode());
-			byteBuffer.appendWord(0);
-			String name = getVariableNameWithoutTypeIndicator();
-			int n = name.length();
-			for (int i = 0; i < n - 1; i++) {
-				byteBuffer.appendByte((byte) name.charAt(i));
-			}
-			byteBuffer.appendByte((byte) (128 + name.charAt(n - 1)));
-		}
-
-		protected abstract byte getVariableTypeCode();
-
-		protected abstract String getVariableNameWithoutTypeIndicator();
-
-	}
-
-	private static abstract class TypedVariableToken extends VariableToken {
-
-		protected TypedVariableToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitStringTypedVariable(StringTypedVariableToken token) {
+			appendByteCodeForTypedVariable((byte) 0x03, token.getVariableNameWithoutTypeIndicator());
 		}
 
 		@Override
-		protected String getVariableNameWithoutTypeIndicator() {
-			return getSourceFragment().substring(0, getSourceFragment().length() - 1);
-		}
-
-	}
-
-	private static class IntegerTypedVariableToken extends TypedVariableToken {
-
-		public IntegerTypedVariableToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitFloatingPointTypedVariable(FloatingPointTypedVariableToken token) {
+			appendByteCodeForTypedVariable((byte) 0x04, token.getVariableNameWithoutTypeIndicator());
 		}
 
 		@Override
-		protected byte getVariableTypeCode() {
-			return (byte) 0x02;
-		}
-
-	}
-
-	private static class StringTypedVariableToken extends TypedVariableToken {
-
-		public StringTypedVariableToken(String sourceFragment) {
-			super(sourceFragment);
+		public void visitUntypedVariable(UntypedVariableToken token) {
+			appendByteCodeForTypedVariable((byte) 0x0d, token.getVariableNameWithoutTypeIndicator());
 		}
 
 		@Override
-		protected byte getVariableTypeCode() {
-			return (byte) 0x03;
-		}
-
-	}
-
-	private static class FloatingPointTypedVariableToken extends TypedVariableToken {
-
-		public FloatingPointTypedVariableToken(String sourceFragment) {
-			super(sourceFragment);
-		}
-
-		@Override
-		protected byte getVariableTypeCode() {
-			return (byte) 0x04;
-		}
-
-	}
-
-	private static class UntypedVariableToken extends VariableToken {
-
-		public UntypedVariableToken(String sourceFragment) {
-			super(sourceFragment);
-		}
-
-		@Override
-		protected byte getVariableTypeCode() {
-			return (byte) 0x0d;
-		}
-
-		@Override
-		protected String getVariableNameWithoutTypeIndicator() {
-			return getSourceFragment();
-		}
-
-	}
-
-	private static class BasicKeywordToken extends SourceToken {
-
-		private BasicKeyword keyword;
-
-		public static final char REMARK_SHORTHAND = '\'';
-
-		public BasicKeywordToken(String sourceFragment, BasicKeyword keyword) {
-			super(sourceFragment);
-			this.keyword = keyword;
-		}
-
-		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			BasicKeyword keyword = getKeyword();
+		public void visitBasicKeyword(BasicKeywordToken token) {
+			BasicKeyword keyword = token.getKeyword();
 			if (keyword.isPrecededByInstructionSeparator()) {
-				byteBuffer.appendByte((byte) 0x01); // instruction separator
+				getByteBuffer().appendByte((byte) 0x01); // instruction separator
 			}
 			if (keyword.isExtendedKeyword()) {
-				byteBuffer.appendByte(keyword.getPrefixByte());
+				getByteBuffer().appendByte(keyword.getPrefixByte());
 			}
-			byteBuffer.appendByte(keyword.getCodeByte());
-		}
-
-		public BasicKeyword getKeyword() {
-			return keyword;
-		}
-
-	}
-
-	private static class OperatorToken extends SourceToken {
-
-		public OperatorToken(String sourceFragment) {
-			super(sourceFragment);
+			getByteBuffer().appendByte(keyword.getCodeByte());
 		}
 
 		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			String symbol = getSourceFragment().toUpperCase();
+		public void visitOperator(OperatorToken token) {
+			ByteBuffer byteBuffer = getByteBuffer();
+			String symbol = token.getSourceFragment().toUpperCase();
 			if (symbol.equals(">")) {
 				byteBuffer.appendByte((byte) 0xee);
 			} else if (symbol.equals("=")) {
@@ -794,22 +319,38 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 			}
 		}
 
-	}
-
-	private static class LiteralToken extends SourceToken {
-
-		public static final char QUOTE = '"';
-
-		public LiteralToken(String sourceFragment) {
-			super(sourceFragment);
+		@Override
+		public void visitLiteral(LiteralToken token) {
+			ByteBuffer byteBuffer = getByteBuffer();
+			int n = token.getSourceFragment().length();
+			for (int i = 0; i < n; i++) {
+				byteBuffer.appendByte((byte) token.getSourceFragment().charAt(i));
+			}
 		}
 
-		@Override
-		public void appendByteCodeTo(ByteBuffer byteBuffer) {
-			int n = getSourceFragment().length();
-			for (int i = 0; i < n; i++) {
-				byteBuffer.appendByte((byte) getSourceFragment().charAt(i));
+		private void appendByteCodeForTypedVariable(byte variableTypeCode, String variableNameWithoutTypeIndicator) {
+			ByteBuffer byteBuffer = getByteBuffer();
+			byteBuffer.appendByte(variableTypeCode);
+			byteBuffer.appendWord(0);
+			int n = variableNameWithoutTypeIndicator.length();
+			for (int i = 0; i < n - 1; i++) {
+				byteBuffer.appendByte((byte) variableNameWithoutTypeIndicator.charAt(i));
 			}
+			byteBuffer.appendByte((byte) (128 + variableNameWithoutTypeIndicator.charAt(n - 1)));
+		}
+
+		private int bitsToInteger(int[] bits, int fromIndex, int toIndex) {
+			int value = 0;
+			int f = 1;
+			for (int i = 0; i < toIndex - fromIndex; i++) {
+				value += f * bits[toIndex - 1 - i];
+				f *= 2;
+			}
+			return value;
+		}
+
+		public ByteBuffer getByteBuffer() {
+			return byteBuffer;
 		}
 
 	}

@@ -35,7 +35,7 @@ public abstract class AmstradProgramRuntime {
 		checkNotDisposed();
 		doRun();
 		setRun(true);
-		for (AmstradProgramRuntimeListener listener : getListeners()) {
+		for (AmstradProgramRuntimeListener listener : getListenersFixedList()) {
 			listener.amstradProgramIsRun(this);
 		}
 	}
@@ -48,7 +48,7 @@ public abstract class AmstradProgramRuntime {
 
 	public void dispose(boolean programRemainsLoaded) {
 		setDisposed(true);
-		for (AmstradProgramRuntimeListener listener : getListeners()) {
+		for (AmstradProgramRuntimeListener listener : getListenersFixedList()) {
 			listener.amstradProgramIsDisposed(this, programRemainsLoaded);
 		}
 	}
@@ -80,6 +80,10 @@ public abstract class AmstradProgramRuntime {
 
 	private void setDisposed(boolean disposed) {
 		this.disposed = disposed;
+	}
+
+	private List<AmstradProgramRuntimeListener> getListenersFixedList() {
+		return new Vector<AmstradProgramRuntimeListener>(getListeners());
 	}
 
 	protected List<AmstradProgramRuntimeListener> getListeners() {
