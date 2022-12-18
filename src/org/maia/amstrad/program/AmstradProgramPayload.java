@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.payload;
+package org.maia.amstrad.program;
 
 public abstract class AmstradProgramPayload {
 

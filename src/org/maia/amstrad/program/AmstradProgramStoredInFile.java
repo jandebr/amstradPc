@@ -5,9 +5,6 @@ import java.io.IOException;
 
 import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.io.AmstradIO;
-import org.maia.amstrad.program.payload.AmstradProgramBinaryPayload;
-import org.maia.amstrad.program.payload.AmstradProgramPayload;
-import org.maia.amstrad.program.payload.AmstradProgramTextPayload;
 
 public class AmstradProgramStoredInFile extends AmstradProgram {
 

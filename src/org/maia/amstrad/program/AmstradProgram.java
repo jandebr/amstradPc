@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradMonitorMode;
-import org.maia.amstrad.program.payload.AmstradProgramPayload;
 import org.maia.amstrad.util.StringUtils;
 
 public abstract class AmstradProgram implements Cloneable {
