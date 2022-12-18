@@ -11,6 +11,16 @@ public class StringUtils {
 	private StringUtils() {
 	}
 
+	public static boolean isBlank(String str) {
+		if (str == null)
+			return true;
+		for (int i = 0; i < str.length(); i++) {
+			if (!Character.isWhitespace(str.charAt(i)))
+				return false;
+		}
+		return true;
+	}
+
 	public static boolean isEmpty(String str) {
 		return str == null || str.isEmpty();
 	}

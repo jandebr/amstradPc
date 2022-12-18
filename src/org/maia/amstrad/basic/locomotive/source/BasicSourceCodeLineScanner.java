@@ -43,9 +43,10 @@ public class BasicSourceCodeLineScanner {
 		char c = getCurrentChar();
 		if (c >= 0x20 && c <= 0x7e) {
 			if (insideRemark) {
-				token = scanRemarkLiteralToken();
+				token = scanLiteralRemarkToken();
 			} else if (insideData) {
-				token = scanDataLiteralToken();
+				token = scanLiteralDataToken();
+				insideData = false;
 			} else {
 				if (c == InstructionSeparatorToken.SEPARATOR) {
 					token = new InstructionSeparatorToken();
@@ -91,7 +92,7 @@ public class BasicSourceCodeLineScanner {
 						lineNumberCanFollow = false;
 					}
 				} else if (c == LiteralToken.QUOTE) {
-					token = scanQuotedLiteralToken();
+					token = scanLiteralQuotedToken();
 					lineNumberCanFollow = false;
 				} else {
 					token = new LiteralToken(String.valueOf(c));
@@ -188,28 +189,28 @@ public class BasicSourceCodeLineScanner {
 		return new OperatorToken(subText(p0, getPosition()));
 	}
 
-	private LiteralToken scanRemarkLiteralToken() {
+	private LiteralRemarkToken scanLiteralRemarkToken() {
 		int p0 = getPosition();
 		while (!atEndOfText())
 			advancePosition();
-		return new LiteralToken(subText(p0, getPosition()));
+		return new LiteralRemarkToken(subText(p0, getPosition()));
 	}
 
-	private LiteralToken scanDataLiteralToken() throws BasicSyntaxException {
+	private LiteralDataToken scanLiteralDataToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		while (!atEndOfText() && getCurrentChar() != InstructionSeparatorToken.SEPARATOR)
 			advancePosition();
-		return new LiteralToken(subText(p0, getPosition()));
+		return new LiteralDataToken(subText(p0, getPosition()));
 	}
 
-	private LiteralToken scanQuotedLiteralToken() throws BasicSyntaxException {
+	private LiteralQuotedToken scanLiteralQuotedToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		advancePosition();
 		while (!atEndOfText() && getCurrentChar() != LiteralToken.QUOTE)
 			advancePosition();
 		if (!atEndOfText())
 			advancePosition();
-		return new LiteralToken(subText(p0, getPosition()));
+		return new LiteralQuotedToken(subText(p0, getPosition()));
 	}
 
 	private String scanSymbol() throws BasicSyntaxException {

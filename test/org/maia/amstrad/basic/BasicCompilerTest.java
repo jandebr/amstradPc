@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.maia.amstrad.basic.BasicCompilationException;
-import org.maia.amstrad.basic.BasicCompiler;
 import org.maia.amstrad.basic.BasicByteCodeComparator.ComparisonResult;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.io.AmstradFileType;
@@ -27,7 +25,7 @@ public class BasicCompilerTest {
 		File dir = new File("resources/test/compiler");
 		PrintWriter out = new PrintWriter(new File(dir, "outcome.txt"));
 		testFilesInDirectory(dir, amstradPc, compiler, out);
-		// testFile(new File(dir, "test-pacman.bas"), amstradPc, compiler, out);
+		// testFile(new File(dir, "test-lineNr.bas"), amstradPc, compiler, out);
 		out.close();
 		amstradPc.terminate();
 	}

@@ -10,9 +10,18 @@ public abstract class BasicProgramManipulator {
 	protected BasicProgramManipulator() {
 	}
 
-	public abstract void manipulateSourceCode(AmstradProgram program, BasicSourceCode sourceCode)
-			throws BasicSyntaxException;
+	public abstract ManipulationSession createSession();
 
-	public abstract void sourceCodeLoaded(AmstradProgramRuntime programRuntime);
+	public abstract class ManipulationSession {
+
+		protected ManipulationSession() {
+		}
+
+		public abstract void manipulateSourceCode(AmstradProgram program, BasicSourceCode sourceCode)
+				throws BasicSyntaxException;
+
+		public abstract void sourceCodeLoaded(AmstradProgramRuntime programRuntime);
+
+	}
 
 }

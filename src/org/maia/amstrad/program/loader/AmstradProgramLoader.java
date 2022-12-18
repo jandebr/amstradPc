@@ -16,7 +16,7 @@ public abstract class AmstradProgramLoader {
 		this.amstradPc = amstradPc;
 	}
 
-	public final AmstradProgramRuntime load(AmstradProgram program) throws AmstradProgramException {
+	public final synchronized AmstradProgramRuntime load(AmstradProgram program) throws AmstradProgramException {
 		AmstradProgramRuntime programRuntime = doLoad(program);
 		new RuntimeCompanion(programRuntime).startCompanionship();
 		return programRuntime;
