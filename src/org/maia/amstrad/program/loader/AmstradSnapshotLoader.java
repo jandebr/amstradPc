@@ -22,8 +22,8 @@ public class AmstradSnapshotLoader extends AmstradProgramLoader {
 				getAmstradPc().load(snapshotFile);
 				return new AmstradSnapshotRuntime(snapshotFile, getAmstradPc());
 			} catch (IOException e) {
-				throw new AmstradProgramException(program, "Failed to load snapshot file " + program.getProgramName(),
-						e);
+				throw new AmstradProgramException(program,
+						"Failed to load snapshot file " + snapshotFile.getFile().getPath(), e);
 			}
 		} else {
 			throw new AmstradProgramException(program, program.getProgramName() + " is not a snapshot file");

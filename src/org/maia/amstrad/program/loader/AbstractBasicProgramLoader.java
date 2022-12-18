@@ -27,7 +27,7 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 				throw new AmstradProgramException(program,
 						"Failed to compile source code of " + program.getProgramName(), e);
 			}
-		} else if (program.getPayload().isBinary()) {
+		} else {
 			getBasicRuntime().loadByteCode(getByteCodeToLoad(program));
 		}
 		return new BasicProgramRuntime(program, getAmstradPc());
@@ -37,11 +37,11 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 
 	protected abstract byte[] getByteCodeToLoad(AmstradProgram program) throws AmstradProgramException;
 
-	protected CharSequence getOriginalSourceCode(AmstradProgram program) throws AmstradProgramException {
+	protected final CharSequence getOriginalSourceCode(AmstradProgram program) throws AmstradProgramException {
 		return program.getPayload().asTextPayload().getText();
 	}
 
-	protected byte[] getOriginalByteCode(AmstradProgram program) throws AmstradProgramException {
+	protected final byte[] getOriginalByteCode(AmstradProgram program) throws AmstradProgramException {
 		return program.getPayload().asBinaryPayload().getBytes();
 	}
 
