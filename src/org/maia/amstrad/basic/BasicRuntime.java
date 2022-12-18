@@ -30,6 +30,10 @@ public abstract class BasicRuntime {
 
 	public static final int MEMORY_POINTER_END_OF_PROGRAM = 0xAE83; // points to memory address following 0x0000
 
+	public static final int MINIMUM_BASIC_LINE_NUMBER = 0x0001;
+
+	public static final int MAXIMUM_BASIC_LINE_NUMBER = 0xFFFF;
+
 	protected BasicRuntime() {
 	}
 

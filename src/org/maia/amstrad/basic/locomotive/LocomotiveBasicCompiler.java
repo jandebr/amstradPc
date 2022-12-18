@@ -1,12 +1,14 @@
 package org.maia.amstrad.basic.locomotive;
 
-import java.util.StringTokenizer;
-
 import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicCompiler;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
 import org.maia.amstrad.basic.locomotive.source.BasicKeywordToken;
+import org.maia.amstrad.basic.locomotive.source.BasicSourceCode;
+import org.maia.amstrad.basic.locomotive.source.BasicSourceCodeLine;
+import org.maia.amstrad.basic.locomotive.source.BasicSourceCodeLineScanner;
 import org.maia.amstrad.basic.locomotive.source.FloatingPointNumberToken;
 import org.maia.amstrad.basic.locomotive.source.FloatingPointTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.source.InstructionSeparatorToken;
@@ -19,7 +21,6 @@ import org.maia.amstrad.basic.locomotive.source.LineNumberToken;
 import org.maia.amstrad.basic.locomotive.source.LiteralToken;
 import org.maia.amstrad.basic.locomotive.source.OperatorToken;
 import org.maia.amstrad.basic.locomotive.source.SingleDigitDecimalToken;
-import org.maia.amstrad.basic.locomotive.source.SourceLineScanner;
 import org.maia.amstrad.basic.locomotive.source.SourceToken;
 import org.maia.amstrad.basic.locomotive.source.SourceTokenVisitor;
 import org.maia.amstrad.basic.locomotive.source.StringTypedVariableToken;
@@ -35,31 +36,32 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		int maxBytes = BasicRuntime.MEMORY_POINTER_END_OF_PROGRAM - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM;
 		ByteBuffer byteBuffer = new ByteBuffer(maxBytes);
 		ByteCodeGenerator byteCodeGenerator = new ByteCodeGenerator(byteBuffer);
-		StringTokenizer st = new StringTokenizer(sourceCode.toString(), "\n\r");
-		int lineIndex = 0;
-		while (st.hasMoreTokens()) {
-			SourceLineScanner scanner = new SourceLineScanner(st.nextToken(), getBasicKeywords());
-			if (!scanner.isEmpty()) {
+		try {
+			BasicSourceCode code = new BasicSourceCode(sourceCode);
+			for (BasicSourceCodeLine line : code) {
+				BasicSourceCodeLineScanner scanner = line.createScanner(getBasicKeywords());
 				int i0 = byteBuffer.getSize();
 				byteBuffer.appendWord(0); // placeholder for line length
-				compileLine(scanner, byteBuffer, byteCodeGenerator);
+				compileLine(scanner, byteCodeGenerator);
 				byteBuffer.replaceWordAt(i0, byteBuffer.getSize() - i0); // substitute actual line length
 			}
+			byteBuffer.appendWord(0); // end of program
+			return byteBuffer.getData();
+		} catch (BasicSyntaxException e) {
+			throw new BasicCompilationException(e.getMessage(), e.getText(), e.getPositionInText());
 		}
-		byteBuffer.appendWord(0); // end of program
-		return byteBuffer.getData();
 	}
 
-	private void compileLine(SourceLineScanner scanner, ByteBuffer byteBuffer, ByteCodeGenerator byteCodeGenerator)
-			throws BasicCompilationException {
+	private void compileLine(BasicSourceCodeLineScanner scanner, ByteCodeGenerator byteCodeGenerator)
+			throws BasicSyntaxException {
 		int lineNumber = scanner.scanLineNumber();
-		byteBuffer.appendWord(lineNumber);
-		compileLineBody(scanner, byteBuffer, byteCodeGenerator);
-		byteBuffer.appendByte((byte) 0); // end of line
+		byteCodeGenerator.getByteBuffer().appendWord(lineNumber);
+		compileLineBody(scanner, byteCodeGenerator);
+		byteCodeGenerator.getByteBuffer().appendByte((byte) 0); // end of line
 	}
 
-	private void compileLineBody(SourceLineScanner scanner, ByteBuffer byteBuffer, ByteCodeGenerator byteCodeGenerator)
-			throws BasicCompilationException {
+	private void compileLineBody(BasicSourceCodeLineScanner scanner, ByteCodeGenerator byteCodeGenerator)
+			throws BasicSyntaxException {
 		while (!scanner.atEndOfText()) {
 			SourceToken token = scanner.scanToken();
 			if (token == null) {

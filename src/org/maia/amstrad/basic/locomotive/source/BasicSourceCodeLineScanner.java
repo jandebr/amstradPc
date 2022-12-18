@@ -1,10 +1,10 @@
 package org.maia.amstrad.basic.locomotive.source;
 
-import org.maia.amstrad.basic.BasicCompilationException;
+import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
 
-public class SourceLineScanner {
+public class BasicSourceCodeLineScanner {
 
 	private String text;
 
@@ -18,16 +18,12 @@ public class SourceLineScanner {
 
 	private boolean insideData;
 
-	public SourceLineScanner(String text, LocomotiveBasicKeywords basicKeywords) {
+	public BasicSourceCodeLineScanner(String text, LocomotiveBasicKeywords basicKeywords) {
 		this.text = text;
 		this.basicKeywords = basicKeywords;
 	}
 
-	public boolean isEmpty() {
-		return getText().trim().isEmpty();
-	}
-
-	public int scanLineNumber() throws BasicCompilationException {
+	public int scanLineNumber() throws BasicSyntaxException {
 		int p0 = getPosition();
 		while (!atEndOfText() && isDecimalDigit(getCurrentChar()))
 			advancePosition();
@@ -38,11 +34,11 @@ public class SourceLineScanner {
 			return Integer.parseInt(subText(p0, p1));
 		} catch (NumberFormatException e) {
 			setPosition(p0);
-			throw new BasicCompilationException("Could not parse line number", getText(), getPosition());
+			throw new BasicSyntaxException("Could not parse line number", getText(), getPosition());
 		}
 	}
 
-	public SourceToken scanToken() throws BasicCompilationException {
+	public SourceToken scanToken() throws BasicSyntaxException {
 		SourceToken token = null;
 		char c = getCurrentChar();
 		if (c >= 0x20 && c <= 0x7e) {
@@ -105,7 +101,7 @@ public class SourceLineScanner {
 		return token;
 	}
 
-	private NumericToken scanAmpersandNumericToken() throws BasicCompilationException {
+	private NumericToken scanAmpersandNumericToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		advancePosition();
 		char c = getCurrentChar();
@@ -125,7 +121,7 @@ public class SourceLineScanner {
 		}
 	}
 
-	private NumericToken scanNumericToken() throws BasicCompilationException {
+	private NumericToken scanNumericToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		advancePosition();
 		boolean point = false;
@@ -176,7 +172,7 @@ public class SourceLineScanner {
 		}
 	}
 
-	private OperatorToken scanNumericOperator() throws BasicCompilationException {
+	private OperatorToken scanNumericOperator() throws BasicSyntaxException {
 		int p0 = getPosition();
 		char c0 = getCurrentChar();
 		advancePosition();
@@ -191,7 +187,7 @@ public class SourceLineScanner {
 		return new OperatorToken(subText(p0, getPosition()));
 	}
 
-	private LiteralToken scanQuotedLiteralToken() throws BasicCompilationException {
+	private LiteralToken scanQuotedLiteralToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		advancePosition();
 		while (!atEndOfText() && getCurrentChar() != LiteralToken.QUOTE)
@@ -201,7 +197,7 @@ public class SourceLineScanner {
 		return new LiteralToken(subText(p0, getPosition()));
 	}
 
-	private String scanSymbol() throws BasicCompilationException {
+	private String scanSymbol() throws BasicSyntaxException {
 		int p0 = getPosition();
 		advancePosition();
 		while (!atEndOfText() && isSymbolCharacter(getCurrentChar()))
@@ -221,7 +217,7 @@ public class SourceLineScanner {
 		return getText().length() - getPosition();
 	}
 
-	private char getCurrentChar() throws BasicCompilationException {
+	private char getCurrentChar() throws BasicSyntaxException {
 		checkEndOfText();
 		return getText().charAt(getPosition());
 	}
@@ -254,9 +250,9 @@ public class SourceLineScanner {
 		return getText().substring(fromPosition, toPosition);
 	}
 
-	private void checkEndOfText() throws BasicCompilationException {
+	private void checkEndOfText() throws BasicSyntaxException {
 		if (atEndOfText())
-			throw new BasicCompilationException("Unfinished line", getText(), getPosition());
+			throw new BasicSyntaxException("Unfinished line", getText(), getPosition());
 	}
 
 	public boolean atEndOfText() {

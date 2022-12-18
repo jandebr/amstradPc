@@ -1,37 +1,9 @@
 package org.maia.amstrad.basic;
 
-public class BasicCompilationException extends Exception {
+public class BasicCompilationException extends BasicSyntaxException {
 
-	private String codeLine;
-
-	private int positionInLine;
-
-	public BasicCompilationException(String message, String codeLine, int positionInLine) {
-		super(message);
-		this.codeLine = codeLine;
-		this.positionInLine = positionInLine;
-	}
-
-	@Override
-	public String getMessage() {
-		StringBuilder sb = new StringBuilder(256);
-		sb.append(super.getMessage());
-		sb.append(" at ").append(getPositionInLine() + 1);
-		sb.append(" in ");
-		if (getCodeLine().length() > 32) {
-			sb.append(getCodeLine().substring(0, 32)).append("...");
-		} else {
-			sb.append(getCodeLine());
-		}
-		return sb.toString();
-	}
-
-	public String getCodeLine() {
-		return codeLine;
-	}
-
-	public int getPositionInLine() {
-		return positionInLine;
+	public BasicCompilationException(String message, String text, int positionInText) {
+		super(message, text, positionInText);
 	}
 
 }
