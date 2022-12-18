@@ -39,7 +39,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		try {
 			BasicSourceCode code = new BasicSourceCode(sourceCode);
 			for (BasicSourceCodeLine line : code) {
-				BasicSourceCodeLineScanner scanner = line.createScanner(getBasicKeywords());
+				BasicSourceCodeLineScanner scanner = line.createScanner();
 				int i0 = byteBuffer.getSize();
 				byteBuffer.appendWord(0); // placeholder for line length
 				compileLine(scanner, byteCodeGenerator);

@@ -9,9 +9,24 @@ public class LocomotiveBasicKeywords {
 
 	private Map<String, BasicKeyword> sourceFormMap;
 
-	public static final byte EXTENDED_PREFIX_BYTE = (byte) 0xff; // prefix byte for the extended keywords
+	private static LocomotiveBasicKeywords instance;
 
-	public LocomotiveBasicKeywords() {
+	private static final byte EXTENDED_PREFIX_BYTE = (byte) 0xff; // prefix byte for the extended keywords
+
+	public static LocomotiveBasicKeywords getInstance() {
+		if (instance == null) {
+			setInstance(new LocomotiveBasicKeywords());
+		}
+		return instance;
+	}
+
+	private static synchronized void setInstance(LocomotiveBasicKeywords keywords) {
+		if (instance == null) {
+			instance = keywords;
+		}
+	}
+
+	private LocomotiveBasicKeywords() {
 		this.byteCodeMap = new HashMap<Integer, BasicKeyword>(512);
 		this.sourceFormMap = new HashMap<String, BasicKeyword>(512);
 		loadBasicKeywords();

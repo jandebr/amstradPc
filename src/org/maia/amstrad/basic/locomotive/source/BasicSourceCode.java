@@ -158,6 +158,17 @@ public class BasicSourceCode implements Iterable<BasicSourceCodeLine> {
 		return Collections.unmodifiableList(getLines()).iterator();
 	}
 
+	@Override
+	public synchronized String toString() {
+		StringBuilder sb = new StringBuilder(40 * getLineCount());
+		for (BasicSourceCodeLine line : getLines()) {
+			if (sb.length() > 0)
+				sb.append('\n');
+			sb.append(line);
+		}
+		return sb.toString();
+	}
+
 	private List<BasicSourceCodeLine> getLines() {
 		return lines;
 	}
