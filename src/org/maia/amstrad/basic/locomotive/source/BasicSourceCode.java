@@ -153,20 +153,34 @@ public class BasicSourceCode implements Iterable<BasicSourceCodeLine> {
 		return i;
 	}
 
-	@Override
-	public synchronized Iterator<BasicSourceCodeLine> iterator() {
-		return Collections.unmodifiableList(getLines()).iterator();
-	}
-
-	@Override
-	public synchronized String toString() {
+	public synchronized String getText() {
 		StringBuilder sb = new StringBuilder(40 * getLineCount());
 		for (BasicSourceCodeLine line : getLines()) {
 			if (sb.length() > 0)
 				sb.append('\n');
-			sb.append(line);
+			sb.append(line.getText());
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+		return getText();
+	}
+
+	public synchronized String toStringInParsedForm() {
+		StringBuilder sb = new StringBuilder(256 * getLineCount());
+		for (BasicSourceCodeLine line : getLines()) {
+			if (sb.length() > 0)
+				sb.append('\n');
+			sb.append(line.toStringInParsedForm());
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public synchronized Iterator<BasicSourceCodeLine> iterator() {
+		return Collections.unmodifiableList(getLines()).iterator();
 	}
 
 	private List<BasicSourceCodeLine> getLines() {

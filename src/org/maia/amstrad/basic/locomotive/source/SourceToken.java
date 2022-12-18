@@ -21,7 +21,7 @@ public abstract class SourceToken {
 	}
 
 	protected String getToStringTypeName() {
-		String name = getClass().getTypeName();
+		String name = getClass().getSimpleName();
 		if (name.endsWith("Token")) {
 			name = name.substring(0, name.length() - 5);
 		}

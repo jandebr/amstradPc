@@ -42,9 +42,10 @@ public class BasicSourceCodeLineScanner {
 		SourceToken token = null;
 		char c = getCurrentChar();
 		if (c >= 0x20 && c <= 0x7e) {
-			if (insideRemark || (insideData && c != InstructionSeparatorToken.SEPARATOR)) {
-				token = new LiteralToken(String.valueOf(c));
-				advancePosition();
+			if (insideRemark) {
+				token = scanRemarkLiteralToken();
+			} else if (insideData) {
+				token = scanDataLiteralToken();
 			} else {
 				if (c == InstructionSeparatorToken.SEPARATOR) {
 					token = new InstructionSeparatorToken();
@@ -185,6 +186,20 @@ public class BasicSourceCodeLineScanner {
 			}
 		}
 		return new OperatorToken(subText(p0, getPosition()));
+	}
+
+	private LiteralToken scanRemarkLiteralToken() {
+		int p0 = getPosition();
+		while (!atEndOfText())
+			advancePosition();
+		return new LiteralToken(subText(p0, getPosition()));
+	}
+
+	private LiteralToken scanDataLiteralToken() throws BasicSyntaxException {
+		int p0 = getPosition();
+		while (!atEndOfText() && getCurrentChar() != InstructionSeparatorToken.SEPARATOR)
+			advancePosition();
+		return new LiteralToken(subText(p0, getPosition()));
 	}
 
 	private LiteralToken scanQuotedLiteralToken() throws BasicSyntaxException {
