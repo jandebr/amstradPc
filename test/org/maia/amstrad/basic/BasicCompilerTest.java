@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.basic;
+package org.maia.amstrad.basic;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,13 +6,14 @@ import java.io.PrintWriter;
 
 import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicCompiler;
+import org.maia.amstrad.basic.BasicByteCodeComparator.ComparisonResult;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
-import org.maia.amstrad.pc.basic.BasicByteCodeComparator.ComparisonResult;
+import org.maia.amstrad.util.AmstradUtils;
 
 public class BasicCompilerTest {
 
@@ -62,6 +63,7 @@ public class BasicCompilerTest {
 		} else {
 			amstradPc.start(true, true);
 		}
+		AmstradUtils.sleep(100);
 		amstradPc.getBasicRuntime().keyboardTypeFileContents(basicFile);
 	}
 
