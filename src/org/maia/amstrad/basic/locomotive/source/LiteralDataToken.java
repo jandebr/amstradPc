@@ -6,4 +6,12 @@ public class LiteralDataToken extends LiteralToken {
 		super(sourceFragment);
 	}
 
+	public String[] getDataElements() {
+		String[] elements = getSourceFragment().split(",");
+		for (int i = 0; i < elements.length; i++) {
+			elements[i] = elements[i].trim();
+		}
+		return elements;
+	}
+
 }

@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.util.StringUtils;
 
 public class BasicSourceCode implements Iterable<BasicSourceCodeLine> {
 
@@ -24,22 +25,33 @@ public class BasicSourceCode implements Iterable<BasicSourceCodeLine> {
 	}
 
 	public synchronized void load(CharSequence sourceCode) throws BasicSyntaxException {
-		clear();
-		Map<Integer, BasicSourceCodeLine> indexedLines = new HashMap<Integer, BasicSourceCodeLine>(100);
+		clear(); // disassociating any previous code lines
+		List<BasicSourceCodeLine> lines = new Vector<BasicSourceCodeLine>(100);
+		boolean strictlyIncreasingLineNumbers = true;
 		StringTokenizer st = new StringTokenizer(sourceCode.toString(), "\n\r");
 		while (st.hasMoreTokens()) {
 			String text = st.nextToken();
-			if (!text.trim().isEmpty()) {
+			if (!StringUtils.isBlank(text)) {
 				BasicSourceCodeLine line = new BasicSourceCodeLine(text);
 				line.setParentSourceCode(this);
+				lines.add(line);
+				if (strictlyIncreasingLineNumbers && lines.size() > 1) {
+					strictlyIncreasingLineNumbers = line.compareTo(lines.get(lines.size() - 2)) > 0;
+				}
+			}
+		}
+		if (!strictlyIncreasingLineNumbers) {
+			Map<Integer, BasicSourceCodeLine> indexedLines = new HashMap<Integer, BasicSourceCodeLine>(lines.size());
+			for (BasicSourceCodeLine line : lines) {
 				BasicSourceCodeLine overwrittenLine = indexedLines.put(line.getLineNumber(), line);
 				if (overwrittenLine != null) {
 					overwrittenLine.setParentSourceCode(null);
 				}
 			}
+			lines.clear();
+			lines.addAll(indexedLines.values());
+			Collections.sort(lines); // by increasing line number
 		}
-		List<BasicSourceCodeLine> lines = new Vector<BasicSourceCodeLine>(indexedLines.values());
-		Collections.sort(lines); // by increasing line number
 		setLines(lines);
 	}
 
