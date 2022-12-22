@@ -7,13 +7,17 @@ public class Integer16BitBinaryToken extends NumericToken {
 	}
 
 	@Override
-	public int parseAsInt() {
+	protected int parseAsInt() {
 		return Integer.parseInt(getSourceFragment().substring(2), 2); // ex. &X11010
 	}
 
 	@Override
 	public void invite(SourceTokenVisitor visitor) {
 		visitor.visitInteger16BitBinary(this);
+	}
+
+	public int getValue() {
+		return parseAsInt();
 	}
 
 }

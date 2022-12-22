@@ -7,7 +7,7 @@ public class Integer16BitHexadecimalToken extends NumericToken {
 	}
 
 	@Override
-	public int parseAsInt() {
+	protected int parseAsInt() {
 		if (getSourceFragment().toUpperCase().startsWith("&H")) {
 			return Integer.parseInt(getSourceFragment().substring(2), 16); // ex. &H7A1D
 		} else {
@@ -18,6 +18,10 @@ public class Integer16BitHexadecimalToken extends NumericToken {
 	@Override
 	public void invite(SourceTokenVisitor visitor) {
 		visitor.visitInteger16BitHexadecimal(this);
+	}
+
+	public int getValue() {
+		return parseAsInt();
 	}
 
 }

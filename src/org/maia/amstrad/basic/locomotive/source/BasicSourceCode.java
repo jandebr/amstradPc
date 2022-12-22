@@ -149,8 +149,14 @@ public class BasicSourceCode implements Iterable<BasicSourceCodeLine> {
 
 	private int getLineNumberInsertionIndex(int lineNumber) {
 		List<BasicSourceCodeLine> lines = getLines();
-		int i = 0;
 		int j = lines.size() - 1;
+		if (j < 0)
+			return 0;
+		if (lineNumber <= lines.get(0).getLineNumber())
+			return 0;
+		if (lineNumber >= lines.get(j).getLineNumber())
+			return j;
+		int i = 0;
 		while (i <= j) {
 			int k = (i + j) / 2;
 			int ln = lines.get(k).getLineNumber();

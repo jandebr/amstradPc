@@ -1,6 +1,5 @@
 package org.maia.amstrad.basic.locomotive;
 
-import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicCompiler;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.BasicSyntaxException;
@@ -32,44 +31,35 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 	}
 
 	@Override
-	public byte[] compile(CharSequence sourceCode) throws BasicCompilationException {
+	public byte[] compile(CharSequence sourceCode) throws BasicSyntaxException {
 		int maxBytes = BasicRuntime.MEMORY_POINTER_END_OF_PROGRAM - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM;
 		ByteBuffer byteBuffer = new ByteBuffer(maxBytes);
 		ByteCodeGenerator byteCodeGenerator = new ByteCodeGenerator(byteBuffer);
-		try {
-			BasicSourceCode code = new BasicSourceCode(sourceCode);
-			for (BasicSourceCodeLine line : code) {
-				BasicSourceCodeLineScanner scanner = line.createScanner();
-				int i0 = byteBuffer.getSize();
-				byteBuffer.appendWord(0); // placeholder for line length
-				compileLine(scanner, byteCodeGenerator);
-				byteBuffer.replaceWordAt(i0, byteBuffer.getSize() - i0); // substitute actual line length
-			}
-			byteBuffer.appendWord(0); // end of program
-			return byteBuffer.getData();
-		} catch (BasicSyntaxException e) {
-			throw new BasicCompilationException(e.getMessage(), e.getText(), e.getPositionInText());
+		BasicSourceCode code = new BasicSourceCode(sourceCode);
+		for (BasicSourceCodeLine line : code) {
+			BasicSourceCodeLineScanner scanner = line.createScanner();
+			int i0 = byteBuffer.getSize();
+			byteBuffer.appendWord(0); // placeholder for line length
+			compileLine(scanner, byteCodeGenerator);
+			byteBuffer.replaceWordAt(i0, byteBuffer.getSize() - i0); // substitute actual line length
 		}
+		byteBuffer.appendWord(0); // end of program
+		return byteBuffer.getData();
 	}
 
 	private void compileLine(BasicSourceCodeLineScanner scanner, ByteCodeGenerator byteCodeGenerator)
 			throws BasicSyntaxException {
-		int lineNumber = scanner.scanLineNumber();
+		int lineNumber = scanner.firstToken().getValue();
 		byteCodeGenerator.getByteBuffer().appendWord(lineNumber);
-		compileLineBody(scanner, byteCodeGenerator);
-		byteCodeGenerator.getByteBuffer().appendByte((byte) 0); // end of line
-	}
-
-	private void compileLineBody(BasicSourceCodeLineScanner scanner, ByteCodeGenerator byteCodeGenerator)
-			throws BasicSyntaxException {
 		while (!scanner.atEndOfText()) {
-			SourceToken token = scanner.scanToken();
+			SourceToken token = scanner.nextToken();
 			if (token == null) {
-				throw new BasicCompilationException("Syntax error", scanner.getText(), scanner.getPosition());
+				throw new BasicSyntaxException("Syntax error", scanner.getText(), scanner.getPosition());
 			} else {
 				token.invite(byteCodeGenerator); // appends the token's byte code to the buffer
 			}
 		}
+		byteCodeGenerator.getByteBuffer().appendByte((byte) 0); // end of line
 	}
 
 	private static class ByteBuffer {
@@ -148,48 +138,48 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		@Override
 		public void visitSingleDigitDecimal(SingleDigitDecimalToken token) {
-			int n = token.parseAsInt();
+			int n = token.getValue();
 			getByteBuffer().appendByte((byte) (0x0e + n));
 		}
 
 		@Override
 		public void visitInteger8BitDecimal(Integer8BitDecimalToken token) {
-			int n = token.parseAsInt();
+			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x19);
 			getByteBuffer().appendByte((byte) n);
 		}
 
 		@Override
 		public void visitInteger16BitDecimal(Integer16BitDecimalToken token) {
-			int n = token.parseAsInt();
+			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x1a);
 			getByteBuffer().appendWord(n);
 		}
 
 		@Override
 		public void visitInteger16BitBinary(Integer16BitBinaryToken token) {
-			int n = token.parseAsInt();
+			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x1b);
 			getByteBuffer().appendWord(n);
 		}
 
 		@Override
 		public void visitInteger16BitHexadecimal(Integer16BitHexadecimalToken token) {
-			int n = token.parseAsInt();
+			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x1c);
 			getByteBuffer().appendWord(n);
 		}
 
 		@Override
 		public void visitLineNumber(LineNumberToken token) {
-			int n = token.parseAsInt();
+			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x1e);
 			getByteBuffer().appendWord(n);
 		}
 
 		@Override
 		public void visitFloatingPointNumber(FloatingPointNumberToken token) {
-			double value = token.parseAsDouble(); // assuming this is a positive number
+			double value = token.getValue(); // assuming this is a positive number
 			double fractionalPart = value % 1;
 			long integralPart = (long) (value - fractionalPart);
 			int[] mantissaBits = new int[32];

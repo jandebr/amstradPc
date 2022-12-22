@@ -11,4 +11,8 @@ public class Integer16BitDecimalToken extends NumericToken {
 		visitor.visitInteger16BitDecimal(this);
 	}
 
+	public int getValue() {
+		return parseAsInt();
+	}
+
 }

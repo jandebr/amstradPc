@@ -11,4 +11,8 @@ public class FloatingPointNumberToken extends NumericToken {
 		visitor.visitFloatingPointNumber(this);
 	}
 
+	public double getValue() {
+		return parseAsDouble();
+	}
+	
 }

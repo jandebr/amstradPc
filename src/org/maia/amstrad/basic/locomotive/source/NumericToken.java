@@ -8,11 +8,11 @@ public abstract class NumericToken extends SourceToken {
 		super(sourceFragment);
 	}
 
-	public int parseAsInt() {
+	protected int parseAsInt() {
 		return Integer.parseInt(getSourceFragment());
 	}
 
-	public double parseAsDouble() {
+	protected double parseAsDouble() {
 		return Double.parseDouble(getSourceFragment());
 	}
 

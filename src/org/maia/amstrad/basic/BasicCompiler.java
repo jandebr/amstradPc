@@ -2,6 +2,6 @@ package org.maia.amstrad.basic;
 
 public interface BasicCompiler {
 
-	byte[] compile(CharSequence sourceCode) throws BasicCompilationException;
+	byte[] compile(CharSequence sourceCode) throws BasicSyntaxException;
 
 }

@@ -11,4 +11,8 @@ public class Integer8BitDecimalToken extends NumericToken {
 		visitor.visitInteger8BitDecimal(this);
 	}
 
+	public int getValue() {
+		return parseAsInt();
+	}
+
 }

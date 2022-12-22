@@ -36,19 +36,13 @@ public class BasicSourceCodeLine implements Comparable<BasicSourceCodeLine> {
 	}
 
 	private int parseLineNumber(String text) throws BasicSyntaxException {
-		int i = 0;
-		while (i < text.length() && Character.isDigit(text.charAt(i)))
-			i++;
-		try {
-			int lineNumber = Integer.parseInt(text.substring(0, i));
-			if (lineNumber < BasicRuntime.MINIMUM_BASIC_LINE_NUMBER
-					|| lineNumber > BasicRuntime.MAXIMUM_BASIC_LINE_NUMBER) {
-				throw new BasicSyntaxException("Line number out of range", text, 0);
-			}
-			return lineNumber;
-		} catch (NumberFormatException e) {
-			throw new BasicSyntaxException("Expecting a line number", text, 0);
+		int lineNumber = new BasicSourceCodeLineScanner(text, LocomotiveBasicKeywords.getInstance()).firstToken()
+				.getValue();
+		if (lineNumber < BasicRuntime.MINIMUM_BASIC_LINE_NUMBER
+				|| lineNumber > BasicRuntime.MAXIMUM_BASIC_LINE_NUMBER) {
+			throw new BasicSyntaxException("Line number out of range", text, 0);
 		}
+		return lineNumber;
 	}
 
 	@Override
@@ -69,16 +63,12 @@ public class BasicSourceCodeLine implements Comparable<BasicSourceCodeLine> {
 	public String toStringInParsedForm() {
 		BasicSourceCodeLineScanner scanner = createScanner();
 		StringBuilder sb = new StringBuilder(256);
-		try {
-			sb.append(scanner.scanLineNumber());
-		} catch (BasicSyntaxException e) {
-			sb.append("0000");
-		}
 		while (!scanner.atEndOfText()) {
-			sb.append(' ');
+			if (sb.length() > 0)
+				sb.append(' ');
 			SourceToken token = null;
 			try {
-				token = scanner.scanToken();
+				token = scanner.nextToken();
 			} catch (BasicSyntaxException e) {
 			}
 			if (token != null) {

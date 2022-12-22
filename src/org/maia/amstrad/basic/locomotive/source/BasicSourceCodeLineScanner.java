@@ -12,6 +12,8 @@ public class BasicSourceCodeLineScanner {
 
 	private LocomotiveBasicKeywords basicKeywords;
 
+	private boolean atLeadingLineNumber;
+
 	private boolean lineNumberCanFollow;
 
 	private boolean insideRemark;
@@ -21,25 +23,31 @@ public class BasicSourceCodeLineScanner {
 	public BasicSourceCodeLineScanner(String text, LocomotiveBasicKeywords basicKeywords) {
 		this.text = text;
 		this.basicKeywords = basicKeywords;
+		positionAtLeadingLineNumber();
 	}
 
-	public int scanLineNumber() throws BasicSyntaxException {
+	private void positionAtLeadingLineNumber() {
+		while (!atEndOfText() && !isDecimalDigit(getCurrentChar()))
+			advancePosition();
+		atLeadingLineNumber = !atEndOfText();
+	}
+
+	public LineNumberToken firstToken() throws BasicSyntaxException {
 		int p0 = getPosition();
-		while (!atEndOfText() && isDecimalDigit(getCurrentChar()))
-			advancePosition();
-		int p1 = getPosition();
-		if (!atEndOfText() && isWhitespace(getCurrentChar()))
-			advancePosition();
-		try {
-			return Integer.parseInt(subText(p0, p1));
-		} catch (NumberFormatException e) {
-			setPosition(p0);
-			throw new BasicSyntaxException("Could not parse line number", getText(), getPosition());
+		if (atLeadingLineNumber) {
+			SourceToken token = nextToken();
+			if (token != null && token instanceof LineNumberToken) {
+				return (LineNumberToken) token;
+			} else {
+				setPosition(p0);
+			}
 		}
+		throw new BasicSyntaxException("No line number ahead", getText(), p0);
 	}
 
-	public SourceToken scanToken() throws BasicSyntaxException {
+	public SourceToken nextToken() throws BasicSyntaxException {
 		SourceToken token = null;
+		checkEndOfText();
 		char c = getCurrentChar();
 		if (c >= 0x20 && c <= 0x7e) {
 			if (insideRemark) {
@@ -95,8 +103,11 @@ public class BasicSourceCodeLineScanner {
 					token = scanLiteralQuotedToken();
 					lineNumberCanFollow = false;
 				} else {
-					token = new LiteralToken(String.valueOf(c));
+					int p0 = getPosition();
 					advancePosition();
+					while (!atEndOfText() && isWhitespace(getCurrentChar()))
+						advancePosition();
+					token = new LiteralToken(subText(p0, getPosition()));
 				}
 			}
 		}
@@ -106,6 +117,7 @@ public class BasicSourceCodeLineScanner {
 	private NumericToken scanAmpersandNumericToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		advancePosition();
+		checkEndOfText();
 		char c = getCurrentChar();
 		if (c == 'X') {
 			// binary
@@ -131,14 +143,14 @@ public class BasicSourceCodeLineScanner {
 		boolean stop = false;
 		while (!atEndOfText() && !stop) {
 			char c = getCurrentChar();
-			if (c == '.') {
+			if (c == '.' && !atLeadingLineNumber) {
 				if (point || exponent) {
 					stop = true;
 				} else {
 					point = true;
 					advancePosition();
 				}
-			} else if (c == 'e' || c == 'E') {
+			} else if ((c == 'e' || c == 'E') && !atLeadingLineNumber) {
 				if (exponent) {
 					stop = true;
 				} else {
@@ -158,7 +170,12 @@ public class BasicSourceCodeLineScanner {
 			return new FloatingPointNumberToken(sourceFragment);
 		} else {
 			int value = Integer.parseInt(sourceFragment);
-			if (lineNumberCanFollow) {
+			if (atLeadingLineNumber) {
+				atLeadingLineNumber = false;
+				if (!atEndOfText() && isWhitespace(getCurrentChar()))
+					advancePosition();
+				return new LineNumberToken(sourceFragment);
+			} else if (lineNumberCanFollow) {
 				return new LineNumberToken(sourceFragment);
 			} else {
 				if (value < 10) {
@@ -176,6 +193,7 @@ public class BasicSourceCodeLineScanner {
 
 	private OperatorToken scanNumericOperator() throws BasicSyntaxException {
 		int p0 = getPosition();
+		checkEndOfText();
 		char c0 = getCurrentChar();
 		advancePosition();
 		if (!atEndOfText()) {
@@ -233,8 +251,7 @@ public class BasicSourceCodeLineScanner {
 		return getText().length() - getPosition();
 	}
 
-	private char getCurrentChar() throws BasicSyntaxException {
-		checkEndOfText();
+	private char getCurrentChar() {
 		return getText().charAt(getPosition());
 	}
 

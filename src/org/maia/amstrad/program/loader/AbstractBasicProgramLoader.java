@@ -1,8 +1,8 @@
 package org.maia.amstrad.program.loader;
 
-import org.maia.amstrad.basic.BasicCompilationException;
 import org.maia.amstrad.basic.BasicProgramRuntime;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -23,7 +23,7 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 		if (program.getPayload().isText()) {
 			try {
 				getBasicRuntime().loadSourceCode(getSourceCodeToLoad(program));
-			} catch (BasicCompilationException e) {
+			} catch (BasicSyntaxException e) {
 				throw new AmstradProgramException(program,
 						"Failed to compile source code of " + program.getProgramName(), e);
 			}

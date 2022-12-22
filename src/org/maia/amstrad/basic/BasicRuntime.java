@@ -79,13 +79,13 @@ public abstract class BasicRuntime {
 
 	public abstract void poke(int memoryAddress, byte value);
 
-	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicCompilationException {
+	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicSyntaxException {
 		loadSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
 		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
 	}
 
-	public void loadSourceCode(CharSequence sourceCode) throws BasicCompilationException {
+	public void loadSourceCode(CharSequence sourceCode) throws BasicSyntaxException {
 		if (sourceCode != null) {
 			BasicCompiler compiler = new LocomotiveBasicCompiler();
 			loadByteCode(compiler.compile(sourceCode));

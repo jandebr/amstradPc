@@ -11,4 +11,8 @@ public class SingleDigitDecimalToken extends NumericToken {
 		visitor.visitSingleDigitDecimal(this);
 	}
 
+	public int getValue() {
+		return parseAsInt();
+	}
+
 }

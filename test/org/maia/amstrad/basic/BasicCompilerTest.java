@@ -31,7 +31,7 @@ public class BasicCompilerTest {
 	}
 
 	private static void testFilesInDirectory(File dir, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)
-			throws IOException, BasicCompilationException {
+			throws IOException, BasicSyntaxException {
 		File[] files = dir.listFiles();
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
@@ -44,7 +44,7 @@ public class BasicCompilerTest {
 	}
 
 	private static void testFile(File basicFile, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)
-			throws IOException, BasicCompilationException {
+			throws IOException, BasicSyntaxException {
 		System.out.println("Testing " + basicFile.getPath() + "...");
 		out.println(">> Testing " + basicFile.getPath());
 		loadFileWithoutCompiler(basicFile, amstradPc);
