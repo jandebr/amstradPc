@@ -58,8 +58,13 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 		getTokens().clear();
 	}
 
-	public boolean remove(SourceToken token) {
-		return getTokens().remove(token);
+	public void removeFirst(SourceToken token) {
+		getTokens().remove(token);
+	}
+
+	public void removeAll(SourceToken token) {
+		while (getTokens().remove(token))
+			;
 	}
 
 	public SourceToken remove(int index) {
@@ -72,10 +77,18 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 		}
 	}
 
-	public void replace(SourceToken tokenToReplace, SourceToken replacementToken) {
+	public void replaceFirst(SourceToken tokenToReplace, SourceToken replacementToken) {
 		int index = getIndexOf(tokenToReplace);
 		if (index >= 0) {
 			replace(index, replacementToken);
+		}
+	}
+
+	public void replaceAll(SourceToken tokenToReplace, SourceToken replacementToken) {
+		int index = getIndexOf(tokenToReplace);
+		while (index >= 0) {
+			replace(index, replacementToken);
+			index = getIndexOf(tokenToReplace);
 		}
 	}
 

@@ -11,6 +11,23 @@ public abstract class SourceToken {
 	public abstract void invite(SourceTokenVisitor visitor);
 
 	@Override
+	public int hashCode() {
+		return getSourceFragment().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SourceToken other = (SourceToken) obj;
+		return getSourceFragment().equals(other.getSourceFragment());
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getToStringTypeName());
