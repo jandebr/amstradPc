@@ -63,7 +63,7 @@ public class SourceTokenFactory {
 
 	public NumericToken createIntegerNumber(int value) throws BasicSyntaxException {
 		if (value < 10) {
-			return createIntegerSingleDecimalDigit(value);
+			return createIntegerSingleDigitDecimal(value);
 		} else if (value <= 0xff) {
 			return createInteger8BitDecimal(value);
 		} else if (value <= 0x7fff) {
@@ -73,7 +73,7 @@ public class SourceTokenFactory {
 		}
 	}
 
-	public SingleDigitDecimalToken createIntegerSingleDecimalDigit(int value) throws BasicSyntaxException {
+	public SingleDigitDecimalToken createIntegerSingleDigitDecimal(int value) throws BasicSyntaxException {
 		checkValueInRange(value, 0, 9);
 		return new SingleDigitDecimalToken(String.valueOf(value));
 	}
@@ -111,45 +111,39 @@ public class SourceTokenFactory {
 		}
 	}
 
-	public VariableToken createVariable(String sourceFragment) throws BasicSyntaxException {
-		if (sourceFragment.endsWith("%")) {
-			return createVariableOfIntegerType(sourceFragment);
-		} else if (sourceFragment.endsWith("$")) {
-			return createVariableOfStringType(sourceFragment);
-		} else if (sourceFragment.endsWith("!")) {
-			return createVariableOfFloatingPointType(sourceFragment);
+	public VariableToken createVariable(String sourceFragment) {
+		char type = sourceFragment.charAt(sourceFragment.length() - 1);
+		if (type == IntegerTypedVariableToken.TYPE_INDICATOR || type == FloatingPointTypedVariableToken.TYPE_INDICATOR
+				|| type == StringTypedVariableToken.TYPE_INDICATOR) {
+			String variableNameWithoutTypeIndicator = sourceFragment.substring(0, sourceFragment.length() - 1);
+			if (type == IntegerTypedVariableToken.TYPE_INDICATOR) {
+				return createVariableOfIntegerType(variableNameWithoutTypeIndicator);
+			} else if (type == FloatingPointTypedVariableToken.TYPE_INDICATOR) {
+				return createVariableOfFloatingPointType(variableNameWithoutTypeIndicator);
+			} else {
+				return createVariableOfStringType(variableNameWithoutTypeIndicator);
+			}
 		} else {
 			return createVariableUntyped(sourceFragment);
 		}
 	}
 
-	public IntegerTypedVariableToken createVariableOfIntegerType(String sourceFragment) throws BasicSyntaxException {
-		if (sourceFragment.endsWith("%")) {
-			return new IntegerTypedVariableToken(sourceFragment);
-		} else {
-			throw new BasicSyntaxException("Type mismatch", sourceFragment);
-		}
+	public IntegerTypedVariableToken createVariableOfIntegerType(String variableNameWithoutTypeIndicator) {
+		return new IntegerTypedVariableToken(
+				variableNameWithoutTypeIndicator + IntegerTypedVariableToken.TYPE_INDICATOR);
 	}
 
-	public StringTypedVariableToken createVariableOfStringType(String sourceFragment) throws BasicSyntaxException {
-		if (sourceFragment.endsWith("$")) {
-			return new StringTypedVariableToken(sourceFragment);
-		} else {
-			throw new BasicSyntaxException("Type mismatch", sourceFragment);
-		}
+	public FloatingPointTypedVariableToken createVariableOfFloatingPointType(String variableNameWithoutTypeIndicator) {
+		return new FloatingPointTypedVariableToken(
+				variableNameWithoutTypeIndicator + FloatingPointTypedVariableToken.TYPE_INDICATOR);
 	}
 
-	public FloatingPointTypedVariableToken createVariableOfFloatingPointType(String sourceFragment)
-			throws BasicSyntaxException {
-		if (sourceFragment.endsWith("!")) {
-			return new FloatingPointTypedVariableToken(sourceFragment);
-		} else {
-			throw new BasicSyntaxException("Type mismatch", sourceFragment);
-		}
+	public StringTypedVariableToken createVariableOfStringType(String variableNameWithoutTypeIndicator) {
+		return new StringTypedVariableToken(variableNameWithoutTypeIndicator + StringTypedVariableToken.TYPE_INDICATOR);
 	}
 
-	public UntypedVariableToken createVariableUntyped(String sourceFragment) {
-		return new UntypedVariableToken(sourceFragment);
+	public UntypedVariableToken createVariableUntyped(String variableName) {
+		return new UntypedVariableToken(variableName);
 	}
 
 	private void checkValueInRange(int value, int minValue, int maxValue) throws BasicSyntaxException {

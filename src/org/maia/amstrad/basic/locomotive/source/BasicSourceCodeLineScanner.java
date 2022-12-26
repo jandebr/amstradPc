@@ -88,11 +88,12 @@ public class BasicSourceCodeLineScanner {
 						insideData = keyword.isData();
 					} else {
 						// Variable
-						if (symbol.endsWith("%")) {
+						char type = symbol.charAt(symbol.length() - 1);
+						if (type == IntegerTypedVariableToken.TYPE_INDICATOR) {
 							token = new IntegerTypedVariableToken(symbol);
-						} else if (symbol.endsWith("$")) {
+						} else if (type == StringTypedVariableToken.TYPE_INDICATOR) {
 							token = new StringTypedVariableToken(symbol);
-						} else if (symbol.endsWith("!")) {
+						} else if (type == FloatingPointTypedVariableToken.TYPE_INDICATOR) {
 							token = new FloatingPointTypedVariableToken(symbol);
 						} else {
 							token = new UntypedVariableToken(symbol);

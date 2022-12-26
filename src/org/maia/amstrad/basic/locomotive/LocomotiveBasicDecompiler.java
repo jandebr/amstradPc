@@ -5,6 +5,10 @@ import org.maia.amstrad.basic.BasicDecompiler;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
 import org.maia.amstrad.basic.locomotive.source.FloatingPointNumberToken;
+import org.maia.amstrad.basic.locomotive.source.FloatingPointTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.source.InstructionSeparatorToken;
+import org.maia.amstrad.basic.locomotive.source.IntegerTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.source.StringTypedVariableToken;
 
 public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implements BasicDecompiler {
 
@@ -67,18 +71,18 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 			if (b == 0x01) {
 				// statement seperator
 				if (!nextByteIsKeywordPrecededByInstructionSeparator()) {
-					line.append(':');
+					line.append(InstructionSeparatorToken.SEPARATOR);
 				}
 			} else if (b >= 0x02 && b <= 0x0d) {
 				// variable
 				nextWord(); // memory offset
 				line.append(nextSymbolicName());
 				if (b == 0x02) {
-					line.append('%'); // integer variable
+					line.append(IntegerTypedVariableToken.TYPE_INDICATOR); // integer variable
 				} else if (b == 0x03) {
-					line.append('$'); // string variable
+					line.append(StringTypedVariableToken.TYPE_INDICATOR); // string variable
 				} else if (b == 0x04) {
-					line.append('!'); // floating point variable
+					line.append(FloatingPointTypedVariableToken.TYPE_INDICATOR); // floating point variable
 				}
 			} else if (b >= 0x0e && b <= 0x18) {
 				// number constant 0 to 10 (although 10 is usually 0x19 0x0a)
