@@ -151,7 +151,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		}
 	}
 
-	protected void closeModalWindow() {
+	public void closeModalWindow() {
 		setModalWindowOpen(false);
 		setModalWindowCloseButtonBounds(null);
 	}
@@ -180,7 +180,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		this.mouseOverButton = mouseOverButton;
 	}
 
-	protected boolean isModalWindowOpen() {
+	public boolean isModalWindowOpen() {
 		return modalWindowOpen;
 	}
 

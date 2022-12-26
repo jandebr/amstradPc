@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.List;
-import java.util.Stack;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradMonitorMode;
@@ -14,12 +13,16 @@ import org.maia.amstrad.pc.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.display.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
-import org.maia.amstrad.program.AmstradProgram.UserControl;
-import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.loader.AmstradProgramLoader;
-import org.maia.amstrad.program.loader.AmstradProgramLoaderFactory;
+import org.maia.amstrad.program.browser.navigate.FolderItemList;
+import org.maia.amstrad.program.browser.navigate.ItemList;
+import org.maia.amstrad.program.browser.navigate.ProgramImageGallery;
+import org.maia.amstrad.program.browser.navigate.ProgramInfoLine;
+import org.maia.amstrad.program.browser.navigate.ProgramInfoSheet;
+import org.maia.amstrad.program.browser.navigate.ProgramInfoTextSpan;
+import org.maia.amstrad.program.browser.navigate.ProgramMenu;
+import org.maia.amstrad.program.browser.navigate.ProgramMenuItem;
+import org.maia.amstrad.program.browser.navigate.StackedFolderItemList;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.util.StringUtils;
 
@@ -70,14 +73,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				Window.PROGRAM_INFO_STANDALONE);
 		ds.setProgramInfoSheet(ds.createProgramInfoSheet(program));
 		return ds;
-	}
-
-	public void addListener(ProgramBrowserListener listener) {
-		getBrowserListeners().add(listener);
-	}
-
-	public void removeListener(ProgramBrowserListener listener) {
-		getBrowserListeners().remove(listener);
 	}
 
 	@Override
@@ -405,7 +400,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			if (stack.canBrowseIntoSelectedItem()) {
 				stack.browseIntoSelectedItem();
 			} else if (stack.canCreateProgramMenu()) {
-				setProgramMenu(stack.createProgramMenu(6));
+				AmstradProgram program = stack.getSelectedItem().asProgram().getProgram();
+				setProgramMenu(createProgramMenu(program, 6));
 				setCurrentWindow(Window.PROGRAM_MENU_MODAL);
 			}
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
@@ -473,7 +469,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	@Override
-	protected void closeModalWindow() {
+	public void closeModalWindow() {
 		super.closeModalWindow();
 		if (isStandaloneInfo()) {
 			close();
@@ -489,109 +485,50 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		getStackedFolderItemList().reset();
 	}
 
-	private ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {
-		ProgramInfoSheet sheet = new ProgramInfoSheet(program, 18);
-		int bg = COLOR_MODAL_BACKGROUND;
-		int maxWidth = 30;
-		AmstradMonitorMode mode = program.getPreferredMonitorMode();
-		if (mode != null) {
-			if (mode.equals(AmstradMonitorMode.GREEN)) {
-				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
-						new ProgramInfoTextSpan("\u00FE GREEN", 0, 9)));
-			} else if (mode.equals(AmstradMonitorMode.GRAY)) {
-				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 5), bg, bg),
-						new ProgramInfoTextSpan("\u00FE GRAY", 0, 13)));
-			} else if (mode.equals(AmstradMonitorMode.COLOR)) {
-				ProgramInfoLine line = new ProgramInfoLine(
-						new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
-						new ProgramInfoTextSpan("\u00FE ", 0, 25));
-				for (int i = 0; i < 5; i++)
-					line.add(new ProgramInfoTextSpan(String.valueOf("COLOR".charAt(i)), 0, 14 + i));
-				sheet.add(line);
-			}
+	public void openProgramInfoModalWindow(AmstradProgram program) {
+		setProgramInfoSheet(createProgramInfoSheet(program));
+		setCurrentWindow(Window.PROGRAM_INFO_MODAL);
+	}
+
+	public void openProgramImageGalleryModalWindow(AmstradProgram program) {
+		setProgramImageGallery(new ProgramImageGallery(program));
+		setCurrentWindow(Window.PROGRAM_IMAGE_GALLERY_MODAL);
+	}
+
+	public void addListener(ProgramBrowserListener listener) {
+		getBrowserListeners().add(listener);
+	}
+
+	public void removeListener(ProgramBrowserListener listener) {
+		getBrowserListeners().remove(listener);
+	}
+
+	public void notifyProgramLoaded(AmstradProgram program) {
+		for (ProgramBrowserListener listener : getBrowserListeners()) {
+			listener.programLoadedFromBrowser(this, program);
 		}
-		if (!StringUtils.isEmpty(program.getAuthor())) {
-			if (sheet.isEmpty())
-				sheet.add(new ProgramInfoLine());
-			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("Author", bg, 25)));
-			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getAuthor(), maxWidth)) {
-				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 26)));
-			}
+	}
+
+	public void notifyProgramRun(AmstradProgram program) {
+		for (ProgramBrowserListener listener : getBrowserListeners()) {
+			listener.programRunFromBrowser(this, program);
 		}
-		if (program.getProductionYear() > 0) {
-			if (!sheet.isEmpty())
-				sheet.add(new ProgramInfoLine());
-			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan("Year", bg, 25)));
-			sheet.add(
-					new ProgramInfoLine(new ProgramInfoTextSpan(String.valueOf(program.getProductionYear()), bg, 26)));
-		}
-		if (!StringUtils.isEmpty(program.getNameOfTape()) || program.getBlocksOnTape() > 0) {
-			if (!sheet.isEmpty())
-				sheet.add(new ProgramInfoLine());
-			String tape = !StringUtils.isEmpty(program.getNameOfTape()) ? program.getNameOfTape() : "?";
-			String blocks = program.getBlocksOnTape() > 0 ? String.valueOf(program.getBlocksOnTape()) : "?";
-			sheet.add(
-					new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth("Tape", 20) + " Blocks", bg, 25)));
-			sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(tape, 20) + " ", bg, 26),
-					new ProgramInfoTextSpan(blocks, bg, 26)));
-		}
-		if (!StringUtils.isEmpty(program.getProgramDescription())) {
-			if (!sheet.isEmpty())
-				sheet.add(new ProgramInfoLine());
-			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getProgramDescription(), maxWidth)) {
-				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 17)));
-			}
-		}
-		if (!StringUtils.isEmpty(program.getAuthoringInformation())) {
-			if (!sheet.isEmpty())
-				sheet.add(new ProgramInfoLine());
-			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getAuthoringInformation(), maxWidth)) {
-				sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(text, bg, 4)));
-			}
-		}
-		if (!program.getUserControls().isEmpty()) {
-			if (!sheet.isEmpty()) {
-				sheet.add(new ProgramInfoLine());
-				sheet.add(new ProgramInfoLine());
-			}
-			sheet.add(new ProgramInfoLine(
-					new ProgramInfoTextSpan("\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F", bg, 7)));
-			for (UserControl uc : program.getUserControls()) {
-				sheet.add(new ProgramInfoLine());
-				if (uc.getHeading() != null) {
-					List<String> hlines = StringUtils.splitOnNewlinesAndWrap(uc.getHeading(), maxWidth - 6);
-					for (int i = 0; i < hlines.size(); i++) {
-						String text = hlines.get(i);
-						if (hlines.size() == 1) {
-							sheet.add(new ProgramInfoLine(
-									new ProgramInfoTextSpan("\u00CF\u00DC " + text + " \u00DD\u00CF", bg, 7)));
-						} else if (i == 0) {
-							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(
-									"\u00CF\u00DC " + StringUtils.fitWidth(text, maxWidth - 6) + " \u00DD\u00CF", bg,
-									7)));
-						} else {
-							sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(
-									"\u00CF  " + StringUtils.fitWidth(text, maxWidth - 6) + "  \u00CF", bg, 7)));
-						}
-					}
-					sheet.add(new ProgramInfoLine());
-				}
-				sheet.add(new ProgramInfoLine(
-						new ProgramInfoTextSpan(StringUtils.fitWidth(uc.getKey(), maxWidth), bg, 16)));
-				for (String text : StringUtils.splitOnNewlinesAndWrap(uc.getDescription(), maxWidth - 2)) {
-					sheet.add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.spaces(2) + text, bg, 26)));
-				}
-			}
-		}
-		sheet.add(new ProgramInfoLine());
-		if (mode != null) {
-			sheet.browseOneItemDown();
-		}
-		return sheet;
 	}
 
 	private StackedFolderItemList createStackedFolderItemList(int maxItemsShowing) {
-		return new StackedFolderItemList(maxItemsShowing);
+		return new StackedFolderItemList(getProgramRepository(), maxItemsShowing);
+	}
+
+	private ProgramMenu createProgramMenu(AmstradProgram program, int maxItemsShowing) {
+		return new ProgramMenu(this, program, maxItemsShowing);
+	}
+
+	private ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {
+		ProgramInfoSheet sheet = new ProgramInfoSheet(program, 18, 30, COLOR_MODAL_BACKGROUND);
+		if (program.getPreferredMonitorMode() != null) {
+			sheet.browseOneItemDown();
+		}
+		return sheet;
 	}
 
 	private AmstradProgram getCurrentProgram() {
@@ -674,581 +611,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		PROGRAM_INFO_STANDALONE,
 
 		PROGRAM_IMAGE_GALLERY_MODAL;
-
-	}
-
-	private class StackedFolderItemList {
-
-		private Stack<FolderItemList> stack;
-
-		private int maxItemsShowing;
-
-		public StackedFolderItemList(int maxItemsShowing) {
-			this.stack = new Stack<FolderItemList>();
-			this.maxItemsShowing = maxItemsShowing;
-			reset();
-		}
-
-		public void reset() {
-			getProgramRepository().refresh();
-			getStack().clear();
-			getStack().push(new FolderItemList(getProgramRepository().getRootNode(), getMaxItemsShowing()));
-		}
-
-		public void browseIntoSelectedItem() {
-			if (canBrowseIntoSelectedItem()) {
-				push(new FolderItemList(getSelectedItem().asFolder(), getMaxItemsShowing()));
-			}
-		}
-
-		public void browseBack() {
-			if (size() > 1) {
-				pop();
-			}
-		}
-
-		public boolean canBrowseIntoSelectedItem() {
-			Node selectedItem = getSelectedItem();
-			if (selectedItem != null) {
-				return selectedItem.isFolder();
-			} else {
-				return false;
-			}
-		}
-
-		public boolean canCreateProgramMenu() {
-			Node selectedItem = getSelectedItem();
-			if (selectedItem != null) {
-				return selectedItem.isProgram();
-			} else {
-				return false;
-			}
-		}
-
-		public ProgramMenu createProgramMenu(int maxItemsShowing) {
-			ProgramMenu menu = null;
-			if (canCreateProgramMenu()) {
-				AmstradProgram program = getSelectedItem().asProgram().getProgram();
-				menu = new ProgramMenu(program, maxItemsShowing);
-			}
-			return menu;
-		}
-
-		public Node getSelectedItem() {
-			Node selectedItem = null;
-			if (size() > 0) {
-				selectedItem = getStack().peek().getSelectedItem();
-			}
-			return selectedItem;
-		}
-
-		public int size() {
-			return getStack().size();
-		}
-
-		public FolderItemList peek() {
-			return getStack().peek();
-		}
-
-		public FolderItemList peek(int distanceFromTop) {
-			return getStack().get(size() - 1 - distanceFromTop);
-		}
-
-		private void push(FolderItemList itemList) {
-			getStack().push(itemList);
-		}
-
-		private void pop() {
-			getStack().pop();
-		}
-
-		private Stack<FolderItemList> getStack() {
-			return stack;
-		}
-
-		public int getMaxItemsShowing() {
-			return maxItemsShowing;
-		}
-
-	}
-
-	private abstract class ItemList {
-
-		private int maxItemsShowing;
-
-		private int indexOfFirstItemShowing;
-
-		private int indexOfSelectedItem;
-
-		protected ItemList(int maxItemsShowing) {
-			this.maxItemsShowing = maxItemsShowing;
-		}
-
-		public void browseHome() {
-			setIndexOfFirstItemShowing(0);
-			setIndexOfSelectedItem(0);
-		}
-
-		public void browseEnd() {
-			setIndexOfFirstItemShowing(Math.max(size() - getMaxItemsShowing(), 0));
-			setIndexOfSelectedItem(size() - 1);
-		}
-
-		public void browseOneItemDown() {
-			int i = getIndexOfSelectedItem();
-			if (i < size() - 1) {
-				if (i - getIndexOfFirstItemShowing() + 1 == getMaxItemsShowing()) {
-					setIndexOfFirstItemShowing(getIndexOfFirstItemShowing() + 1);
-				}
-				setIndexOfSelectedItem(i + 1);
-			}
-		}
-
-		public void browseOneItemUp() {
-			int i = getIndexOfSelectedItem();
-			if (i > 0) {
-				if (i == getIndexOfFirstItemShowing()) {
-					setIndexOfFirstItemShowing(getIndexOfFirstItemShowing() - 1);
-				}
-				setIndexOfSelectedItem(i - 1);
-			}
-		}
-
-		public void browseOnePageDown() {
-			for (int i = 0; i < getMaxItemsShowing(); i++)
-				browseOneItemDown();
-		}
-
-		public void browseOnePageUp() {
-			for (int i = 0; i < getMaxItemsShowing(); i++)
-				browseOneItemUp();
-		}
-
-		public boolean isEmpty() {
-			return size() == 0;
-		}
-
-		public abstract int size();
-
-		public int getIndexOfLastItemShowing() {
-			return Math.min(getIndexOfFirstItemShowing() + getMaxItemsShowing(), size()) - 1;
-		}
-
-		public int getMaxItemsShowing() {
-			return maxItemsShowing;
-		}
-
-		public int getIndexOfFirstItemShowing() {
-			return indexOfFirstItemShowing;
-		}
-
-		private void setIndexOfFirstItemShowing(int index) {
-			this.indexOfFirstItemShowing = index;
-		}
-
-		public int getIndexOfSelectedItem() {
-			return indexOfSelectedItem;
-		}
-
-		private void setIndexOfSelectedItem(int index) {
-			this.indexOfSelectedItem = index;
-		}
-
-	}
-
-	private class FolderItemList extends ItemList {
-
-		private FolderNode folderNode;
-
-		public FolderItemList(FolderNode folderNode, int maxItemsShowing) {
-			super(maxItemsShowing);
-			this.folderNode = folderNode;
-		}
-
-		@Override
-		public int size() {
-			return getItems().size();
-		}
-
-		public Node getSelectedItem() {
-			Node selectedItem = null;
-			if (!isEmpty()) {
-				return getItem(getIndexOfSelectedItem());
-			}
-			return selectedItem;
-		}
-
-		public Node getItem(int index) {
-			return getItems().get(index);
-		}
-
-		public List<Node> getItems() {
-			return getFolderNode().getChildNodes();
-		}
-
-		private FolderNode getFolderNode() {
-			return folderNode;
-		}
-
-	}
-
-	private class ProgramMenu extends ItemList {
-
-		private AmstradProgram program;
-
-		private List<ProgramMenuItem> menuItems;
-
-		public ProgramMenu(AmstradProgram program, int maxItemsShowing) {
-			super(maxItemsShowing);
-			this.program = program;
-			this.menuItems = new Vector<ProgramMenuItem>();
-			populateMenu();
-		}
-
-		private void populateMenu() {
-			AmstradProgram program = getProgram();
-			addMenuItem(new ProgramRunMenuItem(program));
-			addMenuItem(new ProgramLoadMenuItem(program));
-			addMenuItem(new ProgramInfoMenuItem(program));
-			addMenuItem(new ProgramImagesMenuItem(program));
-			addMenuItem(new ProgramCloseMenuItem(program));
-		}
-
-		private void addMenuItem(ProgramMenuItem menuItem) {
-			getMenuItems().add(menuItem);
-		}
-
-		@Override
-		public int size() {
-			return getMenuItems().size();
-		}
-
-		public ProgramMenuItem getSelectedItem() {
-			ProgramMenuItem selectedItem = null;
-			if (!isEmpty()) {
-				return getItem(getIndexOfSelectedItem());
-			}
-			return selectedItem;
-		}
-
-		public ProgramMenuItem getItem(int index) {
-			return getMenuItems().get(index);
-		}
-
-		public AmstradProgram getProgram() {
-			return program;
-		}
-
-		public List<ProgramMenuItem> getMenuItems() {
-			return menuItems;
-		}
-
-	}
-
-	private abstract class ProgramMenuItem {
-
-		private AmstradProgram program;
-
-		private String label;
-
-		protected ProgramMenuItem(AmstradProgram program, String label) {
-			this.program = program;
-			this.label = label;
-		}
-
-		public abstract void execute();
-
-		public boolean isEnabled() {
-			return true;
-		}
-
-		public AmstradProgram getProgram() {
-			return program;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-	}
-
-	private abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
-
-		private long executeStartTime;
-
-		private boolean failed;
-
-		protected ProgramLaunchMenuItem(AmstradProgram program, String label) {
-			super(program, label);
-		}
-
-		@Override
-		public void execute() {
-			if (isEnabled()) {
-				executeStartTime = System.currentTimeMillis();
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						AmstradMonitorMode mode = getProgram().getPreferredMonitorMode();
-						try {
-							releaseKeyboard();
-							getAmstradPc().reboot(true, true);
-							launchProgram();
-							failed = false;
-							closeModalWindow();
-							close(); // restores monitor mode & settings
-							if (mode != null) {
-								getAmstradPc().setMonitorMode(mode);
-							}
-						} catch (AmstradProgramException exc) {
-							System.err.println(exc);
-							acquireKeyboard();
-							failed = true;
-						} finally {
-							executeStartTime = 0L;
-						}
-					}
-				}).start();
-			}
-		}
-
-		protected abstract void launchProgram() throws AmstradProgramException;
-
-		protected AmstradProgramLoader getProgramLoader() {
-			return AmstradProgramLoaderFactory.getInstance().createLoaderFor(getProgram(), getAmstradPc());
-		}
-
-		@Override
-		public boolean isEnabled() {
-			return !failed;
-		}
-
-		@Override
-		public String getLabel() {
-			String label = super.getLabel();
-			if (executeStartTime > 0L) {
-				int t = (int) ((System.currentTimeMillis() - executeStartTime) / 100L);
-				label += ' ';
-				label += (char) (192 + t % 4);
-			} else if (failed) {
-				label += ' ';
-				label += (char) 225;
-			}
-			return label;
-		}
-
-	}
-
-	private class ProgramLoadMenuItem extends ProgramLaunchMenuItem {
-
-		public ProgramLoadMenuItem(AmstradProgram program) {
-			super(program, "Load");
-		}
-
-		@Override
-		protected void launchProgram() throws AmstradProgramException {
-			getProgramLoader().load(getProgram());
-			for (ProgramBrowserListener listener : getBrowserListeners()) {
-				listener.programLoadedFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
-			}
-		}
-
-	}
-
-	private class ProgramRunMenuItem extends ProgramLaunchMenuItem {
-
-		public ProgramRunMenuItem(AmstradProgram program) {
-			super(program, "Run");
-		}
-
-		@Override
-		protected void launchProgram() throws AmstradProgramException {
-			getProgramLoader().load(getProgram()).run();
-			for (ProgramBrowserListener listener : getBrowserListeners()) {
-				listener.programRunFromBrowser(ProgramBrowserDisplaySource.this, getProgram());
-			}
-		}
-
-	}
-
-	private class ProgramInfoMenuItem extends ProgramMenuItem {
-
-		public ProgramInfoMenuItem(AmstradProgram program) {
-			super(program, "Info");
-		}
-
-		@Override
-		public void execute() {
-			if (isEnabled()) {
-				setProgramInfoSheet(createProgramInfoSheet(getProgram()));
-				closeModalWindow();
-				setCurrentWindow(Window.PROGRAM_INFO_MODAL);
-			}
-		}
-
-		@Override
-		public boolean isEnabled() {
-			return getProgram().hasDescriptiveInfo();
-		}
-
-	}
-
-	private class ProgramImagesMenuItem extends ProgramMenuItem {
-
-		public ProgramImagesMenuItem(AmstradProgram program) {
-			super(program, "Images");
-		}
-
-		@Override
-		public void execute() {
-			if (isEnabled()) {
-				setProgramImageGallery(new ProgramImageGallery(getProgram()));
-				closeModalWindow();
-				setCurrentWindow(Window.PROGRAM_IMAGE_GALLERY_MODAL);
-			}
-		}
-
-		@Override
-		public boolean isEnabled() {
-			return !getProgram().getImages().isEmpty();
-		}
-
-	}
-
-	private class ProgramCloseMenuItem extends ProgramMenuItem {
-
-		public ProgramCloseMenuItem(AmstradProgram program) {
-			super(program, "Close");
-		}
-
-		@Override
-		public void execute() {
-			closeModalWindow();
-		}
-
-	}
-
-	private class ProgramInfoSheet extends ItemList {
-
-		private AmstradProgram program;
-
-		private List<ProgramInfoLine> lineItems;
-
-		public ProgramInfoSheet(AmstradProgram program, int maxItemsShowing) {
-			super(maxItemsShowing);
-			this.program = program;
-			this.lineItems = new Vector<ProgramInfoLine>();
-		}
-
-		public void add(ProgramInfoLine lineItem) {
-			getLineItems().add(lineItem);
-		}
-
-		@Override
-		public int size() {
-			return getLineItems().size();
-		}
-
-		public ProgramInfoLine getLineItem(int index) {
-			return getLineItems().get(index);
-		}
-
-		public AmstradProgram getProgram() {
-			return program;
-		}
-
-		public List<ProgramInfoLine> getLineItems() {
-			return lineItems;
-		}
-
-	}
-
-	private static class ProgramInfoLine {
-
-		private List<ProgramInfoTextSpan> textSpans;
-
-		public ProgramInfoLine() {
-			this.textSpans = new Vector<ProgramInfoTextSpan>();
-		}
-
-		public ProgramInfoLine(ProgramInfoTextSpan... textSpans) {
-			this();
-			for (int i = 0; i < textSpans.length; i++) {
-				add(textSpans[i]);
-			}
-		}
-
-		public void add(ProgramInfoTextSpan textSpan) {
-			getTextSpans().add(textSpan);
-		}
-
-		public List<ProgramInfoTextSpan> getTextSpans() {
-			return textSpans;
-		}
-
-	}
-
-	private static class ProgramInfoTextSpan {
-
-		private String text;
-
-		private int paperColorIndex;
-
-		private int penColorIndex;
-
-		public ProgramInfoTextSpan(String text, int paperColorIndex, int penColorIndex) {
-			this.text = text;
-			this.paperColorIndex = paperColorIndex;
-			this.penColorIndex = penColorIndex;
-		}
-
-		public String getText() {
-			return text;
-		}
-
-		public int getPaperColorIndex() {
-			return paperColorIndex;
-		}
-
-		public int getPenColorIndex() {
-			return penColorIndex;
-		}
-
-	}
-
-	private class ProgramImageGallery extends ItemList {
-
-		private AmstradProgram program;
-
-		public ProgramImageGallery(AmstradProgram program) {
-			super(1);
-			this.program = program;
-		}
-
-		public ProgramImage getCurrentImage() {
-			return getImage(getIndexOfSelectedItem());
-		}
-
-		public ProgramImage getImage(int index) {
-			return getProgram().getImages().get(index);
-		}
-
-		@Override
-		public int size() {
-			return getProgram().getImages().size();
-		}
-
-		public boolean hasCaptions() {
-			for (int i = 0; i < size(); i++) {
-				if (!StringUtils.isEmpty(getImage(i).getCaption()))
-					return true;
-			}
-			return false;
-		}
-
-		public AmstradProgram getProgram() {
-			return program;
-		}
 
 	}
 

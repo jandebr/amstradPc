@@ -420,7 +420,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		// Subclasses may override this method
 	}
 
-	protected AmstradPc getAmstradPc() {
+	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}
 
