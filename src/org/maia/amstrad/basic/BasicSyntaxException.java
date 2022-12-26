@@ -6,6 +6,10 @@ public class BasicSyntaxException extends Exception {
 
 	private int positionInText;
 
+	public BasicSyntaxException(String message, String text) {
+		this(message, text, 0);
+	}
+
 	public BasicSyntaxException(String message, String text, int positionInText) {
 		super(message);
 		this.text = text;

@@ -32,4 +32,10 @@ public interface SourceTokenVisitor {
 
 	void visitLiteral(LiteralToken token);
 
+	void visitLiteralQuoted(LiteralQuotedToken token);
+
+	void visitLiteralRemark(LiteralRemarkToken token);
+
+	void visitLiteralData(LiteralDataToken token);
+
 }

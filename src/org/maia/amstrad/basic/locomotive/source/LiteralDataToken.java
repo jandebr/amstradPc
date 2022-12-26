@@ -1,9 +1,14 @@
 package org.maia.amstrad.basic.locomotive.source;
 
-public class LiteralDataToken extends LiteralToken {
+public class LiteralDataToken extends AbstractLiteralToken {
 
 	public LiteralDataToken(String sourceFragment) {
 		super(sourceFragment);
+	}
+
+	@Override
+	public void invite(SourceTokenVisitor visitor) {
+		visitor.visitLiteralData(this);
 	}
 
 	public String[] getDataElements() {

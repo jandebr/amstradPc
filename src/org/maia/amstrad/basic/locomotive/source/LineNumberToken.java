@@ -1,6 +1,6 @@
 package org.maia.amstrad.basic.locomotive.source;
 
-public class LineNumberToken extends Integer16BitDecimalToken {
+public class LineNumberToken extends NumericToken {
 
 	public LineNumberToken(String sourceFragment) {
 		super(sourceFragment);
@@ -9,6 +9,10 @@ public class LineNumberToken extends Integer16BitDecimalToken {
 	@Override
 	public void invite(SourceTokenVisitor visitor) {
 		visitor.visitLineNumber(this);
+	}
+
+	public int getValue() {
+		return parseAsInt();
 	}
 
 }

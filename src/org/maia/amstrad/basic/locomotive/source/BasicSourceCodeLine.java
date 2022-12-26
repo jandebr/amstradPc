@@ -40,7 +40,7 @@ public class BasicSourceCodeLine implements Comparable<BasicSourceCodeLine> {
 				.getValue();
 		if (lineNumber < BasicRuntime.MINIMUM_BASIC_LINE_NUMBER
 				|| lineNumber > BasicRuntime.MAXIMUM_BASIC_LINE_NUMBER) {
-			throw new BasicSyntaxException("Line number out of range", text, 0);
+			throw new BasicSyntaxException("Line number out of range", text);
 		}
 		return lineNumber;
 	}

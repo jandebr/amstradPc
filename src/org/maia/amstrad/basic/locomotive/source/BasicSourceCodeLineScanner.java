@@ -99,7 +99,7 @@ public class BasicSourceCodeLineScanner {
 						}
 						lineNumberCanFollow = false;
 					}
-				} else if (c == LiteralToken.QUOTE) {
+				} else if (c == LiteralQuotedToken.QUOTE) {
 					token = scanLiteralQuotedToken();
 					lineNumberCanFollow = false;
 				} else {
@@ -224,7 +224,7 @@ public class BasicSourceCodeLineScanner {
 	private LiteralQuotedToken scanLiteralQuotedToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		advancePosition();
-		while (!atEndOfText() && getCurrentChar() != LiteralToken.QUOTE)
+		while (!atEndOfText() && getCurrentChar() != LiteralQuotedToken.QUOTE)
 			advancePosition();
 		if (!atEndOfText())
 			advancePosition();

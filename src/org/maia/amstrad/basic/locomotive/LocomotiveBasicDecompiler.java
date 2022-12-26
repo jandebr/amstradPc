@@ -4,6 +4,7 @@ import org.maia.amstrad.basic.BasicDecompilationException;
 import org.maia.amstrad.basic.BasicDecompiler;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
+import org.maia.amstrad.basic.locomotive.source.FloatingPointNumberToken;
 
 public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implements BasicDecompiler {
 
@@ -104,7 +105,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 			} else if (b == 0x1f) {
 				// floating point value
 				double v = nextFloatingPoint();
-				line.append(getFloatingPointFormat().format(v));
+				line.append(FloatingPointNumberToken.format(v));
 			} else if (b >= 0x20 && b <= 0x7e && !(isRSXenabled() && b == 0x7c)) {
 				// ASCII printable symbols
 				line.append((char) b);
@@ -149,8 +150,8 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 				line.append("NOT");
 			} else {
 				// keyword
-				BasicKeyword keyword = b < 0xff ? getBasicKeywords().getKeyword((byte) b) : getBasicKeywords()
-						.getKeyword((byte) b, (byte) nextByte());
+				BasicKeyword keyword = b < 0xff ? getBasicKeywords().getKeyword((byte) b)
+						: getBasicKeywords().getKeyword((byte) b, (byte) nextByte());
 				if (keyword != null) {
 					line.append(keyword.getSourceForm());
 				} else {

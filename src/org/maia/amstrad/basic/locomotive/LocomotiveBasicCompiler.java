@@ -4,6 +4,7 @@ import org.maia.amstrad.basic.BasicCompiler;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
+import org.maia.amstrad.basic.locomotive.source.AbstractLiteralToken;
 import org.maia.amstrad.basic.locomotive.source.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.source.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.source.BasicSourceCodeLine;
@@ -17,6 +18,9 @@ import org.maia.amstrad.basic.locomotive.source.Integer16BitHexadecimalToken;
 import org.maia.amstrad.basic.locomotive.source.Integer8BitDecimalToken;
 import org.maia.amstrad.basic.locomotive.source.IntegerTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.source.LineNumberToken;
+import org.maia.amstrad.basic.locomotive.source.LiteralDataToken;
+import org.maia.amstrad.basic.locomotive.source.LiteralQuotedToken;
+import org.maia.amstrad.basic.locomotive.source.LiteralRemarkToken;
 import org.maia.amstrad.basic.locomotive.source.LiteralToken;
 import org.maia.amstrad.basic.locomotive.source.OperatorToken;
 import org.maia.amstrad.basic.locomotive.source.SingleDigitDecimalToken;
@@ -313,6 +317,25 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		@Override
 		public void visitLiteral(LiteralToken token) {
+			appendByteCodeForLiteral(token);
+		}
+
+		@Override
+		public void visitLiteralQuoted(LiteralQuotedToken token) {
+			appendByteCodeForLiteral(token);
+		}
+
+		@Override
+		public void visitLiteralRemark(LiteralRemarkToken token) {
+			appendByteCodeForLiteral(token);
+		}
+
+		@Override
+		public void visitLiteralData(LiteralDataToken token) {
+			appendByteCodeForLiteral(token);
+		}
+
+		private void appendByteCodeForLiteral(AbstractLiteralToken token) {
 			ByteBuffer byteBuffer = getByteBuffer();
 			int n = token.getSourceFragment().length();
 			for (int i = 0; i < n; i++) {
