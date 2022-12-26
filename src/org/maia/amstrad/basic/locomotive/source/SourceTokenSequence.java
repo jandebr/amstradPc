@@ -74,6 +74,36 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 		return index;
 	}
 
+	public int getIndexFollowing(SourceToken token, int fromIndex) {
+		int i = fromIndex;
+		while (i < size() && get(i).equals(token))
+			i++;
+		if (i < size())
+			return i;
+		else
+			return -1;
+	}
+
+	public int getIndexFollowing(Class<? extends SourceToken> tokenType, int fromIndex) {
+		int i = fromIndex;
+		while (i < size() && get(i).getClass().equals(tokenType))
+			i++;
+		if (i < size())
+			return i;
+		else
+			return -1;
+	}
+
+	public int getIndexFollowingWhitespace(int fromIndex) {
+		int i = fromIndex;
+		while (i < size() && get(i).getClass().equals(LiteralToken.class) && ((LiteralToken) get(i)).isBlank())
+			i++;
+		if (i < size())
+			return i;
+		else
+			return -1;
+	}
+
 	public boolean contains(SourceToken token) {
 		return getFirstIndexOf(token) >= 0;
 	}

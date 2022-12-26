@@ -70,8 +70,8 @@ public class BasicManipulatorTest {
 			if (!sequence.contains(ifToken)) {
 				int i = sequence.getFirstIndexOf(gotoToken);
 				while (i >= 0) {
-					i = sequence.getNextIndexOf(LineNumberToken.class, i + 1);
-					if (i >= 0) {
+					i = sequence.getIndexFollowingWhitespace(i + 1);
+					if (i >= 0 && sequence.get(i) instanceof LineNumberToken) {
 						int ln = ((LineNumberToken) sequence.get(i)).getValue();
 						if (ln == line.getLineNumber()) {
 							System.out.println(line);
