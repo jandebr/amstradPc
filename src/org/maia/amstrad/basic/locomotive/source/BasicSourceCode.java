@@ -154,8 +154,10 @@ public class BasicSourceCode implements Iterable<BasicSourceCodeLine> {
 			return 0;
 		if (lineNumber <= lines.get(0).getLineNumber())
 			return 0;
-		if (lineNumber >= lines.get(j).getLineNumber())
+		if (lineNumber == lines.get(j).getLineNumber())
 			return j;
+		if (lineNumber > lines.get(j).getLineNumber())
+			return j + 1;
 		int i = 0;
 		while (i <= j) {
 			int k = (i + j) / 2;

@@ -16,10 +16,6 @@ public class BasicSourceCodeLine implements Comparable<BasicSourceCodeLine> {
 		editTo(text);
 	}
 
-	public BasicSourceCodeLineScanner createScanner() {
-		return new BasicSourceCodeLineScanner(getText(), LocomotiveBasicKeywords.getInstance());
-	}
-
 	public synchronized void editTo(String text) throws BasicSyntaxException {
 		if (text == null)
 			throw new NullPointerException("null line");
@@ -66,18 +62,27 @@ public class BasicSourceCodeLine implements Comparable<BasicSourceCodeLine> {
 		while (!scanner.atEndOfText()) {
 			if (sb.length() > 0)
 				sb.append(' ');
-			SourceToken token = null;
 			try {
-				token = scanner.nextToken();
-			} catch (BasicSyntaxException e) {
-			}
-			if (token != null) {
+				SourceToken token = scanner.nextToken();
 				sb.append(token);
-			} else {
+			} catch (BasicSyntaxException e) {
 				sb.append("NULL");
 			}
 		}
 		return sb.toString();
+	}
+
+	public BasicSourceCodeLineScanner createScanner() {
+		return new BasicSourceCodeLineScanner(getText(), LocomotiveBasicKeywords.getInstance());
+	}
+
+	public SourceTokenSequence parse() throws BasicSyntaxException {
+		SourceTokenSequence sequence = new SourceTokenSequence();
+		BasicSourceCodeLineScanner scanner = createScanner();
+		while (!scanner.atEndOfText()) {
+			sequence.append(scanner.nextToken());
+		}
+		return sequence;
 	}
 
 	public String getText() {
