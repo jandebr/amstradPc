@@ -32,8 +32,16 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 		return getTokens().get(index);
 	}
 
-	public int getIndexOf(SourceToken token) {
+	public int getFirstIndexOf(SourceToken token) {
 		return getTokens().indexOf(token);
+	}
+
+	public int getLastIndexOf(SourceToken token) {
+		return getTokens().lastIndexOf(token);
+	}
+
+	public int getNextIndexOf(SourceToken token, int fromIndex) {
+		return getTokens().subList(fromIndex, size()).indexOf(token);
 	}
 
 	public boolean contains(SourceToken token) {
@@ -78,17 +86,17 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 	}
 
 	public void replaceFirst(SourceToken tokenToReplace, SourceToken replacementToken) {
-		int index = getIndexOf(tokenToReplace);
+		int index = getFirstIndexOf(tokenToReplace);
 		if (index >= 0) {
 			replace(index, replacementToken);
 		}
 	}
 
 	public void replaceAll(SourceToken tokenToReplace, SourceToken replacementToken) {
-		int index = getIndexOf(tokenToReplace);
+		int index = getFirstIndexOf(tokenToReplace);
 		while (index >= 0) {
 			replace(index, replacementToken);
-			index = getIndexOf(tokenToReplace);
+			index = getFirstIndexOf(tokenToReplace);
 		}
 	}
 
