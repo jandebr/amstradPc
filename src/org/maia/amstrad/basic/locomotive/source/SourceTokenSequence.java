@@ -41,11 +41,45 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 	}
 
 	public int getNextIndexOf(SourceToken token, int fromIndex) {
-		return getTokens().subList(fromIndex, size()).indexOf(token);
+		if (fromIndex >= size())
+			return -1;
+		int index = subSequence(fromIndex, size()).getFirstIndexOf(token);
+		if (index >= 0)
+			index += fromIndex;
+		return index;
+	}
+
+	public int getFirstIndexOf(Class<? extends SourceToken> tokenType) {
+		for (int i = 0; i < size(); i++) {
+			if (get(i).getClass().equals(tokenType))
+				return i;
+		}
+		return -1;
+	}
+
+	public int getLastIndexOf(Class<? extends SourceToken> tokenType) {
+		for (int i = size() - 1; i >= 0; i--) {
+			if (get(i).getClass().equals(tokenType))
+				return i;
+		}
+		return -1;
+	}
+
+	public int getNextIndexOf(Class<? extends SourceToken> tokenType, int fromIndex) {
+		if (fromIndex >= size())
+			return -1;
+		int index = subSequence(fromIndex, size()).getFirstIndexOf(tokenType);
+		if (index >= 0)
+			index += fromIndex;
+		return index;
 	}
 
 	public boolean contains(SourceToken token) {
-		return getTokens().contains(token);
+		return getFirstIndexOf(token) >= 0;
+	}
+
+	public boolean contains(Class<? extends SourceToken> tokenType) {
+		return getFirstIndexOf(tokenType) >= 0;
 	}
 
 	public void prepend(SourceToken... tokens) {
@@ -67,12 +101,61 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 	}
 
 	public void removeFirst(SourceToken token) {
-		getTokens().remove(token);
+		int index = getFirstIndexOf(token);
+		if (index >= 0) {
+			remove(index);
+		}
+	}
+
+	public void removeLast(SourceToken token) {
+		int index = getLastIndexOf(token);
+		if (index >= 0) {
+			remove(index);
+		}
+	}
+
+	public void removeNext(SourceToken token, int fromIndex) {
+		int index = getNextIndexOf(token, fromIndex);
+		if (index >= 0) {
+			remove(index);
+		}
 	}
 
 	public void removeAll(SourceToken token) {
-		while (getTokens().remove(token))
-			;
+		int index = getFirstIndexOf(token);
+		while (index >= 0) {
+			remove(index);
+			index = getNextIndexOf(token, index);
+		}
+	}
+
+	public void removeFirst(Class<? extends SourceToken> tokenType) {
+		int index = getFirstIndexOf(tokenType);
+		if (index >= 0) {
+			remove(index);
+		}
+	}
+
+	public void removeLast(Class<? extends SourceToken> tokenType) {
+		int index = getLastIndexOf(tokenType);
+		if (index >= 0) {
+			remove(index);
+		}
+	}
+
+	public void removeNext(Class<? extends SourceToken> tokenType, int fromIndex) {
+		int index = getNextIndexOf(tokenType, fromIndex);
+		if (index >= 0) {
+			remove(index);
+		}
+	}
+
+	public void removeAll(Class<? extends SourceToken> tokenType) {
+		int index = getFirstIndexOf(tokenType);
+		while (index >= 0) {
+			remove(index);
+			index = getNextIndexOf(tokenType, index);
+		}
 	}
 
 	public SourceToken remove(int index) {
@@ -96,7 +179,7 @@ public class SourceTokenSequence implements Iterable<SourceToken> {
 		int index = getFirstIndexOf(tokenToReplace);
 		while (index >= 0) {
 			replace(index, replacementToken);
-			index = getFirstIndexOf(tokenToReplace);
+			index = getNextIndexOf(tokenToReplace, index);
 		}
 	}
 
