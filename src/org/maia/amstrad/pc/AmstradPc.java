@@ -419,17 +419,23 @@ public abstract class AmstradPc {
 
 		private boolean stop;
 
+		private List<MemoryTrap> memoryTrapsToTrack;
+
 		public MemoryTrapTracker() {
 			setDaemon(true);
+			this.memoryTrapsToTrack = new Vector<MemoryTrap>();
 		}
 
 		@Override
 		public void run() {
 			System.out.println("Memorytrap tracker thread started");
-			while (!stop && !isTerminated()) {
-				if (isStarted() && hasMemoryTraps()) {
-					track(new Vector<MemoryTrap>(getMemoryTraps()));
+			while (!stop && isStarted() && !isTerminated() && hasMemoryTraps()) {
+				List<MemoryTrap> traps = getMemoryTrapsToTrack();
+				traps.clear();
+				synchronized (AmstradPc.this) {
+					traps.addAll(getMemoryTraps());
 				}
+				track(traps);
 				AmstradUtils.sleep(200L);
 			}
 			System.out.println("Memorytrap tracker thread stopped");
@@ -456,6 +462,10 @@ public abstract class AmstradPc {
 
 		public void stopTracking() {
 			stop = true;
+		}
+
+		private List<MemoryTrap> getMemoryTrapsToTrack() {
+			return memoryTrapsToTrack;
 		}
 
 	}
