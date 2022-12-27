@@ -18,6 +18,23 @@ public class BasicKeywordToken extends SourceToken {
 		visitor.visitBasicKeyword(this);
 	}
 
+	@Override
+	public int hashCode() {
+		return getKeyword().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BasicKeywordToken other = (BasicKeywordToken) obj;
+		return getKeyword().equals(other.getKeyword());
+	}
+
 	public BasicKeyword getKeyword() {
 		return keyword;
 	}
