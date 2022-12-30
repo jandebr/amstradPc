@@ -13,6 +13,20 @@ import org.maia.amstrad.program.AmstradProgramException;
 
 public class BasicManipulatorTest {
 
+	private static SourceToken GOTO;
+
+	private static SourceToken IF;
+
+	static {
+		SourceTokenFactory stf = SourceTokenFactory.getInstance();
+		try {
+			GOTO = stf.createBasicKeyword("GOTO");
+			IF = stf.createBasicKeyword("IF");
+		} catch (BasicSyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public BasicManipulatorTest() {
 	}
 
@@ -63,12 +77,10 @@ public class BasicManipulatorTest {
 	}
 
 	private static void scanSourceCodeForGotoSelf(BasicSourceCode sourceCode) throws BasicSyntaxException {
-		SourceToken gotoToken = SourceTokenFactory.getInstance().createBasicKeyword("GOTO");
-		SourceToken ifToken = SourceTokenFactory.getInstance().createBasicKeyword("IF");
 		for (BasicSourceCodeLine line : sourceCode) {
 			SourceTokenSequence sequence = line.parse();
-			if (!sequence.contains(ifToken)) {
-				int i = sequence.getFirstIndexOf(gotoToken);
+			if (!sequence.contains(IF)) {
+				int i = sequence.getFirstIndexOf(GOTO);
 				while (i >= 0) {
 					i = sequence.getIndexFollowingWhitespace(i + 1);
 					if (i >= 0 && sequence.get(i) instanceof LineNumberToken) {
@@ -76,7 +88,7 @@ public class BasicManipulatorTest {
 						if (ln == line.getLineNumber()) {
 							System.out.println(line);
 						}
-						i = sequence.getNextIndexOf(gotoToken, i + 1);
+						i = sequence.getNextIndexOf(GOTO, i + 1);
 					}
 				}
 			}
