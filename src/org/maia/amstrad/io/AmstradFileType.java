@@ -41,7 +41,7 @@ public enum AmstradFileType {
 	}
 
 	public boolean matches(File file) {
-		return file != null && file.isFile() && file.getName().toLowerCase().endsWith(getFileExtension());
+		return file != null && file.getName().toLowerCase().endsWith(getFileExtension());
 	}
 
 	public String getFileExtensionWithoutDot() {

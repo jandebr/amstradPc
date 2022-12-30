@@ -39,8 +39,6 @@ public class AmstradIO {
 	}
 
 	public static File stripExtension(File file) {
-		if (file == null || !file.isFile())
-			throw new IllegalArgumentException("Not a file: " + file.getPath());
 		String name = file.getName();
 		int i = name.lastIndexOf('.');
 		if (i > 0) {
