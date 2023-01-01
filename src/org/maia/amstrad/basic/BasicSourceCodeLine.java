@@ -58,6 +58,7 @@ public abstract class BasicSourceCodeLine implements Comparable<BasicSourceCodeL
 	public BasicSourceTokenSequence parse() throws BasicSyntaxException {
 		BasicSourceTokenSequence sequence = new BasicSourceTokenSequence();
 		BasicSourceCodeLineScanner scanner = createScanner();
+		sequence.append(scanner.firstToken());
 		while (!scanner.atEndOfText()) {
 			sequence.append(scanner.nextToken());
 		}
