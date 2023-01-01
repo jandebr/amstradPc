@@ -24,26 +24,26 @@ import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
-public class LocomotiveSourceTokenFactory {
+public class LocomotiveBasicSourceTokenFactory {
 
 	private LocomotiveBasicKeywords basicKeywords;
 
-	private static LocomotiveSourceTokenFactory instance;
+	private static LocomotiveBasicSourceTokenFactory instance;
 
-	public static LocomotiveSourceTokenFactory getInstance() {
+	public static LocomotiveBasicSourceTokenFactory getInstance() {
 		if (instance == null) {
-			setInstance(new LocomotiveSourceTokenFactory(LocomotiveBasicKeywords.getInstance()));
+			setInstance(new LocomotiveBasicSourceTokenFactory(LocomotiveBasicKeywords.getInstance()));
 		}
 		return instance;
 	}
 
-	private static synchronized void setInstance(LocomotiveSourceTokenFactory factory) {
+	private static synchronized void setInstance(LocomotiveBasicSourceTokenFactory factory) {
 		if (instance == null) {
 			instance = factory;
 		}
 	}
 
-	private LocomotiveSourceTokenFactory(LocomotiveBasicKeywords basicKeywords) {
+	private LocomotiveBasicSourceTokenFactory(LocomotiveBasicKeywords basicKeywords) {
 		this.basicKeywords = basicKeywords;
 	}
 
