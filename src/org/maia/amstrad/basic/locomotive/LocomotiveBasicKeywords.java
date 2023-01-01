@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class LocomotiveBasicKeywords {
 
-	private Map<Integer, BasicKeyword> byteCodeMap;
+	private Map<Integer, LocomotiveBasicKeyword> byteCodeMap;
 
-	private Map<String, BasicKeyword> sourceFormMap;
+	private Map<String, LocomotiveBasicKeyword> sourceFormMap;
 
 	private static LocomotiveBasicKeywords instance;
 
@@ -27,181 +27,181 @@ public class LocomotiveBasicKeywords {
 	}
 
 	private LocomotiveBasicKeywords() {
-		this.byteCodeMap = new HashMap<Integer, BasicKeyword>(512);
-		this.sourceFormMap = new HashMap<String, BasicKeyword>(512);
+		this.byteCodeMap = new HashMap<Integer, LocomotiveBasicKeyword>(512);
+		this.sourceFormMap = new HashMap<String, LocomotiveBasicKeyword>(512);
 		loadBasicKeywords();
 		loadExtendedKeywords();
 	}
 
 	private void loadBasicKeywords() {
-		register(new BasicKeyword((byte) 0x80, "AFTER"));
-		register(new BasicKeyword((byte) 0x81, "AUTO"));
-		register(new BasicKeyword((byte) 0x82, "BORDER"));
-		register(new BasicKeyword((byte) 0x83, "CALL"));
-		register(new BasicKeyword((byte) 0x84, "CAT"));
-		register(new BasicKeyword((byte) 0x85, "CHAIN"));
-		register(new BasicKeyword((byte) 0x86, "CLEAR"));
-		register(new BasicKeyword((byte) 0x87, "CLG"));
-		register(new BasicKeyword((byte) 0x88, "CLOSEIN"));
-		register(new BasicKeyword((byte) 0x89, "CLOSEOUT"));
-		register(new BasicKeyword((byte) 0x8a, "CLS"));
-		register(new BasicKeyword((byte) 0x8b, "CONT"));
-		register(new BasicKeyword((byte) 0x8c, "DATA"));
-		register(new BasicKeyword((byte) 0x8d, "DEF"));
-		register(new BasicKeyword((byte) 0x8e, "DEFINT"));
-		register(new BasicKeyword((byte) 0x8f, "DEFREAL"));
-		register(new BasicKeyword((byte) 0x90, "DEFSTR"));
-		register(new BasicKeyword((byte) 0x91, "DEG"));
-		register(new BasicKeyword((byte) 0x92, "DELETE"));
-		register(new BasicKeyword((byte) 0x93, "DIM"));
-		register(new BasicKeyword((byte) 0x94, "DRAW"));
-		register(new BasicKeyword((byte) 0x95, "DRAWR"));
-		register(new BasicKeyword((byte) 0x96, "EDIT"));
-		register(new BasicKeyword((byte) 0x97, "ELSE"));
-		register(new BasicKeyword((byte) 0x98, "END"));
-		register(new BasicKeyword((byte) 0x99, "ENT"));
-		register(new BasicKeyword((byte) 0x9a, "ENV"));
-		register(new BasicKeyword((byte) 0x9b, "ERASE"));
-		register(new BasicKeyword((byte) 0x9c, "ERROR"));
-		register(new BasicKeyword((byte) 0x9d, "EVERY"));
-		register(new BasicKeyword((byte) 0x9e, "FOR"));
-		register(new BasicKeyword((byte) 0x9f, "GOSUB"));
-		register(new BasicKeyword((byte) 0xa0, "GOTO"));
-		register(new BasicKeyword((byte) 0xa1, "IF"));
-		register(new BasicKeyword((byte) 0xa2, "INK"));
-		register(new BasicKeyword((byte) 0xa3, "INPUT"));
-		register(new BasicKeyword((byte) 0xa4, "KEY"));
-		register(new BasicKeyword((byte) 0xa5, "LET"));
-		register(new BasicKeyword((byte) 0xa6, "LINE"));
-		register(new BasicKeyword((byte) 0xa7, "LIST"));
-		register(new BasicKeyword((byte) 0xa8, "LOAD"));
-		register(new BasicKeyword((byte) 0xa9, "LOCATE"));
-		register(new BasicKeyword((byte) 0xaa, "MEMORY"));
-		register(new BasicKeyword((byte) 0xab, "MERGE"));
-		register(new BasicKeyword((byte) 0xac, "MID$"));
-		register(new BasicKeyword((byte) 0xad, "MODE"));
-		register(new BasicKeyword((byte) 0xae, "MOVE"));
-		register(new BasicKeyword((byte) 0xaf, "MOVER"));
-		register(new BasicKeyword((byte) 0xb0, "NEXT"));
-		register(new BasicKeyword((byte) 0xb1, "NEW"));
-		register(new BasicKeyword((byte) 0xb2, "ON"));
-		register(new BasicKeyword((byte) 0xb3, "ON BREAK"));
-		register(new BasicKeyword((byte) 0xb4, "ON ERROR GOTO"));
-		register(new BasicKeyword((byte) 0xb5, "SQ"));
-		register(new BasicKeyword((byte) 0xb6, "OPENIN"));
-		register(new BasicKeyword((byte) 0xb7, "OPENOUT"));
-		register(new BasicKeyword((byte) 0xb8, "ORIGIN"));
-		register(new BasicKeyword((byte) 0xb9, "OUT"));
-		register(new BasicKeyword((byte) 0xba, "PAPER"));
-		register(new BasicKeyword((byte) 0xbb, "PEN"));
-		register(new BasicKeyword((byte) 0xbc, "PLOT"));
-		register(new BasicKeyword((byte) 0xbd, "PLOTR"));
-		register(new BasicKeyword((byte) 0xbe, "POKE"));
-		register(new BasicKeyword((byte) 0xbf, "PRINT"));
-		register(new BasicKeyword((byte) 0xc0, "'"));
-		register(new BasicKeyword((byte) 0xc1, "RAD"));
-		register(new BasicKeyword((byte) 0xc2, "RANDOMIZE"));
-		register(new BasicKeyword((byte) 0xc3, "READ"));
-		register(new BasicKeyword((byte) 0xc4, "RELEASE"));
-		register(new BasicKeyword((byte) 0xc5, "REM"));
-		register(new BasicKeyword((byte) 0xc6, "RENUM"));
-		register(new BasicKeyword((byte) 0xc7, "RESTORE"));
-		register(new BasicKeyword((byte) 0xc8, "RESUME"));
-		register(new BasicKeyword((byte) 0xc9, "RETURN"));
-		register(new BasicKeyword((byte) 0xca, "RUN"));
-		register(new BasicKeyword((byte) 0xcb, "SAVE"));
-		register(new BasicKeyword((byte) 0xcc, "SOUND"));
-		register(new BasicKeyword((byte) 0xcd, "SPEED"));
-		register(new BasicKeyword((byte) 0xce, "STOP"));
-		register(new BasicKeyword((byte) 0xcf, "SYMBOL"));
-		register(new BasicKeyword((byte) 0xd0, "TAG"));
-		register(new BasicKeyword((byte) 0xd1, "TAGOFF"));
-		register(new BasicKeyword((byte) 0xd2, "TROFF"));
-		register(new BasicKeyword((byte) 0xd3, "TRON"));
-		register(new BasicKeyword((byte) 0xd4, "WAIT"));
-		register(new BasicKeyword((byte) 0xd5, "WEND"));
-		register(new BasicKeyword((byte) 0xd6, "WHILE"));
-		register(new BasicKeyword((byte) 0xd7, "WIDTH"));
-		register(new BasicKeyword((byte) 0xd8, "WINDOW"));
-		register(new BasicKeyword((byte) 0xd9, "WRITE"));
-		register(new BasicKeyword((byte) 0xda, "ZONE"));
-		register(new BasicKeyword((byte) 0xdb, "DI"));
-		register(new BasicKeyword((byte) 0xdc, "EI"));
-		register(new BasicKeyword((byte) 0xdd, "FILL"));
-		register(new BasicKeyword((byte) 0xde, "GRAPHICS"));
-		register(new BasicKeyword((byte) 0xdf, "MASK"));
-		register(new BasicKeyword((byte) 0xe0, "FRAME"));
-		register(new BasicKeyword((byte) 0xe1, "CURSOR"));
-		register(new BasicKeyword((byte) 0xe3, "ERL"));
-		register(new BasicKeyword((byte) 0xe4, "FN"));
-		register(new BasicKeyword((byte) 0xe5, "SPC"));
-		register(new BasicKeyword((byte) 0xe6, "STEP"));
-		register(new BasicKeyword((byte) 0xe7, "SWAP"));
-		register(new BasicKeyword((byte) 0xea, "TAB"));
-		register(new BasicKeyword((byte) 0xeb, "THEN"));
-		register(new BasicKeyword((byte) 0xec, "TO"));
-		register(new BasicKeyword((byte) 0xed, "USING"));
+		register(new LocomotiveBasicKeyword((byte) 0x80, "AFTER"));
+		register(new LocomotiveBasicKeyword((byte) 0x81, "AUTO"));
+		register(new LocomotiveBasicKeyword((byte) 0x82, "BORDER"));
+		register(new LocomotiveBasicKeyword((byte) 0x83, "CALL"));
+		register(new LocomotiveBasicKeyword((byte) 0x84, "CAT"));
+		register(new LocomotiveBasicKeyword((byte) 0x85, "CHAIN"));
+		register(new LocomotiveBasicKeyword((byte) 0x86, "CLEAR"));
+		register(new LocomotiveBasicKeyword((byte) 0x87, "CLG"));
+		register(new LocomotiveBasicKeyword((byte) 0x88, "CLOSEIN"));
+		register(new LocomotiveBasicKeyword((byte) 0x89, "CLOSEOUT"));
+		register(new LocomotiveBasicKeyword((byte) 0x8a, "CLS"));
+		register(new LocomotiveBasicKeyword((byte) 0x8b, "CONT"));
+		register(new LocomotiveBasicKeyword((byte) 0x8c, "DATA"));
+		register(new LocomotiveBasicKeyword((byte) 0x8d, "DEF"));
+		register(new LocomotiveBasicKeyword((byte) 0x8e, "DEFINT"));
+		register(new LocomotiveBasicKeyword((byte) 0x8f, "DEFREAL"));
+		register(new LocomotiveBasicKeyword((byte) 0x90, "DEFSTR"));
+		register(new LocomotiveBasicKeyword((byte) 0x91, "DEG"));
+		register(new LocomotiveBasicKeyword((byte) 0x92, "DELETE"));
+		register(new LocomotiveBasicKeyword((byte) 0x93, "DIM"));
+		register(new LocomotiveBasicKeyword((byte) 0x94, "DRAW"));
+		register(new LocomotiveBasicKeyword((byte) 0x95, "DRAWR"));
+		register(new LocomotiveBasicKeyword((byte) 0x96, "EDIT"));
+		register(new LocomotiveBasicKeyword((byte) 0x97, "ELSE"));
+		register(new LocomotiveBasicKeyword((byte) 0x98, "END"));
+		register(new LocomotiveBasicKeyword((byte) 0x99, "ENT"));
+		register(new LocomotiveBasicKeyword((byte) 0x9a, "ENV"));
+		register(new LocomotiveBasicKeyword((byte) 0x9b, "ERASE"));
+		register(new LocomotiveBasicKeyword((byte) 0x9c, "ERROR"));
+		register(new LocomotiveBasicKeyword((byte) 0x9d, "EVERY"));
+		register(new LocomotiveBasicKeyword((byte) 0x9e, "FOR"));
+		register(new LocomotiveBasicKeyword((byte) 0x9f, "GOSUB"));
+		register(new LocomotiveBasicKeyword((byte) 0xa0, "GOTO"));
+		register(new LocomotiveBasicKeyword((byte) 0xa1, "IF"));
+		register(new LocomotiveBasicKeyword((byte) 0xa2, "INK"));
+		register(new LocomotiveBasicKeyword((byte) 0xa3, "INPUT"));
+		register(new LocomotiveBasicKeyword((byte) 0xa4, "KEY"));
+		register(new LocomotiveBasicKeyword((byte) 0xa5, "LET"));
+		register(new LocomotiveBasicKeyword((byte) 0xa6, "LINE"));
+		register(new LocomotiveBasicKeyword((byte) 0xa7, "LIST"));
+		register(new LocomotiveBasicKeyword((byte) 0xa8, "LOAD"));
+		register(new LocomotiveBasicKeyword((byte) 0xa9, "LOCATE"));
+		register(new LocomotiveBasicKeyword((byte) 0xaa, "MEMORY"));
+		register(new LocomotiveBasicKeyword((byte) 0xab, "MERGE"));
+		register(new LocomotiveBasicKeyword((byte) 0xac, "MID$"));
+		register(new LocomotiveBasicKeyword((byte) 0xad, "MODE"));
+		register(new LocomotiveBasicKeyword((byte) 0xae, "MOVE"));
+		register(new LocomotiveBasicKeyword((byte) 0xaf, "MOVER"));
+		register(new LocomotiveBasicKeyword((byte) 0xb0, "NEXT"));
+		register(new LocomotiveBasicKeyword((byte) 0xb1, "NEW"));
+		register(new LocomotiveBasicKeyword((byte) 0xb2, "ON"));
+		register(new LocomotiveBasicKeyword((byte) 0xb3, "ON BREAK"));
+		register(new LocomotiveBasicKeyword((byte) 0xb4, "ON ERROR GOTO"));
+		register(new LocomotiveBasicKeyword((byte) 0xb5, "SQ"));
+		register(new LocomotiveBasicKeyword((byte) 0xb6, "OPENIN"));
+		register(new LocomotiveBasicKeyword((byte) 0xb7, "OPENOUT"));
+		register(new LocomotiveBasicKeyword((byte) 0xb8, "ORIGIN"));
+		register(new LocomotiveBasicKeyword((byte) 0xb9, "OUT"));
+		register(new LocomotiveBasicKeyword((byte) 0xba, "PAPER"));
+		register(new LocomotiveBasicKeyword((byte) 0xbb, "PEN"));
+		register(new LocomotiveBasicKeyword((byte) 0xbc, "PLOT"));
+		register(new LocomotiveBasicKeyword((byte) 0xbd, "PLOTR"));
+		register(new LocomotiveBasicKeyword((byte) 0xbe, "POKE"));
+		register(new LocomotiveBasicKeyword((byte) 0xbf, "PRINT"));
+		register(new LocomotiveBasicKeyword((byte) 0xc0, "'"));
+		register(new LocomotiveBasicKeyword((byte) 0xc1, "RAD"));
+		register(new LocomotiveBasicKeyword((byte) 0xc2, "RANDOMIZE"));
+		register(new LocomotiveBasicKeyword((byte) 0xc3, "READ"));
+		register(new LocomotiveBasicKeyword((byte) 0xc4, "RELEASE"));
+		register(new LocomotiveBasicKeyword((byte) 0xc5, "REM"));
+		register(new LocomotiveBasicKeyword((byte) 0xc6, "RENUM"));
+		register(new LocomotiveBasicKeyword((byte) 0xc7, "RESTORE"));
+		register(new LocomotiveBasicKeyword((byte) 0xc8, "RESUME"));
+		register(new LocomotiveBasicKeyword((byte) 0xc9, "RETURN"));
+		register(new LocomotiveBasicKeyword((byte) 0xca, "RUN"));
+		register(new LocomotiveBasicKeyword((byte) 0xcb, "SAVE"));
+		register(new LocomotiveBasicKeyword((byte) 0xcc, "SOUND"));
+		register(new LocomotiveBasicKeyword((byte) 0xcd, "SPEED"));
+		register(new LocomotiveBasicKeyword((byte) 0xce, "STOP"));
+		register(new LocomotiveBasicKeyword((byte) 0xcf, "SYMBOL"));
+		register(new LocomotiveBasicKeyword((byte) 0xd0, "TAG"));
+		register(new LocomotiveBasicKeyword((byte) 0xd1, "TAGOFF"));
+		register(new LocomotiveBasicKeyword((byte) 0xd2, "TROFF"));
+		register(new LocomotiveBasicKeyword((byte) 0xd3, "TRON"));
+		register(new LocomotiveBasicKeyword((byte) 0xd4, "WAIT"));
+		register(new LocomotiveBasicKeyword((byte) 0xd5, "WEND"));
+		register(new LocomotiveBasicKeyword((byte) 0xd6, "WHILE"));
+		register(new LocomotiveBasicKeyword((byte) 0xd7, "WIDTH"));
+		register(new LocomotiveBasicKeyword((byte) 0xd8, "WINDOW"));
+		register(new LocomotiveBasicKeyword((byte) 0xd9, "WRITE"));
+		register(new LocomotiveBasicKeyword((byte) 0xda, "ZONE"));
+		register(new LocomotiveBasicKeyword((byte) 0xdb, "DI"));
+		register(new LocomotiveBasicKeyword((byte) 0xdc, "EI"));
+		register(new LocomotiveBasicKeyword((byte) 0xdd, "FILL"));
+		register(new LocomotiveBasicKeyword((byte) 0xde, "GRAPHICS"));
+		register(new LocomotiveBasicKeyword((byte) 0xdf, "MASK"));
+		register(new LocomotiveBasicKeyword((byte) 0xe0, "FRAME"));
+		register(new LocomotiveBasicKeyword((byte) 0xe1, "CURSOR"));
+		register(new LocomotiveBasicKeyword((byte) 0xe3, "ERL"));
+		register(new LocomotiveBasicKeyword((byte) 0xe4, "FN"));
+		register(new LocomotiveBasicKeyword((byte) 0xe5, "SPC"));
+		register(new LocomotiveBasicKeyword((byte) 0xe6, "STEP"));
+		register(new LocomotiveBasicKeyword((byte) 0xe7, "SWAP"));
+		register(new LocomotiveBasicKeyword((byte) 0xea, "TAB"));
+		register(new LocomotiveBasicKeyword((byte) 0xeb, "THEN"));
+		register(new LocomotiveBasicKeyword((byte) 0xec, "TO"));
+		register(new LocomotiveBasicKeyword((byte) 0xed, "USING"));
 	}
 
 	private void loadExtendedKeywords() {
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x00, "ABS"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x01, "ASC"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x02, "ATN"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x03, "CHR$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x04, "CINT"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x05, "COS"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x06, "CREAL"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x07, "EXP"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x08, "FIX"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x09, "FRE"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0a, "INKEY"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0b, "INP"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0c, "INT"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0d, "JOY"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0e, "LEN"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0f, "LOG"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x10, "LOG10"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x11, "LOWER$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x12, "PEEK"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x13, "REMAIN"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x14, "SGN"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x15, "SIN"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x16, "SPACE$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x17, "SQ"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x18, "SQR"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x19, "STR$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1a, "TAN"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1b, "UNT"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1c, "UPPER$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1d, "VAL"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x40, "EOF"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x41, "ERR"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x42, "HIMEM"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x43, "INKEY$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x44, "PI"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x45, "RND"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x46, "TIME"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x47, "XPOS"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x48, "YPOS"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x49, "DERR"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x71, "BIN$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x72, "DEC$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x73, "HEX$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x74, "INSTR"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x75, "LEFT$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x76, "MAX"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x77, "MIN"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x78, "POS"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x79, "RIGHT$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7a, "ROUND"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7b, "STRING$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7c, "TEST"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7d, "TESTR"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7e, "COPYCHR$"));
-		register(new BasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7f, "VPOS"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x00, "ABS"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x01, "ASC"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x02, "ATN"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x03, "CHR$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x04, "CINT"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x05, "COS"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x06, "CREAL"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x07, "EXP"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x08, "FIX"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x09, "FRE"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0a, "INKEY"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0b, "INP"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0c, "INT"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0d, "JOY"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0e, "LEN"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x0f, "LOG"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x10, "LOG10"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x11, "LOWER$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x12, "PEEK"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x13, "REMAIN"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x14, "SGN"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x15, "SIN"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x16, "SPACE$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x17, "SQ"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x18, "SQR"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x19, "STR$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1a, "TAN"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1b, "UNT"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1c, "UPPER$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x1d, "VAL"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x40, "EOF"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x41, "ERR"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x42, "HIMEM"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x43, "INKEY$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x44, "PI"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x45, "RND"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x46, "TIME"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x47, "XPOS"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x48, "YPOS"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x49, "DERR"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x71, "BIN$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x72, "DEC$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x73, "HEX$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x74, "INSTR"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x75, "LEFT$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x76, "MAX"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x77, "MIN"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x78, "POS"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x79, "RIGHT$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7a, "ROUND"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7b, "STRING$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7c, "TEST"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7d, "TESTR"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7e, "COPYCHR$"));
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7f, "VPOS"));
 	}
 
-	private void register(BasicKeyword keyword) {
+	private void register(LocomotiveBasicKeyword keyword) {
 		getByteCodeMap().put(getKeywordIndex(keyword), keyword);
 		getSourceFormMap().put(keyword.getSourceForm(), keyword);
 	}
@@ -210,19 +210,19 @@ public class LocomotiveBasicKeywords {
 		return getSourceFormMap().containsKey(sourceForm);
 	}
 
-	public BasicKeyword getKeyword(String sourceForm) {
+	public LocomotiveBasicKeyword getKeyword(String sourceForm) {
 		return getSourceFormMap().get(sourceForm);
 	}
 
-	public BasicKeyword getKeyword(byte codeByte) {
+	public LocomotiveBasicKeyword getKeyword(byte codeByte) {
 		return getByteCodeMap().get(getKeywordIndex(codeByte));
 	}
 
-	public BasicKeyword getKeyword(byte prefixByte, byte codeByte) {
+	public LocomotiveBasicKeyword getKeyword(byte prefixByte, byte codeByte) {
 		return getByteCodeMap().get(getKeywordIndex(prefixByte, codeByte));
 	}
 
-	private Integer getKeywordIndex(BasicKeyword keyword) {
+	private Integer getKeywordIndex(LocomotiveBasicKeyword keyword) {
 		return getKeywordIndex(keyword.getPrefixByte(), keyword.getCodeByte());
 	}
 
@@ -234,96 +234,12 @@ public class LocomotiveBasicKeywords {
 		return Integer.valueOf((prefixByte << 8) & 0xff00 | (codeByte & 0xff));
 	}
 
-	private Map<Integer, BasicKeyword> getByteCodeMap() {
+	private Map<Integer, LocomotiveBasicKeyword> getByteCodeMap() {
 		return byteCodeMap;
 	}
 
-	private Map<String, BasicKeyword> getSourceFormMap() {
+	private Map<String, LocomotiveBasicKeyword> getSourceFormMap() {
 		return sourceFormMap;
-	}
-
-	public static class BasicKeyword {
-
-		private byte prefixByte;
-
-		private byte codeByte;
-
-		private String sourceForm;
-
-		public BasicKeyword(byte codeByte, String sourceForm) {
-			this((byte) 0, codeByte, sourceForm);
-		}
-
-		public BasicKeyword(byte prefixByte, byte codeByte, String sourceForm) {
-			this.prefixByte = prefixByte;
-			this.codeByte = codeByte;
-			this.sourceForm = sourceForm;
-		}
-
-		@Override
-		public String toString() {
-			return getSourceForm();
-		}
-
-		@Override
-		public int hashCode() {
-			return 31 + ((sourceForm == null) ? 0 : sourceForm.hashCode());
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			BasicKeyword other = (BasicKeyword) obj;
-			return getSourceForm().equals(other.getSourceForm());
-		}
-
-		public boolean canBeFollowedByLineNumber() {
-			String sf = getSourceForm();
-			return sf.equals("GOTO") || sf.equals("GOSUB") || sf.equals("ON ERROR GOTO") || sf.equals("THEN")
-					|| sf.equals("ELSE") || sf.equals("DELETE") || sf.equals("EDIT") || sf.equals("LIST")
-					|| sf.equals("RESUME") || sf.equals("RENUM") || sf.equals("RESTORE") || sf.equals("RUN");
-		}
-
-		public boolean isRemark() {
-			String sf = getSourceForm();
-			return sf.equals("REM") || sf.equals("'");
-		}
-
-		public boolean isData() {
-			String sf = getSourceForm();
-			return sf.equals("DATA");
-		}
-
-		public boolean isPrecededByInstructionSeparator() {
-			String sf = getSourceForm();
-			return sf.equals("ELSE") || sf.equals("'");
-		}
-
-		public boolean isBasicKeyword() {
-			return getPrefixByte() == 0;
-		}
-
-		public boolean isExtendedKeyword() {
-			return !isBasicKeyword();
-		}
-
-		public byte getPrefixByte() {
-			return prefixByte;
-		}
-
-		public byte getCodeByte() {
-			return codeByte;
-		}
-
-		public String getSourceForm() {
-			return sourceForm;
-		}
-
 	}
 
 }

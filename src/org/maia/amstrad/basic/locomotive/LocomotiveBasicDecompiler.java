@@ -3,14 +3,13 @@ package org.maia.amstrad.basic.locomotive;
 import org.maia.amstrad.basic.BasicDecompilationException;
 import org.maia.amstrad.basic.BasicDecompiler;
 import org.maia.amstrad.basic.BasicRuntime;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
-import org.maia.amstrad.basic.locomotive.source.FloatingPointNumberToken;
-import org.maia.amstrad.basic.locomotive.source.FloatingPointTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.source.InstructionSeparatorToken;
-import org.maia.amstrad.basic.locomotive.source.IntegerTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.source.StringTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
+import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
+import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 
-public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implements BasicDecompiler {
+public class LocomotiveBasicDecompiler implements BasicDecompiler {
 
 	private byte[] byteCode;
 
@@ -104,7 +103,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 				} else if (b == 0x1d) {
 					line.append(wordAt(v - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM + 3)); // line pointer
 				} else if (b == 0x1e) {
-					line.append(v); // line number
+					line.append(v); // line number reference
 				}
 			} else if (b == 0x1f) {
 				// floating point value
@@ -154,7 +153,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 				line.append("NOT");
 			} else {
 				// keyword
-				BasicKeyword keyword = b < 0xff ? getBasicKeywords().getKeyword((byte) b)
+				LocomotiveBasicKeyword keyword = b < 0xff ? getBasicKeywords().getKeyword((byte) b)
 						: getBasicKeywords().getKeyword((byte) b, (byte) nextByte());
 				if (keyword != null) {
 					line.append(keyword.getSourceForm());
@@ -177,7 +176,7 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 	private boolean nextByteIsKeywordPrecededByInstructionSeparator() {
 		if (byteCodeIndex >= byteCode.length)
 			return false;
-		BasicKeyword keyword = getBasicKeywords().getKeyword(byteCode[byteCodeIndex]);
+		LocomotiveBasicKeyword keyword = getBasicKeywords().getKeyword(byteCode[byteCodeIndex]);
 		if (keyword == null)
 			return false;
 		return keyword.isPrecededByInstructionSeparator();
@@ -224,6 +223,10 @@ public class LocomotiveBasicDecompiler extends LocomotiveBasicProcessor implemen
 			name.append(c);
 		} while (b < 128);
 		return name;
+	}
+
+	private LocomotiveBasicKeywords getBasicKeywords() {
+		return LocomotiveBasicKeywords.getInstance();
 	}
 
 	public boolean isRSXenabled() {

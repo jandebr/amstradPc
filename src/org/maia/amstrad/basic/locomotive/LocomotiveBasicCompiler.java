@@ -2,34 +2,30 @@ package org.maia.amstrad.basic.locomotive;
 
 import org.maia.amstrad.basic.BasicCompiler;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicSourceCode;
+import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSyntaxException;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicKeywords.BasicKeyword;
-import org.maia.amstrad.basic.locomotive.source.AbstractLiteralToken;
-import org.maia.amstrad.basic.locomotive.source.BasicKeywordToken;
-import org.maia.amstrad.basic.locomotive.source.BasicSourceCode;
-import org.maia.amstrad.basic.locomotive.source.BasicSourceCodeLine;
-import org.maia.amstrad.basic.locomotive.source.BasicSourceCodeLineScanner;
-import org.maia.amstrad.basic.locomotive.source.FloatingPointNumberToken;
-import org.maia.amstrad.basic.locomotive.source.FloatingPointTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.source.InstructionSeparatorToken;
-import org.maia.amstrad.basic.locomotive.source.Integer16BitBinaryToken;
-import org.maia.amstrad.basic.locomotive.source.Integer16BitDecimalToken;
-import org.maia.amstrad.basic.locomotive.source.Integer16BitHexadecimalToken;
-import org.maia.amstrad.basic.locomotive.source.Integer8BitDecimalToken;
-import org.maia.amstrad.basic.locomotive.source.IntegerTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.source.LineNumberToken;
-import org.maia.amstrad.basic.locomotive.source.LiteralDataToken;
-import org.maia.amstrad.basic.locomotive.source.LiteralQuotedToken;
-import org.maia.amstrad.basic.locomotive.source.LiteralRemarkToken;
-import org.maia.amstrad.basic.locomotive.source.LiteralToken;
-import org.maia.amstrad.basic.locomotive.source.OperatorToken;
-import org.maia.amstrad.basic.locomotive.source.SingleDigitDecimalToken;
-import org.maia.amstrad.basic.locomotive.source.SourceToken;
-import org.maia.amstrad.basic.locomotive.source.SourceTokenVisitor;
-import org.maia.amstrad.basic.locomotive.source.StringTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.source.UntypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.AbstractLiteralToken;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
+import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
+import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
+import org.maia.amstrad.basic.locomotive.token.Integer16BitBinaryToken;
+import org.maia.amstrad.basic.locomotive.token.Integer16BitDecimalToken;
+import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
+import org.maia.amstrad.basic.locomotive.token.Integer8BitDecimalToken;
+import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
+import org.maia.amstrad.basic.locomotive.token.LiteralDataToken;
+import org.maia.amstrad.basic.locomotive.token.LiteralQuotedToken;
+import org.maia.amstrad.basic.locomotive.token.LiteralRemarkToken;
+import org.maia.amstrad.basic.locomotive.token.LiteralToken;
+import org.maia.amstrad.basic.locomotive.token.OperatorToken;
+import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
+import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 
-public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements BasicCompiler {
+public class LocomotiveBasicCompiler implements BasicCompiler {
 
 	public LocomotiveBasicCompiler() {
 	}
@@ -39,9 +35,9 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		int maxBytes = BasicRuntime.MEMORY_POINTER_END_OF_PROGRAM - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM;
 		ByteBuffer byteBuffer = new ByteBuffer(maxBytes);
 		ByteCodeGenerator byteCodeGenerator = new ByteCodeGenerator(byteBuffer);
-		BasicSourceCode code = new BasicSourceCode(sourceCode);
+		BasicSourceCode code = new LocomotiveBasicSourceCode(sourceCode);
 		for (BasicSourceCodeLine line : code) {
-			BasicSourceCodeLineScanner scanner = line.createScanner();
+			LocomotiveBasicSourceCodeLineScanner scanner = ((LocomotiveBasicSourceCodeLine) line).createScanner();
 			int i0 = byteBuffer.getSize();
 			byteBuffer.appendWord(0); // placeholder for line length
 			compileLine(scanner, byteCodeGenerator);
@@ -51,12 +47,12 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		return byteBuffer.getData();
 	}
 
-	private void compileLine(BasicSourceCodeLineScanner scanner, ByteCodeGenerator byteCodeGenerator)
+	private void compileLine(LocomotiveBasicSourceCodeLineScanner scanner, ByteCodeGenerator byteCodeGenerator)
 			throws BasicSyntaxException {
-		int lineNumber = scanner.firstToken().getValue();
+		int lineNumber = scanner.firstToken().getLineNumber();
 		byteCodeGenerator.getByteBuffer().appendWord(lineNumber);
 		while (!scanner.atEndOfText()) {
-			SourceToken token = scanner.nextToken();
+			LocomotiveBasicSourceToken token = scanner.nextToken();
 			if (token == null) {
 				throw new BasicSyntaxException("Syntax error", scanner.getText(), scanner.getPosition());
 			} else {
@@ -127,7 +123,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 	}
 
-	private static class ByteCodeGenerator implements SourceTokenVisitor {
+	private static class ByteCodeGenerator implements LocomotiveBasicSourceTokenVisitor {
 
 		private ByteBuffer byteBuffer;
 
@@ -142,43 +138,31 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		@Override
 		public void visitSingleDigitDecimal(SingleDigitDecimalToken token) {
-			int n = token.getValue();
-			getByteBuffer().appendByte((byte) (0x0e + n));
+			getByteBuffer().appendByte((byte) (0x0e + token.getValue()));
 		}
 
 		@Override
 		public void visitInteger8BitDecimal(Integer8BitDecimalToken token) {
-			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x19);
-			getByteBuffer().appendByte((byte) n);
+			getByteBuffer().appendByte((byte) token.getValue());
 		}
 
 		@Override
 		public void visitInteger16BitDecimal(Integer16BitDecimalToken token) {
-			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x1a);
-			getByteBuffer().appendWord(n);
+			getByteBuffer().appendWord(token.getValue());
 		}
 
 		@Override
 		public void visitInteger16BitBinary(Integer16BitBinaryToken token) {
-			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x1b);
-			getByteBuffer().appendWord(n);
+			getByteBuffer().appendWord(token.getValue());
 		}
 
 		@Override
 		public void visitInteger16BitHexadecimal(Integer16BitHexadecimalToken token) {
-			int n = token.getValue();
 			getByteBuffer().appendByte((byte) 0x1c);
-			getByteBuffer().appendWord(n);
-		}
-
-		@Override
-		public void visitLineNumber(LineNumberToken token) {
-			int n = token.getValue();
-			getByteBuffer().appendByte((byte) 0x1e);
-			getByteBuffer().appendWord(n);
+			getByteBuffer().appendWord(token.getValue());
 		}
 
 		@Override
@@ -243,6 +227,12 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 		}
 
 		@Override
+		public void visitLineNumberReference(LineNumberReferenceToken token) {
+			getByteBuffer().appendByte((byte) 0x1e);
+			getByteBuffer().appendWord(token.getLineNumber());
+		}
+
+		@Override
 		public void visitIntegerTypedVariable(IntegerTypedVariableToken token) {
 			appendByteCodeForTypedVariable((byte) 0x02, token.getVariableNameWithoutTypeIndicator());
 		}
@@ -264,7 +254,7 @@ public class LocomotiveBasicCompiler extends LocomotiveBasicProcessor implements
 
 		@Override
 		public void visitBasicKeyword(BasicKeywordToken token) {
-			BasicKeyword keyword = token.getKeyword();
+			LocomotiveBasicKeyword keyword = token.getKeyword();
 			if (keyword.isPrecededByInstructionSeparator()) {
 				getByteBuffer().appendByte((byte) 0x01); // instruction separator
 			}

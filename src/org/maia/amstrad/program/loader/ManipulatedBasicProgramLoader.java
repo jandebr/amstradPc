@@ -3,10 +3,11 @@ package org.maia.amstrad.program.loader;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicDecompiler;
-import org.maia.amstrad.basic.locomotive.source.BasicSourceCode;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -42,7 +43,7 @@ public class ManipulatedBasicProgramLoader extends AbstractBasicProgramLoader {
 	@Override
 	protected CharSequence getSourceCodeToLoad(AmstradProgram program) throws AmstradProgramException {
 		try {
-			BasicSourceCode sourceCode = new BasicSourceCode(getOriginalSourceCode(program));
+			BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(getOriginalSourceCode(program));
 			manipulateSourceCode(program, sourceCode);
 			return sourceCode.getText();
 		} catch (BasicSyntaxException e) {
@@ -55,7 +56,7 @@ public class ManipulatedBasicProgramLoader extends AbstractBasicProgramLoader {
 	protected byte[] getByteCodeToLoad(AmstradProgram program) throws AmstradProgramException {
 		try {
 			CharSequence originalSourceCode = new LocomotiveBasicDecompiler().decompile(getOriginalByteCode(program));
-			BasicSourceCode sourceCode = new BasicSourceCode(originalSourceCode);
+			BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(originalSourceCode);
 			manipulateSourceCode(program, sourceCode);
 			return new LocomotiveBasicCompiler().compile(sourceCode.getText());
 		} catch (Exception e) {

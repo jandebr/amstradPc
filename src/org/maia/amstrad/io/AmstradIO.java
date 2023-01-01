@@ -3,8 +3,10 @@ package org.maia.amstrad.io;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class AmstradIO {
 
@@ -23,6 +25,13 @@ public class AmstradIO {
 		return sb;
 	}
 
+	public static void writeTextFileContents(File file, CharSequence text) throws IOException {
+		PrintWriter pw = new PrintWriter(file);
+		pw.print(text);
+		pw.flush();
+		pw.close();
+	}
+
 	public static byte[] readBinaryFileContents(File file) throws IOException {
 		byte[] data = new byte[(int) file.length()];
 		byte[] buffer = new byte[2048];
@@ -36,6 +45,17 @@ public class AmstradIO {
 		}
 		in.close();
 		return data;
+	}
+
+	public static void writeBinaryFileContents(File file, byte[] data) throws IOException {
+		writeBinaryFileContents(file, data, 0, data.length);
+	}
+
+	public static void writeBinaryFileContents(File file, byte[] data, int offset, int length) throws IOException {
+		FileOutputStream out = new FileOutputStream(file);
+		out.write(data, offset, length);
+		out.flush();
+		out.close();
 	}
 
 	public static File stripExtension(File file) {

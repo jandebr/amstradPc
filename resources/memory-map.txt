@@ -1,0 +1,38 @@
+  HEX	   DEC	Description
+-----	------	-----------------------------
+
+&0000	     0	First address	
+
+-----	------	-----------------------------
+
+&0170	   368	Basic first address
+				Code ends with word 0 (&0000) then followed by variables
+				Default available memory is 42.249 bytes = FRE(0), excluding the ending word 0
+&A67B	42.619	First address following Basic memory space = HIMEM
+
+-----	------	-----------------------------
+
+				??? text input processing
+
+-----	------	-----------------------------
+
+&AE83	44.675	Pointer to address following Basic code ending word 0
+&AE85	44.677	Pointer to address following Basic code ending word 0
+&AE87	44.679	Pointer to address following Basic heap (start of next variable)
+&AE89	44.681	Pointer to address following Basic heap (start of next variable)
+
+-----	------	-----------------------------
+
+&C000	49.152	Start of graphics display
+				First byte of 1st scanline of graphics display
+&C7CF	51.151	Last byte of 1st scanline of graphics display
+&C7D0	51.152	48 bytes between scanlines
+&C800	51.200	First byte of 2nd scanline of graphics display
+&CFCF	53.199	Last byte of 2nd scanline of graphics display
+&CFD0	53.200	48 bytes between scanlines
+...
+&FFCF	65.487	Last byte of 8th scanline of graphics display
+&FFD0	65.488	48 bytes between scanlines
+&FFFF	65.535	End of graphics display
+
+-----	------	-----------------------------

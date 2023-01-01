@@ -1,6 +1,6 @@
 package org.maia.amstrad.basic;
 
-public class BasicSyntaxException extends Exception {
+public class BasicSyntaxException extends BasicException {
 
 	private String text;
 

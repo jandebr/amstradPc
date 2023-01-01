@@ -1,7 +1,7 @@
 package org.maia.amstrad.program.loader;
 
+import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSyntaxException;
-import org.maia.amstrad.basic.locomotive.source.BasicSourceCode;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 
