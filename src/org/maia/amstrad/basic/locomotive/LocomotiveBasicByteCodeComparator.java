@@ -1,20 +1,20 @@
-package org.maia.amstrad.basic;
+package org.maia.amstrad.basic.locomotive;
 
 import java.util.Arrays;
 
-public class BasicByteCodeComparator {
+public class LocomotiveBasicByteCodeComparator {
 
-	public BasicByteCodeComparator() {
+	public LocomotiveBasicByteCodeComparator() {
 	}
 
-	public ComparisonResult compare(BasicByteCode firstByteCode, BasicByteCode secondByteCode) {
+	public ComparisonResult compare(LocomotiveBasicByteCode firstByteCode, LocomotiveBasicByteCode secondByteCode) {
 		ComparisonResult result = new ComparisonResult(firstByteCode, secondByteCode);
 		int n1 = firstByteCode.getByteCount();
 		int n2 = secondByteCode.getByteCount();
 		boolean[] differences1 = new boolean[n1];
 		boolean[] differences2 = new boolean[n2];
-		int[] lo1 = findLineOffsets(firstByteCode);
-		int[] lo2 = findLineOffsets(secondByteCode);
+		int[] lo1 = firstByteCode.getLineOffsetIndices();
+		int[] lo2 = secondByteCode.getLineOffsetIndices();
 		for (int li = 0; li < Math.min(lo1.length, lo2.length); li++) {
 			int i1 = lo1[li];
 			int i2 = lo2[li];
@@ -43,38 +43,17 @@ public class BasicByteCodeComparator {
 		return result;
 	}
 
-	private int[] findLineOffsets(BasicByteCode byteCode) {
-		if (byteCode.getByteCount() < 2)
-			return new int[0];
-		int[] lineOffsets = new int[byteCode.getByteCount()];
-		int lineIndex = 0;
-		int bi = 0;
-		int n = (byteCode.getByte(0) & 0xff) | ((byteCode.getByte(1) << 8) & 0xff00);
-		while (n > 0) {
-			bi += n;
-			if (bi + 1 < byteCode.getByteCount()) {
-				lineOffsets[++lineIndex] = bi;
-				n = (byteCode.getByte(bi) & 0xff) | ((byteCode.getByte(bi + 1) << 8) & 0xff00);
-			} else {
-				n = 0;
-			}
-		}
-		int[] result = new int[lineIndex + 1];
-		System.arraycopy(lineOffsets, 0, result, 0, result.length);
-		return result;
-	}
-
 	public static class ComparisonResult {
 
-		private BasicByteCode firstByteCode;
+		private LocomotiveBasicByteCode firstByteCode;
 
-		private BasicByteCode secondByteCode;
+		private LocomotiveBasicByteCode secondByteCode;
 
 		private boolean[] firstDifferences;
 
 		private boolean[] secondDifferences;
 
-		public ComparisonResult(BasicByteCode firstByteCode, BasicByteCode secondByteCode) {
+		public ComparisonResult(LocomotiveBasicByteCode firstByteCode, LocomotiveBasicByteCode secondByteCode) {
 			this.firstByteCode = firstByteCode;
 			this.secondByteCode = secondByteCode;
 		}
@@ -95,7 +74,7 @@ public class BasicByteCodeComparator {
 			return !isIdentical();
 		}
 
-		public BasicByteCode getFirstByteCode() {
+		public LocomotiveBasicByteCode getFirstByteCode() {
 			return firstByteCode;
 		}
 
@@ -107,7 +86,7 @@ public class BasicByteCodeComparator {
 			this.firstDifferences = firstDifferences;
 		}
 
-		public BasicByteCode getSecondByteCode() {
+		public LocomotiveBasicByteCode getSecondByteCode() {
 			return secondByteCode;
 		}
 

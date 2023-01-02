@@ -9,11 +9,6 @@ public abstract class BasicByteCode extends BasicCode {
 		this.bytes = bytes;
 	}
 
-	@Override
-	public String toString() {
-		return new BasicByteCodeFormatter().format(this).toString();
-	}
-
 	public boolean isEmpty() {
 		return getByteCount() == 0;
 	}
@@ -24,6 +19,10 @@ public abstract class BasicByteCode extends BasicCode {
 
 	public byte getByte(int index) {
 		return getBytes()[index];
+	}
+
+	public int getWord(int index) {
+		return (getByte(index) & 0xff) | ((getByte(index + 1) << 8) & 0xff00);
 	}
 
 	public byte[] getBytes() {

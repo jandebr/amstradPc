@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.maia.amstrad.basic.BasicByteCodeComparator.ComparisonResult;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeComparator;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeComparator.ComparisonResult;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeFormatter;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.io.AmstradIO;
@@ -49,8 +51,9 @@ public class BasicCompilerTest {
 		System.out.println("Testing " + basicFile.getPath() + "...");
 		out.println(">> Testing " + basicFile.getPath());
 		loadFileWithoutCompiler(basicFile, amstradPc);
-		BasicByteCode referenceByteCode = new LocomotiveBasicByteCode(amstradPc.getBasicRuntime().exportByteCode());
-		BasicByteCode compiledByteCode = new LocomotiveBasicByteCode(
+		LocomotiveBasicByteCode referenceByteCode = new LocomotiveBasicByteCode(
+				amstradPc.getBasicRuntime().exportByteCode());
+		LocomotiveBasicByteCode compiledByteCode = new LocomotiveBasicByteCode(
 				compiler.compile(AmstradIO.readTextFileContents(basicFile)));
 		outputByteCodeComparison(referenceByteCode, compiledByteCode, out);
 		out.println();
@@ -67,15 +70,15 @@ public class BasicCompilerTest {
 		amstradPc.getBasicRuntime().keyboardTypeFileContents(basicFile);
 	}
 
-	private static void outputByteCodeComparison(BasicByteCode firstByteCode, BasicByteCode secondByteCode,
-			PrintWriter out) {
-		ComparisonResult cr = new BasicByteCodeComparator().compare(firstByteCode, secondByteCode);
+	private static void outputByteCodeComparison(LocomotiveBasicByteCode firstByteCode,
+			LocomotiveBasicByteCode secondByteCode, PrintWriter out) {
+		ComparisonResult cr = new LocomotiveBasicByteCodeComparator().compare(firstByteCode, secondByteCode);
 		if (cr.isIdentical()) {
 			out.println("Identical");
 		} else {
 			out.println("Different");
 			out.println("-- reference");
-			BasicByteCodeFormatter fmt = new BasicByteCodeFormatter();
+			LocomotiveBasicByteCodeFormatter fmt = new LocomotiveBasicByteCodeFormatter();
 			out.print(fmt.format(firstByteCode, cr.getFirstDifferences(), true));
 			out.println("-- compiled");
 			out.print(fmt.format(secondByteCode, cr.getSecondDifferences(), true));

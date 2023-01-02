@@ -1,21 +1,21 @@
-package org.maia.amstrad.basic;
+package org.maia.amstrad.basic.locomotive;
 
 import org.maia.amstrad.util.StringUtils;
 
-public class BasicByteCodeFormatter {
+public class LocomotiveBasicByteCodeFormatter {
 
-	public BasicByteCodeFormatter() {
+	public LocomotiveBasicByteCodeFormatter() {
 	}
 
-	public CharSequence format(BasicByteCode byteCode) {
+	public CharSequence format(LocomotiveBasicByteCode byteCode) {
 		return format(byteCode, new boolean[byteCode.getByteCount()]);
 	}
 
-	public CharSequence format(BasicByteCode byteCode, boolean[] underline) {
+	public CharSequence format(LocomotiveBasicByteCode byteCode, boolean[] underline) {
 		return format(byteCode, underline, false);
 	}
 
-	public CharSequence format(BasicByteCode byteCode, boolean[] underline, boolean underlinedLinesOnly) {
+	public CharSequence format(LocomotiveBasicByteCode byteCode, boolean[] underline, boolean underlinedLinesOnly) {
 		StringBuilder sb = new StringBuilder(2048);
 		StringBuilder line = new StringBuilder(128);
 		StringBuilder undr = new StringBuilder(128);
@@ -24,14 +24,14 @@ public class BasicByteCodeFormatter {
 		do {
 			line.setLength(0);
 			undr.setLength(0);
-			lineLength = wordAt(byteCode, bi);
+			lineLength = byteCode.getWord(bi);
 			for (int i = 0; i < 2; i++) {
 				line.append(StringUtils.rightPad(formatByte(byteCode.getByte(bi)), 3, ' '));
 				undr.append(StringUtils.rightPad(formatUnderline(underline[bi]), 3, ' '));
 				bi++;
 			}
 			if (lineLength > 0) {
-				lineNumber = wordAt(byteCode, bi);
+				lineNumber = byteCode.getWord(bi);
 				line.insert(0, StringUtils.rightPad(Integer.toString(lineNumber), 5, ' ') + " | ");
 				undr.insert(0, StringUtils.repeat(' ', 8));
 				for (int i = 0; i < 2; i++) {
@@ -76,10 +76,6 @@ public class BasicByteCodeFormatter {
 		} else {
 			return StringUtils.repeat(' ', 2);
 		}
-	}
-
-	private int wordAt(BasicByteCode byteCode, int index) {
-		return (byteCode.getByte(index) & 0xff) | ((byteCode.getByte(index + 1) << 8) & 0xff00);
 	}
 
 }
