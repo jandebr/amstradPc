@@ -684,16 +684,6 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		public byte peek(int memoryAddress) {
-			return getJemuInstance().readMemory(memoryAddress);
-		}
-
-		@Override
-		public void poke(int memoryAddress, byte value) {
-			getJemuInstance().writeMemory(memoryAddress, value);
-		}
-
-		@Override
 		protected void loadFittedByteCode(byte[] byteCode) {
 			synchronized (JemuAmstradPc.this) {
 				JEMU jemu = getJemuInstance();

@@ -14,20 +14,11 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	}
 
 	public LocomotiveBasicByteCode fit() {
-		if (getByteCount() < 2) {
+		int[] indices = getLineOffsetIndices();
+		if (indices.length == 0) {
 			return new LocomotiveBasicByteCode();
 		} else {
-			int i = 0;
-			int n = getWord(0);
-			while (n > 0) {
-				i += n;
-				if (i + 1 < getByteCount()) {
-					n = getWord(i);
-				} else {
-					n = 0;
-				}
-			}
-			int len = i + 2;
+			int len = indices[indices.length - 1] + 2;
 			if (getByteCount() == len) {
 				return this; // already fitted
 			} else {
@@ -38,6 +29,10 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		}
 	}
 
+	/**
+	 * @return The indices in the byte array representing the start of the code lines. A code line starts with a word
+	 *         whose value represents the byte length of that line. The last index normally points to ending word 0x0000
+	 */
 	public int[] getLineOffsetIndices() {
 		if (getByteCount() < 2) {
 			return new int[0];

@@ -42,10 +42,6 @@ public abstract class BasicRuntime {
 		this.amstradPc = amstradPc;
 	}
 
-	public abstract byte peek(int memoryAddress);
-
-	public abstract void poke(int memoryAddress, byte value);
-
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicSyntaxException {
 		loadSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
