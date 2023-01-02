@@ -19,7 +19,7 @@ public class MonitorEffectAction extends AmstradPcAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		boolean state = ((JCheckBoxMenuItem) event.getSource()).getState();
-		getAmstradPc().setMonitorEffect(state);
+		getAmstradPc().getMonitor().setMonitorEffect(state);
 	}
 
 }

@@ -24,11 +24,11 @@ import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcSnapshotFile;
-import org.maia.amstrad.pc.event.AmstradPcEvent;
-import org.maia.amstrad.pc.event.AmstradPcEventListener;
-import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.AmstradPcStateListener;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
@@ -51,8 +51,7 @@ import jemu.ui.JEMU.PauseListener;
 import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
 
-public class JemuAmstradPc extends AmstradPc
-		implements ComputerKeyboardListener, PauseListener, PrimaryDisplaySourceListener, KeyListener {
+public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDisplaySourceListener {
 
 	private JEMU jemuInstance;
 
@@ -66,17 +65,11 @@ public class JemuAmstradPc extends AmstradPc
 
 	private AmstradGraphicsContextImpl graphicsContext;
 
-	private AmstradKeyboardControllerImpl keyboardController;
-
 	private AlternativeDisplaySourceRenderer alternativeDisplaySourceRenderer;
 
 	private boolean started;
 
 	private boolean terminated;
-
-	private boolean autotyping;
-
-	private int escapeKeyCounter;
 
 	private static boolean instanceRunning; // maximum 1 running Jemu instance in JVM
 
@@ -92,7 +85,6 @@ public class JemuAmstradPc extends AmstradPc
 		this.monitor = new JemuMonitorImpl();
 		this.basicRuntime = new JemuBasicRuntimeImpl();
 		this.graphicsContext = new AmstradGraphicsContextImpl();
-		this.keyboardController = new AmstradKeyboardControllerImpl();
 	}
 
 	@Override
@@ -144,25 +136,22 @@ public class JemuAmstradPc extends AmstradPc
 		JEMU jemu = getJemuInstance();
 		jemu.init();
 		jemu.start();
-		jemu.addComputerKeyboardListener(this);
 		jemu.addPauseListener(this);
-		jemu.getDisplay().addKeyListener(this);
 		jemu.getDisplay().addPrimaryDisplaySourceListener(this);
 		getGraphicsContext().setPrimaryDisplaySourceResolution(
 				new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
 		getFrameBridge().pack();
 		setStarted(true);
 		setInstanceRunning(true);
-		resetEscapeKeyCounter();
 		fireStartedEvent();
 		if (waitUntilReady)
 			waitUntilReady();
 		if (silent)
 			Switches.FloppySound = floppySound;
-		if (isWindowFullscreen()) {
+		if (getMonitor().isWindowFullscreen()) {
 			// forcing the display to nicely align in the middle
-			toggleWindowFullscreen();
-			toggleWindowFullscreen();
+			getMonitor().toggleWindowFullscreen();
+			getMonitor().toggleWindowFullscreen();
 		}
 	}
 
@@ -174,7 +163,6 @@ public class JemuAmstradPc extends AmstradPc
 		if (silent)
 			Switches.FloppySound = false;
 		getJemuInstance().reBoot();
-		resetEscapeKeyCounter();
 		fireRebootingEvent();
 		if (waitUntilReady)
 			waitUntilReady();
@@ -214,8 +202,8 @@ public class JemuAmstradPc extends AmstradPc
 	public synchronized void terminate() {
 		if (!isTerminated()) {
 			if (isStarted()) {
-				if (isAlternativeDisplaySourceShowing()) {
-					resetDisplaySource();
+				if (getMonitor().isAlternativeDisplaySourceShowing()) {
+					getMonitor().resetDisplaySource();
 				}
 				Autotype.clearText();
 				getJemuInstance().quit();
@@ -227,203 +215,23 @@ public class JemuAmstradPc extends AmstradPc
 	}
 
 	@Override
-	public synchronized AmstradKeyboard getKeyboard() {
-		checkStarted();
-		checkNotTerminated();
+	public AmstradKeyboard getKeyboard() {
 		return keyboard;
 	}
 
 	@Override
-	public synchronized AmstradMemory getMemory() {
-		checkStarted();
-		checkNotTerminated();
+	public AmstradMemory getMemory() {
 		return memory;
 	}
 
 	@Override
-	public synchronized AmstradMonitor getMonitor() {
-		checkStarted();
-		checkNotTerminated();
+	public AmstradMonitor getMonitor() {
 		return monitor;
 	}
 
 	@Override
-	public synchronized BasicRuntime getBasicRuntime() {
-		checkStarted();
-		checkNotTerminated();
+	public BasicRuntime getBasicRuntime() {
 		return basicRuntime;
-	}
-
-	@Override
-	public Component getDisplayPane() {
-		return getJemuInstance();
-	}
-
-	@Override
-	public void setMonitorMode(AmstradMonitorMode mode) {
-		checkNotTerminated();
-		if (mode != null && !mode.equals(getMonitorMode())) {
-			if (AmstradMonitorMode.COLOR.equals(mode)) {
-				getJemuInstance().changeMonitorModeToColour();
-			} else if (AmstradMonitorMode.GREEN.equals(mode)) {
-				getJemuInstance().changeMonitorModeToGreen();
-			} else if (AmstradMonitorMode.GRAY.equals(mode)) {
-				getJemuInstance().changeMonitorModeToGray();
-			}
-			fireMonitorModeChangedEvent();
-		}
-	}
-
-	@Override
-	public boolean isMonitorEffectOn() {
-		return Settings.getBoolean(Settings.SCANEFFECT, true);
-	}
-
-	@Override
-	public void setMonitorEffect(boolean monitorEffect) {
-		checkNotTerminated();
-		if (monitorEffect != isMonitorEffectOn()) {
-			Settings.setBoolean(Settings.SCANEFFECT, monitorEffect);
-			Display.scaneffect = monitorEffect;
-			fireMonitorEffectChangedEvent();
-		}
-	}
-
-	@Override
-	public boolean isMonitorScanLinesEffectOn() {
-		return Settings.getBoolean(Settings.SCANLINES, false);
-	}
-
-	@Override
-	public void setMonitorScanLinesEffect(boolean scanLinesEffect) {
-		checkNotTerminated();
-		if (scanLinesEffect != isMonitorScanLinesEffectOn()) {
-			Settings.setBoolean(Settings.SCANLINES, scanLinesEffect);
-			Switches.ScanLines = scanLinesEffect;
-			fireMonitorScanLinesEffectChangedEvent();
-		}
-	}
-
-	@Override
-	public boolean isMonitorBilinearEffectOn() {
-		return Settings.getBoolean(Settings.BILINEAR, true);
-	}
-
-	@Override
-	public void setMonitorBilinearEffect(boolean bilinearEffect) {
-		checkNotTerminated();
-		if (bilinearEffect != isMonitorBilinearEffectOn()) {
-			Settings.setBoolean(Settings.BILINEAR, bilinearEffect);
-			Switches.bilinear = bilinearEffect;
-			fireMonitorBilinearEffectChangedEvent();
-		}
-	}
-
-	@Override
-	public boolean isWindowFullscreen() {
-		return JEMU.fullscreen;
-	}
-
-	@Override
-	public void toggleWindowFullscreen() {
-		checkNotTerminated();
-		getJemuInstance().FullSize();
-		fireWindowFullscreenChangedEvent();
-	}
-
-	@Override
-	public boolean isWindowAlwaysOnTop() {
-		return Settings.getBoolean(Settings.ONTOP, false);
-	}
-
-	@Override
-	public void setWindowAlwaysOnTop(boolean alwaysOnTop) {
-		checkNotTerminated();
-		if (alwaysOnTop != isWindowAlwaysOnTop()) {
-			getJemuInstance().setAlwaysOnTop(alwaysOnTop);
-			fireWindowAlwaysOnTopChangedEvent();
-		}
-	}
-
-	@Override
-	public boolean isWindowTitleDynamic() {
-		return Settings.getBoolean(Settings.UPDATETITLE, true);
-	}
-
-	@Override
-	public void setWindowTitleDynamic(boolean dynamicTitle) {
-		checkNotTerminated();
-		if (dynamicTitle != isWindowTitleDynamic()) {
-			Settings.setBoolean(Settings.UPDATETITLE, dynamicTitle);
-			fireWindowTitleDynamicChangedEvent();
-		}
-	}
-
-	@Override
-	public synchronized BufferedImage makeScreenshot(boolean monitorEffect) {
-		checkStarted();
-		checkNotTerminated();
-		Display display = getJemuInstance().getDisplay();
-		boolean masked = display.masked;
-		boolean showeffect = display.showeffect;
-		display.masked = monitorEffect;
-		display.showeffect = monitorEffect;
-		BufferedImage image = display.getImage();
-		display.masked = masked;
-		display.showeffect = showeffect;
-		return image;
-	}
-
-	@Override
-	public synchronized void swapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
-		checkStarted();
-		checkNotTerminated();
-		if (displaySource != null) {
-			getJemuInstance().getDisplay()
-					.installSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
-			fireDisplaySourceChangedEvent();
-			handleAlternativeDisplaySourceRendering();
-		} else {
-			resetDisplaySource();
-		}
-	}
-
-	@Override
-	public synchronized void resetDisplaySource() {
-		checkStarted();
-		checkNotTerminated();
-		getJemuInstance().getDisplay().uninstallSecondaryDisplaySource();
-		fireDisplaySourceChangedEvent();
-		handleAlternativeDisplaySourceRendering();
-	}
-
-	@Override
-	public synchronized AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource() {
-		AmstradAlternativeDisplaySource altDisplaySource = null;
-		if (isStarted()) {
-			SecondaryDisplaySource sds = getJemuInstance().getDisplay().getSecondaryDisplaySource();
-			if (sds != null && sds instanceof JemuSecondaryDisplaySourceBridge) {
-				altDisplaySource = ((JemuSecondaryDisplaySourceBridge) sds).getSource();
-			}
-		}
-		return altDisplaySource;
-	}
-
-	private synchronized void handleAlternativeDisplaySourceRendering() {
-		if (isAlternativeDisplaySourceShowing() && isPaused()) {
-			// When computer is paused, there is no vSync and we need to render ourselves
-			if (getAlternativeDisplaySourceRenderer() == null) {
-				AlternativeDisplaySourceRenderer renderer = new AlternativeDisplaySourceRenderer();
-				setAlternativeDisplaySourceRenderer(renderer);
-				renderer.start();
-			}
-		} else {
-			// Stop our own rendering
-			if (getAlternativeDisplaySourceRenderer() != null) {
-				getAlternativeDisplaySourceRenderer().stopRendering();
-				setAlternativeDisplaySourceRenderer(null);
-			}
-		}
 	}
 
 	private void waitUntilReady() {
@@ -464,64 +272,26 @@ public class JemuAmstradPc extends AmstradPc
 		}
 	}
 
-	private synchronized void waitUntilAutotypeEnded() {
-		setAutotyping(true);
-		while (isAutotyping()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
+	private synchronized void handleAlternativeDisplaySourceRendering() {
+		if (getMonitor().isAlternativeDisplaySourceShowing() && isPaused()) {
+			// When computer is paused, there is no vSync and we need to render ourselves
+			if (getAlternativeDisplaySourceRenderer() == null || getAlternativeDisplaySourceRenderer().isStopped()) {
+				AlternativeDisplaySourceRenderer renderer = new AlternativeDisplaySourceRenderer();
+				setAlternativeDisplaySourceRenderer(renderer);
+				renderer.start();
+			}
+		} else {
+			// Stop our own rendering
+			if (getAlternativeDisplaySourceRenderer() != null) {
+				getAlternativeDisplaySourceRenderer().stopRendering();
+				setAlternativeDisplaySourceRenderer(null);
 			}
 		}
 	}
 
 	@Override
-	public void computerPressEscapeKey(Computer computer) {
-		if (++escapeKeyCounter == 2) {
-			fireDoubleEscapeKey();
-		}
-	}
-
-	@Override
-	public void computerSuppressEscapeKey(Computer computer) {
-		resetEscapeKeyCounter();
-	}
-
-	@Override
-	public void computerAutotypeStarted(Computer computer) {
-		System.out.println("Autotype started");
-	}
-
-	@Override
-	public synchronized void computerAutotypeEnded(Computer computer) {
-		System.out.println("Autotype ended");
-		setAutotyping(false);
-		notifyAll();
-	}
-
-	@Override
 	public void primaryDisplaySourceResolutionChanged(Display display, Dimension resolution) {
 		getGraphicsContext().setPrimaryDisplaySourceResolution(resolution);
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if (!getEventListeners().isEmpty()) {
-			fireEvent(new AmstradPcKeyboardEvent(this, e));
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if (!getEventListeners().isEmpty()) {
-			fireEvent(new AmstradPcKeyboardEvent(this, e));
-		}
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		if (!getEventListeners().isEmpty()) {
-			fireEvent(new AmstradPcKeyboardEvent(this, e));
-		}
 	}
 
 	private static void checkNoInstanceRunning() {
@@ -539,10 +309,6 @@ public class JemuAmstradPc extends AmstradPc
 
 	private AmstradGraphicsContextImpl getGraphicsContext() {
 		return graphicsContext;
-	}
-
-	private AmstradKeyboardControllerImpl getKeyboardController() {
-		return keyboardController;
 	}
 
 	private AlternativeDisplaySourceRenderer getAlternativeDisplaySourceRenderer() {
@@ -576,18 +342,6 @@ public class JemuAmstradPc extends AmstradPc
 		this.terminated = terminated;
 	}
 
-	private boolean isAutotyping() {
-		return autotyping;
-	}
-
-	private void setAutotyping(boolean autotyping) {
-		this.autotyping = autotyping;
-	}
-
-	private void resetEscapeKeyCounter() {
-		escapeKeyCounter = 0;
-	}
-
 	private static boolean isInstanceRunning() {
 		return instanceRunning;
 	}
@@ -596,22 +350,129 @@ public class JemuAmstradPc extends AmstradPc
 		JemuAmstradPc.instanceRunning = instanceRunning;
 	}
 
-	private class JemuKeyboardImpl extends AmstradKeyboard {
+	private class JemuKeyboardImpl extends AmstradKeyboard
+			implements KeyListener, ComputerKeyboardListener, AmstradPcStateListener {
+
+		private AmstradKeyboardController controller;
+
+		private int escapeKeyCounter;
+
+		private boolean autotyping;
 
 		public JemuKeyboardImpl() {
 			super(JemuAmstradPc.this);
+			this.controller = new AmstradKeyboardControllerImpl(this);
+			getAmstradPc().addStateListener(this);
 		}
 
 		@Override
-		public void type(CharSequence text, boolean waitUntilTyped) {
-			synchronized (JemuAmstradPc.this) {
-				Autotype.typeText(text);
-				resetEscapeKeyCounter();
-				if (waitUntilTyped) {
-					waitUntilAutotypeEnded();
-					AmstradUtils.sleep(100L);
+		public void amstradPcStarted(AmstradPc amstradPc) {
+			getJemuInstance().getDisplay().addKeyListener(this);
+			getJemuInstance().addComputerKeyboardListener(this);
+			resetEscapeKeyCounter();
+		}
+
+		@Override
+		public void amstradPcPausing(AmstradPc amstradPc) {
+			// no action
+		}
+
+		@Override
+		public void amstradPcResuming(AmstradPc amstradPc) {
+			// no action
+		}
+
+		@Override
+		public void amstradPcRebooting(AmstradPc amstradPc) {
+			resetEscapeKeyCounter();
+		}
+
+		@Override
+		public void amstradPcTerminated(AmstradPc amstradPc) {
+			resetEscapeKeyCounter();
+		}
+
+		@Override
+		public void amstradPcProgramLoaded(AmstradPc amstradPc) {
+			// no action
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			fireKeyboardEventDispatched(new AmstradKeyboardEvent(this, e));
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			fireKeyboardEventDispatched(new AmstradKeyboardEvent(this, e));
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			fireKeyboardEventDispatched(new AmstradKeyboardEvent(this, e));
+		}
+
+		@Override
+		public void computerPressEscapeKey(Computer computer) {
+			if (++escapeKeyCounter == 2) {
+				fireDoubleEscapeKeyPressed();
+			}
+		}
+
+		@Override
+		public void computerSuppressEscapeKey(Computer computer) {
+			resetEscapeKeyCounter();
+		}
+
+		@Override
+		public void computerAutotypeStarted(Computer computer) {
+			System.out.println("Autotype started");
+		}
+
+		@Override
+		public synchronized void computerAutotypeEnded(Computer computer) {
+			System.out.println("Autotype ended");
+			setAutotyping(false);
+			notifyAll();
+		}
+
+		@Override
+		public synchronized void type(CharSequence text, boolean waitUntilTyped) {
+			checkStarted();
+			checkNotTerminated();
+			Autotype.typeText(text);
+			resetEscapeKeyCounter();
+			if (waitUntilTyped) {
+				waitUntilAutotypeEnded();
+				AmstradUtils.sleep(100L);
+			}
+		}
+
+		private synchronized void waitUntilAutotypeEnded() {
+			setAutotyping(true);
+			while (isAutotyping()) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
 				}
 			}
+		}
+
+		private void resetEscapeKeyCounter() {
+			escapeKeyCounter = 0;
+		}
+
+		private boolean isAutotyping() {
+			return autotyping;
+		}
+
+		private void setAutotyping(boolean autotyping) {
+			this.autotyping = autotyping;
+		}
+
+		@Override
+		public AmstradKeyboardController getController() {
+			return controller;
 		}
 
 	}
@@ -648,6 +509,170 @@ public class JemuAmstradPc extends AmstradPc
 
 		public JemuMonitorImpl() {
 			super(JemuAmstradPc.this);
+		}
+
+		@Override
+		public Component getDisplayPane() {
+			return getJemuInstance();
+		}
+
+		@Override
+		public void setMonitorMode(AmstradMonitorMode mode) {
+			checkNotTerminated();
+			if (mode != null && !mode.equals(getMonitorMode())) {
+				if (AmstradMonitorMode.COLOR.equals(mode)) {
+					getJemuInstance().changeMonitorModeToColour();
+				} else if (AmstradMonitorMode.GREEN.equals(mode)) {
+					getJemuInstance().changeMonitorModeToGreen();
+				} else if (AmstradMonitorMode.GRAY.equals(mode)) {
+					getJemuInstance().changeMonitorModeToGray();
+				}
+				fireMonitorModeChangedEvent();
+			}
+		}
+
+		@Override
+		public boolean isMonitorEffectOn() {
+			return Settings.getBoolean(Settings.SCANEFFECT, true);
+		}
+
+		@Override
+		public void setMonitorEffect(boolean monitorEffect) {
+			checkNotTerminated();
+			if (monitorEffect != isMonitorEffectOn()) {
+				Settings.setBoolean(Settings.SCANEFFECT, monitorEffect);
+				Display.scaneffect = monitorEffect;
+				fireMonitorEffectChangedEvent();
+			}
+		}
+
+		@Override
+		public boolean isMonitorScanLinesEffectOn() {
+			return Settings.getBoolean(Settings.SCANLINES, false);
+		}
+
+		@Override
+		public void setMonitorScanLinesEffect(boolean scanLinesEffect) {
+			checkNotTerminated();
+			if (scanLinesEffect != isMonitorScanLinesEffectOn()) {
+				Settings.setBoolean(Settings.SCANLINES, scanLinesEffect);
+				Switches.ScanLines = scanLinesEffect;
+				fireMonitorScanLinesEffectChangedEvent();
+			}
+		}
+
+		@Override
+		public boolean isMonitorBilinearEffectOn() {
+			return Settings.getBoolean(Settings.BILINEAR, true);
+		}
+
+		@Override
+		public void setMonitorBilinearEffect(boolean bilinearEffect) {
+			checkNotTerminated();
+			if (bilinearEffect != isMonitorBilinearEffectOn()) {
+				Settings.setBoolean(Settings.BILINEAR, bilinearEffect);
+				Switches.bilinear = bilinearEffect;
+				fireMonitorBilinearEffectChangedEvent();
+			}
+		}
+
+		@Override
+		public boolean isWindowFullscreen() {
+			return JEMU.fullscreen;
+		}
+
+		@Override
+		public void toggleWindowFullscreen() {
+			checkNotTerminated();
+			getJemuInstance().FullSize();
+			fireWindowFullscreenChangedEvent();
+		}
+
+		@Override
+		public boolean isWindowAlwaysOnTop() {
+			return Settings.getBoolean(Settings.ONTOP, false);
+		}
+
+		@Override
+		public void setWindowAlwaysOnTop(boolean alwaysOnTop) {
+			checkNotTerminated();
+			if (alwaysOnTop != isWindowAlwaysOnTop()) {
+				getJemuInstance().setAlwaysOnTop(alwaysOnTop);
+				fireWindowAlwaysOnTopChangedEvent();
+			}
+		}
+
+		@Override
+		public boolean isWindowTitleDynamic() {
+			return Settings.getBoolean(Settings.UPDATETITLE, true);
+		}
+
+		@Override
+		public void setWindowTitleDynamic(boolean dynamicTitle) {
+			checkNotTerminated();
+			if (dynamicTitle != isWindowTitleDynamic()) {
+				Settings.setBoolean(Settings.UPDATETITLE, dynamicTitle);
+				fireWindowTitleDynamicChangedEvent();
+			}
+		}
+
+		@Override
+		public BufferedImage makeScreenshot(boolean monitorEffect) {
+			BufferedImage image = null;
+			synchronized (JemuAmstradPc.this) {
+				checkStarted();
+				checkNotTerminated();
+				Display display = getJemuInstance().getDisplay();
+				boolean masked = display.masked;
+				boolean showeffect = display.showeffect;
+				display.masked = monitorEffect;
+				display.showeffect = monitorEffect;
+				image = display.getImage();
+				display.masked = masked;
+				display.showeffect = showeffect;
+			}
+			return image;
+		}
+
+		@Override
+		public void swapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
+			synchronized (JemuAmstradPc.this) {
+				checkStarted();
+				checkNotTerminated();
+				if (displaySource != null) {
+					getJemuInstance().getDisplay()
+							.installSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
+					fireDisplaySourceChangedEvent();
+					handleAlternativeDisplaySourceRendering();
+				} else {
+					resetDisplaySource();
+				}
+			}
+		}
+
+		@Override
+		public void resetDisplaySource() {
+			synchronized (JemuAmstradPc.this) {
+				checkStarted();
+				checkNotTerminated();
+				getJemuInstance().getDisplay().uninstallSecondaryDisplaySource();
+				fireDisplaySourceChangedEvent();
+				handleAlternativeDisplaySourceRendering();
+			}
+		}
+
+		@Override
+		public AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource() {
+			AmstradAlternativeDisplaySource altDisplaySource = null;
+			synchronized (JemuAmstradPc.this) {
+				if (isStarted()) {
+					SecondaryDisplaySource sds = getJemuInstance().getDisplay().getSecondaryDisplaySource();
+					if (sds != null && sds instanceof JemuSecondaryDisplaySourceBridge) {
+						altDisplaySource = ((JemuSecondaryDisplaySourceBridge) sds).getSource();
+					}
+				}
+			}
+			return altDisplaySource;
 		}
 
 	}
@@ -747,7 +772,7 @@ public class JemuAmstradPc extends AmstradPc
 
 		@Override
 		public AmstradMonitorMode getMonitorMode() {
-			return JemuAmstradPc.this.getMonitorMode();
+			return JemuAmstradPc.this.getMonitor().getMonitorMode();
 		}
 
 		@Override
@@ -803,7 +828,7 @@ public class JemuAmstradPc extends AmstradPc
 				if (Settings.getBoolean(Settings.SHOWMENU, true)) {
 					getFrame().setMenuBar(menuBar);
 				} else {
-					if (getFrame().getJMenuBar() != null && !getAmstradPc().isWindowFullscreen()) {
+					if (getFrame().getJMenuBar() != null && !getAmstradPc().getMonitor().isWindowFullscreen()) {
 						getFrame().getJMenuBar().setVisible(true);
 					}
 				}
@@ -949,11 +974,12 @@ public class JemuAmstradPc extends AmstradPc
 
 		@Override
 		public void init(JComponent displayComponent) {
-			rememberedMonitorMode = getMonitorMode();
-			rememberedMonitorEffect = isMonitorEffectOn();
-			rememberedMonitorScanLinesEffect = isMonitorScanLinesEffectOn();
-			rememberedMonitorBilinearEffect = isMonitorBilinearEffectOn();
-			getSource().init(displayComponent, getGraphicsContext(), getKeyboardController());
+			AmstradMonitor monitor = getMonitor();
+			rememberedMonitorMode = monitor.getMonitorMode();
+			rememberedMonitorEffect = monitor.isMonitorEffectOn();
+			rememberedMonitorScanLinesEffect = monitor.isMonitorScanLinesEffectOn();
+			rememberedMonitorBilinearEffect = monitor.isMonitorBilinearEffectOn();
+			getSource().init(displayComponent, getGraphicsContext(), getKeyboard().getController());
 		}
 
 		@Override
@@ -970,10 +996,11 @@ public class JemuAmstradPc extends AmstradPc
 		}
 
 		private void restoreMonitorSettings() {
-			setMonitorMode(rememberedMonitorMode);
-			setMonitorEffect(rememberedMonitorEffect);
-			setMonitorScanLinesEffect(rememberedMonitorScanLinesEffect);
-			setMonitorBilinearEffect(rememberedMonitorBilinearEffect);
+			AmstradMonitor monitor = getMonitor();
+			monitor.setMonitorMode(rememberedMonitorMode);
+			monitor.setMonitorEffect(rememberedMonitorEffect);
+			monitor.setMonitorScanLinesEffect(rememberedMonitorScanLinesEffect);
+			monitor.setMonitorBilinearEffect(rememberedMonitorBilinearEffect);
 		}
 
 		private AmstradAlternativeDisplaySource getSource() {
@@ -982,14 +1009,14 @@ public class JemuAmstradPc extends AmstradPc
 
 	}
 
-	private class AmstradKeyboardControllerImpl implements AmstradKeyboardController, AmstradPcEventListener {
+	private class AmstradKeyboardControllerImpl extends AmstradKeyboardAdapter implements AmstradKeyboardController {
 
 		private int lastKeyModifiers;
 
 		private boolean blockKeyboardPending;
 
-		public AmstradKeyboardControllerImpl() {
-			addEventListener(this);
+		public AmstradKeyboardControllerImpl(AmstradKeyboard keyboard) {
+			keyboard.addKeyboardListener(this);
 		}
 
 		@Override
@@ -1009,13 +1036,11 @@ public class JemuAmstradPc extends AmstradPc
 		}
 
 		@Override
-		public synchronized void amstradPcEventDispatched(AmstradPcEvent event) {
-			if (event instanceof AmstradPcKeyboardEvent) {
-				lastKeyModifiers = ((AmstradPcKeyboardEvent) event).getKey().getModifiersEx();
-				if (blockKeyboardPending && lastKeyModifiers == 0) {
-					Switches.blockKeyboard = true;
-					blockKeyboardPending = false;
-				}
+		public synchronized void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+			lastKeyModifiers = event.getKey().getModifiersEx();
+			if (blockKeyboardPending && lastKeyModifiers == 0) {
+				Switches.blockKeyboard = true;
+				blockKeyboardPending = false;
 			}
 		}
 
@@ -1055,7 +1080,7 @@ public class JemuAmstradPc extends AmstradPc
 			// A dialog catches key events when in focus. When the dialog is invoked by a key combination involving
 			// modifiers, this may leave the JEMU instance and JEMU computer in an obsolete key modifier state causing
 			// artefacts when resuming focus. To prevent this, we reset modifiers when a dialog is closed.
-			getKeyboardController().resetKeyModifiers();
+			((AmstradKeyboardControllerImpl) getKeyboard().getController()).resetKeyModifiers();
 		}
 
 	}
@@ -1072,7 +1097,7 @@ public class JemuAmstradPc extends AmstradPc
 		public void run() {
 			System.out.println("Alternative render thread started");
 			final Display display = getJemuInstance().getDisplay();
-			while (!stop) {
+			while (!isStopped()) {
 				display.updateImage(true);
 			}
 			System.out.println("Alternative render thread stopped");
@@ -1080,6 +1105,10 @@ public class JemuAmstradPc extends AmstradPc
 
 		public void stopRendering() {
 			stop = true;
+		}
+
+		public boolean isStopped() {
+			return stop;
 		}
 
 	}

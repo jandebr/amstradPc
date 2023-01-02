@@ -3,7 +3,7 @@ package org.maia.amstrad.pc.action;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 
 public class ScreenshotWithMonitorEffectAction extends ScreenshotAction {
 
@@ -16,7 +16,7 @@ public class ScreenshotWithMonitorEffectAction extends ScreenshotAction {
 	}
 
 	@Override
-	protected boolean invokeOn(AmstradPcKeyboardEvent keyEvent) {
+	protected boolean invokeOn(AmstradKeyboardEvent keyEvent) {
 		return keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_I && keyEvent.isControlDown()
 				&& keyEvent.isShiftDown();
 	}

@@ -1,22 +1,14 @@
 package org.maia.amstrad.pc;
 
-import java.awt.Component;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicRuntime;
-import org.maia.amstrad.pc.event.AmstradPcEvent;
-import org.maia.amstrad.pc.event.AmstradPcEventListener;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.pc.monitor.AmstradMonitorListener;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
-import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
@@ -31,17 +23,8 @@ public abstract class AmstradPc {
 
 	private List<AmstradPcStateListener> stateListeners;
 
-	private List<AmstradMonitorListener> monitorListeners;
-
-	private List<AmstradPcEventListener> eventListeners;
-
-	private List<AmstradPcProgramListener> programListeners;
-
 	protected AmstradPc() {
 		this.stateListeners = new Vector<AmstradPcStateListener>();
-		this.monitorListeners = new Vector<AmstradMonitorListener>();
-		this.eventListeners = new Vector<AmstradPcEventListener>();
-		this.programListeners = new Vector<AmstradPcProgramListener>();
 	}
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
@@ -57,12 +40,6 @@ public abstract class AmstradPc {
 	public void showActionableDialog(ActionableDialog dialog) {
 		dialog.setVisible(true);
 	}
-
-	public abstract boolean isStarted();
-
-	public abstract boolean isPaused();
-
-	public abstract boolean isTerminated();
 
 	public void launch(File file) throws AmstradProgramException {
 		launch(new AmstradProgramStoredInFile(file));
@@ -90,6 +67,12 @@ public abstract class AmstradPc {
 
 	public abstract void save(AmstradPcSnapshotFile snapshotFile) throws IOException;
 
+	public abstract boolean isStarted();
+
+	public abstract boolean isPaused();
+
+	public abstract boolean isTerminated();
+
 	public void start() {
 		start(true, false);
 	}
@@ -111,58 +94,10 @@ public abstract class AmstradPc {
 	public abstract AmstradKeyboard getKeyboard();
 
 	public abstract AmstradMemory getMemory();
-	
+
 	public abstract AmstradMonitor getMonitor();
 
 	public abstract BasicRuntime getBasicRuntime();
-
-	public abstract Component getDisplayPane();
-
-	public AmstradMonitorMode getMonitorMode() {
-		return AmstradFactory.getInstance().getAmstradContext().getUserSettings().getMonitorMode();
-	}
-
-	public abstract void setMonitorMode(AmstradMonitorMode mode);
-
-	public abstract boolean isMonitorEffectOn();
-
-	public abstract void setMonitorEffect(boolean monitorEffect);
-
-	public abstract boolean isMonitorScanLinesEffectOn();
-
-	public abstract void setMonitorScanLinesEffect(boolean scanLinesEffect);
-
-	public abstract boolean isMonitorBilinearEffectOn();
-
-	public abstract void setMonitorBilinearEffect(boolean bilinearEffect);
-
-	public abstract boolean isWindowFullscreen();
-
-	public abstract void toggleWindowFullscreen();
-
-	public abstract boolean isWindowAlwaysOnTop();
-
-	public abstract void setWindowAlwaysOnTop(boolean alwaysOnTop);
-
-	public abstract boolean isWindowTitleDynamic();
-
-	public abstract void setWindowTitleDynamic(boolean dynamicTitle);
-
-	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
-
-	public abstract void swapDisplaySource(AmstradAlternativeDisplaySource displaySource);
-
-	public abstract void resetDisplaySource();
-
-	public abstract AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource();
-
-	public boolean isAlternativeDisplaySourceShowing() {
-		return getCurrentAlternativeDisplaySource() != null;
-	}
-
-	public boolean isPrimaryDisplaySourceShowing() {
-		return !isAlternativeDisplaySourceShowing();
-	}
 
 	protected void checkStarted() {
 		if (!isStarted())
@@ -185,30 +120,6 @@ public abstract class AmstradPc {
 
 	public void removeStateListener(AmstradPcStateListener listener) {
 		getStateListeners().remove(listener);
-	}
-
-	public void addMonitorListener(AmstradMonitorListener listener) {
-		getMonitorListeners().add(listener);
-	}
-
-	public void removeMonitorListener(AmstradMonitorListener listener) {
-		getMonitorListeners().remove(listener);
-	}
-
-	public void addEventListener(AmstradPcEventListener listener) {
-		getEventListeners().add(listener);
-	}
-
-	public void removeEventListener(AmstradPcEventListener listener) {
-		getEventListeners().remove(listener);
-	}
-
-	public void addProgramListener(AmstradPcProgramListener listener) {
-		getProgramListeners().add(listener);
-	}
-
-	public void removeProgramListener(AmstradPcProgramListener listener) {
-		getProgramListeners().remove(listener);
 	}
 
 	protected void fireStartedEvent() {
@@ -236,59 +147,9 @@ public abstract class AmstradPc {
 			listener.amstradPcTerminated(this);
 	}
 
-	protected void fireMonitorModeChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradMonitorModeChanged(this);
-	}
-
-	protected void fireMonitorEffectChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradMonitorEffectChanged(this);
-	}
-
-	protected void fireMonitorScanLinesEffectChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradMonitorScanLinesEffectChanged(this);
-	}
-
-	protected void fireMonitorBilinearEffectChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradMonitorBilinearEffectChanged(this);
-	}
-
-	protected void fireWindowFullscreenChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradWindowFullscreenChanged(this);
-	}
-
-	protected void fireWindowAlwaysOnTopChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradWindowAlwaysOnTopChanged(this);
-	}
-
-	protected void fireWindowTitleDynamicChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradWindowTitleDynamicChanged(this);
-	}
-
-	protected void fireDisplaySourceChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradDisplaySourceChanged(this);
-	}
-
-	protected void fireEvent(AmstradPcEvent event) {
-		for (AmstradPcEventListener listener : getEventListeners())
-			listener.amstradPcEventDispatched(event);
-	}
-
 	protected void fireProgramLoaded() {
-		for (AmstradPcProgramListener listener : getProgramListenersFixedList())
-			listener.amstradProgramLoaded(this);
-	}
-
-	protected void fireDoubleEscapeKey() {
-		for (AmstradPcProgramListener listener : getProgramListenersFixedList())
-			listener.doubleEscapeKey(this);
+		for (AmstradPcStateListener listener : getStateListenersFixedList())
+			listener.amstradPcProgramLoaded(this);
 	}
 
 	public AmstradPcFrame getFrame() {
@@ -305,22 +166,6 @@ public abstract class AmstradPc {
 
 	protected List<AmstradPcStateListener> getStateListeners() {
 		return stateListeners;
-	}
-
-	protected List<AmstradMonitorListener> getMonitorListeners() {
-		return monitorListeners;
-	}
-
-	protected List<AmstradPcEventListener> getEventListeners() {
-		return eventListeners;
-	}
-
-	private List<AmstradPcProgramListener> getProgramListenersFixedList() {
-		return new Vector<AmstradPcProgramListener>(getProgramListeners());
-	}
-
-	protected List<AmstradPcProgramListener> getProgramListeners() {
-		return programListeners;
 	}
 
 }

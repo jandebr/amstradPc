@@ -4,8 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.event.AmstradPcEvent;
-import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 
 public class RebootAction extends AmstradPcAction {
 
@@ -15,7 +14,7 @@ public class RebootAction extends AmstradPcAction {
 
 	public RebootAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
-		amstradPc.addEventListener(this);
+		amstradPc.getKeyboard().addKeyboardListener(this);
 	}
 
 	@Override
@@ -24,14 +23,11 @@ public class RebootAction extends AmstradPcAction {
 	}
 
 	@Override
-	public void amstradPcEventDispatched(AmstradPcEvent event) {
-		super.amstradPcEventDispatched(event);
-		if (event instanceof AmstradPcKeyboardEvent) {
-			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
-			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_R && keyEvent.isControlDown()
-					&& keyEvent.isShiftDown()) {
-				reboot();
-			}
+	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+		super.amstradKeyboardEventDispatched(event);
+		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_R && event.isControlDown()
+				&& event.isShiftDown()) {
+			reboot();
 		}
 	}
 

@@ -4,11 +4,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.util.AmstradUtils;
 
-public abstract class AmstradMemory extends AmstradPcDevice {
+public abstract class AmstradMemory extends AmstradDevice {
 
 	private List<MemoryTrap> memoryTraps;
 
@@ -33,6 +33,8 @@ public abstract class AmstradMemory extends AmstradPcDevice {
 
 	public synchronized void addMemoryTrap(int memoryAddress, byte memoryValueOff, boolean resetBeforeAdding,
 			AmstradMemoryTrapHandler handler) {
+		checkStarted();
+		checkNotTerminated();
 		MemoryTrap memoryTrap = new MemoryTrap(memoryAddress, memoryValueOff, handler);
 		if (resetBeforeAdding) {
 			memoryTrap.reset();
@@ -57,7 +59,7 @@ public abstract class AmstradMemory extends AmstradPcDevice {
 
 	private void trackMemoryTrapsAsNeeded() {
 		if (hasMemoryTraps()) {
-			if (getMemoryTrapTracker() == null) {
+			if (getMemoryTrapTracker() == null || getMemoryTrapTracker().isStopped()) {
 				MemoryTrapTracker tracker = new MemoryTrapTracker();
 				setMemoryTrapTracker(tracker);
 				tracker.start();
@@ -141,10 +143,10 @@ public abstract class AmstradMemory extends AmstradPcDevice {
 		public void run() {
 			System.out.println("Memorytrap tracker thread started");
 			AmstradPc pc = getAmstradPc();
-			while (!stop && pc.isStarted() && !pc.isTerminated() && hasMemoryTraps()) {
+			while (!isStopped() && pc.isStarted() && !pc.isTerminated() && hasMemoryTraps()) {
 				List<MemoryTrap> traps = getMemoryTrapsToTrack();
 				traps.clear();
-				synchronized (pc) {
+				synchronized (AmstradMemory.this) {
 					traps.addAll(getMemoryTraps());
 				}
 				track(traps);
@@ -167,13 +169,17 @@ public abstract class AmstradMemory extends AmstradPcDevice {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					memoryTrap.getHandler().handleMemoryTrap(getAmstradPc(), memoryTrap.getMemoryAddress(), value);
+					memoryTrap.getHandler().handleMemoryTrap(AmstradMemory.this, memoryTrap.getMemoryAddress(), value);
 				}
 			}).start();
 		}
 
 		public void stopTracking() {
 			stop = true;
+		}
+
+		public boolean isStopped() {
+			return stop;
 		}
 
 		private List<MemoryTrap> getMemoryTrapsToTrack() {

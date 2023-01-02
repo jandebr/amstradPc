@@ -19,8 +19,8 @@ public class AmstradSystemColorsDisplaySource extends AmstradWindowDisplaySource
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
-		getAmstradPc().setMonitorBilinearEffect(false);
-		getAmstradPc().setMonitorScanLinesEffect(false);
+		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
+		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(1).paper(1);
 	}
 

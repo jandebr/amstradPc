@@ -21,7 +21,7 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
+		int returnValue = getFileChooser().showSaveDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
 			new Thread(new Runnable() {

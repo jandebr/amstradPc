@@ -19,7 +19,7 @@ public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		int returnValue = getFileChooser().showOpenDialog(getAmstradPc().getDisplayPane());
+		int returnValue = getFileChooser().showOpenDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
 			new Thread(new Runnable() {
@@ -30,7 +30,8 @@ public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 						getAmstradPc().getBasicRuntime().loadSourceCodeFromFile(file);
 					} catch (Exception e) {
 						System.err.println("Failed to load Basic source file: " + e.getMessage());
-						showErrorMessageDialog("Error loading Basic source file", "Failed to load " + file.getName(), e);
+						showErrorMessageDialog("Error loading Basic source file", "Failed to load " + file.getName(),
+								e);
 					}
 				}
 			}).start();

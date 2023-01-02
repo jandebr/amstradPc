@@ -30,4 +30,9 @@ public abstract class AmstradPcStateAdapter implements AmstradPcStateListener {
 		// Subclasses can override this
 	}
 
+	@Override
+	public void amstradPcProgramLoaded(AmstradPc amstradPc) {
+		// Subclasses can override this
+	}
+
 }

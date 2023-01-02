@@ -1,8 +1,10 @@
 package org.maia.amstrad.program.loader;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcProgramListener;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardListener;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
@@ -29,7 +31,7 @@ public abstract class AmstradProgramLoader {
 	}
 
 	private static class RuntimeCompanion extends AmstradPcStateAdapter
-			implements AmstradPcProgramListener, AmstradProgramRuntimeListener {
+			implements AmstradKeyboardListener, AmstradProgramRuntimeListener {
 
 		private AmstradProgramRuntime programRuntime;
 
@@ -41,16 +43,21 @@ public abstract class AmstradProgramLoader {
 			getProgramRuntime().addListener(this);
 			AmstradPc amstradPc = getProgramRuntime().getAmstradPc();
 			amstradPc.addStateListener(this);
-			amstradPc.addProgramListener(this);
+			amstradPc.getKeyboard().addKeyboardListener(this);
 		}
 
 		@Override
-		public void amstradProgramLoaded(AmstradPc amstradPc) {
+		public void amstradPcProgramLoaded(AmstradPc amstradPc) {
 			getProgramRuntime().dispose(false); // another program got loaded
 		}
 
 		@Override
-		public void doubleEscapeKey(AmstradPc amstradPc) {
+		public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+			// no action
+		}
+
+		@Override
+		public void amstradDoubleEscapeKeyPressed(AmstradKeyboard keyboard) {
 			if (getProgramRuntime().isRun()) {
 				getProgramRuntime().dispose(true);
 			}
@@ -80,7 +87,7 @@ public abstract class AmstradProgramLoader {
 			getProgramRuntime().removeListener(this);
 			AmstradPc amstradPc = getProgramRuntime().getAmstradPc();
 			amstradPc.removeStateListener(this);
-			amstradPc.removeProgramListener(this);
+			amstradPc.getKeyboard().removeKeyboardListener(this);
 		}
 
 		public AmstradProgramRuntime getProgramRuntime() {

@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.action;
 import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColorsDisplaySource;
 
@@ -17,7 +18,7 @@ public class DisplaySystemColorsAction extends AmstradPcAction {
 	public DisplaySystemColorsAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		updateName();
-		amstradPc.addMonitorListener(this);
+		amstradPc.getMonitor().addMonitorListener(this);
 	}
 
 	@Override
@@ -35,19 +36,19 @@ public class DisplaySystemColorsAction extends AmstradPcAction {
 
 	public void showSystemColors() {
 		if (isEnabled()) {
-			getAmstradPc().swapDisplaySource(getDisplaySource());
+			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
 		}
 	}
 
 	public void hideSystemColors() {
 		if (isEnabled()) {
-			getAmstradPc().resetDisplaySource();
+			getAmstradPc().getMonitor().resetDisplaySource();
 		}
 	}
 
 	@Override
-	public void amstradDisplaySourceChanged(AmstradPc amstradPc) {
-		super.amstradDisplaySourceChanged(amstradPc);
+	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
+		super.amstradDisplaySourceChanged(monitor);
 		updateName();
 	}
 
@@ -60,7 +61,8 @@ public class DisplaySystemColorsAction extends AmstradPcAction {
 	}
 
 	public boolean isSystemColorsShowing() {
-		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getCurrentAlternativeDisplaySource();
+		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getMonitor()
+				.getCurrentAlternativeDisplaySource();
 		return altDisplaySource != null && altDisplaySource instanceof AmstradSystemColorsDisplaySource;
 	}
 

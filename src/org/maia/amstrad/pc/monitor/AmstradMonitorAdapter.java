@@ -1,49 +1,47 @@
 package org.maia.amstrad.pc.monitor;
 
-import org.maia.amstrad.pc.AmstradPc;
-
 public abstract class AmstradMonitorAdapter implements AmstradMonitorListener {
 
 	protected AmstradMonitorAdapter() {
 	}
 
 	@Override
-	public void amstradMonitorModeChanged(AmstradPc amstradPc) {
+	public void amstradMonitorModeChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 
 	@Override
-	public void amstradMonitorEffectChanged(AmstradPc amstradPc) {
+	public void amstradMonitorEffectChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 
 	@Override
-	public void amstradMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
+	public void amstradMonitorScanLinesEffectChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 
 	@Override
-	public void amstradMonitorBilinearEffectChanged(AmstradPc amstradPc) {
+	public void amstradMonitorBilinearEffectChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 
 	@Override
-	public void amstradWindowFullscreenChanged(AmstradPc amstradPc) {
+	public void amstradWindowFullscreenChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 
 	@Override
-	public void amstradWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
+	public void amstradWindowAlwaysOnTopChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 
 	@Override
-	public void amstradWindowTitleDynamicChanged(AmstradPc amstradPc) {
+	public void amstradWindowTitleDynamicChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 
 	@Override
-	public void amstradDisplaySourceChanged(AmstradPc amstradPc) {
+	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}
 

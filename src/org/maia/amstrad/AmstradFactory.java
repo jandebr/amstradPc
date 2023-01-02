@@ -37,6 +37,7 @@ import org.maia.amstrad.pc.action.ScreenshotWithMonitorEffectAction;
 import org.maia.amstrad.pc.action.WindowAlwaysOnTopAction;
 import org.maia.amstrad.pc.action.WindowDynamicTitleAction;
 import org.maia.amstrad.pc.impl.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
@@ -212,7 +213,7 @@ public class AmstradFactory {
 		protected MonitorMenuHelper() {
 		}
 
-		protected abstract void syncMenu(AmstradPc amstradPc);
+		protected abstract void syncMenu(AmstradMonitor monitor);
 
 	}
 
@@ -239,18 +240,18 @@ public class AmstradFactory {
 			buttonGroup.add(greenMode);
 			buttonGroup.add(grayMode);
 			MonitorModeMenuHelper helper = new MonitorModeMenuHelper(buttonGroup);
-			helper.syncMenu(amstradPc);
-			amstradPc.addMonitorListener(helper);
+			helper.syncMenu(amstradPc.getMonitor());
+			amstradPc.getMonitor().addMonitorListener(helper);
 		}
 
 		@Override
-		public void amstradMonitorModeChanged(AmstradPc amstradPc) {
-			syncMenu(amstradPc);
+		public void amstradMonitorModeChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
 		}
 
 		@Override
-		protected void syncMenu(AmstradPc amstradPc) {
-			AmstradMonitorMode monitorMode = amstradPc.getMonitorMode();
+		protected void syncMenu(AmstradMonitor monitor) {
+			AmstradMonitorMode monitorMode = monitor.getMonitorMode();
 			for (Enumeration<AbstractButton> en = getButtonGroup().getElements(); en.hasMoreElements();) {
 				AbstractButton button = en.nextElement();
 				if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode)) {
@@ -271,16 +272,16 @@ public class AmstradFactory {
 
 		protected MonitorCheckboxMenuHelper(AmstradPcAction action) {
 			this.checkbox = new JCheckBoxMenuItem(action);
-			syncMenu(action.getAmstradPc());
-			action.getAmstradPc().addMonitorListener(this);
+			syncMenu(action.getAmstradPc().getMonitor());
+			action.getAmstradPc().getMonitor().addMonitorListener(this);
 		}
-
-		protected abstract boolean getState(AmstradPc amstradPc);
 
 		@Override
-		protected final void syncMenu(AmstradPc amstradPc) {
-			getCheckbox().setSelected(getState(amstradPc));
+		protected final void syncMenu(AmstradMonitor monitor) {
+			getCheckbox().setSelected(getState(monitor));
 		}
+
+		protected abstract boolean getState(AmstradMonitor monitor);
 
 		protected JCheckBoxMenuItem getCheckbox() {
 			return checkbox;
@@ -300,13 +301,13 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradMonitorEffectChanged(AmstradPc amstradPc) {
-			syncMenu(amstradPc);
+		public void amstradMonitorEffectChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
 		}
 
 		@Override
-		protected boolean getState(AmstradPc amstradPc) {
-			return amstradPc.isMonitorEffectOn();
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isMonitorEffectOn();
 		}
 
 	}
@@ -323,13 +324,13 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
-			syncMenu(amstradPc);
+		public void amstradMonitorScanLinesEffectChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
 		}
 
 		@Override
-		protected boolean getState(AmstradPc amstradPc) {
-			return amstradPc.isMonitorScanLinesEffectOn();
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isMonitorScanLinesEffectOn();
 		}
 
 	}
@@ -346,13 +347,13 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradMonitorBilinearEffectChanged(AmstradPc amstradPc) {
-			syncMenu(amstradPc);
+		public void amstradMonitorBilinearEffectChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
 		}
 
 		@Override
-		protected boolean getState(AmstradPc amstradPc) {
-			return amstradPc.isMonitorBilinearEffectOn();
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isMonitorBilinearEffectOn();
 		}
 
 	}
@@ -369,13 +370,13 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradWindowTitleDynamicChanged(AmstradPc amstradPc) {
-			syncMenu(amstradPc);
+		public void amstradWindowTitleDynamicChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
 		}
 
 		@Override
-		protected boolean getState(AmstradPc amstradPc) {
-			return amstradPc.isWindowTitleDynamic();
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isWindowTitleDynamic();
 		}
 
 	}
@@ -392,13 +393,13 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
-			syncMenu(amstradPc);
+		public void amstradWindowAlwaysOnTopChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
 		}
 
 		@Override
-		protected boolean getState(AmstradPc amstradPc) {
-			return amstradPc.isWindowAlwaysOnTop();
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isWindowAlwaysOnTop();
 		}
 
 	}

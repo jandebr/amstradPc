@@ -10,8 +10,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.event.AmstradPcEvent;
-import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 
 public class ScreenshotAction extends FileChooserAction {
 
@@ -21,7 +20,7 @@ public class ScreenshotAction extends FileChooserAction {
 
 	public ScreenshotAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
-		amstradPc.addEventListener(this);
+		amstradPc.getKeyboard().addKeyboardListener(this);
 	}
 
 	@Override
@@ -30,24 +29,21 @@ public class ScreenshotAction extends FileChooserAction {
 	}
 
 	@Override
-	public void amstradPcEventDispatched(AmstradPcEvent event) {
-		super.amstradPcEventDispatched(event);
-		if (event instanceof AmstradPcKeyboardEvent) {
-			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
-			if (invokeOn(keyEvent)) {
-				makeScreenshot();
-			}
+	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+		super.amstradKeyboardEventDispatched(event);
+		if (invokeOn(event)) {
+			makeScreenshot();
 		}
 	}
 
-	protected boolean invokeOn(AmstradPcKeyboardEvent keyEvent) {
-		return keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_I && keyEvent.isControlDown()
-				&& !keyEvent.isShiftDown();
+	protected boolean invokeOn(AmstradKeyboardEvent event) {
+		return event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_I && event.isControlDown()
+				&& !event.isShiftDown();
 	}
 
 	private void makeScreenshot() {
-		BufferedImage image = getAmstradPc().makeScreenshot(includeMonitorEffect());
-		int returnValue = getFileChooser().showSaveDialog(getAmstradPc().getDisplayPane());
+		BufferedImage image = getAmstradPc().getMonitor().makeScreenshot(includeMonitorEffect());
+		int returnValue = getFileChooser().showSaveDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
 			File file = getSelectedFileWithExtension(".png");

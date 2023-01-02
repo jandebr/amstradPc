@@ -80,9 +80,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		super.init(canvas);
 		setFollowPrimaryDisplaySourceResolution(false);
 		resetItemListCursorBlinkOffsetTime();
-		getAmstradPc().setMonitorMode(AmstradMonitorMode.COLOR);
-		getAmstradPc().setMonitorBilinearEffect(false);
-		getAmstradPc().setMonitorScanLinesEffect(false);
+		getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
+		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
+		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
 		canvas.symbol(254, 255, 129, 129, 129, 255, 24, 126, 0); // monitor
 		canvas.symbol(255, 24, 60, 126, 255, 126, 110, 110, 124); // home

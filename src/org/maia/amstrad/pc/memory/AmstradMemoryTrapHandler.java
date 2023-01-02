@@ -1,9 +1,7 @@
 package org.maia.amstrad.pc.memory;
 
-import org.maia.amstrad.pc.AmstradPc;
-
 public interface AmstradMemoryTrapHandler {
 
-	void handleMemoryTrap(AmstradPc amstradPc, int memoryAddress, byte memoryValue);
+	void handleMemoryTrap(AmstradMemory memory, int memoryAddress, byte memoryValue);
 
 }

@@ -29,7 +29,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 	}
 
 	protected void buildUI() {
-		getContentPane().add(getAmstradPc().getDisplayPane(), BorderLayout.CENTER);
+		getContentPane().add(getAmstradPc().getMonitor().getDisplayPane(), BorderLayout.CENTER);
 	}
 
 	public void installMenuBar() {
@@ -37,11 +37,11 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 	}
 
 	public boolean isFullscreen() {
-		return getAmstradPc().isWindowFullscreen();
+		return getAmstradPc().getMonitor().isWindowFullscreen();
 	}
 
 	public void toggleFullscreen() {
-		getAmstradPc().toggleWindowFullscreen();
+		getAmstradPc().getMonitor().toggleWindowFullscreen();
 	}
 
 	@Override
@@ -51,14 +51,17 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	@Override
 	public void amstradPcPausing(AmstradPc amstradPc) {
+		// no action
 	}
 
 	@Override
 	public void amstradPcResuming(AmstradPc amstradPc) {
+		// no action
 	}
 
 	@Override
 	public void amstradPcRebooting(AmstradPc amstradPc) {
+		// no action
 	}
 
 	@Override
@@ -69,11 +72,18 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 	}
 
 	@Override
+	public void amstradPcProgramLoaded(AmstradPc amstradPc) {
+		// no action
+	}
+
+	@Override
 	public void windowActivated(WindowEvent event) {
+		// no action
 	}
 
 	@Override
 	public void windowClosed(WindowEvent event) {
+		// no action
 	}
 
 	@Override
@@ -86,18 +96,22 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	@Override
 	public void windowDeactivated(WindowEvent event) {
+		// no action
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent event) {
+		// no action
 	}
 
 	@Override
 	public void windowIconified(WindowEvent event) {
+		// no action
 	}
 
 	@Override
 	public void windowOpened(WindowEvent event) {
+		// no action
 	}
 
 	public AmstradPc getAmstradPc() {

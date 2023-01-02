@@ -19,7 +19,7 @@ public class WindowDynamicTitleAction extends AmstradPcAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		boolean state = ((JCheckBoxMenuItem) event.getSource()).getState();
-		getAmstradPc().setWindowTitleDynamic(state);
+		getAmstradPc().getMonitor().setWindowTitleDynamic(state);
 	}
 
 }

@@ -1,5 +1,7 @@
 package org.maia.amstrad.pc.action;
 
+import java.awt.Component;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -9,12 +11,14 @@ import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateListener;
-import org.maia.amstrad.pc.event.AmstradPcEvent;
-import org.maia.amstrad.pc.event.AmstradPcEventListener;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardListener;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorListener;
 
-public abstract class AmstradPcAction extends AbstractAction implements AmstradPcStateListener,
-		AmstradMonitorListener, AmstradPcEventListener {
+public abstract class AmstradPcAction extends AbstractAction
+		implements AmstradPcStateListener, AmstradMonitorListener, AmstradKeyboardListener {
 
 	private AmstradPc amstradPc;
 
@@ -24,12 +28,11 @@ public abstract class AmstradPcAction extends AbstractAction implements AmstradP
 	}
 
 	protected void showInfoMessageDialog(String dialogMessage) {
-		JOptionPane.showMessageDialog(getAmstradPc().getDisplayPane(), dialogMessage);
+		JOptionPane.showMessageDialog(getDisplayPane(), dialogMessage);
 	}
 
 	protected void showErrorMessageDialog(String dialogTitle, String dialogMessage) {
-		JOptionPane.showMessageDialog(getAmstradPc().getDisplayPane(), dialogMessage, dialogTitle,
-				JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(getDisplayPane(), dialogMessage, dialogTitle, JOptionPane.ERROR_MESSAGE);
 	}
 
 	protected void showErrorMessageDialog(String dialogTitle, String dialogMessage, Exception error) {
@@ -54,6 +57,10 @@ public abstract class AmstradPcAction extends AbstractAction implements AmstradP
 
 	protected AmstradContext getAmstradContext() {
 		return AmstradFactory.getInstance().getAmstradContext();
+	}
+
+	protected Component getDisplayPane() {
+		return getAmstradPc().getMonitor().getDisplayPane();
 	}
 
 	public AmstradPc getAmstradPc() {
@@ -86,48 +93,58 @@ public abstract class AmstradPcAction extends AbstractAction implements AmstradP
 	}
 
 	@Override
-	public void amstradMonitorModeChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradPcProgramLoaded(AmstradPc amstradPc) {
+		// Subclasses may override after registering with amstradPc as AmstradPcStateListener
 	}
 
 	@Override
-	public void amstradMonitorEffectChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradMonitorModeChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 
 	@Override
-	public void amstradMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradMonitorEffectChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 
 	@Override
-	public void amstradMonitorBilinearEffectChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradMonitorScanLinesEffectChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 
 	@Override
-	public void amstradWindowFullscreenChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradMonitorBilinearEffectChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 
 	@Override
-	public void amstradWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradWindowFullscreenChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 
 	@Override
-	public void amstradWindowTitleDynamicChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradWindowAlwaysOnTopChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 
 	@Override
-	public void amstradDisplaySourceChanged(AmstradPc amstradPc) {
-		// Subclasses may override after registering with amstradPc as AmstradPcMonitorListener
+	public void amstradWindowTitleDynamicChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 
 	@Override
-	public void amstradPcEventDispatched(AmstradPcEvent event) {
-		// Subclasses may override after registering with amstradPc as AmstradPcEventListener
+	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
+	}
+
+	@Override
+	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+		// Subclasses may override after registering with amstradPc's keyboard as AmstradKeyboardListener
+	}
+
+	@Override
+	public void amstradDoubleEscapeKeyPressed(AmstradKeyboard keyboard) {
+		// Subclasses may override after registering with amstradPc's keyboard as AmstradKeyboardListener
 	}
 
 }

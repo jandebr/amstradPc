@@ -3,8 +3,7 @@ package org.maia.amstrad.program.browser.action;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.action.ActionableDialogAction;
-import org.maia.amstrad.pc.event.AmstradPcEvent;
-import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfigurator;
 import org.maia.swing.dialog.ActionableDialog;
@@ -20,18 +19,15 @@ public class ProgramBrowserSetupAction extends ActionableDialogAction {
 	public ProgramBrowserSetupAction(ProgramBrowserAction browserAction, String name) {
 		super(browserAction.getAmstradPc(), name);
 		this.browserAction = browserAction;
-		getAmstradPc().addEventListener(this);
+		getAmstradPc().getKeyboard().addKeyboardListener(this);
 	}
 
 	@Override
-	public void amstradPcEventDispatched(AmstradPcEvent event) {
-		super.amstradPcEventDispatched(event);
-		if (event instanceof AmstradPcKeyboardEvent) {
-			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
-			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_B && keyEvent.isControlDown()
-					&& keyEvent.isShiftDown()) {
-				openDialog();
-			}
+	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+		super.amstradKeyboardEventDispatched(event);
+		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_B && event.isControlDown()
+				&& event.isShiftDown()) {
+			openDialog();
 		}
 	}
 

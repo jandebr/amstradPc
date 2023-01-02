@@ -19,7 +19,7 @@ public class MonitorBilinearEffectAction extends AmstradPcAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		boolean state = ((JCheckBoxMenuItem) event.getSource()).getState();
-		getAmstradPc().setMonitorBilinearEffect(state);
+		getAmstradPc().getMonitor().setMonitorBilinearEffect(state);
 	}
 
 }

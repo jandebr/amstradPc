@@ -58,7 +58,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	 * @see AmstradPc#swapDisplaySource(AmstradAlternativeDisplaySource)
 	 */
 	public void close() {
-		getAmstradPc().resetDisplaySource(); // will invoke dispose()
+		getAmstradPc().getMonitor().resetDisplaySource(); // will invoke dispose()
 	}
 
 	@Override

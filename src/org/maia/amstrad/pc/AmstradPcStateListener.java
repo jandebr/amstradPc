@@ -1,7 +1,5 @@
 package org.maia.amstrad.pc;
 
-import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
-
 public interface AmstradPcStateListener {
 
 	void amstradPcStarted(AmstradPc amstradPc);
@@ -13,5 +11,7 @@ public interface AmstradPcStateListener {
 	void amstradPcRebooting(AmstradPc amstradPc);
 
 	void amstradPcTerminated(AmstradPc amstradPc);
+
+	void amstradPcProgramLoaded(AmstradPc amstradPc);
 
 }

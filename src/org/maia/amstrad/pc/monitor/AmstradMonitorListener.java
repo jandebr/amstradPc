@@ -1,23 +1,21 @@
 package org.maia.amstrad.pc.monitor;
 
-import org.maia.amstrad.pc.AmstradPc;
-
 public interface AmstradMonitorListener {
 
-	void amstradMonitorModeChanged(AmstradPc amstradPc);
+	void amstradMonitorModeChanged(AmstradMonitor monitor);
 
-	void amstradMonitorEffectChanged(AmstradPc amstradPc);
+	void amstradMonitorEffectChanged(AmstradMonitor monitor);
 
-	void amstradMonitorScanLinesEffectChanged(AmstradPc amstradPc);
+	void amstradMonitorScanLinesEffectChanged(AmstradMonitor monitor);
 
-	void amstradMonitorBilinearEffectChanged(AmstradPc amstradPc);
+	void amstradMonitorBilinearEffectChanged(AmstradMonitor monitor);
 
-	void amstradWindowFullscreenChanged(AmstradPc amstradPc);
+	void amstradWindowFullscreenChanged(AmstradMonitor monitor);
 
-	void amstradWindowAlwaysOnTopChanged(AmstradPc amstradPc);
+	void amstradWindowAlwaysOnTopChanged(AmstradMonitor monitor);
 
-	void amstradWindowTitleDynamicChanged(AmstradPc amstradPc);
+	void amstradWindowTitleDynamicChanged(AmstradMonitor monitor);
 
-	void amstradDisplaySourceChanged(AmstradPc amstradPc);
+	void amstradDisplaySourceChanged(AmstradMonitor monitor);
 
 }

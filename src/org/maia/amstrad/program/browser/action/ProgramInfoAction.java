@@ -6,8 +6,8 @@ import java.awt.event.KeyEvent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
-import org.maia.amstrad.pc.event.AmstradPcEvent;
-import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
@@ -31,8 +31,8 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 		super(browserAction.getAmstradPc(), "");
 		browserAction.addListener(this);
 		getAmstradPc().addStateListener(this);
-		getAmstradPc().addMonitorListener(this);
-		getAmstradPc().addEventListener(this);
+		getAmstradPc().getMonitor().addMonitorListener(this);
+		getAmstradPc().getKeyboard().addKeyboardListener(this);
 		updateName();
 		setEnabled(false);
 	}
@@ -65,13 +65,10 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	}
 
 	@Override
-	public void amstradPcEventDispatched(AmstradPcEvent event) {
-		super.amstradPcEventDispatched(event);
-		if (event instanceof AmstradPcKeyboardEvent) {
-			AmstradPcKeyboardEvent keyEvent = (AmstradPcKeyboardEvent) event;
-			if (keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_F1) {
-				toggleProgramInfo();
-			}
+	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+		super.amstradKeyboardEventDispatched(event);
+		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F1) {
+			toggleProgramInfo();
 		}
 	}
 
@@ -87,25 +84,25 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 		if (isEnabled()) {
 			resumeAfterInfoMode = !getAmstradPc().isPaused();
 			getAmstradPc().pause(); // auto-pause
-			getAmstradPc().swapDisplaySource(getDisplaySource());
+			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
 		}
 	}
 
 	public void hideProgramInfo() {
 		if (isEnabled()) {
-			getAmstradPc().resetDisplaySource();
+			getAmstradPc().getMonitor().resetDisplaySource();
 		}
 	}
 
 	@Override
-	public void amstradDisplaySourceChanged(AmstradPc amstradPc) {
-		super.amstradDisplaySourceChanged(amstradPc);
+	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
+		super.amstradDisplaySourceChanged(monitor);
 		updateName();
-		if (amstradPc.isPrimaryDisplaySourceShowing()) {
+		if (monitor.getAmstradPc().getMonitor().isPrimaryDisplaySourceShowing()) {
 			if (infoMode) {
 				infoMode = false; // exit info screen
 				if (resumeAfterInfoMode) {
-					amstradPc.resume(); // auto-resume
+					monitor.getAmstradPc().resume(); // auto-resume
 				}
 			}
 		} else if (isProgramInfoShowing()) {
@@ -132,7 +129,8 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	}
 
 	public boolean isProgramInfoShowing() {
-		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getCurrentAlternativeDisplaySource();
+		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getMonitor()
+				.getCurrentAlternativeDisplaySource();
 		if (altDisplaySource == null)
 			return false;
 		if (!(altDisplaySource instanceof ProgramBrowserDisplaySource))
