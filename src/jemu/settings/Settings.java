@@ -2,8 +2,8 @@ package jemu.settings;
 
 import java.io.File;
 
-import org.maia.amstrad.pc.AmstradFactory;
-import org.maia.amstrad.pc.AmstradSettings;
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradSettings;
 
 /**
  * User settings from last session.

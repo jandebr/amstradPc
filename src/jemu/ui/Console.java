@@ -20,8 +20,8 @@ import javax.swing.border.*;
 
 import jemu.settings.Settings;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.io.MultiplexOutputStream;
-import org.maia.amstrad.pc.AmstradFactory;
 
 public class Console extends WindowAdapter implements WindowListener, ActionListener, Runnable
 {

@@ -1,6 +1,6 @@
 package org.maia.amstrad.pc;
 
-import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 
 public interface AmstradPcStateListener {
 

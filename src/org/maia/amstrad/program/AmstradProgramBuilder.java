@@ -12,7 +12,7 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 
 import org.maia.amstrad.basic.BasicLanguage;
-import org.maia.amstrad.pc.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.util.StringUtils;

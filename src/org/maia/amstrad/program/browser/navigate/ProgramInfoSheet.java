@@ -3,7 +3,7 @@ package org.maia.amstrad.program.browser.navigate;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.pc.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.util.StringUtils;

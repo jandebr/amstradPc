@@ -84,7 +84,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
-import org.maia.amstrad.pc.jemu.JemuFrameAdapter;
+import org.maia.amstrad.pc.impl.jemu.JemuFrameAdapter;
 
 import jemu.core.Util;
 import jemu.core.device.Computer;
@@ -2236,39 +2236,39 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		return result;
 	}
 
-	public void writeMemory(byte[] data, int memoryOffset) {
-		writeMemory(data, 0, data.length, memoryOffset);
+	public byte readMemory(int memoryAddress) {
+		return computer.readMemory(memoryAddress);
 	}
 
-	public void writeMemory(byte[] data, int dataOffset, int dataLength, int memoryOffset) {
+	public byte[] readMemoryRange(int memoryOffset, int memoryLength) {
 		boolean running = computer.isRunning();
 		if (running) {
 			computer.stop();
 		}
-		computer.writeMemory(data, dataOffset, dataLength, memoryOffset);
-		if (running) {
-			computer.start();
-		}
-	}
-
-	public byte[] readMemory(int memoryOffset, int memoryLength) {
-		boolean running = computer.isRunning();
-		if (running) {
-			computer.stop();
-		}
-		byte[] data = computer.readMemory(memoryOffset, memoryLength);
+		byte[] data = computer.readMemoryRange(memoryOffset, memoryLength);
 		if (running) {
 			computer.start();
 		}
 		return data;
 	}
 
-	public byte peekMemory(int memoryAddress) {
-		return computer.peekMemory(memoryAddress);
+	public void writeMemory(int memoryAddress, byte value) {
+		computer.writeMemory(memoryAddress, value);
 	}
 
-	public void pokeMemory(int memoryAddress, byte value) {
-		computer.pokeMemory(memoryAddress, value);
+	public void writeMemoryRange(int memoryOffset, byte[] data) {
+		writeMemoryRange(memoryOffset, data, 0, data.length);
+	}
+
+	public void writeMemoryRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
+		boolean running = computer.isRunning();
+		if (running) {
+			computer.stop();
+		}
+		computer.writeMemoryRange(memoryOffset, data, dataOffset, dataLength);
+		if (running) {
+			computer.start();
+		}
 	}
 
 	public void resetComputer() {

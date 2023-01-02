@@ -8,7 +8,7 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 
-import org.maia.amstrad.pc.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.swing.util.SwingUtils;
 

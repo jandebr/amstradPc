@@ -481,27 +481,27 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	/*
 	 * Subclasses to override
 	 */
-	public void writeMemory(byte[] data, int dataOffset, int dataLength, int memoryOffset) {
-	}
-
-	/*
-	 * Subclasses to override
-	 */
-	public byte[] readMemory(int memoryOffset, int memoryLength) {
-		return null;
-	}
-
-	/*
-	 * Subclasses to override
-	 */
-	public byte peekMemory(int memoryAddress) {
+	public byte readMemory(int memoryAddress) {
 		return 0;
 	}
 
 	/*
 	 * Subclasses to override
 	 */
-	public void pokeMemory(int memoryAddress, byte value) {
+	public byte[] readMemoryRange(int memoryOffset, int memoryLength) {
+		return null;
+	}
+
+	/*
+	 * Subclasses to override
+	 */
+	public void writeMemory(int memoryAddress, byte value) {
+	}
+
+	/*
+	 * Subclasses to override
+	 */
+	public void writeMemoryRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
 	}
 
 	public abstract Dimension getDisplaySize(boolean large);

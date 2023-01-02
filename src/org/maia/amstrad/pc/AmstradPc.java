@@ -4,43 +4,42 @@ import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicRuntime;
-import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcEventListener;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
+import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.AmstradMonitorListener;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.program.loader.AmstradProgramLoader;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderFactory;
-import org.maia.amstrad.util.AmstradUtils;
 import org.maia.swing.dialog.ActionableDialog;
 
 public abstract class AmstradPc {
 
 	private AmstradPcFrame frame;
 
-	private List<MemoryTrap> memoryTraps;
-
-	private MemoryTrapTracker memoryTrapTracker;
-
 	private List<AmstradPcStateListener> stateListeners;
 
-	private List<AmstradPcMonitorListener> monitorListeners;
+	private List<AmstradMonitorListener> monitorListeners;
 
 	private List<AmstradPcEventListener> eventListeners;
 
 	private List<AmstradPcProgramListener> programListeners;
 
 	protected AmstradPc() {
-		this.memoryTraps = new Vector<MemoryTrap>();
 		this.stateListeners = new Vector<AmstradPcStateListener>();
-		this.monitorListeners = new Vector<AmstradPcMonitorListener>();
+		this.monitorListeners = new Vector<AmstradMonitorListener>();
 		this.eventListeners = new Vector<AmstradPcEventListener>();
 		this.programListeners = new Vector<AmstradPcProgramListener>();
 	}
@@ -109,6 +108,12 @@ public abstract class AmstradPc {
 
 	public abstract void terminate();
 
+	public abstract AmstradKeyboard getKeyboard();
+
+	public abstract AmstradMemory getMemory();
+	
+	public abstract AmstradMonitor getMonitor();
+
 	public abstract BasicRuntime getBasicRuntime();
 
 	public abstract Component getDisplayPane();
@@ -159,47 +164,6 @@ public abstract class AmstradPc {
 		return !isAlternativeDisplaySourceShowing();
 	}
 
-	public synchronized void addMemoryTrap(int memoryAddress, byte memoryValueOff, boolean resetBeforeAdding,
-			AmstradPcMemoryTrapHandler handler) {
-		checkStarted();
-		checkNotTerminated();
-		MemoryTrap memoryTrap = new MemoryTrap(memoryAddress, memoryValueOff, handler);
-		if (resetBeforeAdding) {
-			memoryTrap.reset();
-		}
-		getMemoryTraps().add(memoryTrap);
-		trackMemoryTrapsAsNeeded();
-	}
-
-	public synchronized void removeMemoryTrapsAt(int memoryAddress) {
-		Iterator<MemoryTrap> it = getMemoryTraps().iterator();
-		while (it.hasNext()) {
-			if (it.next().getMemoryAddress() == memoryAddress)
-				it.remove();
-		}
-		trackMemoryTrapsAsNeeded();
-	}
-
-	public synchronized void removeAllMemoryTraps() {
-		getMemoryTraps().clear();
-		trackMemoryTrapsAsNeeded();
-	}
-
-	private synchronized void trackMemoryTrapsAsNeeded() {
-		if (hasMemoryTraps()) {
-			if (getMemoryTrapTracker() == null) {
-				MemoryTrapTracker tracker = new MemoryTrapTracker();
-				setMemoryTrapTracker(tracker);
-				tracker.start();
-			}
-		} else {
-			if (getMemoryTrapTracker() != null) {
-				getMemoryTrapTracker().stopTracking();
-				setMemoryTrapTracker(null);
-			}
-		}
-	}
-
 	protected void checkStarted() {
 		if (!isStarted())
 			throw new IllegalStateException("This Amstrad PC has not been started");
@@ -223,11 +187,11 @@ public abstract class AmstradPc {
 		getStateListeners().remove(listener);
 	}
 
-	public void addMonitorListener(AmstradPcMonitorListener listener) {
+	public void addMonitorListener(AmstradMonitorListener listener) {
 		getMonitorListeners().add(listener);
 	}
 
-	public void removeMonitorListener(AmstradPcMonitorListener listener) {
+	public void removeMonitorListener(AmstradMonitorListener listener) {
 		getMonitorListeners().remove(listener);
 	}
 
@@ -273,43 +237,43 @@ public abstract class AmstradPc {
 	}
 
 	protected void fireMonitorModeChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcMonitorModeChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradMonitorModeChanged(this);
 	}
 
 	protected void fireMonitorEffectChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcMonitorEffectChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradMonitorEffectChanged(this);
 	}
 
 	protected void fireMonitorScanLinesEffectChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcMonitorScanLinesEffectChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradMonitorScanLinesEffectChanged(this);
 	}
 
 	protected void fireMonitorBilinearEffectChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcMonitorBilinearEffectChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradMonitorBilinearEffectChanged(this);
 	}
 
 	protected void fireWindowFullscreenChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcWindowFullscreenChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradWindowFullscreenChanged(this);
 	}
 
 	protected void fireWindowAlwaysOnTopChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcWindowAlwaysOnTopChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradWindowAlwaysOnTopChanged(this);
 	}
 
 	protected void fireWindowTitleDynamicChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcWindowTitleDynamicChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradWindowTitleDynamicChanged(this);
 	}
 
 	protected void fireDisplaySourceChangedEvent() {
-		for (AmstradPcMonitorListener listener : getMonitorListeners())
-			listener.amstradPcDisplaySourceChanged(this);
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradDisplaySourceChanged(this);
 	}
 
 	protected void fireEvent(AmstradPcEvent event) {
@@ -335,22 +299,6 @@ public abstract class AmstradPc {
 		this.frame = frame;
 	}
 
-	private boolean hasMemoryTraps() {
-		return !getMemoryTraps().isEmpty();
-	}
-
-	private List<MemoryTrap> getMemoryTraps() {
-		return memoryTraps;
-	}
-
-	private MemoryTrapTracker getMemoryTrapTracker() {
-		return memoryTrapTracker;
-	}
-
-	private void setMemoryTrapTracker(MemoryTrapTracker tracker) {
-		this.memoryTrapTracker = tracker;
-	}
-
 	private List<AmstradPcStateListener> getStateListenersFixedList() {
 		return new Vector<AmstradPcStateListener>(getStateListeners());
 	}
@@ -359,7 +307,7 @@ public abstract class AmstradPc {
 		return stateListeners;
 	}
 
-	protected List<AmstradPcMonitorListener> getMonitorListeners() {
+	protected List<AmstradMonitorListener> getMonitorListeners() {
 		return monitorListeners;
 	}
 
@@ -373,101 +321,6 @@ public abstract class AmstradPc {
 
 	protected List<AmstradPcProgramListener> getProgramListeners() {
 		return programListeners;
-	}
-
-	private class MemoryTrap {
-
-		private int memoryAddress;
-
-		private byte memoryValueOff;
-
-		private AmstradPcMemoryTrapHandler handler;
-
-		public MemoryTrap(int memoryAddress, byte memoryValueOff, AmstradPcMemoryTrapHandler handler) {
-			this.memoryAddress = memoryAddress;
-			this.memoryValueOff = memoryValueOff;
-			this.handler = handler;
-		}
-
-		public boolean isOn() {
-			return getMemoryValue() != getMemoryValueOff();
-		}
-
-		public void reset() {
-			getBasicRuntime().poke(getMemoryAddress(), getMemoryValueOff());
-		}
-
-		public int getMemoryAddress() {
-			return memoryAddress;
-		}
-
-		public byte getMemoryValueOff() {
-			return memoryValueOff;
-		}
-
-		public byte getMemoryValue() {
-			return getBasicRuntime().peek(getMemoryAddress());
-		}
-
-		public AmstradPcMemoryTrapHandler getHandler() {
-			return handler;
-		}
-
-	}
-
-	private class MemoryTrapTracker extends Thread {
-
-		private boolean stop;
-
-		private List<MemoryTrap> memoryTrapsToTrack;
-
-		public MemoryTrapTracker() {
-			setDaemon(true);
-			this.memoryTrapsToTrack = new Vector<MemoryTrap>();
-		}
-
-		@Override
-		public void run() {
-			System.out.println("Memorytrap tracker thread started");
-			while (!stop && isStarted() && !isTerminated() && hasMemoryTraps()) {
-				List<MemoryTrap> traps = getMemoryTrapsToTrack();
-				traps.clear();
-				synchronized (AmstradPc.this) {
-					traps.addAll(getMemoryTraps());
-				}
-				track(traps);
-				AmstradUtils.sleep(200L);
-			}
-			System.out.println("Memorytrap tracker thread stopped");
-		}
-
-		private void track(List<MemoryTrap> memoryTraps) {
-			for (MemoryTrap memoryTrap : memoryTraps) {
-				if (memoryTrap.isOn()) {
-					byte value = memoryTrap.getMemoryValue();
-					memoryTrap.reset();
-					handleInSeparateThread(memoryTrap, value);
-				}
-			}
-		}
-
-		private void handleInSeparateThread(final MemoryTrap memoryTrap, final byte value) {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					memoryTrap.getHandler().handleMemoryTrap(AmstradPc.this, memoryTrap.getMemoryAddress(), value);
-				}
-			}).start();
-		}
-
-		public void stopTracking() {
-			stop = true;
-		}
-
-		private List<MemoryTrap> getMemoryTrapsToTrack() {
-			return memoryTrapsToTrack;
-		}
-
 	}
 
 }

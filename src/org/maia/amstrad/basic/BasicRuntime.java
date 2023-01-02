@@ -5,10 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicDecompiler;
 import org.maia.amstrad.io.AmstradIO;
-import org.maia.amstrad.pc.AmstradFactory;
+import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 
 public abstract class BasicRuntime {
 
@@ -34,45 +36,10 @@ public abstract class BasicRuntime {
 
 	public static final int MAXIMUM_BASIC_LINE_NUMBER = 0xFFFF;
 
-	protected BasicRuntime() {
-	}
+	private AmstradPc amstradPc;
 
-	public void keyboardType(CharSequence text) {
-		keyboardType(text, true);
-	}
-
-	public abstract void keyboardType(CharSequence text, boolean waitUntilTyped);
-
-	public void keyboardTypeFileContents(File textFile) throws IOException {
-		keyboardTypeFileContents(textFile, true);
-	}
-
-	public void keyboardTypeFileContents(File textFile, boolean waitUntilTyped) throws IOException {
-		keyboardType(AmstradIO.readTextFileContents(textFile), waitUntilTyped);
-	}
-
-	public void keyboardEnter(CharSequence text) {
-		keyboardEnter(text, true);
-	}
-
-	public void keyboardEnter(CharSequence text, boolean waitUntilTyped) {
-		keyboardType(text + "\n", waitUntilTyped);
-	}
-
-	public void keyboardEnter() {
-		keyboardEnter("", true);
-	}
-
-	public void cls() {
-		keyboardEnter("CLS", true);
-	}
-
-	public void list() {
-		keyboardEnter("LIST", true);
-	}
-
-	public void run() {
-		keyboardEnter("RUN", true);
+	protected BasicRuntime(AmstradPc amstradPc) {
+		this.amstradPc = amstradPc;
 	}
 
 	public abstract byte peek(int memoryAddress);
@@ -169,6 +136,14 @@ public abstract class BasicRuntime {
 				return fitted;
 			}
 		}
+	}
+
+	public AmstradKeyboard getKeyboard() {
+		return getAmstradPc().getKeyboard();
+	}
+	
+	public AmstradPc getAmstradPc() {
+		return amstradPc;
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.jemu;
+package org.maia.amstrad.pc.impl.jemu;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -17,20 +17,24 @@ import java.io.File;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.io.AmstradFileType;
-import org.maia.amstrad.pc.AmstradFactory;
-import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcSnapshotFile;
-import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
-import org.maia.amstrad.pc.display.AmstradGraphicsContext;
-import org.maia.amstrad.pc.display.AmstradKeyboardController;
-import org.maia.amstrad.pc.display.AmstradSystemColors;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcEventListener;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
+import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.amstrad.util.AmstradUtils;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
@@ -51,6 +55,12 @@ public class JemuAmstradPc extends AmstradPc
 		implements ComputerKeyboardListener, PauseListener, PrimaryDisplaySourceListener, KeyListener {
 
 	private JEMU jemuInstance;
+
+	private AmstradKeyboard keyboard;
+
+	private AmstradMemory memory;
+
+	private AmstradMonitor monitor;
 
 	private BasicRuntime basicRuntime;
 
@@ -77,6 +87,9 @@ public class JemuAmstradPc extends AmstradPc
 		this.jemuInstance.setStandalone(true);
 		this.jemuInstance.setControlKeysEnabled(false);
 		this.jemuInstance.setMouseClickActionsEnabled(false);
+		this.keyboard = new JemuKeyboardImpl();
+		this.memory = new JemuMemoryImpl();
+		this.monitor = new JemuMonitorImpl();
 		this.basicRuntime = new JemuBasicRuntimeImpl();
 		this.graphicsContext = new AmstradGraphicsContextImpl();
 		this.keyboardController = new AmstradKeyboardControllerImpl();
@@ -211,6 +224,27 @@ public class JemuAmstradPc extends AmstradPc
 			setInstanceRunning(false);
 			fireTerminatedEvent();
 		}
+	}
+
+	@Override
+	public synchronized AmstradKeyboard getKeyboard() {
+		checkStarted();
+		checkNotTerminated();
+		return keyboard;
+	}
+
+	@Override
+	public synchronized AmstradMemory getMemory() {
+		checkStarted();
+		checkNotTerminated();
+		return memory;
+	}
+
+	@Override
+	public synchronized AmstradMonitor getMonitor() {
+		checkStarted();
+		checkNotTerminated();
+		return monitor;
 	}
 
 	@Override
@@ -562,13 +596,14 @@ public class JemuAmstradPc extends AmstradPc
 		JemuAmstradPc.instanceRunning = instanceRunning;
 	}
 
-	private class JemuBasicRuntimeImpl extends BasicRuntime {
+	private class JemuKeyboardImpl extends AmstradKeyboard {
 
-		public JemuBasicRuntimeImpl() {
+		public JemuKeyboardImpl() {
+			super(JemuAmstradPc.this);
 		}
 
 		@Override
-		public void keyboardType(CharSequence text, boolean waitUntilTyped) {
+		public void type(CharSequence text, boolean waitUntilTyped) {
 			synchronized (JemuAmstradPc.this) {
 				Autotype.typeText(text);
 				resetEscapeKeyCounter();
@@ -579,14 +614,58 @@ public class JemuAmstradPc extends AmstradPc
 			}
 		}
 
+	}
+
+	private class JemuMemoryImpl extends AmstradMemory {
+
+		public JemuMemoryImpl() {
+			super(JemuAmstradPc.this);
+		}
+
+		@Override
+		public byte read(int memoryAddress) {
+			return getJemuInstance().readMemory(memoryAddress);
+		}
+
+		@Override
+		public byte[] readRange(int memoryOffset, int memoryLength) {
+			return getJemuInstance().readMemoryRange(memoryOffset, memoryLength);
+		}
+
+		@Override
+		public void write(int memoryAddress, byte value) {
+			getJemuInstance().writeMemory(memoryAddress, value);
+		}
+
+		@Override
+		public void writeRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
+			getJemuInstance().writeMemoryRange(memoryOffset, data, dataOffset, dataLength);
+		}
+
+	}
+
+	private class JemuMonitorImpl extends AmstradMonitor {
+
+		public JemuMonitorImpl() {
+			super(JemuAmstradPc.this);
+		}
+
+	}
+
+	private class JemuBasicRuntimeImpl extends LocomotiveBasicRuntime {
+
+		public JemuBasicRuntimeImpl() {
+			super(JemuAmstradPc.this);
+		}
+
 		@Override
 		public byte peek(int memoryAddress) {
-			return getJemuInstance().peekMemory(memoryAddress);
+			return getJemuInstance().readMemory(memoryAddress);
 		}
 
 		@Override
 		public void poke(int memoryAddress, byte value) {
-			getJemuInstance().pokeMemory(memoryAddress, value);
+			getJemuInstance().writeMemory(memoryAddress, value);
 		}
 
 		@Override
@@ -599,7 +678,7 @@ public class JemuAmstradPc extends AmstradPc
 					jemu.pauseComputer();
 				}
 				// Load byte code
-				jemu.writeMemory(byteCode, MEMORY_ADDRESS_START_OF_PROGRAM);
+				jemu.writeMemoryRange(MEMORY_ADDRESS_START_OF_PROGRAM, byteCode);
 				// Marking end of byte code
 				int addr = MEMORY_ADDRESS_START_OF_PROGRAM + byteCode.length;
 				byte w0 = (byte) (addr % 256);
@@ -609,7 +688,7 @@ public class JemuAmstradPc extends AmstradPc
 					data[i * 2] = w0;
 					data[i * 2 + 1] = w1;
 				}
-				jemu.writeMemory(data, MEMORY_POINTER_END_OF_PROGRAM);
+				jemu.writeMemoryRange(MEMORY_POINTER_END_OF_PROGRAM, data);
 				// Resume
 				if (running) {
 					jemu.goComputer();
@@ -622,7 +701,7 @@ public class JemuAmstradPc extends AmstradPc
 		protected byte[] exportFittedByteCode() {
 			synchronized (JemuAmstradPc.this) {
 				int len = MEMORY_POINTER_END_OF_PROGRAM - MEMORY_ADDRESS_START_OF_PROGRAM;
-				byte[] mem = getJemuInstance().readMemory(MEMORY_ADDRESS_START_OF_PROGRAM, len);
+				byte[] mem = getJemuInstance().readMemoryRange(MEMORY_ADDRESS_START_OF_PROGRAM, len);
 				return fitByteCode(mem);
 			}
 		}

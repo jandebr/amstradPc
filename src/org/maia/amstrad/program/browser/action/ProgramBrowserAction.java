@@ -5,12 +5,12 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.pc.AmstradFactory;
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
-import org.maia.amstrad.pc.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.event.AmstradPcEvent;
 import org.maia.amstrad.pc.event.AmstradPcKeyboardEvent;
+import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.program.browser.ProgramBrowserListener;
@@ -78,8 +78,8 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	}
 
 	@Override
-	public void amstradPcDisplaySourceChanged(AmstradPc amstradPc) {
-		super.amstradPcDisplaySourceChanged(amstradPc);
+	public void amstradDisplaySourceChanged(AmstradPc amstradPc) {
+		super.amstradDisplaySourceChanged(amstradPc);
 		updateName();
 	}
 

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.maia.amstrad.pc.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 
 public class StringUtils {
 

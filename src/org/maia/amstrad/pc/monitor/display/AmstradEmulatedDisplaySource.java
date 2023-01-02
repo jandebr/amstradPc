@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.display;
+package org.maia.amstrad.pc.monitor.display;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 
 public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		implements AmstradAlternativeDisplaySource, MouseListener, MouseMotionListener {

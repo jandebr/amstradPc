@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.pc.AmstradFactory;
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 
 public abstract class FileChooserAction extends AmstradPcAction {

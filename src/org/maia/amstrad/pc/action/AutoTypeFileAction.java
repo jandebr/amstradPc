@@ -29,7 +29,7 @@ public class AutoTypeFileAction extends FileChooserAction {
 				public void run() {
 					File file = getSelectedFile();
 					try {
-						getAmstradPc().getBasicRuntime().keyboardTypeFileContents(file);
+						getAmstradPc().getKeyboard().typeFileContents(file);
 					} catch (Exception e) {
 						System.err.println("Failed to read text file: " + e.getMessage());
 						showErrorMessageDialog("Error reading text file", "Failed to read " + file.getName(), e);
@@ -45,8 +45,8 @@ public class AutoTypeFileAction extends FileChooserAction {
 		fileChooser.setDialogTitle(getName());
 		String extText = "txt";
 		String extBasic = AmstradFileType.BASIC_SOURCE_CODE_FILE.getFileExtensionWithoutDot();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files (*." + extText + ", *." + extBasic
-				+ ")", extText, extBasic);
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+				"Text files (*." + extText + ", *." + extBasic + ")", extText, extBasic);
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
 	}

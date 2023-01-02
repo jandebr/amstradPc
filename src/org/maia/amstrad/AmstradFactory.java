@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc;
+package org.maia.amstrad;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -14,6 +14,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.action.AutoTypeFileAction;
 import org.maia.amstrad.pc.action.DisplaySystemColorsAction;
@@ -35,7 +36,9 @@ import org.maia.amstrad.pc.action.ScreenshotAction;
 import org.maia.amstrad.pc.action.ScreenshotWithMonitorEffectAction;
 import org.maia.amstrad.pc.action.WindowAlwaysOnTopAction;
 import org.maia.amstrad.pc.action.WindowDynamicTitleAction;
-import org.maia.amstrad.pc.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.impl.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.program.browser.action.ProgramBrowserAction;
@@ -204,7 +207,7 @@ public class AmstradFactory {
 		}
 	}
 
-	private static abstract class MonitorMenuHelper extends AmstradPcMonitorAdapter {
+	private static abstract class MonitorMenuHelper extends AmstradMonitorAdapter {
 
 		protected MonitorMenuHelper() {
 		}
@@ -241,7 +244,7 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradPcMonitorModeChanged(AmstradPc amstradPc) {
+		public void amstradMonitorModeChanged(AmstradPc amstradPc) {
 			syncMenu(amstradPc);
 		}
 
@@ -297,7 +300,7 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradPcMonitorEffectChanged(AmstradPc amstradPc) {
+		public void amstradMonitorEffectChanged(AmstradPc amstradPc) {
 			syncMenu(amstradPc);
 		}
 
@@ -320,7 +323,7 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradPcMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
+		public void amstradMonitorScanLinesEffectChanged(AmstradPc amstradPc) {
 			syncMenu(amstradPc);
 		}
 
@@ -343,7 +346,7 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradPcMonitorBilinearEffectChanged(AmstradPc amstradPc) {
+		public void amstradMonitorBilinearEffectChanged(AmstradPc amstradPc) {
 			syncMenu(amstradPc);
 		}
 
@@ -366,7 +369,7 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradPcWindowTitleDynamicChanged(AmstradPc amstradPc) {
+		public void amstradWindowTitleDynamicChanged(AmstradPc amstradPc) {
 			syncMenu(amstradPc);
 		}
 
@@ -389,7 +392,7 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void amstradPcWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
+		public void amstradWindowAlwaysOnTopChanged(AmstradPc amstradPc) {
 			syncMenu(amstradPc);
 		}
 

@@ -1,8 +1,8 @@
 package org.maia.amstrad.program.loader;
 
-import org.maia.amstrad.basic.BasicProgramRuntime;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicProgramRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -30,7 +30,7 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 		} else {
 			getBasicRuntime().loadByteCode(getByteCodeToLoad(program));
 		}
-		return new BasicProgramRuntime(program, getAmstradPc());
+		return new LocomotiveBasicProgramRuntime(program, getAmstradPc());
 	}
 
 	protected abstract CharSequence getSourceCodeToLoad(AmstradProgram program) throws AmstradProgramException;

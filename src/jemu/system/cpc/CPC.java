@@ -2085,13 +2085,12 @@ public class CPC extends Computer {
 	}
 
 	@Override
-	public void writeMemory(byte[] data, int dataOffset, int dataLength, int memoryOffset) {
-		byte[] mem = memory.getMemory();
-		System.arraycopy(data, dataOffset, mem, memoryOffset, dataLength);
+	public byte readMemory(int memoryAddress) {
+		return memory.getMemory()[memoryAddress];
 	}
 
 	@Override
-	public byte[] readMemory(int memoryOffset, int memoryLength) {
+	public byte[] readMemoryRange(int memoryOffset, int memoryLength) {
 		byte[] mem = memory.getMemory();
 		byte[] data = new byte[memoryLength];
 		int length = Math.min(memoryLength, mem.length - memoryOffset);
@@ -2100,13 +2099,14 @@ public class CPC extends Computer {
 	}
 
 	@Override
-	public byte peekMemory(int memoryAddress) {
-		return memory.getMemory()[memoryAddress];
+	public void writeMemory(int memoryAddress, byte value) {
+		memory.getMemory()[memoryAddress] = value;
 	}
 
 	@Override
-	public void pokeMemory(int memoryAddress, byte value) {
-		memory.getMemory()[memoryAddress] = value;
+	public void writeMemoryRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
+		byte[] mem = memory.getMemory();
+		System.arraycopy(data, dataOffset, mem, memoryOffset, dataLength);
 	}
 
 	public void SNK_Save() {

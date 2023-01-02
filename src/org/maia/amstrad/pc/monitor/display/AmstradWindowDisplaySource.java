@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.display;
+package org.maia.amstrad.pc.monitor.display;
 
 import java.awt.Cursor;
 import java.awt.Point;

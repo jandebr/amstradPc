@@ -6,6 +6,8 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
+import org.maia.amstrad.AmstradFactory;
+
 public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
 
 	private AmstradPc amstradPc;

@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc;
+package org.maia.amstrad;
 
 import java.io.File;
 import java.io.FileInputStream;

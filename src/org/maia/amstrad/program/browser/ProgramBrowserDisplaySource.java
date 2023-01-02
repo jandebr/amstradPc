@@ -7,10 +7,10 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.display.AmstradDisplayCanvas;
-import org.maia.amstrad.pc.display.AmstradWindowDisplaySource;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
+import org.maia.amstrad.pc.monitor.display.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.browser.navigate.FolderItemList;
