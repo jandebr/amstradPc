@@ -6,15 +6,17 @@ public abstract class BasicSourceCodeLine implements Comparable<BasicSourceCodeL
 
 	private int lineNumber;
 
+	private BasicLanguage language;
+
 	private BasicSourceCode parentSourceCode;
 
-	protected BasicSourceCodeLine(String text) throws BasicSyntaxException {
-		editTo(text);
+	protected BasicSourceCodeLine(BasicLanguage language, String text) throws BasicSyntaxException {
+		this.language = language;
+		setText(text);
+		setLineNumber(parseLineNumber(text));
 	}
 
-	public synchronized void editTo(String text) throws BasicSyntaxException {
-		if (text == null)
-			throw new NullPointerException("null line");
+	public synchronized void editTo(String text) throws BasicException {
 		int oldLineNumber = getLineNumber();
 		int newLineNumber = parseLineNumber(text);
 		setText(text);
@@ -28,12 +30,7 @@ public abstract class BasicSourceCodeLine implements Comparable<BasicSourceCodeL
 	}
 
 	private int parseLineNumber(String text) throws BasicSyntaxException {
-		int lineNumber = new LineNumberParser(text).firstToken().getLineNumber();
-		if (lineNumber < BasicRuntime.MINIMUM_BASIC_LINE_NUMBER
-				|| lineNumber > BasicRuntime.MAXIMUM_BASIC_LINE_NUMBER) {
-			throw new BasicSyntaxException("Line number out of range", text);
-		}
-		return lineNumber;
+		return new LineNumberParser(text).firstToken().getLineNumber();
 	}
 
 	@Override
@@ -81,6 +78,10 @@ public abstract class BasicSourceCodeLine implements Comparable<BasicSourceCodeL
 
 	private void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
+	}
+
+	public BasicLanguage getLanguage() {
+		return language;
 	}
 
 	private boolean hasParentSourceCode() {

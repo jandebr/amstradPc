@@ -88,6 +88,15 @@ public class StringUtils {
 		}
 	}
 
+	public static String rightPad(String str, int width, char padding) {
+		int n = str.length();
+		if (n >= width) {
+			return str;
+		} else {
+			return str + repeat(padding, width - n);
+		}
+	}
+
 	public static List<String> splitOnNewlinesAndWrap(String str, int width) {
 		List<String> wrappedLines = new Vector<String>();
 		List<String> lines = splitOnNewlines(str);

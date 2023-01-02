@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.maia.amstrad.basic.BasicByteCodeComparator.ComparisonResult;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.io.AmstradIO;
@@ -48,8 +49,9 @@ public class BasicCompilerTest {
 		System.out.println("Testing " + basicFile.getPath() + "...");
 		out.println(">> Testing " + basicFile.getPath());
 		loadFileWithoutCompiler(basicFile, amstradPc);
-		byte[] referenceByteCode = amstradPc.getBasicRuntime().exportByteCode();
-		byte[] compiledByteCode = compiler.compile(AmstradIO.readTextFileContents(basicFile));
+		BasicByteCode referenceByteCode = new LocomotiveBasicByteCode(amstradPc.getBasicRuntime().exportByteCode());
+		BasicByteCode compiledByteCode = new LocomotiveBasicByteCode(
+				compiler.compile(AmstradIO.readTextFileContents(basicFile)));
 		outputByteCodeComparison(referenceByteCode, compiledByteCode, out);
 		out.println();
 		out.flush();
@@ -65,7 +67,8 @@ public class BasicCompilerTest {
 		amstradPc.getBasicRuntime().keyboardTypeFileContents(basicFile);
 	}
 
-	private static void outputByteCodeComparison(byte[] firstByteCode, byte[] secondByteCode, PrintWriter out) {
+	private static void outputByteCodeComparison(BasicByteCode firstByteCode, BasicByteCode secondByteCode,
+			PrintWriter out) {
 		ComparisonResult cr = new BasicByteCodeComparator().compare(firstByteCode, secondByteCode);
 		if (cr.isIdentical()) {
 			out.println("Identical");
@@ -77,10 +80,6 @@ public class BasicCompilerTest {
 			out.println("-- compiled");
 			out.print(fmt.format(secondByteCode, cr.getSecondDifferences(), true));
 		}
-	}
-
-	private static void printByteCode(byte[] byteCode) {
-		System.out.println(new BasicByteCodeFormatter().format(byteCode));
 	}
 
 }

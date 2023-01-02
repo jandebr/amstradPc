@@ -7,10 +7,10 @@ public class BasicByteCodeComparator {
 	public BasicByteCodeComparator() {
 	}
 
-	public ComparisonResult compare(byte[] firstByteCode, byte[] secondByteCode) {
+	public ComparisonResult compare(BasicByteCode firstByteCode, BasicByteCode secondByteCode) {
 		ComparisonResult result = new ComparisonResult(firstByteCode, secondByteCode);
-		int n1 = firstByteCode.length;
-		int n2 = secondByteCode.length;
+		int n1 = firstByteCode.getByteCount();
+		int n2 = secondByteCode.getByteCount();
 		boolean[] differences1 = new boolean[n1];
 		boolean[] differences2 = new boolean[n2];
 		int[] lo1 = findLineOffsets(firstByteCode);
@@ -27,7 +27,7 @@ public class BasicByteCodeComparator {
 					differences2[i2 + i] = true;
 				} else if (i >= r2) {
 					differences1[i1 + i] = true;
-				} else if (firstByteCode[i1 + i] != secondByteCode[i2 + i]) {
+				} else if (firstByteCode.getByte(i1 + i) != secondByteCode.getByte(i2 + i)) {
 					differences1[i1 + i] = true;
 					differences2[i2 + i] = true;
 				}
@@ -43,18 +43,18 @@ public class BasicByteCodeComparator {
 		return result;
 	}
 
-	private int[] findLineOffsets(byte[] byteCode) {
-		if (byteCode.length < 2)
+	private int[] findLineOffsets(BasicByteCode byteCode) {
+		if (byteCode.getByteCount() < 2)
 			return new int[0];
-		int[] lineOffsets = new int[byteCode.length];
+		int[] lineOffsets = new int[byteCode.getByteCount()];
 		int lineIndex = 0;
 		int bi = 0;
-		int n = (byteCode[0] & 0xff) | ((byteCode[1] << 8) & 0xff00);
+		int n = (byteCode.getByte(0) & 0xff) | ((byteCode.getByte(1) << 8) & 0xff00);
 		while (n > 0) {
 			bi += n;
-			if (bi + 1 < byteCode.length) {
+			if (bi + 1 < byteCode.getByteCount()) {
 				lineOffsets[++lineIndex] = bi;
-				n = (byteCode[bi] & 0xff) | ((byteCode[bi + 1] << 8) & 0xff00);
+				n = (byteCode.getByte(bi) & 0xff) | ((byteCode.getByte(bi + 1) << 8) & 0xff00);
 			} else {
 				n = 0;
 			}
@@ -66,26 +66,26 @@ public class BasicByteCodeComparator {
 
 	public static class ComparisonResult {
 
-		private byte[] firstByteCode;
+		private BasicByteCode firstByteCode;
 
-		private byte[] secondByteCode;
+		private BasicByteCode secondByteCode;
 
 		private boolean[] firstDifferences;
 
 		private boolean[] secondDifferences;
 
-		public ComparisonResult(byte[] firstByteCode, byte[] secondByteCode) {
+		public ComparisonResult(BasicByteCode firstByteCode, BasicByteCode secondByteCode) {
 			this.firstByteCode = firstByteCode;
 			this.secondByteCode = secondByteCode;
 		}
 
 		public boolean isIdentical() {
-			int n1 = getFirstByteCode().length;
-			int n2 = getSecondByteCode().length;
+			int n1 = getFirstByteCode().getByteCount();
+			int n2 = getSecondByteCode().getByteCount();
 			if (n1 != n2)
 				return false;
 			for (int i = 0; i < n1; i++) {
-				if (getFirstByteCode()[i] != getSecondByteCode()[i])
+				if (getFirstByteCode().getByte(i) != getSecondByteCode().getByte(i))
 					return false;
 			}
 			return true;
@@ -95,7 +95,7 @@ public class BasicByteCodeComparator {
 			return !isIdentical();
 		}
 
-		public byte[] getFirstByteCode() {
+		public BasicByteCode getFirstByteCode() {
 			return firstByteCode;
 		}
 
@@ -107,7 +107,7 @@ public class BasicByteCodeComparator {
 			this.firstDifferences = firstDifferences;
 		}
 
-		public byte[] getSecondByteCode() {
+		public BasicByteCode getSecondByteCode() {
 			return secondByteCode;
 		}
 

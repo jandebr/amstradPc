@@ -4,12 +4,15 @@ import java.awt.Image;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.util.StringUtils;
 
 public abstract class AmstradProgram implements Cloneable {
 
 	private AmstradProgramType programType;
+
+	private BasicLanguage basicLanguage;
 
 	private String programName;
 
@@ -49,7 +52,9 @@ public abstract class AmstradProgram implements Cloneable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("AmstradProgram [programType=");
 		builder.append(programType.name());
-		builder.append(", programName='");
+		builder.append(", basicLanguage='");
+		builder.append(basicLanguage.name());
+		builder.append("', programName='");
 		builder.append(programName);
 		builder.append("', programDescription='");
 		builder.append(programDescription);
@@ -121,6 +126,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	public void setProgramType(AmstradProgramType programType) {
 		this.programType = programType;
+	}
+
+	public BasicLanguage getBasicLanguage() {
+		return basicLanguage;
+	}
+
+	public void setBasicLanguage(BasicLanguage basicLanguage) {
+		this.basicLanguage = basicLanguage;
 	}
 
 	public String getProgramName() {

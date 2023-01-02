@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.pc.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
@@ -30,6 +31,11 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 
 	public AmstradProgramBuilder withProgramType(AmstradProgramType programType) {
 		getProgram().setProgramType(programType);
+		return this;
+	}
+
+	public AmstradProgramBuilder withBasicLanguage(BasicLanguage basicLanguage) {
+		getProgram().setBasicLanguage(basicLanguage);
 		return this;
 	}
 
@@ -105,6 +111,9 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			AmstradProgramType programType = parseProgramTypeFromMetaData(props.getProperty(AMD_TYPE));
 			if (programType != null)
 				withProgramType(programType);
+			BasicLanguage basicLanguage = parseBasicLanguageFromMetaData(props.getProperty(AMD_TYPE));
+			if (basicLanguage != null)
+				withBasicLanguage(basicLanguage);
 			withProgramName(props.getProperty(AMD_NAME, getProgram().getProgramName()));
 			withAuthor(props.getProperty(AMD_AUTHOR));
 			withProductionYear(StringUtils.toInt(props.getProperty(AMD_YEAR), 0));
@@ -145,8 +154,16 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 	}
 
 	private AmstradProgramType parseProgramTypeFromMetaData(String value) {
-		if (AMD_TYPE_BASIC_PROGRAM.equals(value)) {
+		if (AMD_TYPE_LOCOMOTIVE_BASIC_PROGRAM.equals(value)) {
 			return AmstradProgramType.BASIC_PROGRAM;
+		} else {
+			return null;
+		}
+	}
+
+	private BasicLanguage parseBasicLanguageFromMetaData(String value) {
+		if (AMD_TYPE_LOCOMOTIVE_BASIC_PROGRAM.equals(value)) {
+			return BasicLanguage.LOCOMOTIVE_BASIC;
 		} else {
 			return null;
 		}

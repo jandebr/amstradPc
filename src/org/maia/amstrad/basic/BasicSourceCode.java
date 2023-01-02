@@ -9,11 +9,13 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	private List<BasicSourceCodeLine> lines; // ordered by increasing line number
 
-	protected BasicSourceCode() {
+	protected BasicSourceCode(BasicLanguage language) {
+		super(language);
 		setLines(new Vector<BasicSourceCodeLine>(100));
 	}
 
-	protected BasicSourceCode(CharSequence sourceCode) throws BasicSyntaxException {
+	protected BasicSourceCode(BasicLanguage language, CharSequence sourceCode) throws BasicSyntaxException {
+		super(language);
 		setLines(parse(sourceCode));
 		for (BasicSourceCodeLine line : getLines()) {
 			line.setParentSourceCode(this);
@@ -98,7 +100,9 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 		}
 	}
 
-	public synchronized void addLine(BasicSourceCodeLine line) {
+	public synchronized void addLine(BasicSourceCodeLine line) throws BasicException {
+		if (!line.getLanguage().equals(getLanguage()))
+			throw new BasicException("Basic language mismatch");
 		int lineNumber = line.getLineNumber();
 		int i = getLineNumberInsertionIndex(lineNumber);
 		if (i == getLineCount()) {

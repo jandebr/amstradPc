@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSyntaxException;
@@ -15,11 +16,11 @@ import org.maia.amstrad.util.StringUtils;
 public class LocomotiveBasicSourceCode extends BasicSourceCode {
 
 	public LocomotiveBasicSourceCode() {
-		super();
+		super(BasicLanguage.LOCOMOTIVE_BASIC);
 	}
 
 	public LocomotiveBasicSourceCode(CharSequence sourceCode) throws BasicSyntaxException {
-		super(sourceCode);
+		super(BasicLanguage.LOCOMOTIVE_BASIC, sourceCode);
 	}
 
 	@Override

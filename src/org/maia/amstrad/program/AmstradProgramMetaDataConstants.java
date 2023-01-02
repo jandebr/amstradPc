@@ -4,7 +4,7 @@ public interface AmstradProgramMetaDataConstants {
 
 	String AMD_TYPE = "TYPE";
 
-	String AMD_TYPE_BASIC_PROGRAM = "BASIC PROGRAM";
+	String AMD_TYPE_LOCOMOTIVE_BASIC_PROGRAM = "LOCOMOTIVE BASIC PROGRAM";
 
 	String AMD_NAME = "NAME";
 
