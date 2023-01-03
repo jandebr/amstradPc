@@ -25,6 +25,18 @@ public abstract class BasicByteCode extends BasicCode {
 		return (getByte(index) & 0xff) | ((getByte(index + 1) << 8) & 0xff00);
 	}
 
+	public void setByte(int index, byte value) {
+		getBytes()[index] = value;
+	}
+
+	public void setWord(int index, int value) {
+		// little Endian
+		byte b1 = (byte) (value % 256);
+		byte b2 = (byte) (value / 256);
+		setByte(index, b1);
+		setByte(index + 1, b2);
+	}
+
 	public byte[] getBytes() {
 		return bytes;
 	}

@@ -1,15 +1,17 @@
 package org.maia.amstrad.basic.locomotive;
 
+import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicDecompilationException;
 import org.maia.amstrad.basic.BasicDecompiler;
-import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
 import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 
-public class LocomotiveBasicDecompiler implements BasicDecompiler {
+public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBasicMemoryMap {
 
 	private byte[] byteCode;
 
@@ -22,7 +24,9 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler {
 	}
 
 	@Override
-	public CharSequence decompile(byte[] byteCode) throws BasicDecompilationException {
+	public LocomotiveBasicSourceCode decompile(BasicByteCode byteCode) throws BasicException {
+		if (!byteCode.getLanguage().equals(BasicLanguage.LOCOMOTIVE_BASIC))
+			throw new BasicException("Basic language mismatch");
 		init(byteCode);
 		StringBuilder sourceCode = new StringBuilder(2048);
 		int i0 = byteCodeIndex;
@@ -44,12 +48,16 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler {
 			i0 = byteCodeIndex;
 			announcedLineLengthInBytes = nextWord();
 		}
-		return sourceCode;
+		return new LocomotiveBasicSourceCode(sourceCode);
 	}
 
-	protected void init(byte[] byteCode) {
-		this.byteCode = byteCode;
+	protected void init(BasicByteCode byteCode) {
+		this.byteCode = byteCode.getBytes();
 		this.byteCodeIndex = 0;
+	}
+
+	protected void addedSourceCodeLine(int lineNumber, CharSequence lineOfCode) {
+		// Subclasses may override
 	}
 
 	protected void addedSourceCodeToken(int lineNumber, CharSequence lineSoFar, int linePositionFrom,
@@ -57,7 +65,7 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler {
 		// Subclasses may override
 	}
 
-	protected void addedSourceCodeLine(int lineNumber, CharSequence lineOfCode) {
+	protected void encounteredLinePointer(int bytecodeOffset, int addressPointer, int lineNumber) {
 		// Subclasses may override
 	}
 
@@ -101,7 +109,9 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler {
 					line.append("&"); // hexadecimal
 					line.append(Integer.toHexString(v));
 				} else if (b == 0x1d) {
-					line.append(wordAt(v - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM + 3)); // line pointer
+					int lineNr = wordAt(v - ADDRESS_BYTECODE_START + 3); // line pointer (to preceding 0x00)
+					line.append(lineNr);
+					encounteredLinePointer(bytecodeOffset, v, lineNr);
 				} else if (b == 0x1e) {
 					line.append(v); // line number reference
 				}

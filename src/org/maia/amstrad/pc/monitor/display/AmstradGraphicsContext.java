@@ -21,4 +21,10 @@ public interface AmstradGraphicsContext {
 
 	int getTextColumns();
 
+	int getDefaultBorderColorIndex();
+
+	int getDefaultPaperColorIndex();
+
+	int getDefaultPenColorIndex();
+
 }

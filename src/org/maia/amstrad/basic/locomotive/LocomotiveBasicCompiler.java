@@ -1,7 +1,8 @@
 package org.maia.amstrad.basic.locomotive;
 
 import org.maia.amstrad.basic.BasicCompiler;
-import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSyntaxException;
@@ -31,12 +32,12 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 	}
 
 	@Override
-	public byte[] compile(CharSequence sourceCode) throws BasicSyntaxException {
-		int maxBytes = BasicRuntime.MEMORY_POINTER_END_OF_PROGRAM - BasicRuntime.MEMORY_ADDRESS_START_OF_PROGRAM;
-		ByteBuffer byteBuffer = new ByteBuffer(maxBytes);
+	public LocomotiveBasicByteCode compile(BasicSourceCode sourceCode) throws BasicException {
+		if (!sourceCode.getLanguage().equals(BasicLanguage.LOCOMOTIVE_BASIC))
+			throw new BasicException("Basic language mismatch");
+		ByteBuffer byteBuffer = new ByteBuffer();
 		ByteCodeGenerator byteCodeGenerator = new ByteCodeGenerator(byteBuffer);
-		BasicSourceCode code = new LocomotiveBasicSourceCode(sourceCode);
-		for (BasicSourceCodeLine line : code) {
+		for (BasicSourceCodeLine line : sourceCode) {
 			LocomotiveBasicSourceCodeLineScanner scanner = ((LocomotiveBasicSourceCodeLine) line).createScanner();
 			int i0 = byteBuffer.getSize();
 			byteBuffer.appendWord(0); // placeholder for line length
@@ -44,7 +45,7 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 			byteBuffer.replaceWordAt(i0, byteBuffer.getSize() - i0); // substitute actual line length
 		}
 		byteBuffer.appendWord(0); // end of program
-		return byteBuffer.getData();
+		return new LocomotiveBasicByteCode(byteBuffer.getData());
 	}
 
 	private void compileLine(LocomotiveBasicSourceCodeLineScanner scanner, ByteCodeGenerator byteCodeGenerator)
@@ -67,6 +68,10 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 		private byte[] buffer;
 
 		private int size;
+
+		public ByteBuffer() {
+			this(65536);
+		}
 
 		public ByteBuffer(int fixedCapacity) {
 			this.buffer = new byte[fixedCapacity];

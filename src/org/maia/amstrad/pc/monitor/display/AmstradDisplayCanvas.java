@@ -13,8 +13,6 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.maia.amstrad.basic.BasicRuntime;
-
 public abstract class AmstradDisplayCanvas {
 
 	private AmstradGraphicsContext graphicsContext;
@@ -44,9 +42,9 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	public void resetColors() {
-		setBorderColorIndex(BasicRuntime.DEFAULT_BORDER_COLOR_INDEX);
-		setPaperColorIndex(BasicRuntime.DEFAULT_PAPER_COLOR_INDEX);
-		setPenColorIndex(BasicRuntime.DEFAULT_PEN_COLOR_INDEX);
+		setBorderColorIndex(getGraphicsContext().getDefaultBorderColorIndex());
+		setPaperColorIndex(getGraphicsContext().getDefaultPaperColorIndex());
+		setPenColorIndex(getGraphicsContext().getDefaultPenColorIndex());
 	}
 
 	private void resetTextPosition() {

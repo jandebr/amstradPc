@@ -1,7 +1,6 @@
 package org.maia.amstrad.basic.locomotive;
 
 import org.maia.amstrad.basic.BasicLineNumberToken;
-import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
@@ -118,12 +117,14 @@ public class LocomotiveBasicSourceTokenFactory {
 	}
 
 	public BasicLineNumberToken createLineNumber(int lineNumber) throws BasicSyntaxException {
-		checkValueInRange(lineNumber, BasicRuntime.MINIMUM_BASIC_LINE_NUMBER, BasicRuntime.MAXIMUM_BASIC_LINE_NUMBER);
+		checkValueInRange(lineNumber, LocomotiveBasicRuntime.MINIMUM_LINE_NUMBER,
+				LocomotiveBasicRuntime.MAXIMUM_LINE_NUMBER);
 		return new BasicLineNumberToken(String.valueOf(lineNumber));
 	}
 
 	public LineNumberReferenceToken createLineNumberReference(int lineNumber) throws BasicSyntaxException {
-		checkValueInRange(lineNumber, BasicRuntime.MINIMUM_BASIC_LINE_NUMBER, BasicRuntime.MAXIMUM_BASIC_LINE_NUMBER);
+		checkValueInRange(lineNumber, LocomotiveBasicRuntime.MINIMUM_LINE_NUMBER,
+				LocomotiveBasicRuntime.MAXIMUM_LINE_NUMBER);
 		return new LineNumberReferenceToken(String.valueOf(lineNumber));
 	}
 

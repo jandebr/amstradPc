@@ -18,6 +18,8 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.basic.BasicByteCode;
+import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.io.AmstradFileType;
@@ -684,7 +686,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		protected void loadFittedByteCode(byte[] byteCode) {
+		protected void loadByteCode(BasicByteCode code) throws BasicException {
 			synchronized (JemuAmstradPc.this) {
 				JEMU jemu = getJemuInstance();
 				// Pause
@@ -693,32 +695,13 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 					jemu.pauseComputer();
 				}
 				// Load byte code
-				jemu.writeMemoryRange(MEMORY_ADDRESS_START_OF_PROGRAM, byteCode);
-				// Marking end of byte code
-				int addr = MEMORY_ADDRESS_START_OF_PROGRAM + byteCode.length;
-				byte w0 = (byte) (addr % 256);
-				byte w1 = (byte) (addr / 256);
-				byte[] data = new byte[8];
-				for (int i = 0; i < 4; i++) {
-					data[i * 2] = w0;
-					data[i * 2 + 1] = w1;
-				}
-				jemu.writeMemoryRange(MEMORY_POINTER_END_OF_PROGRAM, data);
+				super.loadByteCode(code);
 				// Resume
 				if (running) {
 					jemu.goComputer();
 				}
 			}
 			fireProgramLoaded();
-		}
-
-		@Override
-		protected byte[] exportFittedByteCode() {
-			synchronized (JemuAmstradPc.this) {
-				int len = MEMORY_POINTER_END_OF_PROGRAM - MEMORY_ADDRESS_START_OF_PROGRAM;
-				byte[] mem = getJemuInstance().readMemoryRange(MEMORY_ADDRESS_START_OF_PROGRAM, len);
-				return fitByteCode(mem);
-			}
 		}
 
 	}
@@ -731,19 +714,12 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		private Font systemFont;
 
-		private int textRows;
-
-		private int textColumns;
-
 		public AmstradGraphicsContextImpl() {
-			this(new Dimension(BasicRuntime.DISPLAY_CANVAS_WIDTH, BasicRuntime.DISPLAY_CANVAS_HEIGHT),
-					BasicRuntime.DISPLAY_TEXT_ROWS, BasicRuntime.DISPLAY_TEXT_COLUMNS);
+			this(new Dimension(getBasicRuntime().getDisplayCanvasWidth(), getBasicRuntime().getDisplayCanvasHeight()));
 		}
 
-		public AmstradGraphicsContextImpl(Dimension displayCanvasSize, int textRows, int textColumns) {
+		public AmstradGraphicsContextImpl(Dimension displayCanvasSize) {
 			this.displayCanvasSize = displayCanvasSize;
-			this.textRows = textRows;
-			this.textColumns = textColumns;
 		}
 
 		@Override
@@ -762,7 +738,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		@Override
 		public AmstradMonitorMode getMonitorMode() {
-			return JemuAmstradPc.this.getMonitor().getMonitorMode();
+			return getMonitor().getMonitorMode();
 		}
 
 		@Override
@@ -772,12 +748,27 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		@Override
 		public int getTextRows() {
-			return textRows;
+			return getBasicRuntime().getDisplayTextRows();
 		}
 
 		@Override
 		public int getTextColumns() {
-			return textColumns;
+			return getBasicRuntime().getDisplayTextColumns();
+		}
+
+		@Override
+		public int getDefaultBorderColorIndex() {
+			return getBasicRuntime().getDefaultBorderColorIndex();
+		}
+
+		@Override
+		public int getDefaultPaperColorIndex() {
+			return getBasicRuntime().getDefaultPaperColorIndex();
+		}
+
+		@Override
+		public int getDefaultPenColorIndex() {
+			return getBasicRuntime().getDefaultPenColorIndex();
 		}
 
 		@Override

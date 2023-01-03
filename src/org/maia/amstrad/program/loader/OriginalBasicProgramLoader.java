@@ -1,5 +1,8 @@
 package org.maia.amstrad.program.loader;
 
+import org.maia.amstrad.basic.BasicByteCode;
+import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -11,12 +14,13 @@ public class OriginalBasicProgramLoader extends AbstractBasicProgramLoader {
 	}
 
 	@Override
-	protected CharSequence getSourceCodeToLoad(AmstradProgram program) throws AmstradProgramException {
+	protected BasicSourceCode getSourceCodeToLoad(AmstradProgram program)
+			throws AmstradProgramException, BasicException {
 		return getOriginalSourceCode(program);
 	}
 
 	@Override
-	protected byte[] getByteCodeToLoad(AmstradProgram program) throws AmstradProgramException {
+	protected BasicByteCode getByteCodeToLoad(AmstradProgram program) throws AmstradProgramException {
 		return getOriginalByteCode(program);
 	}
 

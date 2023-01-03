@@ -10,6 +10,7 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeComparator;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeComparator.ComparisonResult;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeFormatter;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
@@ -24,7 +25,7 @@ public class BasicCompilerTest {
 	public static void main(String[] args) throws Exception {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		BasicCompiler compiler = new LocomotiveBasicCompiler();
+		LocomotiveBasicCompiler compiler = new LocomotiveBasicCompiler();
 		File dir = new File("resources/test/compiler");
 		PrintWriter out = new PrintWriter(new File(dir, "outcome.txt"));
 		testFilesInDirectory(dir, amstradPc, compiler, out);
@@ -33,8 +34,8 @@ public class BasicCompilerTest {
 		amstradPc.terminate();
 	}
 
-	private static void testFilesInDirectory(File dir, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)
-			throws IOException, BasicSyntaxException {
+	private static void testFilesInDirectory(File dir, AmstradPc amstradPc, LocomotiveBasicCompiler compiler,
+			PrintWriter out) throws IOException, BasicException {
 		File[] files = dir.listFiles();
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
@@ -46,15 +47,15 @@ public class BasicCompilerTest {
 		}
 	}
 
-	private static void testFile(File basicFile, AmstradPc amstradPc, BasicCompiler compiler, PrintWriter out)
-			throws IOException, BasicSyntaxException {
+	private static void testFile(File basicFile, AmstradPc amstradPc, LocomotiveBasicCompiler compiler, PrintWriter out)
+			throws IOException, BasicException {
 		System.out.println("Testing " + basicFile.getPath() + "...");
 		out.println(">> Testing " + basicFile.getPath());
 		loadFileWithoutCompiler(basicFile, amstradPc);
-		LocomotiveBasicByteCode referenceByteCode = new LocomotiveBasicByteCode(
-				amstradPc.getBasicRuntime().exportByteCode());
-		LocomotiveBasicByteCode compiledByteCode = new LocomotiveBasicByteCode(
-				compiler.compile(AmstradIO.readTextFileContents(basicFile)));
+		LocomotiveBasicByteCode referenceByteCode = (LocomotiveBasicByteCode) amstradPc.getBasicRuntime()
+				.exportByteCode();
+		LocomotiveBasicByteCode compiledByteCode = compiler
+				.compile(new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(basicFile)));
 		outputByteCodeComparison(referenceByteCode, compiledByteCode, out);
 		out.println();
 		out.flush();

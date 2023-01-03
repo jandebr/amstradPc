@@ -23,7 +23,22 @@ public abstract class AmstradMemory extends AmstradDevice {
 
 	public abstract byte[] readRange(int memoryOffset, int memoryLength);
 
+	public int readWord(int memoryAddress) {
+		// little Endian
+		byte b1 = read(memoryAddress);
+		byte b2 = read(memoryAddress + 1);
+		return (b1 & 0xff) | ((b2 << 8) & 0xff00);
+	}
+
 	public abstract void write(int memoryAddress, byte value);
+
+	public void writeWord(int memoryOffset, int value) {
+		// little Endian
+		byte b1 = (byte) (value % 256);
+		byte b2 = (byte) (value / 256);
+		write(memoryOffset, b1);
+		write(memoryOffset + 1, b2);
+	}
 
 	public void writeRange(int memoryOffset, byte[] data) {
 		writeRange(memoryOffset, data, 0, data.length);

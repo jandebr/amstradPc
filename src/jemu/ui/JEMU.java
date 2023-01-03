@@ -2241,13 +2241,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public byte[] readMemoryRange(int memoryOffset, int memoryLength) {
-		boolean running = computer.isRunning();
+		boolean running = isRunning();
 		if (running) {
-			computer.stop();
+			pauseComputer();
 		}
 		byte[] data = computer.readMemoryRange(memoryOffset, memoryLength);
 		if (running) {
-			computer.start();
+			goComputer();
 		}
 		return data;
 	}
@@ -2261,13 +2261,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void writeMemoryRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
-		boolean running = computer.isRunning();
+		boolean running = isRunning();
 		if (running) {
-			computer.stop();
+			pauseComputer();
 		}
 		computer.writeMemoryRange(memoryOffset, data, dataOffset, dataLength);
 		if (running) {
-			computer.start();
+			goComputer();
 		}
 	}
 

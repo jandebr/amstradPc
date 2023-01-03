@@ -12,8 +12,7 @@ public class LocomotiveBasicProgramRuntime extends AmstradProgramRuntime {
 
 	@Override
 	protected void doRun() {
-		LocomotiveBasicRuntime rt = (LocomotiveBasicRuntime) getAmstradPc().getBasicRuntime();
-		rt.run();
+		getAmstradPc().getBasicRuntime().run();
 	}
 
 }

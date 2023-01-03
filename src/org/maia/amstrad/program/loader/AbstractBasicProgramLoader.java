@@ -1,8 +1,12 @@
 package org.maia.amstrad.program.loader;
 
+import org.maia.amstrad.basic.BasicByteCode;
+import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicRuntime;
-import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.basic.BasicSourceCode;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicProgramRuntime;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -20,29 +24,31 @@ public abstract class AbstractBasicProgramLoader extends AmstradProgramLoader {
 		if (!AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType()))
 			throw new AmstradProgramException(program,
 					"Program " + program.getProgramName() + " is not a Basic program");
-		if (program.getPayload().isText()) {
-			try {
-				getBasicRuntime().loadSourceCode(getSourceCodeToLoad(program));
-			} catch (BasicSyntaxException e) {
-				throw new AmstradProgramException(program,
-						"Failed to compile source code of " + program.getProgramName(), e);
+		try {
+			if (program.getPayload().isText()) {
+				getBasicRuntime().load(getSourceCodeToLoad(program));
+			} else {
+				getBasicRuntime().load(getByteCodeToLoad(program));
 			}
-		} else {
-			getBasicRuntime().loadByteCode(getByteCodeToLoad(program));
+		} catch (BasicException e) {
+			throw new AmstradProgramException(program, e);
 		}
 		return new LocomotiveBasicProgramRuntime(program, getAmstradPc());
 	}
 
-	protected abstract CharSequence getSourceCodeToLoad(AmstradProgram program) throws AmstradProgramException;
+	protected abstract BasicSourceCode getSourceCodeToLoad(AmstradProgram program)
+			throws AmstradProgramException, BasicException;
 
-	protected abstract byte[] getByteCodeToLoad(AmstradProgram program) throws AmstradProgramException;
+	protected abstract BasicByteCode getByteCodeToLoad(AmstradProgram program)
+			throws AmstradProgramException, BasicException;
 
-	protected final CharSequence getOriginalSourceCode(AmstradProgram program) throws AmstradProgramException {
-		return program.getPayload().asTextPayload().getText();
+	protected final BasicSourceCode getOriginalSourceCode(AmstradProgram program)
+			throws AmstradProgramException, BasicException {
+		return new LocomotiveBasicSourceCode(program.getPayload().asTextPayload().getText());
 	}
 
-	protected final byte[] getOriginalByteCode(AmstradProgram program) throws AmstradProgramException {
-		return program.getPayload().asBinaryPayload().getBytes();
+	protected final BasicByteCode getOriginalByteCode(AmstradProgram program) throws AmstradProgramException {
+		return new LocomotiveBasicByteCode(program.getPayload().asBinaryPayload().getBytes());
 	}
 
 	protected BasicRuntime getBasicRuntime() {
