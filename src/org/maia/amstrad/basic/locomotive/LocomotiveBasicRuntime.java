@@ -68,7 +68,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		AmstradMemory memory = getMemory();
 		int len = memory.readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
 		LocomotiveBasicByteCode byteCode = new LocomotiveBasicByteCode(memory.readRange(ADDRESS_BYTECODE_START, len));
-		byteCode.resolveLinePointers(); // replace line pointers (after runs) with absolute line numbers
+		byteCode.sanitize(); 
 		return byteCode;
 	}
 

@@ -341,7 +341,7 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 		private void appendByteCodeForTypedVariable(byte variableTypeCode, String variableNameWithoutTypeIndicator) {
 			ByteBuffer byteBuffer = getByteBuffer();
 			byteBuffer.appendByte(variableTypeCode);
-			byteBuffer.appendWord(0);
+			byteBuffer.appendWord(0); // memory offset placeholder
 			int n = variableNameWithoutTypeIndicator.length();
 			for (int i = 0; i < n - 1; i++) {
 				byteBuffer.appendByte((byte) variableNameWithoutTypeIndicator.charAt(i));

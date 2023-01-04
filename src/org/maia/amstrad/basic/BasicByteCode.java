@@ -22,6 +22,7 @@ public abstract class BasicByteCode extends BasicCode {
 	}
 
 	public int getWord(int index) {
+		// little Endian
 		return (getByte(index) & 0xff) | ((getByte(index + 1) << 8) & 0xff00);
 	}
 

@@ -69,6 +69,11 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 		// Subclasses may override
 	}
 
+	protected void encounteredVariable(int bytecodeOffset, byte variableTypeCode,
+			CharSequence variableNameWithoutTypeIndicator) {
+		// Subclasses may override
+	}
+
 	private CharSequence nextLineOfCode(int lineNumber) throws EndOfByteCodeException {
 		StringBuilder line = new StringBuilder(256);
 		int bytecodeOffset = byteCodeIndex;
@@ -83,7 +88,8 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 			} else if (b >= 0x02 && b <= 0x0d) {
 				// variable
 				nextWord(); // memory offset
-				line.append(nextSymbolicName());
+				CharSequence varName = nextSymbolicName();
+				line.append(varName);
 				if (b == 0x02) {
 					line.append(IntegerTypedVariableToken.TYPE_INDICATOR); // integer variable
 				} else if (b == 0x03) {
@@ -91,6 +97,7 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 				} else if (b == 0x04) {
 					line.append(FloatingPointTypedVariableToken.TYPE_INDICATOR); // floating point variable
 				}
+				encounteredVariable(bytecodeOffset, (byte) b, varName);
 			} else if (b >= 0x0e && b <= 0x18) {
 				// number constant 0 to 10 (although 10 is usually 0x19 0x0a)
 				line.append(b - 0x0e);

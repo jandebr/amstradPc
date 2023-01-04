@@ -70,13 +70,19 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	}
 
 	/**
-	 * Replaces line pointers (0x1d) with absolute line numbers (0x1e)
+	 * Sanitizes this byte code so as to remove any runtime modifications.
+	 * 
+	 * Sanitizing involves the following operations :
+	 * <ul>
+	 * <li>Replaces line pointers (0x1d) with absolute line numbers (0x1e)</li>
+	 * <li>Clears the memory offsets for variables</li>
+	 * </ul>
 	 * 
 	 * @throws BasicException
 	 *             When byte code interpretation is faulty
 	 */
-	public void resolveLinePointers() throws BasicException {
-		new LinePointerResolver().resolve(this);
+	public void sanitize() throws BasicException {
+		new ByteCodeSanitizer().sanitize(this);
 	}
 
 	@Override
@@ -84,12 +90,12 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		return new LocomotiveBasicByteCodeFormatter().format(this).toString();
 	}
 
-	private class LinePointerResolver extends LocomotiveBasicDecompiler {
+	private class ByteCodeSanitizer extends LocomotiveBasicDecompiler {
 
-		public LinePointerResolver() {
+		public ByteCodeSanitizer() {
 		}
 
-		public void resolve(LocomotiveBasicByteCode byteCode) throws BasicException {
+		public void sanitize(LocomotiveBasicByteCode byteCode) throws BasicException {
 			decompile(byteCode);
 		}
 
@@ -97,6 +103,12 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		protected void encounteredLinePointer(int bytecodeOffset, int addressPointer, int lineNumber) {
 			setByte(bytecodeOffset, (byte) 0x1e);
 			setWord(bytecodeOffset + 1, lineNumber);
+		}
+
+		@Override
+		protected void encounteredVariable(int bytecodeOffset, byte variableTypeCode,
+				CharSequence variableNameWithoutTypeIndicator) {
+			setWord(bytecodeOffset + 1, 0); // clear memory offset
 		}
 
 	}
