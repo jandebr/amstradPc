@@ -22,12 +22,37 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		super(amstradPc);
 	}
 
-	public void cls() {
+	public void command_new() {
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			memory.eraseBetween(ADDRESS_BYTECODE_START, memory.readWord(ADDRESS_HEAP_END_POINTER));
+			// Reset end of byte code
+			int addrEnd = ADDRESS_BYTECODE_START + 2;
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
+			// Reset end of heap space
+			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+	}
+
+	public void command_cls() {
 		getKeyboard().enter("CLS");
 	}
 
-	public void list() {
+	public void command_list() {
 		getKeyboard().enter("LIST");
+	}
+
+	public void command_run() {
+		run();
+	}
+
+	public void command_run(int lineNumber) {
+		run(lineNumber);
 	}
 
 	@Override
@@ -53,22 +78,37 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	@Override
 	protected void loadByteCode(BasicByteCode code) throws BasicException {
 		AmstradMemory memory = getMemory();
-		memory.writeRange(ADDRESS_BYTECODE_START, code.getBytes());
-		// Marking end of byte code
-		int addr = ADDRESS_BYTECODE_START + code.getByteCount();
-		memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addr);
-		memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addr);
-		// Marking end of heap space
-		memory.writeWord(ADDRESS_HEAP_END_POINTER, addr);
-		memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addr);
+		memory.startThreadExclusiveSession();
+		try {
+			// Clear any current code + heap
+			command_new();
+			// Write byte code
+			memory.writeRange(ADDRESS_BYTECODE_START, code.getBytes());
+			// Marking end of byte code
+			int addrEnd = ADDRESS_BYTECODE_START + code.getByteCount();
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
+			// Marking end of heap space
+			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
 	}
 
 	@Override
 	protected LocomotiveBasicByteCode exportByteCode() throws BasicException {
 		AmstradMemory memory = getMemory();
-		int len = memory.readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
-		LocomotiveBasicByteCode byteCode = new LocomotiveBasicByteCode(memory.readRange(ADDRESS_BYTECODE_START, len));
-		byteCode.sanitize(); 
+		memory.startThreadExclusiveSession();
+		byte[] bytes = null;
+		try {
+			int len = memory.readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
+			bytes = memory.readRange(ADDRESS_BYTECODE_START, len);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+		LocomotiveBasicByteCode byteCode = new LocomotiveBasicByteCode(bytes);
+		byteCode.sanitize();
 		return byteCode;
 	}
 

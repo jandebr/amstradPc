@@ -14,6 +14,10 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
+import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicClsAction;
+import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicListAction;
+import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicNewAction;
+import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicRunAction;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.action.AutoTypeFileAction;
@@ -118,6 +122,7 @@ public class AmstradFactory {
 	private JMenu createEmulatorMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(new JMenuItem(new AutoTypeFileAction(amstradPc)));
+		menu.add(createBasicMenu(amstradPc));
 		menu.add(new JSeparator());
 		JMenuItem item = new JMenuItem(new PauseResumeAction(amstradPc));
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0));
@@ -126,6 +131,15 @@ public class AmstradFactory {
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		menu.add(item);
+		return menu;
+	}
+
+	private JMenu createBasicMenu(AmstradPc amstradPc) {
+		JMenu menu = new JMenu("Basic");
+		menu.add(new JMenuItem(new LocomotiveBasicNewAction(amstradPc)));
+		menu.add(new JMenuItem(new LocomotiveBasicRunAction(amstradPc)));
+		menu.add(new JMenuItem(new LocomotiveBasicListAction(amstradPc)));
+		menu.add(new JMenuItem(new LocomotiveBasicClsAction(amstradPc)));
 		return menu;
 	}
 

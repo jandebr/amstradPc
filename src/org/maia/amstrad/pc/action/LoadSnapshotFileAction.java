@@ -23,7 +23,7 @@ public class LoadSnapshotFileAction extends SnapshotFileAction {
 		int returnValue = getFileChooser().showOpenDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
-			new Thread(new Runnable() {
+			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
 					File file = getSelectedFile();
@@ -34,7 +34,7 @@ public class LoadSnapshotFileAction extends SnapshotFileAction {
 						showErrorMessageDialog("Error loading snapshot file", "Failed to load " + file.getName(), e);
 					}
 				}
-			}).start();
+			});
 		}
 	}
 

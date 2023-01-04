@@ -22,7 +22,7 @@ public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 		int returnValue = getFileChooser().showOpenDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
-			new Thread(new Runnable() {
+			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
 					File file = getSelectedFile();
@@ -34,7 +34,7 @@ public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 								e);
 					}
 				}
-			}).start();
+			});
 		}
 	}
 

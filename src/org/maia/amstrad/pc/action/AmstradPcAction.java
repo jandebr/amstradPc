@@ -39,6 +39,10 @@ public abstract class AmstradPcAction extends AbstractAction
 		showErrorMessageDialog(dialogTitle, dialogMessage + "\n" + error.getMessage());
 	}
 
+	protected void runInSeparateThread(Runnable task) {
+		new Thread(task).start();
+	}
+
 	protected void setToolTipText(String text) {
 		putValue(Action.SHORT_DESCRIPTION, text);
 	}

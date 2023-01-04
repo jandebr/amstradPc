@@ -23,7 +23,7 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 		int returnValue = getFileChooser().showSaveDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
-			new Thread(new Runnable() {
+			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
 					File file = getSelectedFileWithExtension(AmstradFileType.BASIC_SOURCE_CODE_FILE.getFileExtension());
@@ -34,7 +34,7 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 						showErrorMessageDialog("Error saving Basic source file", "Failed to save " + file.getName(), e);
 					}
 				}
-			}).start();
+			});
 		}
 	}
 

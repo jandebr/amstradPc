@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.memory;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.maia.amstrad.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
@@ -10,13 +11,30 @@ import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class AmstradMemory extends AmstradDevice {
 
+	private ReentrantLock exclusiveThreadUseLock;
+
 	private List<MemoryTrap> memoryTraps;
 
 	private MemoryTrapTracker memoryTrapTracker;
 
 	protected AmstradMemory(AmstradPc amstradPc) {
 		super(amstradPc);
+		this.exclusiveThreadUseLock = new ReentrantLock(true);
 		this.memoryTraps = new Vector<MemoryTrap>();
+	}
+
+	public void startThreadExclusiveSession() {
+		this.exclusiveThreadUseLock.lock();
+		// Subclasses may want to extend this
+	}
+
+	public void endThreadExclusiveSession() {
+		// Subclasses may want to extend this
+		this.exclusiveThreadUseLock.unlock();
+	}
+
+	protected final boolean isNestedThreadExclusiveSession() {
+		return this.exclusiveThreadUseLock.getHoldCount() > 1;
 	}
 
 	public abstract byte read(int memoryAddress);
@@ -45,6 +63,22 @@ public abstract class AmstradMemory extends AmstradDevice {
 	}
 
 	public abstract void writeRange(int memoryOffset, byte[] data, int dataOffset, int dataLength);
+
+	public void erase(int memoryAddress) {
+		write(memoryAddress, (byte) 0);
+	}
+
+	public void eraseWord(int memoryAddress) {
+		writeWord(memoryAddress, 0);
+	}
+
+	public void eraseRange(int memoryOffset, int memoryLength) {
+		writeRange(memoryOffset, new byte[memoryLength]);
+	}
+
+	public void eraseBetween(int memoryAddressStartInclusive, int memoryAddressEndExclusive) {
+		eraseRange(memoryAddressStartInclusive, memoryAddressEndExclusive - memoryAddressStartInclusive);
+	}
 
 	public synchronized void addMemoryTrap(int memoryAddress, byte memoryValueOff, boolean resetBeforeAdding,
 			AmstradMemoryTrapHandler handler) {

@@ -481,8 +481,37 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	private class JemuMemoryImpl extends AmstradMemory {
 
+		private boolean jemuRunningAtStartOfMMO;
+
 		public JemuMemoryImpl() {
 			super(JemuAmstradPc.this);
+		}
+
+		@Override
+		public void startThreadExclusiveSession() {
+			super.startThreadExclusiveSession();
+			if (!isNestedThreadExclusiveSession()) {
+				// Pause computer when running
+				synchronized (JemuAmstradPc.this) {
+					jemuRunningAtStartOfMMO = getJemuInstance().isRunning();
+					if (jemuRunningAtStartOfMMO) {
+						getJemuInstance().pauseComputer();
+					}
+				}
+			}
+		}
+
+		@Override
+		public void endThreadExclusiveSession() {
+			if (!isNestedThreadExclusiveSession()) {
+				// Resume computer when paused
+				if (jemuRunningAtStartOfMMO) {
+					synchronized (JemuAmstradPc.this) {
+						getJemuInstance().goComputer();
+					}
+				}
+			}
+			super.endThreadExclusiveSession();
 		}
 
 		@Override
@@ -687,20 +716,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		@Override
 		protected void loadByteCode(BasicByteCode code) throws BasicException {
-			synchronized (JemuAmstradPc.this) {
-				JEMU jemu = getJemuInstance();
-				// Pause
-				boolean running = jemu.isRunning();
-				if (running) {
-					jemu.pauseComputer();
-				}
-				// Load byte code
-				super.loadByteCode(code);
-				// Resume
-				if (running) {
-					jemu.goComputer();
-				}
-			}
+			super.loadByteCode(code);
 			fireProgramLoaded();
 		}
 

@@ -24,7 +24,7 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 		int returnValue = getFileChooser().showSaveDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
-			new Thread(new Runnable() {
+			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
 					File file = getSelectedFileWithExtension(
@@ -37,7 +37,7 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 						showErrorMessageDialog("Error saving snapshot file", "Failed to save " + file.getName(), e);
 					}
 				}
-			}).start();
+			});
 		}
 	}
 

@@ -23,7 +23,7 @@ public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 		int returnValue = getFileChooser().showSaveDialog(getDisplayPane());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
-			new Thread(new Runnable() {
+			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
 					File file = getSelectedFileWithExtension(AmstradFileType.BASIC_BYTE_CODE_FILE.getFileExtension());
@@ -34,7 +34,7 @@ public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 						showErrorMessageDialog("Error saving Basic binary file", "Failed to save " + file.getName(), e);
 					}
 				}
-			}).start();
+			});
 		}
 	}
 
