@@ -14,6 +14,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
+import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicClearAction;
 import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicClsAction;
 import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicListAction;
 import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicNewAction;
@@ -140,6 +141,7 @@ public class AmstradFactory {
 		menu.add(new JMenuItem(new LocomotiveBasicRunAction(amstradPc)));
 		menu.add(new JMenuItem(new LocomotiveBasicListAction(amstradPc)));
 		menu.add(new JMenuItem(new LocomotiveBasicClsAction(amstradPc)));
+		menu.add(new JMenuItem(new LocomotiveBasicClearAction(amstradPc)));
 		return menu;
 	}
 

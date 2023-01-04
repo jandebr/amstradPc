@@ -23,20 +23,11 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	public void command_new() {
-		AmstradMemory memory = getMemory();
-		memory.startThreadExclusiveSession();
-		try {
-			memory.eraseBetween(ADDRESS_BYTECODE_START, memory.readWord(ADDRESS_HEAP_END_POINTER));
-			// Reset end of byte code
-			int addrEnd = ADDRESS_BYTECODE_START + 2;
-			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
-			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
-			// Reset end of heap space
-			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
-			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
-		} finally {
-			memory.endThreadExclusiveSession();
-		}
+		getKeyboard().enter("NEW");
+	}
+
+	public void command_clear() {
+		getKeyboard().enter("CLEAR");
 	}
 
 	public void command_cls() {
@@ -48,21 +39,21 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	public void command_run() {
-		run();
+		getKeyboard().enter("RUN");
 	}
 
 	public void command_run(int lineNumber) {
-		run(lineNumber);
+		getKeyboard().enter("RUN " + lineNumber);
 	}
 
 	@Override
 	public void run() {
-		getKeyboard().enter("RUN");
+		command_run();
 	}
 
 	@Override
 	public void run(int lineNumber) {
-		getKeyboard().enter("RUN " + lineNumber);
+		command_run(lineNumber);
 	}
 
 	@Override
@@ -80,8 +71,8 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
-			// Clear any current code + heap
-			command_new();
+			// Clear
+			clearProgramAndVariables();
 			// Write byte code
 			memory.writeRange(ADDRESS_BYTECODE_START, code.getBytes());
 			// Marking end of byte code
@@ -110,6 +101,41 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		LocomotiveBasicByteCode byteCode = new LocomotiveBasicByteCode(bytes);
 		byteCode.sanitize();
 		return byteCode;
+	}
+
+	private void clearProgramAndVariables() {
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			// Erase code and heap
+			memory.eraseBetween(ADDRESS_BYTECODE_START, memory.readWord(ADDRESS_HEAP_END_POINTER));
+			// Reset end of byte code
+			int addrEnd = ADDRESS_BYTECODE_START + 2;
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
+			// Reset end of heap space
+			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+	}
+
+	private void clearVariables() throws BasicException {
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			// Sanitize byte code to clear any variable memory pointers
+			loadBinaryData(exportByteCode().getBytes(), ADDRESS_BYTECODE_START);
+			// Erase heap
+			int addrEnd = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
+			memory.eraseBetween(addrEnd, memory.readWord(ADDRESS_HEAP_END_POINTER));
+			// Reset end of heap space
+			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
 	}
 
 	@Override
@@ -174,10 +200,6 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 
 	private AmstradKeyboard getKeyboard() {
 		return getAmstradPc().getKeyboard();
-	}
-
-	private AmstradMemory getMemory() {
-		return getAmstradPc().getMemory();
 	}
 
 }

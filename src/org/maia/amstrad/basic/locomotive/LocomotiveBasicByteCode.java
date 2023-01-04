@@ -78,6 +78,8 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	 * <li>Clears the memory offsets for variables</li>
 	 * </ul>
 	 * 
+	 * Sanitization preserves the exact byte count.
+	 * 
 	 * @throws BasicException
 	 *             When byte code interpretation is faulty
 	 */

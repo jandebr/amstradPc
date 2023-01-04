@@ -28,7 +28,7 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 				public void run() {
 					File file = getSelectedFileWithExtension(AmstradFileType.BASIC_SOURCE_CODE_FILE.getFileExtension());
 					try {
-						getAmstradPc().getBasicRuntime().exportSourceCodeToFile(file);
+						getAmstradPc().getBasicRuntime().saveSourceCodeToFile(file);
 					} catch (Exception e) {
 						System.err.println("Failed to save Basic source file: " + e.getMessage());
 						showErrorMessageDialog("Error saving Basic source file", "Failed to save " + file.getName(), e);
