@@ -67,7 +67,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	@Override
-	protected void loadByteCode(BasicByteCode code) throws BasicException {
+	protected void loadByteCode(BasicByteCode code) {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
@@ -88,21 +88,77 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	@Override
-	protected LocomotiveBasicByteCode exportByteCode() throws BasicException {
-		LocomotiveBasicByteCode byteCode = null;
-		AmstradMemory memory = getMemory();
-		memory.startThreadExclusiveSession();
-		try {
-			int len = getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
-			byteCode = new LocomotiveBasicByteCode(memory.readBytes(ADDRESS_BYTECODE_START, len));
-		} finally {
-			memory.endThreadExclusiveSession();
-		}
+	public LocomotiveBasicByteCode exportByteCode() throws BasicException {
+		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
 		byteCode.sanitize();
 		return byteCode;
 	}
 
-	private void clearProgramAndVariables() {
+	protected LocomotiveBasicByteCode getUnmodifiedByteCode() {
+		LocomotiveBasicByteCode byteCode = null;
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			int len = getByteCodeLength();
+			byteCode = new LocomotiveBasicByteCode(memory.readBytes(ADDRESS_BYTECODE_START, len));
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+		return byteCode;
+	}
+
+	protected int getByteCodeLength() {
+		return getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
+	}
+
+	public void hotMergeByteCode(LocomotiveBasicByteCode byteCodeToMerge) throws BasicException {
+		LocomotiveBasicByteCode mergedCode = getUnmodifiedByteCode();
+		mergedCode.merge(byteCodeToMerge);
+		hotSwapByteCode(mergedCode);
+	}
+
+	public void hotSwapByteCode(BasicByteCode newByteCode) {
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			// Move heap space
+			moveHeapSpace(newByteCode.getByteCount() - getByteCodeLength());
+			// Swap byte code
+			memory.writeBytes(ADDRESS_BYTECODE_START, newByteCode.getBytes());
+			// Marking end of byte code
+			int addrEnd = ADDRESS_BYTECODE_START + newByteCode.getByteCount();
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+	}
+
+	private void moveHeapSpace(int distanceInBytes) {
+		if (distanceInBytes == 0)
+			return;
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			int heapStart = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
+			int heapEnd = memory.readWord(ADDRESS_HEAP_END_POINTER);
+			if (heapEnd > heapStart) {
+				byte[] heap = memory.readBytes(heapStart, heapEnd - heapStart);
+				memory.eraseBytesBetween(heapStart, heapEnd);
+				memory.writeBytes(heapStart + distanceInBytes, heap);
+			}
+			int heapEndNew = heapEnd + distanceInBytes;
+			memory.writeWord(ADDRESS_HEAP_END_POINTER, heapEndNew);
+			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, heapEndNew);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+	}
+
+	/**
+	 * Similar effect as the Basic NEW instruction
+	 */
+	protected void clearProgramAndVariables() {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
@@ -120,7 +176,10 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		}
 	}
 
-	private void clearVariables() throws BasicException {
+	/**
+	 * Similar effect as the Basic CLEAR instruction
+	 */
+	protected void clearVariables() throws BasicException {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
@@ -193,11 +252,11 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	@Override
-	public BasicLanguage getLanguage() {
+	public final BasicLanguage getLanguage() {
 		return BasicLanguage.LOCOMOTIVE_BASIC;
 	}
 
-	private AmstradKeyboard getKeyboard() {
+	protected AmstradKeyboard getKeyboard() {
 		return getAmstradPc().getKeyboard();
 	}
 

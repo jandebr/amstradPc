@@ -50,4 +50,9 @@ public class LocomotiveBasicSourceCode extends BasicSourceCode {
 		return lines;
 	}
 
+	@Override
+	public LocomotiveBasicSourceCode clone() {
+		return (LocomotiveBasicSourceCode) super.clone();
+	}
+
 }

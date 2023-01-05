@@ -65,7 +65,7 @@ public abstract class BasicRuntime {
 		return getDecompiler().decompile(exportByteCode());
 	}
 
-	protected abstract BasicByteCode exportByteCode() throws BasicException;
+	public abstract BasicByteCode exportByteCode() throws BasicException;
 
 	public void saveSourceCodeToFile(File file) throws IOException, BasicException {
 		PrintWriter pw = new PrintWriter(file);

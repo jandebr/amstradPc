@@ -11,6 +11,11 @@ public class LocomotiveBasicSourceCodeLine extends BasicSourceCodeLine {
 	}
 
 	@Override
+	public LocomotiveBasicSourceCodeLine clone() {
+		return (LocomotiveBasicSourceCodeLine) super.clone();
+	}
+
+	@Override
 	public LocomotiveBasicSourceCodeLineScanner createScanner() {
 		return new LocomotiveBasicSourceCodeLineScanner(getText(), LocomotiveBasicKeywords.getInstance());
 	}

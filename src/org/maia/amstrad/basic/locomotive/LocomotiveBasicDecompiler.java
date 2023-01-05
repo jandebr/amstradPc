@@ -33,6 +33,7 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 		int announcedLineLengthInBytes = nextWord();
 		while (announcedLineLengthInBytes > 0) {
 			int lineNumber = nextWord();
+			encounteredLineNumber(byteCodeIndex - 2, lineNumber);
 			CharSequence lineOfCode = nextLineOfCode(lineNumber);
 			int lineLengthInBytes = byteCodeIndex - i0;
 			if (lineLengthInBytes != announcedLineLengthInBytes) {
@@ -56,7 +57,20 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 		this.byteCodeIndex = 0;
 	}
 
-	protected void addedSourceCodeLine(int lineNumber, CharSequence lineOfCode) {
+	protected void encounteredLineNumber(int bytecodeOffset, int lineNumber) {
+		// Subclasses may override
+	}
+
+	protected void encounteredLineNumberReferenceByAddress(int bytecodeOffset, int addressPointer, int lineNumber) {
+		// Subclasses may override
+	}
+
+	protected void encounteredLineNumberReferenceByValue(int bytecodeOffset, int lineNumber) {
+		// Subclasses may override
+	}
+
+	protected void encounteredVariable(int bytecodeOffset, byte variableTypeCode,
+			CharSequence variableNameWithoutTypeIndicator) {
 		// Subclasses may override
 	}
 
@@ -65,12 +79,7 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 		// Subclasses may override
 	}
 
-	protected void encounteredLinePointer(int bytecodeOffset, int addressPointer, int lineNumber) {
-		// Subclasses may override
-	}
-
-	protected void encounteredVariable(int bytecodeOffset, byte variableTypeCode,
-			CharSequence variableNameWithoutTypeIndicator) {
+	protected void addedSourceCodeLine(int lineNumber, CharSequence lineOfCode) {
 		// Subclasses may override
 	}
 
@@ -118,9 +127,10 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 				} else if (b == 0x1d) {
 					int lineNr = wordAt(v - ADDRESS_BYTECODE_START + 3); // line pointer (to preceding 0x00)
 					line.append(lineNr);
-					encounteredLinePointer(bytecodeOffset, v, lineNr);
+					encounteredLineNumberReferenceByAddress(bytecodeOffset, v, lineNr);
 				} else if (b == 0x1e) {
 					line.append(v); // line number reference
+					encounteredLineNumberReferenceByValue(bytecodeOffset, v);
 				}
 			} else if (b == 0x1f) {
 				// floating point value

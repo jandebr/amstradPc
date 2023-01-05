@@ -6,7 +6,21 @@ public abstract class BasicByteCode extends BasicCode {
 
 	protected BasicByteCode(BasicLanguage language, byte[] bytes) {
 		super(language);
-		this.bytes = bytes;
+		setBytes(bytes);
+	}
+
+	@Override
+	public BasicByteCode clone() {
+		BasicByteCode clone = null;
+		try {
+			clone = (BasicByteCode) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// never the case
+		}
+		byte[] clonedBytes = new byte[getByteCount()];
+		System.arraycopy(getBytes(), 0, clonedBytes, 0, getByteCount());
+		clone.setBytes(clonedBytes);
+		return clone;
 	}
 
 	public boolean isEmpty() {
@@ -40,6 +54,10 @@ public abstract class BasicByteCode extends BasicCode {
 
 	public byte[] getBytes() {
 		return bytes;
+	}
+
+	protected void setBytes(byte[] bytes) {
+		this.bytes = bytes;
 	}
 
 }

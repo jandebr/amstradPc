@@ -88,6 +88,15 @@ public class StringUtils {
 		}
 	}
 
+	public static String leftPad(String str, int width, char padding) {
+		int n = str.length();
+		if (n >= width) {
+			return str;
+		} else {
+			return repeat(padding, width - n) + str;
+		}
+	}
+
 	public static String rightPad(String str, int width, char padding) {
 		int n = str.length();
 		if (n >= width) {

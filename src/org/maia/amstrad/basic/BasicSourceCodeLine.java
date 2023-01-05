@@ -1,6 +1,6 @@
 package org.maia.amstrad.basic;
 
-public abstract class BasicSourceCodeLine implements Comparable<BasicSourceCodeLine> {
+public abstract class BasicSourceCodeLine implements Cloneable, Comparable<BasicSourceCodeLine> {
 
 	private String text;
 
@@ -14,6 +14,17 @@ public abstract class BasicSourceCodeLine implements Comparable<BasicSourceCodeL
 		this.language = language;
 		setText(text);
 		setLineNumber(parseLineNumber(text));
+	}
+
+	@Override
+	public BasicSourceCodeLine clone() {
+		BasicSourceCodeLine clone = null;
+		try {
+			clone = (BasicSourceCodeLine) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// never the case
+		}
+		return clone;
 	}
 
 	public synchronized void editTo(String text) throws BasicException {

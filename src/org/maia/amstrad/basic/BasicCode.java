@@ -1,6 +1,6 @@
 package org.maia.amstrad.basic;
 
-public abstract class BasicCode {
+public abstract class BasicCode implements Cloneable {
 
 	private BasicLanguage language;
 

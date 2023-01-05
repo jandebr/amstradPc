@@ -24,6 +24,25 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	protected abstract List<BasicSourceCodeLine> parse(CharSequence sourceCode) throws BasicSyntaxException;
 
+	@Override
+	public BasicSourceCode clone() {
+		BasicSourceCode clone = null;
+		try {
+			clone = (BasicSourceCode) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// never the case
+		}
+		clone.setLines(new Vector<BasicSourceCodeLine>(getLineCount()));
+		for (BasicSourceCodeLine line : this) {
+			try {
+				clone.addLine(line.clone());
+			} catch (BasicException e) {
+				// never the case
+			}
+		}
+		return clone;
+	}
+
 	public synchronized void clear() {
 		if (!isEmpty()) {
 			for (BasicSourceCodeLine line : getLines()) {
@@ -116,6 +135,12 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 			getLines().add(i, line);
 		}
 		line.setParentSourceCode(this);
+	}
+
+	public synchronized void merge(BasicSourceCode sourceCodeToMerge) throws BasicException {
+		for (BasicSourceCodeLine line : sourceCodeToMerge) {
+			addLine(line.clone());
+		}
 	}
 
 	private int getLineNumberInsertionIndex(int lineNumber) {
