@@ -74,7 +74,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 			// Clear
 			clearProgramAndVariables();
 			// Write byte code
-			memory.writeRange(ADDRESS_BYTECODE_START, code.getBytes());
+			memory.writeBytes(ADDRESS_BYTECODE_START, code.getBytes());
 			// Marking end of byte code
 			int addrEnd = ADDRESS_BYTECODE_START + code.getByteCount();
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
@@ -89,16 +89,15 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 
 	@Override
 	protected LocomotiveBasicByteCode exportByteCode() throws BasicException {
+		LocomotiveBasicByteCode byteCode = null;
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
-		byte[] bytes = null;
 		try {
-			int len = memory.readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
-			bytes = memory.readRange(ADDRESS_BYTECODE_START, len);
+			int len = getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
+			byteCode = new LocomotiveBasicByteCode(memory.readBytes(ADDRESS_BYTECODE_START, len));
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
-		LocomotiveBasicByteCode byteCode = new LocomotiveBasicByteCode(bytes);
 		byteCode.sanitize();
 		return byteCode;
 	}
@@ -108,7 +107,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		memory.startThreadExclusiveSession();
 		try {
 			// Erase code and heap
-			memory.eraseBetween(ADDRESS_BYTECODE_START, memory.readWord(ADDRESS_HEAP_END_POINTER));
+			memory.eraseBytesBetween(ADDRESS_BYTECODE_START, memory.readWord(ADDRESS_HEAP_END_POINTER));
 			// Reset end of byte code
 			int addrEnd = ADDRESS_BYTECODE_START + 2;
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
@@ -129,7 +128,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 			loadBinaryData(exportByteCode().getBytes(), ADDRESS_BYTECODE_START);
 			// Erase heap
 			int addrEnd = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
-			memory.eraseBetween(addrEnd, memory.readWord(ADDRESS_HEAP_END_POINTER));
+			memory.eraseBytesBetween(addrEnd, memory.readWord(ADDRESS_HEAP_END_POINTER));
 			// Reset end of heap space
 			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);

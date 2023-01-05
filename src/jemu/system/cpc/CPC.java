@@ -2085,28 +2085,13 @@ public class CPC extends Computer {
 	}
 
 	@Override
-	public byte readMemory(int memoryAddress) {
+	public byte readByteFromUnmappedMemory(int memoryAddress) {
 		return memory.getMemory()[memoryAddress];
 	}
 
 	@Override
-	public byte[] readMemoryRange(int memoryOffset, int memoryLength) {
-		byte[] mem = memory.getMemory();
-		byte[] data = new byte[memoryLength];
-		int length = Math.min(memoryLength, mem.length - memoryOffset);
-		System.arraycopy(mem, memoryOffset, data, 0, length);
-		return data;
-	}
-
-	@Override
-	public void writeMemory(int memoryAddress, byte value) {
+	public void writeByteToUnmappedMemory(int memoryAddress, byte value) {
 		memory.getMemory()[memoryAddress] = value;
-	}
-
-	@Override
-	public void writeMemoryRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
-		byte[] mem = memory.getMemory();
-		System.arraycopy(data, dataOffset, mem, memoryOffset, dataLength);
 	}
 
 	public void SNK_Save() {

@@ -2236,36 +2236,36 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		return result;
 	}
 
-	public byte readMemory(int memoryAddress) {
-		return computer.readMemory(memoryAddress);
+	public byte readByteFromUnmappedMemory(int memoryAddress) {
+		return computer.readByteFromUnmappedMemory(memoryAddress);
 	}
 
-	public byte[] readMemoryRange(int memoryOffset, int memoryLength) {
+	public byte[] readBytesFromUnmappedMemory(int memoryOffset, int memoryLength) {
 		boolean running = isRunning();
 		if (running) {
 			pauseComputer();
 		}
-		byte[] data = computer.readMemoryRange(memoryOffset, memoryLength);
+		byte[] data = computer.readBytesFromUnmappedMemory(memoryOffset, memoryLength);
 		if (running) {
 			goComputer();
 		}
 		return data;
 	}
 
-	public void writeMemory(int memoryAddress, byte value) {
-		computer.writeMemory(memoryAddress, value);
+	public void writeByteToUnmappedMemory(int memoryAddress, byte value) {
+		computer.writeByteToUnmappedMemory(memoryAddress, value);
 	}
 
-	public void writeMemoryRange(int memoryOffset, byte[] data) {
-		writeMemoryRange(memoryOffset, data, 0, data.length);
+	public void writeBytesToUnmappedMemory(int memoryOffset, byte[] data) {
+		writeBytesToUnmappedMemory(memoryOffset, data, 0, data.length);
 	}
 
-	public void writeMemoryRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
+	public void writeBytesToUnmappedMemory(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
 		boolean running = isRunning();
 		if (running) {
 			pauseComputer();
 		}
-		computer.writeMemoryRange(memoryOffset, data, dataOffset, dataLength);
+		computer.writeBytesToUnmappedMemory(memoryOffset, data, dataOffset, dataLength);
 		if (running) {
 			goComputer();
 		}

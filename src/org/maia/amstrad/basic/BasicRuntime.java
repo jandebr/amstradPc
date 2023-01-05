@@ -92,7 +92,7 @@ public abstract class BasicRuntime {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
-			memory.writeRange(memoryStartAddress, data);
+			memory.writeBytes(memoryStartAddress, data);
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
@@ -106,10 +106,18 @@ public abstract class BasicRuntime {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
-			return memory.readRange(memoryStartAddress, memoryLength);
+			return memory.readBytes(memoryStartAddress, memoryLength);
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
+	}
+
+	public byte peek(int memoryAddress) {
+		return getMemory().readByte(memoryAddress);
+	}
+
+	public void poke(int memoryAddress, byte value) {
+		getMemory().writeByte(memoryAddress, value);
 	}
 
 	protected void checkSameLanguage(BasicCode code) throws BasicException {

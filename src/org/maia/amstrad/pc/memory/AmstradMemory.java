@@ -37,47 +37,47 @@ public abstract class AmstradMemory extends AmstradDevice {
 		return this.exclusiveThreadUseLock.getHoldCount() > 1;
 	}
 
-	public abstract byte read(int memoryAddress);
+	public abstract byte readByte(int memoryAddress);
 
-	public abstract byte[] readRange(int memoryOffset, int memoryLength);
+	public abstract byte[] readBytes(int memoryOffset, int memoryLength);
 
 	public int readWord(int memoryAddress) {
 		// little Endian
-		byte b1 = read(memoryAddress);
-		byte b2 = read(memoryAddress + 1);
+		byte b1 = readByte(memoryAddress);
+		byte b2 = readByte(memoryAddress + 1);
 		return (b1 & 0xff) | ((b2 << 8) & 0xff00);
 	}
 
-	public abstract void write(int memoryAddress, byte value);
+	public abstract void writeByte(int memoryAddress, byte value);
 
 	public void writeWord(int memoryOffset, int value) {
 		// little Endian
 		byte b1 = (byte) (value % 256);
 		byte b2 = (byte) (value / 256);
-		write(memoryOffset, b1);
-		write(memoryOffset + 1, b2);
+		writeByte(memoryOffset, b1);
+		writeByte(memoryOffset + 1, b2);
 	}
 
-	public void writeRange(int memoryOffset, byte[] data) {
-		writeRange(memoryOffset, data, 0, data.length);
+	public void writeBytes(int memoryOffset, byte[] data) {
+		writeBytes(memoryOffset, data, 0, data.length);
 	}
 
-	public abstract void writeRange(int memoryOffset, byte[] data, int dataOffset, int dataLength);
+	public abstract void writeBytes(int memoryOffset, byte[] data, int dataOffset, int dataLength);
 
-	public void erase(int memoryAddress) {
-		write(memoryAddress, (byte) 0);
+	public void eraseByte(int memoryAddress) {
+		writeByte(memoryAddress, (byte) 0);
 	}
 
 	public void eraseWord(int memoryAddress) {
 		writeWord(memoryAddress, 0);
 	}
 
-	public void eraseRange(int memoryOffset, int memoryLength) {
-		writeRange(memoryOffset, new byte[memoryLength]);
+	public void eraseBytes(int memoryOffset, int memoryLength) {
+		writeBytes(memoryOffset, new byte[memoryLength]);
 	}
 
-	public void eraseBetween(int memoryAddressStartInclusive, int memoryAddressEndExclusive) {
-		eraseRange(memoryAddressStartInclusive, memoryAddressEndExclusive - memoryAddressStartInclusive);
+	public void eraseBytesBetween(int memoryAddressStartInclusive, int memoryAddressEndExclusive) {
+		eraseBytes(memoryAddressStartInclusive, memoryAddressEndExclusive - memoryAddressStartInclusive);
 	}
 
 	public synchronized void addMemoryTrap(int memoryAddress, byte memoryValueOff, boolean resetBeforeAdding,
@@ -156,7 +156,7 @@ public abstract class AmstradMemory extends AmstradDevice {
 		}
 
 		public void reset() {
-			write(getMemoryAddress(), getMemoryValueOff());
+			writeByte(getMemoryAddress(), getMemoryValueOff());
 		}
 
 		public int getMemoryAddress() {
@@ -168,7 +168,7 @@ public abstract class AmstradMemory extends AmstradDevice {
 		}
 
 		public byte getMemoryValue() {
-			return read(getMemoryAddress());
+			return readByte(getMemoryAddress());
 		}
 
 		public AmstradMemoryTrapHandler getHandler() {

@@ -515,23 +515,23 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		public byte read(int memoryAddress) {
-			return getJemuInstance().readMemory(memoryAddress);
+		public byte readByte(int memoryAddress) {
+			return getJemuInstance().readByteFromUnmappedMemory(memoryAddress);
 		}
 
 		@Override
-		public byte[] readRange(int memoryOffset, int memoryLength) {
-			return getJemuInstance().readMemoryRange(memoryOffset, memoryLength);
+		public byte[] readBytes(int memoryOffset, int memoryLength) {
+			return getJemuInstance().readBytesFromUnmappedMemory(memoryOffset, memoryLength);
 		}
 
 		@Override
-		public void write(int memoryAddress, byte value) {
-			getJemuInstance().writeMemory(memoryAddress, value);
+		public void writeByte(int memoryAddress, byte value) {
+			getJemuInstance().writeByteToUnmappedMemory(memoryAddress, value);
 		}
 
 		@Override
-		public void writeRange(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
-			getJemuInstance().writeMemoryRange(memoryOffset, data, dataOffset, dataLength);
+		public void writeBytes(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
+			getJemuInstance().writeBytesToUnmappedMemory(memoryOffset, data, dataOffset, dataLength);
 		}
 
 	}
