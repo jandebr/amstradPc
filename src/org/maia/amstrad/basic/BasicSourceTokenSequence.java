@@ -30,6 +30,20 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 		return getTokens().get(index);
 	}
 
+	public BasicSourceToken getFirstToken() {
+		BasicSourceToken token = null;
+		if (!isEmpty())
+			token = get(0);
+		return token;
+	}
+
+	public BasicSourceToken getLastToken() {
+		BasicSourceToken token = null;
+		if (!isEmpty())
+			token = get(size() - 1);
+		return token;
+	}
+
 	public int getFirstIndexOf(BasicSourceToken token) {
 		return getTokens().indexOf(token);
 	}
@@ -49,7 +63,7 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 
 	public int getFirstIndexOf(Class<? extends BasicSourceToken> tokenType) {
 		for (int i = 0; i < size(); i++) {
-			if (get(i).getClass().equals(tokenType))
+			if (tokenType.isAssignableFrom(get(i).getClass()))
 				return i;
 		}
 		return -1;
@@ -57,7 +71,7 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 
 	public int getLastIndexOf(Class<? extends BasicSourceToken> tokenType) {
 		for (int i = size() - 1; i >= 0; i--) {
-			if (get(i).getClass().equals(tokenType))
+			if (tokenType.isAssignableFrom(get(i).getClass()))
 				return i;
 		}
 		return -1;
@@ -84,7 +98,7 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 
 	public int getIndexFollowing(Class<? extends BasicSourceToken> tokenType, int fromIndex) {
 		int i = fromIndex;
-		while (i < size() && get(i).getClass().equals(tokenType))
+		while (i < size() && tokenType.isAssignableFrom(get(i).getClass()))
 			i++;
 		if (i < size())
 			return i;
@@ -100,6 +114,26 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 			return i;
 		else
 			return -1;
+	}
+
+	public boolean startsWith(BasicSourceToken token) {
+		return !isEmpty() && getFirstToken().equals(token);
+	}
+
+	public boolean startsWith(Class<? extends BasicSourceToken> tokenType) {
+		return !isEmpty() && tokenType.isAssignableFrom(getFirstToken().getClass());
+	}
+
+	public boolean startsWithLineNumber() {
+		return startsWith(BasicLineNumberToken.class);
+	}
+
+	public boolean endsWith(BasicSourceToken token) {
+		return !isEmpty() && getLastToken().equals(token);
+	}
+
+	public boolean endsWith(Class<? extends BasicSourceToken> tokenType) {
+		return !isEmpty() && tokenType.isAssignableFrom(getLastToken().getClass());
 	}
 
 	public boolean contains(BasicSourceToken token) {
@@ -221,6 +255,19 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 		insert(fromIndex, tokens);
 	}
 
+	/**
+	 * Creates a new token sequence that is a subset of this sequence.
+	 * <p>
+	 * The returned token sequence is backed by this sequence, so non-structural changes in the returned sequence are
+	 * reflected in this sequence, and vice-versa.
+	 * </p>
+	 * 
+	 * @param fromIndex
+	 *            Low token index (inclusive) of the sub sequence
+	 * @param toIndex
+	 *            High token index (exclusive) of the sub sequence
+	 * @return A new token sequence that is a subset of this sequence
+	 */
 	public BasicSourceTokenSequence subSequence(int fromIndex, int toIndex) {
 		BasicSourceTokenSequence sub = new BasicSourceTokenSequence();
 		sub.setTokens(getTokens().subList(fromIndex, toIndex));

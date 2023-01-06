@@ -7,20 +7,63 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
+import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicLineNumberToken;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
+import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.util.StringUtils;
 
 public class LocomotiveBasicSourceCode extends BasicSourceCode {
 
 	public LocomotiveBasicSourceCode() {
-		super(BasicLanguage.LOCOMOTIVE_BASIC);
 	}
 
 	public LocomotiveBasicSourceCode(CharSequence sourceCode) throws BasicSyntaxException {
-		super(BasicLanguage.LOCOMOTIVE_BASIC, sourceCode);
+		super(sourceCode);
+	}
+
+	@Override
+	public final BasicLanguage getLanguage() {
+		return BasicLanguage.LOCOMOTIVE_BASIC;
+	}
+
+	@Override
+	public LocomotiveBasicSourceCode clone() {
+		return (LocomotiveBasicSourceCode) super.clone();
+	}
+
+	@Override
+	public synchronized void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
+		if (isEmpty() || mapping.isEmpty())
+			return;
+		List<BasicSourceCodeLine> lines = new Vector<BasicSourceCodeLine>(getLineCount());
+		for (BasicSourceCodeLine line : this)
+			lines.add(line);
+		clear(); // lines are detached
+		for (BasicSourceCodeLine line : lines) {
+			BasicSourceTokenSequence sequence = line.parse();
+			// Map line number
+			int lineNumber = line.getLineNumber();
+			if (mapping.isMapped(lineNumber) && sequence.startsWithLineNumber()) {
+				sequence.replace(0, new BasicLineNumberToken(mapping.getNewLineNumber(lineNumber)));
+			}
+			// Map line number references
+			int i = sequence.getFirstIndexOf(LineNumberReferenceToken.class);
+			while (i >= 0) {
+				lineNumber = ((LineNumberReferenceToken) sequence.get(i)).getLineNumber();
+				if (mapping.isMapped(lineNumber)) {
+					sequence.replace(i, new LineNumberReferenceToken(mapping.getNewLineNumber(lineNumber)));
+				}
+				i = sequence.getNextIndexOf(LineNumberReferenceToken.class, i + 1);
+			}
+			line.editTo(sequence.getSourceCode());
+			addLine(line); // attach line again
+		}
 	}
 
 	@Override
@@ -48,11 +91,6 @@ public class LocomotiveBasicSourceCode extends BasicSourceCode {
 			Collections.sort(lines); // by increasing line number
 		}
 		return lines;
-	}
-
-	@Override
-	public LocomotiveBasicSourceCode clone() {
-		return (LocomotiveBasicSourceCode) super.clone();
 	}
 
 }

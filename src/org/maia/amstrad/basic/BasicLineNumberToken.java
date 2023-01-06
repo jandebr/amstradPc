@@ -6,6 +6,10 @@ public class BasicLineNumberToken extends BasicSourceToken {
 		super(sourceFragment);
 	}
 
+	public BasicLineNumberToken(int lineNumber) {
+		this(String.valueOf(lineNumber));
+	}
+
 	public int getLineNumber() {
 		return Integer.parseInt(getSourceFragment());
 	}

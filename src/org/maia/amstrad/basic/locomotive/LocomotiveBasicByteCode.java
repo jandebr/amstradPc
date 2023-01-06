@@ -1,17 +1,15 @@
 package org.maia.amstrad.basic.locomotive;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
+import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 
 public class LocomotiveBasicByteCode extends BasicByteCode {
-
-	public LocomotiveBasicByteCode(byte[] bytes) {
-		super(BasicLanguage.LOCOMOTIVE_BASIC, fit(bytes));
-	}
 
 	private static byte[] fit(byte[] bytes) {
 		byte[] fitted = null;
@@ -62,6 +60,15 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		}
 	}
 
+	public LocomotiveBasicByteCode(byte[] bytes) {
+		super(fit(bytes));
+	}
+
+	@Override
+	public final BasicLanguage getLanguage() {
+		return BasicLanguage.LOCOMOTIVE_BASIC;
+	}
+
 	@Override
 	public LocomotiveBasicByteCode clone() {
 		return (LocomotiveBasicByteCode) super.clone();
@@ -70,6 +77,36 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	@Override
 	public String toString() {
 		return new LocomotiveBasicByteCodeFormatter().format(this).toString();
+	}
+
+	@Override
+	public synchronized int getLineCount() {
+		if (getByteCount() < 4)
+			return 0;
+		return getLineOffsetIndices().length;
+	}
+
+	@Override
+	public synchronized int getSmallestLineNumber() {
+		if (getByteCount() >= 4) {
+			return getWord(2);
+		} else {
+			return 0;
+		}
+	}
+
+	@Override
+	public synchronized List<Integer> getLineNumbers() {
+		int[] indices = getLineOffsetIndices();
+		if (indices.length == 0) {
+			return Collections.emptyList();
+		} else {
+			List<Integer> lineNumbers = new Vector<Integer>(indices.length);
+			for (int i = 0; i < indices.length; i++) {
+				lineNumbers.add(getWord(indices[i] + 2));
+			}
+			return lineNumbers;
+		}
 	}
 
 	/**
@@ -82,23 +119,20 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		return getLineOffsetIndices(getBytes());
 	}
 
-	public synchronized void renum(int lineNumberStart, int lineNumberStep) throws BasicException {
-		int[] indices = getLineOffsetIndices(getBytes());
-		if (indices.length == 0)
+	@Override
+	public synchronized void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
+		if (isEmpty() || mapping.isEmpty())
 			return;
-		// Create mapping
-		Map<Integer, Integer> lineNumberMapping = new HashMap<Integer, Integer>(indices.length);
-		for (int i = 0; i < indices.length; i++) {
-			int currentLineNumber = getWord(indices[i] + 2);
-			int newLineNumber = lineNumberStart + i * lineNumberStep;
-			lineNumberMapping.put(currentLineNumber, newLineNumber);
-		}
-		// Map line number references
-		new LineReferenceMapper(lineNumberMapping).map();
-		// Map line numbers
+		// Map line number references (must go first)
+		new LineReferenceMapper(mapping).map();
+		// Map line numbers (must go second)
+		int[] indices = getLineOffsetIndices();
 		for (int i = 0; i < indices.length; i++) {
 			int j = indices[i] + 2;
-			setWord(j, lineNumberMapping.get(getWord(j)));
+			int lineNumber = getWord(j);
+			if (mapping.isMapped(lineNumber)) {
+				setWord(j, mapping.getNewLineNumber(lineNumber));
+			}
 		}
 	}
 
@@ -111,8 +145,8 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		int bc = getByteCount(), bcOther = other.getByteCount();
 		byte[] mergedBytes = new byte[bc + bcOther - 2];
 		int mbc = 0;
-		int[] indices = getLineOffsetIndices(getBytes());
-		int[] indicesOther = getLineOffsetIndices(other.getBytes());
+		int[] indices = getLineOffsetIndices();
+		int[] indicesOther = other.getLineOffsetIndices();
 		int n = indices.length, nOther = indicesOther.length;
 		int i = 0, iOther = 0;
 		while (i < n && iOther < nOther) {
@@ -203,10 +237,10 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 
 	private class LineReferenceMapper extends LocomotiveBasicDecompiler {
 
-		Map<Integer, Integer> lineNumberMapping;
+		private BasicLineNumberLinearMapping mapping;
 
-		public LineReferenceMapper(Map<Integer, Integer> lineNumberMapping) {
-			this.lineNumberMapping = lineNumberMapping;
+		public LineReferenceMapper(BasicLineNumberLinearMapping mapping) {
+			this.mapping = mapping;
 		}
 
 		public void map() throws BasicException {
@@ -225,11 +259,15 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		}
 
 		private int mapLineNumber(int lineNumber) {
-			return getLineNumberMapping().get(lineNumber);
+			if (getMapping().isMapped(lineNumber)) {
+				return getMapping().getNewLineNumber(lineNumber);
+			} else {
+				return lineNumber;
+			}
 		}
 
-		private Map<Integer, Integer> getLineNumberMapping() {
-			return lineNumberMapping;
+		private BasicLineNumberLinearMapping getMapping() {
+			return mapping;
 		}
 
 	}

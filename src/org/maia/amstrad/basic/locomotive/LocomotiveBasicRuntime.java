@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.maia.amstrad.basic.BasicByteCode;
+import org.maia.amstrad.basic.BasicCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicRuntime;
@@ -111,13 +112,48 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		return getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
 	}
 
-	public void hotMergeByteCode(LocomotiveBasicByteCode byteCodeToMerge) throws BasicException {
+	/**
+	 * Amends the loaded Basic byte code by merging a given byte code while preserving variables.
+	 * 
+	 * <p>
+	 * This method should be used with extreme care. Merging loaded byte code may lead to unexpected results even
+	 * blocking the entire Amstrad computer. In general, it is only safe to merge when no program is being run (at the
+	 * prompt). When a program is still running (<em>hot merge</em>) it will only succeed under conditions that cause no
+	 * interference with the running Basic interpreter.
+	 * </p>
+	 * <p>
+	 * If it is not needed to preserve variables, it is advised to use the {@link #load(BasicCode)} method, passing a
+	 * merged byte code obtained from {@link LocomotiveBasicByteCode#merge(LocomotiveBasicByteCode)}.
+	 * </p>
+	 * 
+	 * @param byteCodeToMerge
+	 *            The byte code to merge with the currently loaded byte code
+	 * @throws BasicException
+	 *             When byte code interpretation is faulty
+	 */
+	public void swapMergedByteCode(LocomotiveBasicByteCode byteCodeToMerge) throws BasicException {
 		LocomotiveBasicByteCode mergedCode = getUnmodifiedByteCode();
 		mergedCode.merge(byteCodeToMerge);
-		hotSwapByteCode(mergedCode);
+		swapByteCode(mergedCode);
 	}
 
-	public void hotSwapByteCode(BasicByteCode newByteCode) {
+	/**
+	 * Replaces the loaded Basic byte code with the given byte code while preserving variables.
+	 * 
+	 * <p>
+	 * This method should be used with extreme care. Swapping loaded byte code may lead to unexpected results even
+	 * blocking the entire Amstrad computer. In general, it is only safe to swap when no program is being run (at the
+	 * prompt). When a program is still running (<em>hot swap</em>) it will only succeed under conditions that cause no
+	 * interference with the running Basic interpreter.
+	 * </p>
+	 * <p>
+	 * If it is not needed to preserve variables, it is advised to use the {@link #load(BasicCode)} method.
+	 * </p>
+	 * 
+	 * @param newByteCode
+	 *            The byte code to swap in.
+	 */
+	public void swapByteCode(BasicByteCode newByteCode) {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {

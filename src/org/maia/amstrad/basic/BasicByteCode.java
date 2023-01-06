@@ -4,8 +4,7 @@ public abstract class BasicByteCode extends BasicCode {
 
 	private byte[] bytes;
 
-	protected BasicByteCode(BasicLanguage language, byte[] bytes) {
-		super(language);
+	protected BasicByteCode(byte[] bytes) {
 		setBytes(bytes);
 	}
 
@@ -23,10 +22,6 @@ public abstract class BasicByteCode extends BasicCode {
 		return clone;
 	}
 
-	public boolean isEmpty() {
-		return getByteCount() == 0;
-	}
-
 	public int getByteCount() {
 		return getBytes().length;
 	}
@@ -40,11 +35,11 @@ public abstract class BasicByteCode extends BasicCode {
 		return (getByte(index) & 0xff) | ((getByte(index + 1) << 8) & 0xff00);
 	}
 
-	public void setByte(int index, byte value) {
+	protected void setByte(int index, byte value) {
 		getBytes()[index] = value;
 	}
 
-	public void setWord(int index, int value) {
+	protected void setWord(int index, int value) {
 		// little Endian
 		byte b1 = (byte) (value % 256);
 		byte b2 = (byte) (value / 256);

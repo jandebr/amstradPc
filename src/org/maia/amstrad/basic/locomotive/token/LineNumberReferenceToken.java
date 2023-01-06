@@ -8,6 +8,10 @@ public class LineNumberReferenceToken extends NumericToken {
 		super(sourceFragment);
 	}
 
+	public LineNumberReferenceToken(int lineNumber) {
+		this(String.valueOf(lineNumber));
+	}
+
 	@Override
 	public void invite(LocomotiveBasicSourceTokenVisitor visitor) {
 		visitor.visitLineNumberReference(this);

@@ -9,15 +9,13 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	private List<BasicSourceCodeLine> lines; // ordered by increasing line number
 
-	protected BasicSourceCode(BasicLanguage language) {
-		super(language);
+	protected BasicSourceCode() {
 		setLines(new Vector<BasicSourceCodeLine>(100));
 	}
 
-	protected BasicSourceCode(BasicLanguage language, CharSequence sourceCode) throws BasicSyntaxException {
-		super(language);
+	protected BasicSourceCode(CharSequence sourceCode) throws BasicSyntaxException {
 		setLines(parse(sourceCode));
-		for (BasicSourceCodeLine line : getLines()) {
+		for (BasicSourceCodeLine line : this) {
 			line.setParentSourceCode(this);
 		}
 	}
@@ -45,21 +43,19 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	public synchronized void clear() {
 		if (!isEmpty()) {
-			for (BasicSourceCodeLine line : getLines()) {
+			for (BasicSourceCodeLine line : this) {
 				line.setParentSourceCode(null);
 			}
 			getLines().clear();
 		}
 	}
 
+	@Override
 	public synchronized int getLineCount() {
 		return getLines().size();
 	}
 
-	public synchronized boolean isEmpty() {
-		return getLineCount() == 0;
-	}
-
+	@Override
 	public synchronized int getSmallestLineNumber() {
 		if (!isEmpty()) {
 			return getLineByIndex(0).getLineNumber();
@@ -68,11 +64,30 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 		}
 	}
 
+	@Override
 	public synchronized int getLargestLineNumber() {
 		if (!isEmpty()) {
 			return getLineByIndex(getLineCount() - 1).getLineNumber();
 		} else {
 			return 0;
+		}
+	}
+
+	@Override
+	public synchronized boolean containsLineNumber(int lineNumber) {
+		return getLineByLineNumber(lineNumber) != null;
+	}
+
+	@Override
+	public synchronized List<Integer> getLineNumbers() {
+		if (isEmpty()) {
+			return Collections.emptyList();
+		} else {
+			List<Integer> lineNumbers = new Vector<Integer>(getLineCount());
+			for (BasicSourceCodeLine line : this) {
+				lineNumbers.add(line.getLineNumber());
+			}
+			return lineNumbers;
 		}
 	}
 
@@ -90,10 +105,6 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 			}
 		}
 		return line;
-	}
-
-	public synchronized boolean containsLineNumber(int lineNumber) {
-		return getLineByLineNumber(lineNumber) != null;
 	}
 
 	public synchronized void removeLineNumber(int lineNumber) {
@@ -171,7 +182,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	public synchronized String getText() {
 		StringBuilder sb = new StringBuilder(40 * getLineCount());
-		for (BasicSourceCodeLine line : getLines()) {
+		for (BasicSourceCodeLine line : this) {
 			if (sb.length() > 0)
 				sb.append('\n');
 			sb.append(line.getText());
@@ -186,7 +197,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	public synchronized String toStringInParsedForm() throws BasicSyntaxException {
 		StringBuilder sb = new StringBuilder(256 * getLineCount());
-		for (BasicSourceCodeLine line : getLines()) {
+		for (BasicSourceCodeLine line : this) {
 			if (sb.length() > 0)
 				sb.append('\n');
 			sb.append(line.toStringInParsedForm());
