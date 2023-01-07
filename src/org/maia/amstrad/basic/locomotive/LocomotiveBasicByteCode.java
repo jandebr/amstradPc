@@ -88,10 +88,10 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 
 	@Override
 	public synchronized int getSmallestLineNumber() {
-		if (getByteCount() >= 4) {
-			return getWord(2);
+		if (getByteCount() < 4) {
+			return -1;
 		} else {
-			return 0;
+			return getWord(2);
 		}
 	}
 

@@ -57,19 +57,19 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	@Override
 	public synchronized int getSmallestLineNumber() {
-		if (!isEmpty()) {
-			return getLineByIndex(0).getLineNumber();
+		if (isEmpty()) {
+			return -1;
 		} else {
-			return 0;
+			return getLineByIndex(0).getLineNumber();
 		}
 	}
 
 	@Override
 	public synchronized int getLargestLineNumber() {
-		if (!isEmpty()) {
-			return getLineByIndex(getLineCount() - 1).getLineNumber();
+		if (isEmpty()) {
+			return -1;
 		} else {
-			return 0;
+			return getLineByIndex(getLineCount() - 1).getLineNumber();
 		}
 	}
 

@@ -22,7 +22,7 @@ public abstract class BasicCode implements Cloneable {
 	public int getSmallestLineNumber() {
 		List<Integer> lineNumbers = getLineNumbers();
 		if (lineNumbers.isEmpty()) {
-			return 0;
+			return -1;
 		} else {
 			return lineNumbers.get(0);
 		}
@@ -31,7 +31,7 @@ public abstract class BasicCode implements Cloneable {
 	public int getLargestLineNumber() {
 		List<Integer> lineNumbers = getLineNumbers();
 		if (lineNumbers.isEmpty()) {
-			return 0;
+			return -1;
 		} else {
 			return lineNumbers.get(lineNumbers.size() - 1);
 		}
@@ -48,14 +48,7 @@ public abstract class BasicCode implements Cloneable {
 	}
 
 	public BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException {
-		List<Integer> lineNumbers = getLineNumbers();
-		Map<Integer, Integer> mapping = new HashMap<Integer, Integer>(lineNumbers.size());
-		for (int i = 0; i < lineNumbers.size(); i++) {
-			int currentLineNumber = lineNumbers.get(i);
-			int newLineNumber = lineNumberStart + i * lineNumberStep;
-			mapping.put(currentLineNumber, newLineNumber);
-		}
-		BasicLineNumberLinearMapping lineNumberMapping = new BasicLineNumberLinearMappingImpl(mapping);
+		BasicLineNumberLinearMapping lineNumberMapping = createLineNumberMapping(lineNumberStart, lineNumberStep);
 		if (!lineNumberMapping.isEmpty()) {
 			renum(lineNumberMapping);
 		}
@@ -63,6 +56,17 @@ public abstract class BasicCode implements Cloneable {
 	}
 
 	public abstract void renum(BasicLineNumberLinearMapping mapping) throws BasicException;
+
+	private BasicLineNumberLinearMapping createLineNumberMapping(int lineNumberStart, int lineNumberStep) {
+		List<Integer> lineNumbers = getLineNumbers();
+		Map<Integer, Integer> mapping = new HashMap<Integer, Integer>(lineNumbers.size());
+		for (int i = 0; i < lineNumbers.size(); i++) {
+			int currentLineNumber = lineNumbers.get(i);
+			int newLineNumber = lineNumberStart + i * lineNumberStep;
+			mapping.put(currentLineNumber, newLineNumber);
+		}
+		return new BasicLineNumberLinearMappingImpl(mapping);
+	}
 
 	private static class BasicLineNumberLinearMappingImpl implements BasicLineNumberLinearMapping {
 
