@@ -653,11 +653,14 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 				checkStarted();
 				checkNotTerminated();
 				Display display = getJemuInstance().getDisplay();
+				boolean scaneffect = Display.scaneffect;
 				boolean masked = display.masked;
 				boolean showeffect = display.showeffect;
+				Display.scaneffect = monitorEffect;
 				display.masked = monitorEffect;
 				display.showeffect = monitorEffect;
 				image = display.getImage();
+				Display.scaneffect = scaneffect;
 				display.masked = masked;
 				display.showeffect = showeffect;
 			}
@@ -989,6 +992,11 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			if (getSource().isRestoreMonitorSettingsOnDispose()) {
 				restoreMonitorSettings();
 			}
+		}
+
+		@Override
+		public boolean canShow(OnDisplayIndicator indicator) {
+			return !indicator.equals(OnDisplayIndicator.AUTO_TYPE);
 		}
 
 		private void restoreMonitorSettings() {

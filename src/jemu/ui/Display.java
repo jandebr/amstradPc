@@ -30,6 +30,7 @@ import javax.swing.JComponent;
 
 import jemu.core.Util;
 import jemu.core.samples.Samples;
+import jemu.ui.SecondaryDisplaySource.OnDisplayIndicator;
 
 /**
  * Title: JEMU Description: The Java Emulation Platform Copyright: Copyright (c) 2002 Company:
@@ -344,8 +345,8 @@ public class Display extends JComponent {
 		int clientWidth = size.width - insets.left - insets.right;
 		int clientHeight = size.height - insets.top - insets.bottom;
 		if (Switches.stretch) {
-			imageRect = new Rectangle(insets.left + (clientWidth - scaleWidth) / 2, insets.top
-					+ (clientHeight - scaleHeight) / 2, scaleWidth, scaleHeight);
+			imageRect = new Rectangle(insets.left + (clientWidth - scaleWidth) / 2,
+					insets.top + (clientHeight - scaleHeight) / 2, scaleWidth, scaleHeight);
 		} else {
 			imageRect = new Rectangle(insets.left, insets.top, clientWidth, clientHeight);
 			sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
@@ -587,7 +588,8 @@ public class Display extends JComponent {
 			}
 		}
 
-		if (showpause > 0) {
+		SecondaryDisplaySource sds = getSecondaryDisplaySource();
+		if (showpause > 0 && (sds == null || sds.canShow(OnDisplayIndicator.PAUSE))) {
 			if (imageRect.height >= 540)
 				g.drawImage(paused, imageRect.width - 80, 12, this);
 			else
@@ -725,7 +727,7 @@ public class Display extends JComponent {
 			g.drawString("AUTOBOOT IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
 			bootgames--;
 		}
-		if (autotype >= 1) {
+		if (autotype >= 1 && (sds == null || sds.canShow(OnDisplayIndicator.AUTO_TYPE))) {
 			if (imageRect.height >= 540)
 				g.drawImage(autotyped, imageRect.width - 80, 12, this);
 			else
@@ -780,9 +782,9 @@ public class Display extends JComponent {
 			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
 		} else {
 			if (sourceRect != null) {
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y
-						+ imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width, sourceRect.y
-						+ sourceRect.height, null);
+				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width,
+						imageRect.y + imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width,
+						sourceRect.y + sourceRect.height, null);
 			} else if (sameSize) {
 				g.drawImage(image, imageRect.x, imageRect.y, null);
 			} else {
@@ -794,14 +796,14 @@ public class Display extends JComponent {
 	private void paintBalls(Graphics g) {
 		for (ck = 0; ck < ch; ck++) {
 			cj = ((((int) ((Math.cos((double) co + (double) ((float) ck / 50F) * 12.566370964050293D) * Math.sin(cl)
-					* 20D + Math.cos((double) (2.0F * cn) / 2D - (double) (((float) ck / 50F) * 6.28F)) * 40D) - Math
-					.sin((double) (cn / 2.0F + cm) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 60D) + 160) - 7) + 40)
-					* zoom;
+					* 20D + Math.cos((double) (2.0F * cn) / 2D - (double) (((float) ck / 50F) * 6.28F)) * 40D)
+					- Math.sin((double) (cn / 2.0F + cm) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 60D)
+					+ 160) - 7) + 40) * zoom;
 			ci = (((int) ((Math.cos((double) (cn * 1.5F) + (double) ((float) ck / 50F) * 6.2831850051879883D)
-					* Math.sin(cm) * 20D - Math.sin((double) (4F * co) / 3D
-					+ (double) (((float) ck / 50F) * 6.28F * 2.0F)) * 40D) + Math.sin((double) (co / 2.0F + cl)
-					+ (double) ((float) ck / 50F) * 6.2831850051879883D) * 30D) + 100) - 7)
-					* zoom;
+					* Math.sin(cm) * 20D
+					- Math.sin((double) (4F * co) / 3D + (double) (((float) ck / 50F) * 6.28F * 2.0F)) * 40D)
+					+ Math.sin((double) (co / 2.0F + cl) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 30D)
+					+ 100) - 7) * zoom;
 			if (zoom >= 3)
 				g.drawImage(ballbb, cj, ci, null);
 			else if (zoom >= 2)
@@ -832,7 +834,7 @@ public class Display extends JComponent {
 	public BufferedImage getRawPrimaryImage() {
 		return image;
 	}
-	
+
 	public BufferedImage getImage() {
 		BufferedImage off_Image = new BufferedImage(imageRect.width, imageRect.height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = off_Image.createGraphics();
@@ -931,6 +933,7 @@ public class Display extends JComponent {
 		if (showeffect || masked) {
 			g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
 		}
+		g.dispose();
 		return off_Image;
 	}
 
@@ -949,8 +952,8 @@ public class Display extends JComponent {
 	@Override
 	public Dimension getPreferredSize() {
 		Insets insets = getInsets();
-		return new Dimension(imageRect.width + insets.left + insets.right, imageRect.height + insets.top
-				+ insets.bottom);
+		return new Dimension(imageRect.width + insets.left + insets.right,
+				imageRect.height + insets.top + insets.bottom);
 	}
 
 	public Font getDisplayFont() {
