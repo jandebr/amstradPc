@@ -4,6 +4,6 @@ public interface AmstradKeyboardListener {
 
 	void amstradKeyboardEventDispatched(AmstradKeyboardEvent event);
 
-	void amstradDoubleEscapeKeyPressed(AmstradKeyboard keyboard);
+	void amstradKeyboardBreakEscaped(AmstradKeyboard keyboard);
 
 }

@@ -123,6 +123,8 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	// Listeners for keyboard
 	private List<ComputerKeyboardListener> keyboardListeners;
 	private boolean escapeKeyMode = false;
+	private KeyEvent escapeKeyEventPressed;
+	private KeyEvent escapeKeyEventReleased;
 
 	@SuppressWarnings("unchecked")
 	public static Computer createComputer(Applet applet, String name) throws Exception {
@@ -141,6 +143,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		this.applet = applet;
 		this.name = name;
 		this.keyboardListeners = new Vector<ComputerKeyboardListener>();
+		this.escapeKeyEventPressed = new KeyEvent(applet, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_ESCAPE,
+				KeyEvent.CHAR_UNDEFINED);
+		this.escapeKeyEventReleased = new KeyEvent(applet, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_ESCAPE,
+				KeyEvent.CHAR_UNDEFINED);
 		thread.setPriority(Thread.MAX_PRIORITY);
 		thread.start();
 	}
@@ -418,6 +424,17 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 
 	public abstract Memory getMemory();
 
+	public void breakEscape() {
+		processKeyEvent(escapeKeyEventPressed);
+		sleepBetweenKeyEvents();
+		processKeyEvent(escapeKeyEventReleased);
+		sleepBetweenKeyEvents();
+		processKeyEvent(escapeKeyEventPressed);
+		sleepBetweenKeyEvents();
+		processKeyEvent(escapeKeyEventReleased);
+		sleepBetweenKeyEvents();
+	}
+
 	public void processKeyEvent(KeyEvent e) {
 		if (mode == RUN) {
 			if (e.getID() == KeyEvent.KEY_PRESSED) {
@@ -431,6 +448,13 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				}
 			} else if (e.getID() == KeyEvent.KEY_RELEASED)
 				keyReleased(e);
+		}
+	}
+
+	private static void sleepBetweenKeyEvents() {
+		try {
+			Thread.sleep(100L);
+		} catch (InterruptedException e) {
 		}
 	}
 

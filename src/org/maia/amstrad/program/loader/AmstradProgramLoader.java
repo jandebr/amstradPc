@@ -57,7 +57,7 @@ public abstract class AmstradProgramLoader {
 		}
 
 		@Override
-		public void amstradDoubleEscapeKeyPressed(AmstradKeyboard keyboard) {
+		public void amstradKeyboardBreakEscaped(AmstradKeyboard keyboard) {
 			if (getProgramRuntime().isRun()) {
 				getProgramRuntime().dispose(true);
 			}

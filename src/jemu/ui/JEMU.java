@@ -1832,6 +1832,12 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		keyReleased(new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_ALT, cUnd));
 	}
 
+	public void breakEscape() {
+		if (isRunning()) {
+			computer.breakEscape();
+		}
+	}
+
 	private KeyEvent cloneKeyEvent(KeyEvent e) {
 		return new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(), e.getKeyCode(), e.getKeyChar(),
 				e.getKeyLocation());

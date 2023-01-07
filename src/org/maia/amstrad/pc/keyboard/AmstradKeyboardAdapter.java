@@ -11,7 +11,7 @@ public abstract class AmstradKeyboardAdapter implements AmstradKeyboardListener 
 	}
 
 	@Override
-	public void amstradDoubleEscapeKeyPressed(AmstradKeyboard keyboard) {
+	public void amstradKeyboardBreakEscaped(AmstradKeyboard keyboard) {
 		// Subclasses can override this
 	}
 

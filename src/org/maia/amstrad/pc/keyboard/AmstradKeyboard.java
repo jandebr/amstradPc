@@ -48,6 +48,8 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 		enter(true);
 	}
 
+	public abstract void breakEscape();
+
 	public abstract AmstradKeyboardController getController();
 
 	public void addKeyboardListener(AmstradKeyboardListener listener) {
@@ -66,9 +68,9 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 		}
 	}
 
-	protected void fireDoubleEscapeKeyPressed() {
+	protected void fireKeyboardBreakEscaped() {
 		for (AmstradKeyboardListener listener : getKeyboardListenersFixedList()) {
-			listener.amstradDoubleEscapeKeyPressed(this);
+			listener.amstradKeyboardBreakEscaped(this);
 		}
 	}
 

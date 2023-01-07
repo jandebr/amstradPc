@@ -91,7 +91,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	public final void renderOntoDisplay(Graphics2D display, Rectangle displayBounds,
 			AmstradGraphicsContext graphicsContext) {
 		AmstradEmulatedDisplayCanvas canvas = getDisplayCanvas();
-		Insets borderInsets = deriveBorderInsets(displayBounds.getSize());
+		Insets borderInsets = graphicsContext.getBorderInsetsForDisplaySize(displayBounds.getSize());
 		updateDisplayCanvasBounds(displayBounds, borderInsets);
 		Graphics2D drawingSurface = deriveDrawingSurface(display, displayBounds, borderInsets, graphicsContext);
 		canvas.updateDrawingSurface(drawingSurface);
@@ -106,16 +106,6 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		}
 		drawingSurface.dispose();
 		canvas.restoreColors();
-	}
-
-	private Insets deriveBorderInsets(Dimension size) {
-		double sy = size.height / 272.0;
-		double sx = size.width / 384.0;
-		int top = (int) Math.floor(sy * 40.0);
-		int left = (int) Math.floor(sx * 32.0);
-		int bottom = size.height - top - (int) Math.ceil(sy * 200.0);
-		int right = size.width - left - (int) Math.ceil(sx * 320.0);
-		return new Insets(top, left, bottom, right);
 	}
 
 	private void updateDisplayCanvasBounds(Rectangle displayBounds, Insets borderInsets) {
@@ -160,7 +150,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		g2.setColor(getDisplayCanvas().getBorderColor());
 		g2.fillRect(0, 0, image.getWidth(), image.getHeight());
 		// Transform for canvas
-		Insets imageInsets = deriveBorderInsets(imageResolution);
+		Insets imageInsets = graphicsContext.getBorderInsetsForDisplaySize(imageResolution);
 		Dimension canvasResolution = new Dimension(imageResolution.width - imageInsets.left - imageInsets.right,
 				imageResolution.height - imageInsets.top - imageInsets.bottom);
 		Graphics2D drawingSurface = (Graphics2D) g2.create(imageInsets.left, imageInsets.top, canvasResolution.width,

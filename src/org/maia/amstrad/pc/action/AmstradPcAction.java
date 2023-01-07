@@ -147,7 +147,7 @@ public abstract class AmstradPcAction extends AbstractAction
 	}
 
 	@Override
-	public void amstradDoubleEscapeKeyPressed(AmstradKeyboard keyboard) {
+	public void amstradKeyboardBreakEscaped(AmstradKeyboard keyboard) {
 		// Subclasses may override after registering with amstradPc's keyboard as AmstradKeyboardListener
 	}
 

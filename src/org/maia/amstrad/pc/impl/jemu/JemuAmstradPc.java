@@ -7,6 +7,7 @@ import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
+import java.awt.Insets;
 import java.awt.MenuBar;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -416,7 +417,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public void computerPressEscapeKey(Computer computer) {
 			if (++escapeKeyCounter == 2) {
-				fireDoubleEscapeKeyPressed();
+				fireKeyboardBreakEscaped();
 			}
 		}
 
@@ -447,6 +448,13 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 				waitUntilAutotypeEnded();
 				AmstradUtils.sleep(100L);
 			}
+		}
+
+		@Override
+		public void breakEscape() {
+			checkStarted();
+			checkNotTerminated();
+			getJemuInstance().breakEscape();
 		}
 
 		private synchronized void waitUntilAutotypeEnded() {
@@ -757,6 +765,17 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public AmstradMonitorMode getMonitorMode() {
 			return getMonitor().getMonitorMode();
+		}
+
+		@Override
+		public Insets getBorderInsetsForDisplaySize(Dimension size) {
+			double sy = size.height / 272.0;
+			double sx = size.width / 384.0;
+			int top = (int) Math.floor(sy * 40.0);
+			int left = (int) Math.floor(sx * 32.0);
+			int bottom = size.height - top - (int) Math.ceil(sy * 200.0);
+			int right = size.width - left - (int) Math.ceil(sx * 320.0);
+			return new Insets(top, left, bottom, right);
 		}
 
 		@Override
