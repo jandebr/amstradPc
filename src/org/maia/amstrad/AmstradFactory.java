@@ -2,7 +2,10 @@ package org.maia.amstrad;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.PrintStream;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -64,7 +67,10 @@ public class AmstradFactory {
 
 	private AmstradContext context;
 
+	private Map<AmstradPc, ProgramBrowserAction> programBrowserActions;
+
 	private AmstradFactory() {
+		this.programBrowserActions = new HashMap<AmstradPc, ProgramBrowserAction>();
 	}
 
 	public AmstradContext getAmstradContext() {
@@ -94,7 +100,7 @@ public class AmstradFactory {
 
 	private JMenu createFileMenu(AmstradPc amstradPc) {
 		JMenu menu = new JMenu("File");
-		ProgramBrowserAction browserAction = new ProgramBrowserAction(amstradPc);
+		ProgramBrowserAction browserAction = getProgramBrowserAction(amstradPc);
 		JMenuItem item = new JMenuItem(browserAction);
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
 		menu.add(item);
@@ -214,6 +220,15 @@ public class AmstradFactory {
 		return ProgramBrowserDisplaySource.createProgramInfo(amstradPc, program);
 	}
 
+	private ProgramBrowserAction getProgramBrowserAction(AmstradPc amstradPc) {
+		ProgramBrowserAction action = programBrowserActions.get(amstradPc);
+		if (action == null) {
+			action = new ProgramBrowserAction(amstradPc);
+			programBrowserActions.put(amstradPc, action);
+		}
+		return action;
+	}
+
 	public static AmstradFactory getInstance() {
 		if (instance == null) {
 			setInstance(new AmstradFactory());
@@ -225,6 +240,46 @@ public class AmstradFactory {
 		if (instance == null) {
 			instance = factory;
 		}
+	}
+
+	private class AmstradContextImpl extends AmstradContext {
+
+		private AmstradSettings userSettings;
+
+		private PrintStream consoleOutputStream;
+
+		private PrintStream consoleErrorStream;
+
+		public AmstradContextImpl(AmstradSettings userSettings, PrintStream consoleOutputStream,
+				PrintStream consoleErrorStream) {
+			this.userSettings = userSettings;
+			this.consoleOutputStream = consoleOutputStream;
+			this.consoleErrorStream = consoleErrorStream;
+		}
+
+		@Override
+		public AmstradSettings getUserSettings() {
+			return userSettings;
+		}
+
+		@Override
+		public PrintStream getConsoleOutputStream() {
+			return consoleOutputStream;
+		}
+
+		@Override
+		public PrintStream getConsoleErrorStream() {
+			return consoleErrorStream;
+		}
+
+		@Override
+		public void showProgramBrowser(AmstradPc amstradPc) {
+			ProgramBrowserAction browserAction = getProgramBrowserAction(amstradPc);
+			if (browserAction != null && !browserAction.isProgramBrowserShowing()) {
+				browserAction.showProgramBrowser();
+			}
+		}
+
 	}
 
 	private static abstract class MonitorMenuHelper extends AmstradMonitorAdapter {

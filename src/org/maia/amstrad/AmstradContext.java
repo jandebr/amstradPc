@@ -3,6 +3,7 @@ package org.maia.amstrad;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 
@@ -30,6 +31,8 @@ public abstract class AmstradContext {
 	public abstract PrintStream getConsoleOutputStream();
 
 	public abstract PrintStream getConsoleErrorStream();
+
+	public abstract void showProgramBrowser(AmstradPc amstradPc);
 
 	public File getCurrentDirectory() {
 		String dir = getUserSettings().get(SETTING_CURRENT_DIR, null);
@@ -64,8 +67,8 @@ public abstract class AmstradContext {
 		configuration.setSearchByProgramName(settings.getBool(SETTING_PROGRAM_REPO_SEARCH_BY_NAME, false));
 		configuration.setSearchString(settings.get(SETTING_PROGRAM_REPO_SEARCH_STRING, ""));
 		configuration.setFaceted(settings.getBool(SETTING_PROGRAM_REPO_FACETED, false));
-		configuration.setFacets(FacetFactory.getInstance().fromExternalForm(
-				settings.get(SETTING_PROGRAM_REPO_FACETS, "")));
+		configuration
+				.setFacets(FacetFactory.getInstance().fromExternalForm(settings.get(SETTING_PROGRAM_REPO_FACETS, "")));
 		return configuration;
 	}
 

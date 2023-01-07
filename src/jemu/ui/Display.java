@@ -240,15 +240,16 @@ public class Display extends JComponent {
 			uninstallSecondaryDisplaySource();
 		}
 		if (displaySource != null) {
-			setSecondaryDisplaySource(displaySource);
 			displaySource.init(this);
+			setSecondaryDisplaySource(displaySource);
 		}
 	}
 
 	public void uninstallSecondaryDisplaySource() {
-		if (getSecondaryDisplaySource() != null) {
-			getSecondaryDisplaySource().dispose(this);
+		SecondaryDisplaySource displaySource = getSecondaryDisplaySource();
+		if (displaySource != null) {
 			setSecondaryDisplaySource(null);
+			displaySource.dispose(this);
 		}
 	}
 
