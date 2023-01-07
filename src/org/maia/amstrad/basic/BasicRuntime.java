@@ -18,6 +18,18 @@ public abstract class BasicRuntime {
 		this.amstradPc = amstradPc;
 	}
 
+	/**
+	 * Clears any loaded program code and variables.
+	 * <p>
+	 * This has a similar effect as when executing the Basic <code>NEW</code> instruction.
+	 * </p>
+	 * <p>
+	 * This method should be used only when no program is being run (in the Basic "direct modus"). When a program is
+	 * still running, it may lead to unexpected behaviour even blocking the entire Amstrad computer.
+	 * </p>
+	 */
+	public abstract void purge();
+
 	public final void load(BasicCode code) throws BasicException {
 		checkSameLanguage(code);
 		if (code instanceof BasicByteCode) {
@@ -142,6 +154,12 @@ public abstract class BasicRuntime {
 	public abstract int getMinimumLineNumber();
 
 	public abstract int getMaximumLineNumber();
+
+	public int getNextAvailableLineNumber() {
+		return getNextAvailableLineNumber(1);
+	}
+
+	public abstract int getNextAvailableLineNumber(int lineNumberStep);
 
 	public abstract BasicCompiler getCompiler();
 

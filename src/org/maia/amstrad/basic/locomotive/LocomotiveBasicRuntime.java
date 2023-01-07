@@ -89,6 +89,11 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	@Override
+	public void purge() {
+		clearProgramAndVariables();
+	}
+
+	@Override
 	public LocomotiveBasicByteCode exportByteCode() throws BasicException {
 		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
 		byteCode.sanitize();
@@ -116,10 +121,10 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	 * Amends the loaded Basic byte code by merging a given byte code while preserving variables.
 	 * 
 	 * <p>
-	 * This method should be used with extreme care. Merging loaded byte code may lead to unexpected results even
-	 * blocking the entire Amstrad computer. In general, it is only safe to merge when no program is being run (at the
-	 * prompt). When a program is still running (<em>hot merge</em>) it will only succeed under conditions that cause no
-	 * interference with the running Basic interpreter.
+	 * This method should be used with extreme care. Merging loaded byte code may lead to unexpected behaviour even
+	 * blocking the entire Amstrad computer. In general, it is only safe to merge when no program is being run (in the
+	 * Basic "direct modus"). When a program is still running (<em>hot merge</em>) it will only succeed under conditions
+	 * that cause no interference with the running Basic interpreter.
 	 * </p>
 	 * <p>
 	 * If it is not needed to preserve variables, it is advised to use the {@link #load(BasicCode)} method, passing a
@@ -141,10 +146,10 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	 * Replaces the loaded Basic byte code with the given byte code while preserving variables.
 	 * 
 	 * <p>
-	 * This method should be used with extreme care. Swapping loaded byte code may lead to unexpected results even
-	 * blocking the entire Amstrad computer. In general, it is only safe to swap when no program is being run (at the
-	 * prompt). When a program is still running (<em>hot swap</em>) it will only succeed under conditions that cause no
-	 * interference with the running Basic interpreter.
+	 * This method should be used with extreme care. Swapping loaded byte code may lead to unexpected behaviour even
+	 * blocking the entire Amstrad computer. In general, it is only safe to swap when no program is being run (in the
+	 * Basic "direct modus"). When a program is still running (<em>hot swap</em>) it will only succeed under conditions
+	 * that cause no interference with the running Basic interpreter.
 	 * </p>
 	 * <p>
 	 * If it is not needed to preserve variables, it is advised to use the {@link #load(BasicCode)} method.
@@ -192,7 +197,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	/**
-	 * Similar effect as the Basic NEW instruction
+	 * Similar effect as the Basic <code>NEW</code> instruction
 	 */
 	protected void clearProgramAndVariables() {
 		AmstradMemory memory = getMemory();
@@ -213,7 +218,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	/**
-	 * Similar effect as the Basic CLEAR instruction
+	 * Similar effect as the Basic <code>CLEAR</code> instruction
 	 */
 	protected void clearVariables() throws BasicException {
 		AmstradMemory memory = getMemory();
@@ -275,6 +280,17 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	@Override
 	public int getMaximumLineNumber() {
 		return MAXIMUM_LINE_NUMBER;
+	}
+
+	@Override
+	public int getNextAvailableLineNumber(int lineNumberStep) {
+		int n = getUnmodifiedByteCode().getLargestLineNumber();
+		if (n < 0) {
+			// no lines yet
+			return lineNumberStep;
+		} else {
+			return (n / lineNumberStep + 1) * lineNumberStep;
+		}
 	}
 
 	@Override
