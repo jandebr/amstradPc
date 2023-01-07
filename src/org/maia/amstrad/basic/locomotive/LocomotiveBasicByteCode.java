@@ -12,41 +12,34 @@ import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 public class LocomotiveBasicByteCode extends BasicByteCode {
 
 	private static byte[] fit(byte[] bytes) {
-		byte[] fitted = null;
-		if (bytes.length < 2) {
-			fitted = new byte[2];
+		int i = getIndexOfLastLineOffset(bytes);
+		if (i < 0) {
+			// no lines
+			return new byte[2];
 		} else {
-			int[] indices = getLineOffsetIndices(bytes);
-			if (indices.length == 0) {
-				fitted = new byte[2];
+			byte[] fitted = null;
+			int n = (bytes[i] & 0xff) | ((bytes[i + 1] << 8) & 0xff00);
+			i += n;
+			if (i == bytes.length - 2) {
+				fitted = bytes; // already fitted
 			} else {
-				int i = indices[indices.length - 1];
-				int n = (bytes[i] & 0xff) | ((bytes[i + 1] << 8) & 0xff00);
-				i += n;
-				if (i == bytes.length - 2) {
-					fitted = bytes; // already fitted
-				} else {
-					fitted = new byte[i + 2];
-					System.arraycopy(bytes, 0, fitted, 0, Math.min(fitted.length, bytes.length));
-				}
+				fitted = new byte[i + 2];
+				System.arraycopy(bytes, 0, fitted, 0, Math.min(fitted.length, bytes.length));
 			}
+			// last word should be 0x0000
+			fitted[fitted.length - 2] = 0;
+			fitted[fitted.length - 1] = 0;
+			return fitted;
 		}
-		// last word should be 0x0000
-		fitted[fitted.length - 2] = 0;
-		fitted[fitted.length - 1] = 0;
-		return fitted;
 	}
 
-	private static int[] getLineOffsetIndices(byte[] bytes) {
-		if (bytes.length < 2) {
-			return new int[0];
-		} else {
-			int[] lineOffsets = new int[bytes.length];
-			int lineIndex = 0;
+	private static int getIndexOfLastLineOffset(byte[] bytes) {
+		int index = -1;
+		if (bytes.length >= 2) {
 			int i = 0;
 			int n = (bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
 			while (n > 0) {
-				lineOffsets[lineIndex++] = i;
+				index = i;
 				i += n;
 				if (i + 1 < bytes.length) {
 					n = (bytes[i] & 0xff) | ((bytes[i + 1] << 8) & 0xff00);
@@ -54,10 +47,8 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 					n = 0;
 				}
 			}
-			int[] result = new int[lineIndex];
-			System.arraycopy(lineOffsets, 0, result, 0, result.length);
-			return result;
 		}
+		return index;
 	}
 
 	public LocomotiveBasicByteCode(byte[] bytes) {
@@ -81,9 +72,23 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 
 	@Override
 	public synchronized int getLineCount() {
-		if (getByteCount() < 4)
+		if (getByteCount() < 4) {
 			return 0;
-		return getLineOffsetIndices().length;
+		} else {
+			int lineCount = 0;
+			int i = 0;
+			int n = getWord(0);
+			while (n > 0) {
+				lineCount++;
+				i += n;
+				if (i + 1 < getByteCount()) {
+					n = getWord(i);
+				} else {
+					n = 0;
+				}
+			}
+			return lineCount;
+		}
 	}
 
 	@Override
@@ -92,6 +97,16 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 			return -1;
 		} else {
 			return getWord(2);
+		}
+	}
+
+	@Override
+	public synchronized int getLargestLineNumber() {
+		int i = getIndexOfLastLineOffset();
+		if (i < 0) {
+			return -1; // no lines
+		} else {
+			return getWord(i + 2);
 		}
 	}
 
@@ -116,7 +131,31 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	 *         whose value represents the byte length of that line.
 	 */
 	public synchronized int[] getLineOffsetIndices() {
-		return getLineOffsetIndices(getBytes());
+		int bc = getByteCount();
+		if (bc < 4) {
+			return new int[0];
+		} else {
+			int[] lineOffsets = new int[bc];
+			int lineIndex = 0;
+			int i = 0;
+			int n = getWord(0);
+			while (n > 0) {
+				lineOffsets[lineIndex++] = i;
+				i += n;
+				if (i + 1 < bc) {
+					n = getWord(i);
+				} else {
+					n = 0;
+				}
+			}
+			int[] result = new int[lineIndex];
+			System.arraycopy(lineOffsets, 0, result, 0, result.length);
+			return result;
+		}
+	}
+
+	public synchronized int getIndexOfLastLineOffset() {
+		return getIndexOfLastLineOffset(getBytes());
 	}
 
 	@Override
