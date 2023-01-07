@@ -28,7 +28,7 @@ public abstract class BasicRuntime {
 	 * still running, it may lead to unexpected behaviour even blocking the entire Amstrad computer.
 	 * </p>
 	 */
-	public abstract void purge();
+	public abstract void renew();
 
 	public final void load(BasicCode code) throws BasicException {
 		checkSameLanguage(code);

@@ -89,7 +89,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	@Override
-	public void purge() {
+	public void renew() {
 		clearProgramAndVariables();
 	}
 
