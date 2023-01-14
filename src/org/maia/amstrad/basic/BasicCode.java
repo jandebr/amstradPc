@@ -16,11 +16,11 @@ public abstract class BasicCode implements Cloneable {
 	}
 
 	public int getLineCount() {
-		return getLineNumbers().size();
+		return getAscendingLineNumbers().size();
 	}
 
 	public int getSmallestLineNumber() {
-		List<Integer> lineNumbers = getLineNumbers();
+		List<Integer> lineNumbers = getAscendingLineNumbers();
 		if (lineNumbers.isEmpty()) {
 			return -1;
 		} else {
@@ -29,7 +29,7 @@ public abstract class BasicCode implements Cloneable {
 	}
 
 	public int getLargestLineNumber() {
-		List<Integer> lineNumbers = getLineNumbers();
+		List<Integer> lineNumbers = getAscendingLineNumbers();
 		if (lineNumbers.isEmpty()) {
 			return -1;
 		} else {
@@ -38,10 +38,10 @@ public abstract class BasicCode implements Cloneable {
 	}
 
 	public boolean containsLineNumber(int lineNumber) {
-		return getLineNumbers().contains(lineNumber);
+		return getAscendingLineNumbers().contains(lineNumber);
 	}
 
-	public abstract List<Integer> getLineNumbers();
+	public abstract List<Integer> getAscendingLineNumbers();
 
 	public BasicLineNumberLinearMapping renum() throws BasicException {
 		return renum(10, 10);
@@ -55,10 +55,20 @@ public abstract class BasicCode implements Cloneable {
 		return lineNumberMapping;
 	}
 
-	public abstract void renum(BasicLineNumberLinearMapping mapping) throws BasicException;
+	public void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
+		renum(mapping, new BasicLineNumberScope() {
+
+			@Override
+			public boolean isInScope(int lineNumber) {
+				return true;
+			}
+		});
+	}
+
+	public abstract void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException;
 
 	private BasicLineNumberLinearMapping createLineNumberMapping(int lineNumberStart, int lineNumberStep) {
-		List<Integer> lineNumbers = getLineNumbers();
+		List<Integer> lineNumbers = getAscendingLineNumbers();
 		Map<Integer, Integer> mapping = new HashMap<Integer, Integer>(lineNumbers.size());
 		for (int i = 0; i < lineNumbers.size(); i++) {
 			int currentLineNumber = lineNumbers.get(i);

@@ -8,6 +8,7 @@ import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicLineNumberScope;
 
 public class LocomotiveBasicByteCode extends BasicByteCode {
 
@@ -111,7 +112,7 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	}
 
 	@Override
-	public synchronized List<Integer> getLineNumbers() {
+	public synchronized List<Integer> getAscendingLineNumbers() {
 		int[] indices = getLineOffsetIndices();
 		if (indices.length == 0) {
 			return Collections.emptyList();
@@ -159,17 +160,18 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	}
 
 	@Override
-	public synchronized void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
+	public synchronized void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope)
+			throws BasicException {
 		if (isEmpty() || mapping.isEmpty())
 			return;
 		// Map line number references (must go first)
-		new LineReferenceMapper(mapping).map();
+		new LineReferenceMapper(mapping, scope).map();
 		// Map line numbers (must go second)
 		int[] indices = getLineOffsetIndices();
 		for (int i = 0; i < indices.length; i++) {
 			int j = indices[i] + 2;
 			int lineNumber = getWord(j);
-			if (mapping.isMapped(lineNumber)) {
+			if (scope.isInScope(lineNumber) && mapping.isMapped(lineNumber)) {
 				setWord(j, mapping.getNewLineNumber(lineNumber));
 			}
 		}
@@ -278,8 +280,13 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 
 		private BasicLineNumberLinearMapping mapping;
 
-		public LineReferenceMapper(BasicLineNumberLinearMapping mapping) {
+		private BasicLineNumberScope scope;
+
+		private int currentLineNumber;
+
+		public LineReferenceMapper(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) {
 			this.mapping = mapping;
+			this.scope = scope;
 		}
 
 		public void map() throws BasicException {
@@ -287,26 +294,43 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		}
 
 		@Override
+		protected void encounteredLineNumber(int bytecodeOffset, int lineNumber) {
+			setCurrentLineNumber(lineNumber);
+		}
+
+		@Override
 		protected void encounteredLineNumberReferenceByAddress(int bytecodeOffset, int addressPointer, int lineNumber) {
-			setByte(bytecodeOffset, (byte) 0x1e); // make absolute
-			setWord(bytecodeOffset + 1, mapLineNumber(lineNumber));
+			if (getScope().isInScope(getCurrentLineNumber())) {
+				if (getMapping().isMapped(lineNumber)) {
+					setByte(bytecodeOffset, (byte) 0x1e); // make absolute
+					setWord(bytecodeOffset + 1, getMapping().getNewLineNumber(lineNumber));
+				}
+			}
 		}
 
 		@Override
 		protected void encounteredLineNumberReferenceByValue(int bytecodeOffset, int lineNumber) {
-			setWord(bytecodeOffset + 1, mapLineNumber(lineNumber));
-		}
-
-		private int mapLineNumber(int lineNumber) {
-			if (getMapping().isMapped(lineNumber)) {
-				return getMapping().getNewLineNumber(lineNumber);
-			} else {
-				return lineNumber;
+			if (getScope().isInScope(getCurrentLineNumber())) {
+				if (getMapping().isMapped(lineNumber)) {
+					setWord(bytecodeOffset + 1, getMapping().getNewLineNumber(lineNumber));
+				}
 			}
 		}
 
 		private BasicLineNumberLinearMapping getMapping() {
 			return mapping;
+		}
+
+		private BasicLineNumberScope getScope() {
+			return scope;
+		}
+
+		private int getCurrentLineNumber() {
+			return currentLineNumber;
+		}
+
+		private void setCurrentLineNumber(int currentLineNumber) {
+			this.currentLineNumber = currentLineNumber;
 		}
 
 	}

@@ -2,11 +2,14 @@ package org.maia.amstrad.basic.locomotive;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
+import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
@@ -55,6 +58,21 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	@Override
 	public void run(int lineNumber) {
 		command_run(lineNumber);
+	}
+
+	@Override
+	public BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException {
+		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
+		BasicLineNumberLinearMapping mapping = byteCode.renum(lineNumberStart, lineNumberStep);
+		swapByteCode(byteCode);
+		return mapping;
+	}
+
+	@Override
+	public void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException {
+		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
+		byteCode.renum(mapping, scope);
+		swapByteCode(byteCode);
 	}
 
 	@Override
@@ -137,9 +155,9 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	 *             When byte code interpretation is faulty
 	 */
 	public void swapMergedByteCode(LocomotiveBasicByteCode byteCodeToMerge) throws BasicException {
-		LocomotiveBasicByteCode mergedCode = getUnmodifiedByteCode();
-		mergedCode.merge(byteCodeToMerge);
-		swapByteCode(mergedCode);
+		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
+		byteCode.merge(byteCodeToMerge);
+		swapByteCode(byteCode);
 	}
 
 	/**
@@ -291,6 +309,11 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		} else {
 			return (n / lineNumberStep + 1) * lineNumberStep;
 		}
+	}
+
+	@Override
+	public List<Integer> getAscendingLineNumbers() {
+		return getUnmodifiedByteCode().getAscendingLineNumbers();
 	}
 
 	@Override

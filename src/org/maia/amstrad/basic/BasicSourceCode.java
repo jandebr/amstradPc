@@ -79,7 +79,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 	}
 
 	@Override
-	public synchronized List<Integer> getLineNumbers() {
+	public synchronized List<Integer> getAscendingLineNumbers() {
 		if (isEmpty()) {
 			return Collections.emptyList();
 		} else {

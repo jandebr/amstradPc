@@ -10,6 +10,7 @@ import java.util.Vector;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicLineNumberToken;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
@@ -38,7 +39,8 @@ public class LocomotiveBasicSourceCode extends BasicSourceCode {
 	}
 
 	@Override
-	public synchronized void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
+	public synchronized void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope)
+			throws BasicException {
 		if (isEmpty() || mapping.isEmpty())
 			return;
 		List<BasicSourceCodeLine> lines = new Vector<BasicSourceCodeLine>(getLineCount());
@@ -46,22 +48,24 @@ public class LocomotiveBasicSourceCode extends BasicSourceCode {
 			lines.add(line);
 		clear(); // lines are detached
 		for (BasicSourceCodeLine line : lines) {
-			BasicSourceTokenSequence sequence = line.parse();
-			// Map line number
 			int lineNumber = line.getLineNumber();
-			if (mapping.isMapped(lineNumber) && sequence.startsWithLineNumber()) {
-				sequence.replace(0, new BasicLineNumberToken(mapping.getNewLineNumber(lineNumber)));
-			}
-			// Map line number references
-			int i = sequence.getFirstIndexOf(LineNumberReferenceToken.class);
-			while (i >= 0) {
-				lineNumber = ((LineNumberReferenceToken) sequence.get(i)).getLineNumber();
-				if (mapping.isMapped(lineNumber)) {
-					sequence.replace(i, new LineNumberReferenceToken(mapping.getNewLineNumber(lineNumber)));
+			if (scope.isInScope(lineNumber)) {
+				BasicSourceTokenSequence sequence = line.parse();
+				// Map line number
+				if (mapping.isMapped(lineNumber) && sequence.startsWithLineNumber()) {
+					sequence.replace(0, new BasicLineNumberToken(mapping.getNewLineNumber(lineNumber)));
 				}
-				i = sequence.getNextIndexOf(LineNumberReferenceToken.class, i + 1);
+				// Map line number references
+				int i = sequence.getFirstIndexOf(LineNumberReferenceToken.class);
+				while (i >= 0) {
+					lineNumber = ((LineNumberReferenceToken) sequence.get(i)).getLineNumber();
+					if (mapping.isMapped(lineNumber)) {
+						sequence.replace(i, new LineNumberReferenceToken(mapping.getNewLineNumber(lineNumber)));
+					}
+					i = sequence.getNextIndexOf(LineNumberReferenceToken.class, i + 1);
+				}
+				line.editTo(sequence.getSourceCode());
 			}
-			line.editTo(sequence.getSourceCode());
 			addLine(line); // attach line again
 		}
 	}

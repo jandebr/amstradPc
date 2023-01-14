@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.io.AmstradIO;
@@ -72,6 +73,24 @@ public abstract class BasicRuntime {
 	public abstract void run();
 
 	public abstract void run(int lineNumber);
+
+	public BasicLineNumberLinearMapping renum() throws BasicException {
+		return renum(10, 10);
+	}
+
+	public abstract BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException;
+
+	public void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
+		renum(mapping, new BasicLineNumberScope() {
+
+			@Override
+			public boolean isInScope(int lineNumber) {
+				return true;
+			}
+		});
+	}
+
+	public abstract void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException;
 
 	public BasicSourceCode exportSourceCode() throws BasicException {
 		return getDecompiler().decompile(exportByteCode());
@@ -160,6 +179,8 @@ public abstract class BasicRuntime {
 	}
 
 	public abstract int getNextAvailableLineNumber(int lineNumberStep);
+
+	public abstract List<Integer> getAscendingLineNumbers();
 
 	public abstract BasicCompiler getCompiler();
 
