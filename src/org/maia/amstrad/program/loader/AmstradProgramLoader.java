@@ -29,8 +29,7 @@ public abstract class AmstradProgramLoader {
 	protected abstract AmstradProgramRuntime createProgramRuntime(AmstradProgram program)
 			throws AmstradProgramException;
 
-	protected AmstradProgramLoaderSession createLoaderSession(AmstradProgramRuntime programRuntime)
-			throws AmstradProgramException {
+	protected AmstradProgramLoaderSession createLoaderSession(AmstradProgramRuntime programRuntime) {
 		return new AmstradProgramLoaderSession(this, programRuntime);
 	}
 

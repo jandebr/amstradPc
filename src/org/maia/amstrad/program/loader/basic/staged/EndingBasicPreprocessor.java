@@ -11,7 +11,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	@Override
 	protected void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session) throws BasicException {
-		// TODO Auto-generated method stub
+		// TODO
 	}
 
 }

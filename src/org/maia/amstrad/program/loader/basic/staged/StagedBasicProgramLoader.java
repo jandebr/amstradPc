@@ -1,9 +1,7 @@
 package org.maia.amstrad.program.loader.basic.staged;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
-import org.maia.amstrad.program.loader.AmstradProgramLoaderSession;
 import org.maia.amstrad.program.loader.basic.BasicPreprocessedProgramLoader;
 
 public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
@@ -18,8 +16,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
 	}
 
 	@Override
-	protected AmstradProgramLoaderSession createLoaderSession(AmstradProgramRuntime programRuntime)
-			throws AmstradProgramException {
+	protected StagedBasicProgramLoaderSession createLoaderSession(AmstradProgramRuntime programRuntime) {
 		return new StagedBasicProgramLoaderSession(this, programRuntime);
 	}
 
