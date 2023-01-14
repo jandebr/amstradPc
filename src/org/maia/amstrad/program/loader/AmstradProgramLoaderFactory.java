@@ -5,6 +5,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramType;
 import org.maia.amstrad.program.loader.basic.BasicProgramLoader;
 import org.maia.amstrad.program.loader.basic.staged.StagedBasicProgramLoader;
+import org.maia.amstrad.program.loader.snapshot.AmstradPcSnapshotLoader;
 
 public class AmstradProgramLoaderFactory {
 

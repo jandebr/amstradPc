@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.loader;
+package org.maia.amstrad.program.loader.snapshot;
 
 import java.io.IOException;
 
@@ -7,6 +7,8 @@ import org.maia.amstrad.pc.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
+import org.maia.amstrad.program.loader.AmstradProgramLoader;
+import org.maia.amstrad.program.loader.AmstradProgramLoaderSession;
 
 public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
 
