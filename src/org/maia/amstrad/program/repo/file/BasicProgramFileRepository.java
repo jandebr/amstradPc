@@ -2,8 +2,8 @@ package org.maia.amstrad.program.repo.file;
 
 import java.io.File;
 
-import org.maia.amstrad.basic.BasicProgramFile;
 import org.maia.amstrad.io.AmstradFileType;
+import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
 public class BasicProgramFileRepository extends FileBasedAmstradProgramRepository {
@@ -29,7 +29,7 @@ public class BasicProgramFileRepository extends FileBasedAmstradProgramRepositor
 
 	@Override
 	protected AmstradProgramStoredInFile createProgram(String programName, File file) {
-		return new BasicProgramFile(programName, file);
+		return new AmstradBasicProgramFile(programName, file);
 	}
 
 }

@@ -3,6 +3,8 @@ package org.maia.amstrad.program.loader;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramType;
+import org.maia.amstrad.program.loader.basic.BasicProgramLoader;
+import org.maia.amstrad.program.loader.basic.staged.StagedBasicProgramLoader;
 
 public class AmstradProgramLoaderFactory {
 
@@ -13,12 +15,24 @@ public class AmstradProgramLoaderFactory {
 
 	public AmstradProgramLoader createLoaderFor(AmstradProgram program, AmstradPc amstradPc) {
 		AmstradProgramLoader loader = null;
-		if (AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType())) {
-			loader = new OriginalBasicProgramLoader(amstradPc);
-		} else if (AmstradProgramType.CPC_SNAPSHOT.equals(program.getProgramType())) {
-			loader = new AmstradSnapshotLoader(amstradPc);
+		if (AmstradProgramType.CPC_SNAPSHOT.equals(program.getProgramType())) {
+			loader = createAmstradPcSnapshotLoader(amstradPc);
+		} else if (AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType())) {
+			loader = createOriginalBasicProgramLoader(amstradPc);
 		}
 		return loader;
+	}
+
+	public AmstradPcSnapshotLoader createAmstradPcSnapshotLoader(AmstradPc amstradPc) {
+		return new AmstradPcSnapshotLoader(amstradPc);
+	}
+
+	public BasicProgramLoader createOriginalBasicProgramLoader(AmstradPc amstradPc) {
+		return new BasicProgramLoader(amstradPc);
+	}
+
+	public StagedBasicProgramLoader createStagedBasicProgramLoader(AmstradPc amstradPc) {
+		return new StagedBasicProgramLoader(amstradPc);
 	}
 
 	public static AmstradProgramLoaderFactory getInstance() {

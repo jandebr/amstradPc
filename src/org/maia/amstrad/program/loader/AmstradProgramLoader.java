@@ -19,27 +19,38 @@ public abstract class AmstradProgramLoader {
 	}
 
 	public final synchronized AmstradProgramRuntime load(AmstradProgram program) throws AmstradProgramException {
-		AmstradProgramRuntime programRuntime = doLoad(program);
-		new RuntimeCompanion(programRuntime).startCompanionship();
+		AmstradProgramRuntime programRuntime = createProgramRuntime(program);
+		AmstradProgramLoaderSession session = createLoaderSession(programRuntime);
+		loadProgramIntoAmstradPc(program, session);
+		new AmstradProgramRuntimeDisposer(programRuntime).startTracking();
 		return programRuntime;
 	}
 
-	protected abstract AmstradProgramRuntime doLoad(AmstradProgram program) throws AmstradProgramException;
+	protected abstract AmstradProgramRuntime createProgramRuntime(AmstradProgram program)
+			throws AmstradProgramException;
+
+	protected AmstradProgramLoaderSession createLoaderSession(AmstradProgramRuntime programRuntime)
+			throws AmstradProgramException {
+		return new AmstradProgramLoaderSession(this, programRuntime);
+	}
+
+	protected abstract void loadProgramIntoAmstradPc(AmstradProgram program, AmstradProgramLoaderSession session)
+			throws AmstradProgramException;
 
 	protected AmstradPc getAmstradPc() {
 		return amstradPc;
 	}
 
-	private static class RuntimeCompanion extends AmstradPcStateAdapter
+	private static class AmstradProgramRuntimeDisposer extends AmstradPcStateAdapter
 			implements AmstradKeyboardListener, AmstradProgramRuntimeListener {
 
 		private AmstradProgramRuntime programRuntime;
 
-		public RuntimeCompanion(AmstradProgramRuntime programRuntime) {
+		public AmstradProgramRuntimeDisposer(AmstradProgramRuntime programRuntime) {
 			this.programRuntime = programRuntime;
 		}
 
-		public void startCompanionship() {
+		public void startTracking() {
 			getProgramRuntime().addListener(this);
 			AmstradPc amstradPc = getProgramRuntime().getAmstradPc();
 			amstradPc.addStateListener(this);
@@ -80,10 +91,10 @@ public abstract class AmstradProgramLoader {
 
 		@Override
 		public void amstradProgramIsDisposed(AmstradProgramRuntime programRuntime, boolean programRemainsLoaded) {
-			stopCompanionship();
+			stopTracking();
 		}
 
-		private void stopCompanionship() {
+		private void stopTracking() {
 			getProgramRuntime().removeListener(this);
 			AmstradPc amstradPc = getProgramRuntime().getAmstradPc();
 			amstradPc.removeStateListener(this);
