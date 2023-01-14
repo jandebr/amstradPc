@@ -40,7 +40,7 @@ public class AmstradProgramLoaderFactory {
 
 	public StagedBasicProgramLoader createStagedBasicProgramLoader(AmstradPc amstradPc,
 			EndingBasicAction endingAction) {
-		return createStagedBasicProgramLoader(amstradPc, endingAction, EndingBasicCodeDisclosure.HIDE_CODE);
+		return createStagedBasicProgramLoader(amstradPc, endingAction, EndingBasicCodeDisclosure.ORIGINAL_CODE);
 	}
 
 	public StagedBasicProgramLoader createStagedBasicProgramLoader(AmstradPc amstradPc, EndingBasicAction endingAction,

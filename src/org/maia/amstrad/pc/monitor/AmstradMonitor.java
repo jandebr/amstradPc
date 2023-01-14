@@ -9,6 +9,7 @@ import org.maia.amstrad.AmstradDevice;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.AmstradCoverImageDisplaySource;
 
 public abstract class AmstradMonitor extends AmstradDevice {
 
@@ -52,6 +53,19 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	public abstract void setWindowTitleDynamic(boolean dynamicTitle);
 
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
+
+	public void freezeFrame() {
+		if (isPrimaryDisplaySourceShowing()) {
+			swapDisplaySource(AmstradCoverImageDisplaySource.createFreezeFrame(getAmstradPc()));
+		}
+	}
+
+	public void unfreezeFrame() {
+		if (isAlternativeDisplaySourceShowing()
+				&& getCurrentAlternativeDisplaySource() instanceof AmstradCoverImageDisplaySource) {
+			resetDisplaySource();
+		}
+	}
 
 	public abstract void swapDisplaySource(AmstradAlternativeDisplaySource displaySource);
 

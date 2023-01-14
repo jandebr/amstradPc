@@ -11,6 +11,8 @@ import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.loader.AmstradProgramLoader;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderFactory;
+import org.maia.amstrad.program.loader.basic.staged.EndingBasicAction;
+import org.maia.amstrad.program.loader.basic.staged.EndingBasicCodeDisclosure;
 
 public class BasicStagingTest {
 
@@ -26,11 +28,23 @@ public class BasicStagingTest {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		AmstradProgram program = new AmstradBasicProgramFile(new File("resources/test/staging/test.bas"));
-		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance()
-				.createStagedBasicProgramLoader(amstradPc);
+		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(
+				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE);
 		amstradPc.start();
 		AmstradProgramRuntime rt = loader.load(program);
 		rt.run();
+	}
+
+	private static class EndingBasicActionImpl implements EndingBasicAction {
+
+		public EndingBasicActionImpl() {
+		}
+
+		@Override
+		public void perform(AmstradProgramRuntime programRuntime) {
+			System.out.println("ENDED " + programRuntime.getProgram().getProgramName());
+		}
+
 	}
 
 }

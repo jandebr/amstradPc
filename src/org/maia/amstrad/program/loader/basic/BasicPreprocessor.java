@@ -2,6 +2,7 @@ package org.maia.amstrad.program.loader.basic;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCodeLine;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderSession;
 
 public abstract class BasicPreprocessor {
@@ -11,5 +12,9 @@ public abstract class BasicPreprocessor {
 
 	protected abstract void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
 			throws BasicException;
+
+	protected void addCodeLine(BasicSourceCode sourceCode, int lineNumber, String lineCode) throws BasicException {
+		sourceCode.addLine(new LocomotiveBasicSourceCodeLine(lineNumber + " " + lineCode));
+	}
 
 }

@@ -302,13 +302,7 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 
 	@Override
 	public int getNextAvailableLineNumber(int lineNumberStep) {
-		int n = getUnmodifiedByteCode().getLargestLineNumber();
-		if (n < 0) {
-			// no lines yet
-			return lineNumberStep;
-		} else {
-			return (n / lineNumberStep + 1) * lineNumberStep;
-		}
+		return getUnmodifiedByteCode().getNextAvailableLineNumber(lineNumberStep);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
 
 	protected void setupPreprocessors() {
 		addPreprocessor(new EndingBasicPreprocessor());
+		addPreprocessor(new HimemBasicPreprocessor(16)); // must come last
 	}
 
 	@Override

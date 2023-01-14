@@ -1,5 +1,7 @@
 package org.maia.amstrad.program.loader;
 
+import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public class AmstradProgramLoaderSession {
@@ -19,6 +21,14 @@ public class AmstradProgramLoaderSession {
 
 	public AmstradProgramRuntime getProgramRuntime() {
 		return programRuntime;
+	}
+
+	public AmstradProgram getProgram() {
+		return getProgramRuntime().getProgram();
+	}
+
+	public AmstradPc getAmstradPc() {
+		return getProgramRuntime().getAmstradPc();
 	}
 
 }

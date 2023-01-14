@@ -18,4 +18,8 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 	protected abstract void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException;
 
+	protected void runInSeparateThread(Runnable task) {
+		new Thread(task).start();
+	}
+
 }

@@ -80,6 +80,11 @@ public abstract class AmstradMemory extends AmstradDevice {
 		eraseBytes(memoryAddressStartInclusive, memoryAddressEndExclusive - memoryAddressStartInclusive);
 	}
 
+	public synchronized void addMemoryTrap(int memoryAddress, boolean resetBeforeAdding,
+			AmstradMemoryTrapHandler handler) {
+		addMemoryTrap(memoryAddress, (byte) 0, resetBeforeAdding, handler);
+	}
+
 	public synchronized void addMemoryTrap(int memoryAddress, byte memoryValueOff, boolean resetBeforeAdding,
 			AmstradMemoryTrapHandler handler) {
 		checkStarted();
