@@ -1,5 +1,6 @@
 package org.maia.amstrad.program.browser.navigate;
 
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 
@@ -25,6 +26,10 @@ public abstract class ProgramMenuItem {
 
 	protected ProgramBrowserDisplaySource getProgramBrowser() {
 		return programBrowser;
+	}
+
+	protected AmstradPc getAmstradPc() {
+		return getProgramBrowser().getAmstradPc();
 	}
 
 	public AmstradProgram getProgram() {

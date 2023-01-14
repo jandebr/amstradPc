@@ -11,9 +11,8 @@ public class ProgramLoadMenuItem extends ProgramLaunchMenuItem {
 	}
 
 	@Override
-	protected void launchProgram() throws AmstradProgramException {
-		AmstradProgram program = getProgram();
-		getProgramLoader().load(program);
+	protected void launchProgram(AmstradProgram program) throws AmstradProgramException {
+		getProgramLoader(program).load(program);
 		getProgramBrowser().notifyProgramLoaded(program);
 	}
 

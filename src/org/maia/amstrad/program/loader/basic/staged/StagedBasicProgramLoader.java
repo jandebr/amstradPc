@@ -6,8 +6,15 @@ import org.maia.amstrad.program.loader.basic.BasicPreprocessedProgramLoader;
 
 public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
 
-	public StagedBasicProgramLoader(AmstradPc amstradPc) {
+	private EndingBasicAction endingAction;
+
+	private EndingBasicCodeDisclosure codeDisclosure;
+
+	public StagedBasicProgramLoader(AmstradPc amstradPc, EndingBasicAction endingAction,
+			EndingBasicCodeDisclosure codeDisclosure) {
 		super(amstradPc);
+		this.endingAction = endingAction;
+		this.codeDisclosure = codeDisclosure;
 		setupPreprocessors();
 	}
 
@@ -17,7 +24,18 @@ public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
 
 	@Override
 	protected StagedBasicProgramLoaderSession createLoaderSession(AmstradProgramRuntime programRuntime) {
-		return new StagedBasicProgramLoaderSession(this, programRuntime);
+		StagedBasicProgramLoaderSession session = new StagedBasicProgramLoaderSession(this, programRuntime);
+		session.setEndingAction(getEndingAction());
+		session.setCodeDisclosure(getCodeDisclosure());
+		return session;
+	}
+
+	private EndingBasicAction getEndingAction() {
+		return endingAction;
+	}
+
+	private EndingBasicCodeDisclosure getCodeDisclosure() {
+		return codeDisclosure;
 	}
 
 }

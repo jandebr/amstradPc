@@ -29,7 +29,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 					try {
 						browser.releaseKeyboard();
 						browser.getAmstradPc().reboot(true, true);
-						launchProgram();
+						launchProgram(getProgram());
 						failed = false;
 						browser.closeModalWindow();
 						browser.close(); // restores monitor mode & settings
@@ -48,11 +48,10 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 		}
 	}
 
-	protected abstract void launchProgram() throws AmstradProgramException;
+	protected abstract void launchProgram(AmstradProgram program) throws AmstradProgramException;
 
-	protected AmstradProgramLoader getProgramLoader() {
-		return AmstradProgramLoaderFactory.getInstance().createLoaderFor(getProgram(),
-				getProgramBrowser().getAmstradPc());
+	protected AmstradProgramLoader getProgramLoader(AmstradProgram program) {
+		return AmstradProgramLoaderFactory.getInstance().createLoaderFor(program, getAmstradPc());
 	}
 
 	@Override

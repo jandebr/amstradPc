@@ -59,7 +59,7 @@ public abstract class AmstradPc {
 			System.out.println("Launching program " + program.getProgramName());
 			rt.run();
 		} else {
-			System.err.println("Cannot load program " + program.getProgramName());
+			System.err.println("No loader found for program " + program.getProgramName());
 		}
 	}
 
