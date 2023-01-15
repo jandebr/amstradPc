@@ -30,7 +30,7 @@ public class BasicStagingTest {
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		AmstradProgram program = new AmstradBasicProgramFile(basFile);
 		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(
-				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE);
+				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE, true);
 		amstradPc.start();
 		AmstradProgramRuntime rt = loader.load(program);
 		rt.run();

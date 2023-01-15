@@ -40,12 +40,12 @@ public class AmstradProgramLoaderFactory {
 
 	public StagedBasicProgramLoader createStagedBasicProgramLoader(AmstradPc amstradPc,
 			EndingBasicAction endingAction) {
-		return createStagedBasicProgramLoader(amstradPc, endingAction, EndingBasicCodeDisclosure.ORIGINAL_CODE);
+		return createStagedBasicProgramLoader(amstradPc, endingAction, EndingBasicCodeDisclosure.ORIGINAL_CODE, false);
 	}
 
 	public StagedBasicProgramLoader createStagedBasicProgramLoader(AmstradPc amstradPc, EndingBasicAction endingAction,
-			EndingBasicCodeDisclosure codeDisclosure) {
-		return new StagedBasicProgramLoader(amstradPc, endingAction, codeDisclosure);
+			EndingBasicCodeDisclosure codeDisclosure, boolean leaveRemarks) {
+		return new StagedBasicProgramLoader(amstradPc, endingAction, codeDisclosure, leaveRemarks);
 	}
 
 	public static AmstradProgramLoaderFactory getInstance() {

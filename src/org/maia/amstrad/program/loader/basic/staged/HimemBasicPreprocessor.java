@@ -14,7 +14,7 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
-		if (!session.isMacroAdded(HimemMacro.class)) {
+		if (!session.hasMacrosAdded(HimemMacro.class)) {
 			int n = Math.max(session.getReservedMemoryInBytes(), getMinimumReservedBytes());
 			if (n > 0) {
 				addMacro(sourceCode, ADDRESS_HIMEM - n, session);
@@ -24,14 +24,9 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 
 	protected void addMacro(BasicSourceCode sourceCode, int himemAddress, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		int ln = session.getAmstradPc().getBasicRuntime().getMinimumLineNumber();
-		if (sourceCode.getSmallestLineNumber() == ln) {
-			// line number already in use => renum
-			int lnStep = sourceCode.getDominantLineNumberStep();
-			int lnStart = lnStep * (ln / lnStep + 1);
-			sourceCode.renum(lnStart, lnStep);
-		}
-		addCodeLine(sourceCode, ln, "MEMORY &" + Integer.toHexString(himemAddress) + ": REM @Himem");
+		int ln = session.acquireFirstAvailablePreambleLineNumber();
+		addCodeLine(sourceCode, ln, "SYMBOL AFTER 256:MEMORY &" + Integer.toHexString(himemAddress)
+				+ (session.leaveRemarks() ? ":REM @himem" : ""));
 		session.addMacro(new HimemMacro(ln));
 	}
 

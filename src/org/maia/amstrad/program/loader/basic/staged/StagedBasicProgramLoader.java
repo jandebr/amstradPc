@@ -10,15 +10,19 @@ public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
 
 	private EndingBasicCodeDisclosure codeDisclosure;
 
+	private boolean leaveRemarks;
+
 	public StagedBasicProgramLoader(AmstradPc amstradPc, EndingBasicAction endingAction,
-			EndingBasicCodeDisclosure codeDisclosure) {
+			EndingBasicCodeDisclosure codeDisclosure, boolean leaveRemarks) {
 		super(amstradPc);
 		this.endingAction = endingAction;
 		this.codeDisclosure = codeDisclosure;
+		this.leaveRemarks = leaveRemarks;
 		setupPreprocessors();
 	}
 
 	protected void setupPreprocessors() {
+		addPreprocessor(new PreambleBasicPreprocessor(2)); // must come first
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new HimemBasicPreprocessor(16)); // must come last
 	}
@@ -28,6 +32,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
 		StagedBasicProgramLoaderSession session = new StagedBasicProgramLoaderSession(this, programRuntime);
 		session.setEndingAction(getEndingAction());
 		session.setCodeDisclosure(getCodeDisclosure());
+		session.setLeaveRemarks(leaveRemarks());
 		return session;
 	}
 
@@ -37,6 +42,10 @@ public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
 
 	private EndingBasicCodeDisclosure getCodeDisclosure() {
 		return codeDisclosure;
+	}
+
+	private boolean leaveRemarks() {
+		return leaveRemarks;
 	}
 
 }
