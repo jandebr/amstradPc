@@ -31,7 +31,7 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 			int lnStart = lnStep * (ln / lnStep + 1);
 			sourceCode.renum(lnStart, lnStep);
 		}
-		addCodeLine(sourceCode, ln, "MEMORY &" + Integer.toHexString(himemAddress));
+		addCodeLine(sourceCode, ln, "MEMORY &" + Integer.toHexString(himemAddress) + ": REM @Himem");
 		session.addMacro(new HimemMacro(ln));
 	}
 
@@ -41,8 +41,8 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 
 	public static class HimemMacro extends StagedBasicMacro {
 
-		public HimemMacro(int lineNumberStart) {
-			super(lineNumberStart);
+		public HimemMacro(int lineNumber) {
+			super(lineNumber, lineNumber);
 		}
 
 	}

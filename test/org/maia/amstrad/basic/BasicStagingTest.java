@@ -25,9 +25,10 @@ public class BasicStagingTest {
 	}
 
 	public void run() throws AmstradProgramException {
+		File basFile = new File("resources/test/staging/test.bas");
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		AmstradProgram program = new AmstradBasicProgramFile(new File("resources/test/staging/test.bas"));
+		AmstradProgram program = new AmstradBasicProgramFile(basFile);
 		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(
 				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE);
 		amstradPc.start();

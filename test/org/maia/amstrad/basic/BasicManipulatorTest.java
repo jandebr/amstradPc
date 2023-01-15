@@ -72,10 +72,10 @@ public class BasicManipulatorTest {
 	}
 
 	private static void scanSourceCode(BasicSourceCode sourceCode) throws BasicException {
-		scanSourceCodeForGotoSelf(sourceCode);
+		scanSourceCodeForGotoLoop(sourceCode);
 	}
 
-	private static void scanSourceCodeForGotoSelf(BasicSourceCode sourceCode) throws BasicException {
+	private static void scanSourceCodeForGotoLoop(BasicSourceCode sourceCode) throws BasicException {
 		for (BasicSourceCodeLine line : sourceCode) {
 			BasicSourceTokenSequence sequence = line.parse();
 			if (!sequence.contains(IF)) {

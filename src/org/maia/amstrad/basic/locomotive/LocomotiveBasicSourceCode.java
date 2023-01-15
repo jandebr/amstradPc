@@ -2,6 +2,7 @@ package org.maia.amstrad.basic.locomotive;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -43,11 +44,10 @@ public class LocomotiveBasicSourceCode extends BasicSourceCode {
 			throws BasicException {
 		if (isEmpty() || mapping.isEmpty())
 			return;
-		List<BasicSourceCodeLine> lines = new Vector<BasicSourceCodeLine>(getLineCount());
-		for (BasicSourceCodeLine line : this)
-			lines.add(line);
+		Iterator<BasicSourceCodeLine> it = iterator();
 		clear(); // lines are detached
-		for (BasicSourceCodeLine line : lines) {
+		while (it.hasNext()) {
+			BasicSourceCodeLine line = it.next();
 			int lineNumber = line.getLineNumber();
 			if (scope.isInScope(lineNumber)) {
 				BasicSourceTokenSequence sequence = line.parse();

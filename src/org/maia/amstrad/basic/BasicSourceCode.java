@@ -15,7 +15,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	protected BasicSourceCode(CharSequence sourceCode) throws BasicSyntaxException {
 		setLines(parse(sourceCode));
-		for (BasicSourceCodeLine line : this) {
+		for (BasicSourceCodeLine line : getLines()) {
 			line.setParentSourceCode(this);
 		}
 	}
@@ -31,7 +31,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 			// never the case
 		}
 		clone.setLines(new Vector<BasicSourceCodeLine>(getLineCount()));
-		for (BasicSourceCodeLine line : this) {
+		for (BasicSourceCodeLine line : getLines()) {
 			try {
 				clone.addLine(line.clone());
 			} catch (BasicException e) {
@@ -43,7 +43,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	public synchronized void clear() {
 		if (!isEmpty()) {
-			for (BasicSourceCodeLine line : this) {
+			for (BasicSourceCodeLine line : getLines()) {
 				line.setParentSourceCode(null);
 			}
 			getLines().clear();
@@ -84,7 +84,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 			return Collections.emptyList();
 		} else {
 			List<Integer> lineNumbers = new Vector<Integer>(getLineCount());
-			for (BasicSourceCodeLine line : this) {
+			for (BasicSourceCodeLine line : getLines()) {
 				lineNumbers.add(line.getLineNumber());
 			}
 			return lineNumbers;
@@ -182,7 +182,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	public synchronized String getText() {
 		StringBuilder sb = new StringBuilder(40 * getLineCount());
-		for (BasicSourceCodeLine line : this) {
+		for (BasicSourceCodeLine line : getLines()) {
 			if (sb.length() > 0)
 				sb.append('\n');
 			sb.append(line.getText());
@@ -197,7 +197,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	public synchronized String toStringInParsedForm() throws BasicSyntaxException {
 		StringBuilder sb = new StringBuilder(256 * getLineCount());
-		for (BasicSourceCodeLine line : this) {
+		for (BasicSourceCodeLine line : getLines()) {
 			if (sb.length() > 0)
 				sb.append('\n');
 			sb.append(line.toStringInParsedForm());
@@ -207,7 +207,7 @@ public abstract class BasicSourceCode extends BasicCode implements Iterable<Basi
 
 	@Override
 	public synchronized Iterator<BasicSourceCodeLine> iterator() {
-		return Collections.unmodifiableList(getLines()).iterator();
+		return Collections.unmodifiableList(new Vector<BasicSourceCodeLine>(getLines())).iterator();
 	}
 
 	private List<BasicSourceCodeLine> getLines() {
