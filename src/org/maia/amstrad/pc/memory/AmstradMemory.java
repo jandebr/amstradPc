@@ -73,7 +73,13 @@ public abstract class AmstradMemory extends AmstradDevice {
 	}
 
 	public void eraseBytes(int memoryOffset, int memoryLength) {
-		writeBytes(memoryOffset, new byte[memoryLength]);
+		if (memoryLength == 1) {
+			eraseByte(memoryOffset);
+		} else if (memoryLength == 2) {
+			eraseWord(memoryOffset);
+		} else if (memoryLength > 2) {
+			writeBytes(memoryOffset, new byte[memoryLength]);
+		}
 	}
 
 	public void eraseBytesBetween(int memoryAddressStartInclusive, int memoryAddressEndExclusive) {

@@ -56,7 +56,7 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	public void freezeFrame() {
 		if (isPrimaryDisplaySourceShowing()) {
-			swapDisplaySource(AmstradCoverImageDisplaySource.createFreezeFrame(getAmstradPc()));
+			swapDisplaySource(AmstradCoverImageDisplaySource.createFreezeFrame(this));
 		}
 	}
 

@@ -6,11 +6,8 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
-import org.maia.amstrad.program.AmstradProgramRuntimeListener;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderFactory;
 import org.maia.amstrad.program.loader.basic.BasicProgramLoader;
-import org.maia.amstrad.util.AmstradUtils;
 
 public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
@@ -19,21 +16,20 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
-		EndingMacro macro = addMacro(sourceCode, session);
-		session.getProgramRuntime().addListener(new EndingRuntimeListener(session, macro));
+		if (!session.isMacroAdded(EndingMacro.class)) {
+			addMacro(sourceCode, session);
+			session.getProgramRuntime().addListener(new EndingRuntimeListener(session));
+		}
 	}
 
-	protected EndingMacro addMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
+	protected void addMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
 		int lnStep = sourceCode.getDominantLineNumberStep();
 		int ln = sourceCode.getNextAvailableLineNumber(lnStep);
-		int addr = session.claimMemoryTrapAddress();
-		String address = "&" + Integer.toHexString(addr);
+		int addr = session.reserveMemoryTrapAddress();
 		addCodeLine(sourceCode, ln, "REM @Ending");
-		addCodeLine(sourceCode, ln + 1 * lnStep, "POKE " + address + ",1");
+		addCodeLine(sourceCode, ln + 1 * lnStep, "POKE &" + Integer.toHexString(addr) + ",1");
 		addCodeLine(sourceCode, ln + 2 * lnStep, "GOTO " + (ln + 2 * lnStep));
-		addCodeLine(sourceCode, ln + 3 * lnStep, "END");
-		return new EndingMacro(ln, addr);
+		session.addMacro(new EndingMacro(ln, addr));
 	}
 
 	private void handleProgramEndedInSeparateThread(final StagedBasicProgramLoaderSession session) {
@@ -47,7 +43,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	protected void handleProgramEnded(StagedBasicProgramLoaderSession session) {
-		AmstradUtils.sleep(500L); // wait for Basic direct modus
 		discloseCode(session);
 		clearScreen(session);
 		performEndingAction(session);
@@ -58,10 +53,12 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		EndingBasicCodeDisclosure disclosure = session.getCodeDisclosure();
 		if (EndingBasicCodeDisclosure.HIDE_CODE.equals(disclosure)) {
 			amstradPc.getMonitor().freezeFrame();
+			amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
 			amstradPc.getKeyboard().enter("NEW");
 		} else if (EndingBasicCodeDisclosure.ORIGINAL_CODE.equals(disclosure)) {
 			BasicProgramLoader loader = AmstradProgramLoaderFactory.getInstance()
 					.createOriginalBasicProgramLoader(amstradPc);
+			amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
 			try {
 				loader.load(session.getProgram());
 			} catch (AmstradProgramException e) {
@@ -73,7 +70,9 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	protected void clearScreen(StagedBasicProgramLoaderSession session) {
 		AmstradPc amstradPc = session.getAmstradPc();
 		amstradPc.getMonitor().freezeFrame();
+		amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
 		amstradPc.getKeyboard().enter("CLS");
+		amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
 		amstradPc.getMonitor().unfreezeFrame();
 	}
 
@@ -84,19 +83,13 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 	}
 
-	private static class EndingMacro {
-
-		private int lineNumberStart;
+	public static class EndingMacro extends StagedBasicMacro {
 
 		private int memoryTrapAddress;
 
 		public EndingMacro(int lineNumberStart, int memoryTrapAddress) {
-			this.lineNumberStart = lineNumberStart;
+			super(lineNumberStart);
 			this.memoryTrapAddress = memoryTrapAddress;
-		}
-
-		public int getLineNumberStart() {
-			return lineNumberStart;
 		}
 
 		public int getMemoryTrapAddress() {
@@ -105,12 +98,10 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	}
 
-	private class EndingMacroHandler implements AmstradMemoryTrapHandler {
+	private class EndingMacroHandler extends StagedBasicMacroHandler implements AmstradMemoryTrapHandler {
 
-		private StagedBasicProgramLoaderSession session;
-
-		public EndingMacroHandler(StagedBasicProgramLoaderSession session) {
-			this.session = session;
+		public EndingMacroHandler(EndingMacro macro, StagedBasicProgramLoaderSession session) {
+			super(macro, session);
 		}
 
 		@Override
@@ -120,44 +111,30 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 			amstradPc.getKeyboard().breakEscape(); // to Basic direct modus
 		}
 
-		private StagedBasicProgramLoaderSession getSession() {
-			return session;
-		}
-
 	}
 
-	private class EndingRuntimeListener implements AmstradProgramRuntimeListener {
+	private class EndingRuntimeListener extends StagedBasicProgramRuntimeListener {
 
-		private StagedBasicProgramLoaderSession session;
-
-		private EndingMacro macro;
-
-		public EndingRuntimeListener(StagedBasicProgramLoaderSession session, EndingMacro macro) {
-			this.session = session;
-			this.macro = macro;
+		public EndingRuntimeListener(StagedBasicProgramLoaderSession session) {
+			super(session);
 		}
 
 		@Override
-		public void amstradProgramIsRun(AmstradProgramRuntime programRuntime) {
-			programRuntime.getAmstradPc().getMemory().addMemoryTrap(getMacro().getMemoryTrapAddress(), false,
-					new EndingMacroHandler(getSession()));
+		protected void stagedProgramIsRun() {
+			addMemoryTrap(getMacro().getMemoryTrapAddress(), new EndingMacroHandler(getMacro(), getSession()));
 		}
 
 		@Override
-		public void amstradProgramIsDisposed(AmstradProgramRuntime programRuntime, boolean programRemainsLoaded) {
-			programRuntime.getAmstradPc().getMemory().removeMemoryTrapsAt(getMacro().getMemoryTrapAddress());
+		protected void stagedProgramIsDisposed(boolean programRemainsLoaded) {
+			removeMemoryTrapsAt(getMacro().getMemoryTrapAddress());
 			if (programRemainsLoaded) {
 				// Break-Escape
 				handleProgramEndedInSeparateThread(getSession());
 			}
 		}
 
-		private StagedBasicProgramLoaderSession getSession() {
-			return session;
-		}
-
 		private EndingMacro getMacro() {
-			return macro;
+			return getSession().getMacroAdded(EndingMacro.class);
 		}
 
 	}

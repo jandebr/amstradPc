@@ -6,8 +6,8 @@ import java.awt.Rectangle;
 
 import javax.swing.JComponent;
 
-import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
 public class AmstradCoverImageDisplaySource implements AmstradAlternativeDisplaySource {
 
@@ -17,8 +17,8 @@ public class AmstradCoverImageDisplaySource implements AmstradAlternativeDisplay
 		setCoverImage(coverImage);
 	}
 
-	public static AmstradCoverImageDisplaySource createFreezeFrame(AmstradPc amstradPc) {
-		return new AmstradCoverImageDisplaySource(amstradPc.getMonitor().makeScreenshot(false));
+	public static AmstradCoverImageDisplaySource createFreezeFrame(AmstradMonitor monitor) {
+		return new AmstradCoverImageDisplaySource(monitor.makeScreenshot(false));
 	}
 
 	@Override

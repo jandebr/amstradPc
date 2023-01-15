@@ -14,13 +14,15 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
-		int n = Math.max(session.getClaimedMemoryTrapAddresses(), getMinimumReservedBytes());
-		if (n > 0) {
-			specifyHimem(sourceCode, ADDRESS_HIMEM - n, session);
+		if (!session.isMacroAdded(HimemMacro.class)) {
+			int n = Math.max(session.getReservedMemoryInBytes(), getMinimumReservedBytes());
+			if (n > 0) {
+				addMacro(sourceCode, ADDRESS_HIMEM - n, session);
+			}
 		}
 	}
 
-	protected void specifyHimem(BasicSourceCode sourceCode, int himemAddress, StagedBasicProgramLoaderSession session)
+	protected void addMacro(BasicSourceCode sourceCode, int himemAddress, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int ln = session.getAmstradPc().getBasicRuntime().getMinimumLineNumber();
 		if (sourceCode.getSmallestLineNumber() == ln) {
@@ -30,10 +32,19 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 			sourceCode.renum(lnStart, lnStep);
 		}
 		addCodeLine(sourceCode, ln, "MEMORY &" + Integer.toHexString(himemAddress));
+		session.addMacro(new HimemMacro(ln));
 	}
 
 	protected int getMinimumReservedBytes() {
 		return minimumReservedBytes;
+	}
+
+	public static class HimemMacro extends StagedBasicMacro {
+
+		public HimemMacro(int lineNumberStart) {
+			super(lineNumberStart);
+		}
+
 	}
 
 }

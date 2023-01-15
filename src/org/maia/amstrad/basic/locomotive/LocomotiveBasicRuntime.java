@@ -15,6 +15,7 @@ import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.util.AmstradUtils;
 
 public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBasicMemoryMap {
 
@@ -252,6 +253,20 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
 		} finally {
 			memory.endThreadExclusiveSession();
+		}
+	}
+
+	@Override
+	public synchronized boolean isPromptInDirectModus() {
+		// TODO
+		return false;
+	}
+
+	@Override
+	public synchronized void waitUntilPromptInDirectModus() {
+		if (!isPromptInDirectModus()) {
+			// TODO
+			AmstradUtils.sleep(500L);
 		}
 	}
 

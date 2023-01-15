@@ -32,7 +32,8 @@ public abstract class BasicRuntime {
 	public abstract void renew();
 
 	public final void load(BasicCode code) throws BasicException {
-		checkSameLanguage(code);
+		if (!code.getLanguage().equals(getLanguage()))
+			throw new BasicException("Basic language mismatch");
 		if (code instanceof BasicByteCode) {
 			loadByteCode((BasicByteCode) code);
 		} else if (code instanceof BasicSourceCode) {
@@ -151,10 +152,9 @@ public abstract class BasicRuntime {
 		getMemory().writeByte(memoryAddress, value);
 	}
 
-	protected void checkSameLanguage(BasicCode code) throws BasicException {
-		if (!code.getLanguage().equals(getLanguage()))
-			throw new BasicException("Basic language mismatch");
-	}
+	public abstract boolean isPromptInDirectModus();
+
+	public abstract void waitUntilPromptInDirectModus();
 
 	public abstract int getDisplayCanvasWidth();
 
