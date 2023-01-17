@@ -11,15 +11,12 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 	}
 
 	@Override
-	protected void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session) throws BasicException {
+	protected final void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
+			throws BasicException {
 		stage(sourceCode, (StagedBasicProgramLoaderSession) session);
 	}
 
 	protected abstract void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException;
-
-	protected void runInSeparateThread(Runnable task) {
-		new Thread(task).start();
-	}
 
 }

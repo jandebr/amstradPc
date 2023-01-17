@@ -31,7 +31,7 @@ public abstract class AmstradProgramRuntime {
 		getListeners().remove(listener);
 	}
 
-	public final void run() throws AmstradProgramException {
+	public final synchronized void run() throws AmstradProgramException {
 		checkNotDisposed();
 		doRun();
 		setRun(true);
@@ -42,14 +42,12 @@ public abstract class AmstradProgramRuntime {
 
 	protected abstract void doRun() throws AmstradProgramException;
 
-	public void dispose() {
-		dispose(false);
-	}
-
-	public void dispose(boolean programRemainsLoaded) {
-		setDisposed(true);
-		for (AmstradProgramRuntimeListener listener : getListenersFixedList()) {
-			listener.amstradProgramIsDisposed(this, programRemainsLoaded);
+	public synchronized void dispose(boolean programRemainsLoaded) {
+		if (!isDisposed()) {
+			setDisposed(true);
+			for (AmstradProgramRuntimeListener listener : getListenersFixedList()) {
+				listener.amstradProgramIsDisposed(this, programRemainsLoaded);
+			}
 		}
 	}
 

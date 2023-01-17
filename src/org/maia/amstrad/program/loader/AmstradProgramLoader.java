@@ -1,14 +1,15 @@
 package org.maia.amstrad.program.loader;
 
+import java.io.File;
+
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardListener;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.AmstradProgramRuntimeListener;
+import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
 public abstract class AmstradProgramLoader {
 
@@ -22,6 +23,11 @@ public abstract class AmstradProgramLoader {
 		AmstradProgramRuntime programRuntime = createProgramRuntime(program);
 		AmstradProgramLoaderSession session = createLoaderSession(programRuntime);
 		loadProgramIntoAmstradPc(program, session);
+		if (program instanceof AmstradProgramStoredInFile) {
+			File file = ((AmstradProgramStoredInFile) program).getFile();
+			AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
+			System.out.println("Loaded program from file " + file.getPath());
+		}
 		new AmstradProgramRuntimeDisposer(programRuntime).startTracking();
 		return programRuntime;
 	}
@@ -41,7 +47,7 @@ public abstract class AmstradProgramLoader {
 	}
 
 	private static class AmstradProgramRuntimeDisposer extends AmstradPcStateAdapter
-			implements AmstradKeyboardListener, AmstradProgramRuntimeListener {
+			implements AmstradProgramRuntimeListener {
 
 		private AmstradProgramRuntime programRuntime;
 
@@ -51,26 +57,12 @@ public abstract class AmstradProgramLoader {
 
 		public void startTracking() {
 			getProgramRuntime().addListener(this);
-			AmstradPc amstradPc = getProgramRuntime().getAmstradPc();
-			amstradPc.addStateListener(this);
-			amstradPc.getKeyboard().addKeyboardListener(this);
+			getProgramRuntime().getAmstradPc().addStateListener(this);
 		}
 
 		@Override
 		public void amstradPcProgramLoaded(AmstradPc amstradPc) {
 			getProgramRuntime().dispose(false); // another program got loaded
-		}
-
-		@Override
-		public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
-			// no action
-		}
-
-		@Override
-		public void amstradKeyboardBreakEscaped(AmstradKeyboard keyboard) {
-			if (getProgramRuntime().isRun()) {
-				getProgramRuntime().dispose(true);
-			}
 		}
 
 		@Override
@@ -95,9 +87,7 @@ public abstract class AmstradProgramLoader {
 
 		private void stopTracking() {
 			getProgramRuntime().removeListener(this);
-			AmstradPc amstradPc = getProgramRuntime().getAmstradPc();
-			amstradPc.removeStateListener(this);
-			amstradPc.getKeyboard().removeKeyboardListener(this);
+			getProgramRuntime().getAmstradPc().removeStateListener(this);
 		}
 
 		public AmstradProgramRuntime getProgramRuntime() {

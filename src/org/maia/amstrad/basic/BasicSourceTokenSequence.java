@@ -148,14 +148,26 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 		insert(0, tokens);
 	}
 
+	public void prepend(BasicSourceTokenSequence sequence) {
+		prepend(sequence.getTokensArray());
+	}
+
 	public void append(BasicSourceToken... tokens) {
 		insert(size(), tokens);
+	}
+
+	public void append(BasicSourceTokenSequence sequence) {
+		append(sequence.getTokensArray());
 	}
 
 	public void insert(int index, BasicSourceToken... tokens) {
 		for (int i = tokens.length - 1; i >= 0; i--) {
 			getTokens().add(index, tokens[i]);
 		}
+	}
+
+	public void insert(int index, BasicSourceTokenSequence sequence) {
+		insert(index, sequence.getTokensArray());
 	}
 
 	public void clear() {
@@ -250,9 +262,17 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 		insert(index, tokens);
 	}
 
+	public void replace(int index, BasicSourceTokenSequence sequence) {
+		replace(index, sequence.getTokensArray());
+	}
+
 	public void replaceRange(int fromIndex, int toIndex, BasicSourceToken... tokens) {
 		removeRange(fromIndex, toIndex);
 		insert(fromIndex, tokens);
+	}
+
+	public void replaceRange(int fromIndex, int toIndex, BasicSourceTokenSequence sequence) {
+		replaceRange(fromIndex, toIndex, sequence.getTokensArray());
 	}
 
 	/**
@@ -301,6 +321,14 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 			firstToken = false;
 		}
 		return sb.toString();
+	}
+
+	private BasicSourceToken[] getTokensArray() {
+		BasicSourceToken[] array = new BasicSourceToken[size()];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = getTokens().get(i);
+		}
+		return array;
 	}
 
 	private List<BasicSourceToken> getTokens() {

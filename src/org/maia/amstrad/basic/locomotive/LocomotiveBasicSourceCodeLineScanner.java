@@ -1,5 +1,8 @@
 package org.maia.amstrad.basic.locomotive;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.maia.amstrad.basic.BasicSourceCodeLineScanner;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
@@ -26,6 +29,8 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 
 	private LocomotiveBasicKeywords basicKeywords;
 
+	private List<LocomotiveBasicKeyword> keywordsAtHand;
+
 	private boolean lineNumberCanFollow;
 
 	private boolean insideRemark;
@@ -35,6 +40,7 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 	public LocomotiveBasicSourceCodeLineScanner(String text, LocomotiveBasicKeywords basicKeywords) {
 		super(text);
 		this.basicKeywords = basicKeywords;
+		this.keywordsAtHand = new Vector<LocomotiveBasicKeyword>();
 	}
 
 	@Override
@@ -57,7 +63,7 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 				} else if (c == BasicKeywordToken.REMARK_SHORTHAND) {
 					String symbol = String.valueOf(c);
 					LocomotiveBasicKeyword keyword = getBasicKeywords().getKeyword(symbol);
-					token = new BasicKeywordToken(symbol, keyword);
+					token = new BasicKeywordToken(keyword);
 					advancePosition();
 					insideRemark = true;
 				} else if (c == NumericToken.AMPERSAND) {
@@ -73,25 +79,28 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 							|| usymbol.equals("NOT")) {
 						token = new OperatorToken(symbol);
 						lineNumberCanFollow = false;
-					} else if (getBasicKeywords().hasKeyword(usymbol)) {
-						LocomotiveBasicKeyword keyword = getBasicKeywords().getKeyword(usymbol);
-						token = new BasicKeywordToken(symbol, keyword);
-						lineNumberCanFollow = keyword.canBeFollowedByLineNumber();
-						insideRemark = keyword.isRemark();
-						insideData = keyword.isData();
 					} else {
-						// Variable
-						char type = symbol.charAt(symbol.length() - 1);
-						if (type == IntegerTypedVariableToken.TYPE_INDICATOR) {
-							token = new IntegerTypedVariableToken(symbol);
-						} else if (type == StringTypedVariableToken.TYPE_INDICATOR) {
-							token = new StringTypedVariableToken(symbol);
-						} else if (type == FloatingPointTypedVariableToken.TYPE_INDICATOR) {
-							token = new FloatingPointTypedVariableToken(symbol);
+						getBasicKeywords().collectKeywordsStartingWithSymbol(usymbol, keywordsAtHand);
+						if (!keywordsAtHand.isEmpty()) {
+							LocomotiveBasicKeyword keyword = scanFullKeyword(usymbol, keywordsAtHand);
+							token = new BasicKeywordToken(keyword);
+							lineNumberCanFollow = keyword.canBeFollowedByLineNumber();
+							insideRemark = keyword.isRemark();
+							insideData = keyword.isData();
 						} else {
-							token = new UntypedVariableToken(symbol);
+							// Variable
+							char type = symbol.charAt(symbol.length() - 1);
+							if (type == IntegerTypedVariableToken.TYPE_INDICATOR) {
+								token = new IntegerTypedVariableToken(symbol);
+							} else if (type == StringTypedVariableToken.TYPE_INDICATOR) {
+								token = new StringTypedVariableToken(symbol);
+							} else if (type == FloatingPointTypedVariableToken.TYPE_INDICATOR) {
+								token = new FloatingPointTypedVariableToken(symbol);
+							} else {
+								token = new UntypedVariableToken(symbol);
+							}
+							lineNumberCanFollow = false;
 						}
-						lineNumberCanFollow = false;
 					}
 				} else if (c == LiteralQuotedToken.QUOTE) {
 					token = scanLiteralQuotedToken();
@@ -230,6 +239,25 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 
 	private boolean isSymbolCharacter(char c) {
 		return isDecimalDigit(c) || isLetter(c) || "%$!._".indexOf(c) >= 0;
+	}
+
+	private LocomotiveBasicKeyword scanFullKeyword(String symbolScannedSoFar, List<LocomotiveBasicKeyword> candidates) {
+		LocomotiveBasicKeyword winner = candidates.get(0);
+		if (candidates.size() > 1) {
+			// Find longest matching keyword
+			String utext = getText().toUpperCase();
+			int p0 = getPosition() - symbolScannedSoFar.length();
+			for (int i = 1; i < candidates.size(); i++) {
+				LocomotiveBasicKeyword keyword = candidates.get(i);
+				if (utext.startsWith(keyword.getSourceForm(), p0)) {
+					if (keyword.getSourceForm().length() > winner.getSourceForm().length()) {
+						winner = keyword;
+					}
+				}
+			}
+		}
+		advancePosition(winner.getSourceForm().length() - symbolScannedSoFar.length());
+		return winner;
 	}
 
 	private LocomotiveBasicKeywords getBasicKeywords() {

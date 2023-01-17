@@ -62,12 +62,28 @@ public class LocomotiveBasicKeyword {
 		return sf.equals("ELSE") || sf.equals("'");
 	}
 
+	public boolean isExclusiveForDecompile() {
+		return getSourceForm().equals("ON ERROR GOTO"); // as this gets parsed and compiled as separate keywords
+	}
+
 	public boolean isBasicKeyword() {
 		return getPrefixByte() == 0;
 	}
 
 	public boolean isExtendedKeyword() {
 		return !isBasicKeyword();
+	}
+
+	public boolean isMultiSymbol() {
+		return getSourceForm().indexOf(' ') > 0;
+	}
+
+	public String getFirstSymbol() {
+		if (!isMultiSymbol()) {
+			return getSourceForm();
+		} else {
+			return getSourceForm().substring(0, getSourceForm().indexOf(' '));
+		}
 	}
 
 	public byte getPrefixByte() {

@@ -10,8 +10,8 @@ public class BasicKeywordToken extends LocomotiveBasicSourceToken {
 
 	public static final char REMARK_SHORTHAND = '\'';
 
-	public BasicKeywordToken(String sourceFragment, LocomotiveBasicKeyword keyword) {
-		super(sourceFragment);
+	public BasicKeywordToken(LocomotiveBasicKeyword keyword) {
+		super(keyword.getSourceForm());
 		this.keyword = keyword;
 	}
 

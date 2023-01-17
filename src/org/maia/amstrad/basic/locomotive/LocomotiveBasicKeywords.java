@@ -1,13 +1,18 @@
 package org.maia.amstrad.basic.locomotive;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class LocomotiveBasicKeywords {
 
 	private Map<Integer, LocomotiveBasicKeyword> byteCodeMap;
 
 	private Map<String, LocomotiveBasicKeyword> sourceFormMap;
+
+	private Map<String, Set<LocomotiveBasicKeyword>> multiSymbolMap; // indexed on first symbol
 
 	private static LocomotiveBasicKeywords instance;
 
@@ -29,6 +34,7 @@ public class LocomotiveBasicKeywords {
 	private LocomotiveBasicKeywords() {
 		this.byteCodeMap = new HashMap<Integer, LocomotiveBasicKeyword>(512);
 		this.sourceFormMap = new HashMap<String, LocomotiveBasicKeyword>(512);
+		this.multiSymbolMap = new HashMap<String, Set<LocomotiveBasicKeyword>>(16);
 		loadBasicKeywords();
 		loadExtendedKeywords();
 	}
@@ -203,7 +209,18 @@ public class LocomotiveBasicKeywords {
 
 	private void register(LocomotiveBasicKeyword keyword) {
 		getByteCodeMap().put(getKeywordIndex(keyword), keyword);
-		getSourceFormMap().put(keyword.getSourceForm(), keyword);
+		if (!keyword.isExclusiveForDecompile()) {
+			getSourceFormMap().put(keyword.getSourceForm(), keyword);
+			if (keyword.isMultiSymbol()) {
+				String firstSymbol = keyword.getFirstSymbol();
+				Set<LocomotiveBasicKeyword> set = getMultiSymbolMap().get(firstSymbol);
+				if (set == null) {
+					set = new HashSet<LocomotiveBasicKeyword>();
+					getMultiSymbolMap().put(firstSymbol, set);
+				}
+				set.add(keyword);
+			}
+		}
 	}
 
 	public boolean hasKeyword(String sourceForm) {
@@ -220,6 +237,16 @@ public class LocomotiveBasicKeywords {
 
 	public LocomotiveBasicKeyword getKeyword(byte prefixByte, byte codeByte) {
 		return getByteCodeMap().get(getKeywordIndex(prefixByte, codeByte));
+	}
+
+	public void collectKeywordsStartingWithSymbol(String symbol, Collection<LocomotiveBasicKeyword> result) {
+		result.clear();
+		if (hasKeyword(symbol)) {
+			result.add(getKeyword(symbol));
+		}
+		if (getMultiSymbolMap().containsKey(symbol)) {
+			result.addAll(getMultiSymbolMap().get(symbol));
+		}
 	}
 
 	private Integer getKeywordIndex(LocomotiveBasicKeyword keyword) {
@@ -240,6 +267,10 @@ public class LocomotiveBasicKeywords {
 
 	private Map<String, LocomotiveBasicKeyword> getSourceFormMap() {
 		return sourceFormMap;
+	}
+
+	private Map<String, Set<LocomotiveBasicKeyword>> getMultiSymbolMap() {
+		return multiSymbolMap;
 	}
 
 }

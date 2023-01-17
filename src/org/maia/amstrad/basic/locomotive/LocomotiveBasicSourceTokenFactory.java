@@ -49,7 +49,7 @@ public class LocomotiveBasicSourceTokenFactory {
 	public BasicKeywordToken createBasicKeyword(String sourceFragment) throws BasicSyntaxException {
 		LocomotiveBasicKeyword keyword = getBasicKeywords().getKeyword(sourceFragment.toUpperCase());
 		if (keyword != null) {
-			return new BasicKeywordToken(sourceFragment, keyword);
+			return new BasicKeywordToken(keyword);
 		} else {
 			throw new BasicSyntaxException("Unrecognized keyword", sourceFragment);
 		}

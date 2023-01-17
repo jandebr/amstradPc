@@ -48,6 +48,11 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 		enter(true);
 	}
 
+	public void exec(CharSequence text) {
+		enter(text);
+		getAmstradPc().getBasicRuntime().waitUntilPromptInDirectModus();
+	}
+
 	public abstract void breakEscape();
 
 	public abstract AmstradKeyboardController getController();

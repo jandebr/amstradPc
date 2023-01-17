@@ -1,10 +1,12 @@
 package org.maia.amstrad.program.loader.basic.staged;
 
 import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.pc.AmstradPc;
@@ -25,7 +27,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 			addMacros(sourceCode, session);
 			session.getProgramRuntime().addListener(new EndingRuntimeListener(session));
 		}
-		invokeEndingMacroFromCode(sourceCode, session.getMacroAdded(EndingMacro.class));
+		invokeMacrosFromCode(sourceCode, session);
 	}
 
 	protected void addMacros(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
@@ -37,88 +39,113 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	protected void addEndingMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int addr = session.reserveMemoryTrapAddress();
-		int lnStep = sourceCode.getDominantLineNumberStep();
-		int lnStart = sourceCode.getNextAvailableLineNumber(lnStep);
-		int ln = lnStart - lnStep;
-		if (session.leaveRemarks()) {
-			ln += lnStep;
-			addCodeLine(sourceCode, ln, "REM @ending[");
-		}
-		ln += lnStep;
-		addCodeLine(sourceCode, ln, "POKE &" + Integer.toHexString(addr) + ",1");
-		ln += lnStep;
-		addCodeLine(sourceCode, ln, "GOTO " + ln);
-		if (session.leaveRemarks()) {
-			ln += lnStep;
-			addCodeLine(sourceCode, ln, "REM @ending]");
-		}
-		session.addMacro(new EndingMacro(lnStart, ln, addr));
+		int ln = sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
+		addCodeLine(sourceCode, ln,
+				"POKE &" + Integer.toHexString(addr) + ",1:END" + (session.leaveRemarks() ? ":REM @ending" : ""));
+		session.addMacro(new EndingMacro(ln, addr));
 	}
 
 	protected void addInterruptMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int ln = session.acquireFirstAvailablePreambleLineNumber();
 		int lnGoto = session.getMacroAdded(EndingMacro.class).getLineNumberStart();
-		addCodeLine(sourceCode, ln, "ON ERROR GOTO " + lnGoto + (session.leaveRemarks() ? ":REM @interrupt" : ""));
+		addCodeLine(sourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ON BREAK GOSUB " + lnGoto
+				+ (session.leaveRemarks() ? ":REM @interrupt" : ""));
+		session.addMacro(new InterruptMacro(ln));
 	}
 
-	protected void invokeEndingMacroFromCode(BasicSourceCode sourceCode, EndingMacro macro) throws BasicException {
-		invokeEndingMacroAtEndOfCode(sourceCode, macro);
-		invokeEndingMacroFromEndCommands(sourceCode, macro);
-		invokeEndingMacroFromGotoLoops(sourceCode, macro);
+	protected void invokeMacrosFromCode(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		BasicLineNumberScope scope = session.getScopeExcludingMacros();
+		EndingMacro emacro = session.getMacroAdded(EndingMacro.class);
+		invokeEndingMacroOnBreak(sourceCode, scope, emacro);
+		invokeEndingMacroOnEndCommands(sourceCode, scope, emacro);
+		invokeEndingMacroOnGotoLoops(sourceCode, scope, emacro);
+		invokeEndingMacroAtEndOfCode(sourceCode, emacro);
+		InterruptMacro imacro = session.getMacroAdded(InterruptMacro.class);
+		repeatInterruptMacroAfterClear(sourceCode, scope, imacro);
 	}
 
-	private void invokeEndingMacroAtEndOfCode(BasicSourceCode sourceCode, EndingMacro macro) throws BasicException {
-		int ln = sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
+	private void invokeEndingMacroOnBreak(BasicSourceCode sourceCode, BasicLineNumberScope scope, EndingMacro macro)
+			throws BasicException {
 		int lnGoto = macro.getLineNumberStart();
-		addCodeLine(sourceCode, ln, "GOTO " + lnGoto);
-	}
-
-	private void invokeEndingMacroFromEndCommands(BasicSourceCode sourceCode, EndingMacro macro) throws BasicException {
-		invokeEndingMacroFromEndCommand(sourceCode, createKeywordToken("END"), macro);
-		invokeEndingMacroFromEndCommand(sourceCode, createKeywordToken("STOP"), macro);
-	}
-
-	private void invokeEndingMacroFromEndCommand(BasicSourceCode sourceCode, BasicSourceToken command,
-			EndingMacro macro) throws BasicException {
-		int lnGoto = macro.getLineNumberStart();
+		BasicSourceToken ON_BREAK = createKeywordToken("ON BREAK");
+		BasicSourceToken STOP = createKeywordToken("STOP");
 		for (BasicSourceCodeLine line : sourceCode) {
-			BasicSourceTokenSequence sequence = line.parse();
-			boolean lineEdited = false;
-			int i = sequence.getFirstIndexOf(command);
-			while (i >= 0) {
-				// End command => Goto macro
-				sequence.replace(i, createKeywordToken("GOTO"), new LiteralToken(" "),
-						new LineNumberReferenceToken(lnGoto));
-				lineEdited = true;
-				i = sequence.getNextIndexOf(command, i + 3);
-			}
-			if (lineEdited) {
-				addCodeLine(sourceCode, sequence);
+			if (scope.isInScope(line.getLineNumber())) {
+				BasicSourceTokenSequence sequence = line.parse();
+				boolean lineEdited = false;
+				int i = sequence.getFirstIndexOf(ON_BREAK);
+				while (i >= 0) {
+					i = sequence.getIndexFollowingWhitespace(i + 1);
+					if (i >= 0) {
+						if (sequence.get(i).equals(STOP)) {
+							// ON BREAK STOP => ON BREAK GOSUB macro
+							sequence.replace(i, createKeywordToken("GOSUB"), new LiteralToken(" "),
+									new LineNumberReferenceToken(lnGoto));
+							lineEdited = true;
+						}
+						i = sequence.getNextIndexOf(ON_BREAK, i);
+					}
+				}
+				if (lineEdited) {
+					addCodeLine(sourceCode, sequence);
+				}
 			}
 		}
 	}
 
-	private void invokeEndingMacroFromGotoLoops(BasicSourceCode sourceCode, EndingMacro macro) throws BasicException {
+	private void invokeEndingMacroOnEndCommands(BasicSourceCode sourceCode, BasicLineNumberScope scope,
+			EndingMacro macro) throws BasicException {
+		invokeEndingMacroOnEndCommand(sourceCode, scope, createKeywordToken("END"), macro);
+		invokeEndingMacroOnEndCommand(sourceCode, scope, createKeywordToken("STOP"), macro);
+	}
+
+	private void invokeEndingMacroOnEndCommand(BasicSourceCode sourceCode, BasicLineNumberScope scope,
+			BasicSourceToken command, EndingMacro macro) throws BasicException {
+		int lnGoto = macro.getLineNumberStart();
+		for (BasicSourceCodeLine line : sourceCode) {
+			if (scope.isInScope(line.getLineNumber())) {
+				BasicSourceTokenSequence sequence = line.parse();
+				boolean lineEdited = false;
+				int i = sequence.getFirstIndexOf(command);
+				while (i >= 0) {
+					// End command => Goto macro
+					sequence.replace(i, createKeywordToken("GOTO"), new LiteralToken(" "),
+							new LineNumberReferenceToken(lnGoto));
+					lineEdited = true;
+					i = sequence.getNextIndexOf(command, i + 3);
+				}
+				if (lineEdited) {
+					addCodeLine(sourceCode, sequence);
+				}
+			}
+		}
+	}
+
+	private void invokeEndingMacroOnGotoLoops(BasicSourceCode sourceCode, BasicLineNumberScope scope, EndingMacro macro)
+			throws BasicException {
 		int lnGoto = macro.getLineNumberStart();
 		BasicSourceToken GOTO = createKeywordToken("GOTO");
 		BasicSourceToken IF = createKeywordToken("IF");
 		for (BasicSourceCodeLine line : sourceCode) {
-			if (!macro.containsLine(line.getLineNumber())) {
+			if (scope.isInScope(line.getLineNumber())) {
 				BasicSourceTokenSequence sequence = line.parse();
 				if (!sequence.contains(IF)) {
 					boolean lineEdited = false;
 					int i = sequence.getFirstIndexOf(GOTO);
 					while (i >= 0) {
 						i = sequence.getIndexFollowingWhitespace(i + 1);
-						if (i >= 0 && sequence.get(i) instanceof LineNumberReferenceToken) {
-							int ln = ((LineNumberReferenceToken) sequence.get(i)).getLineNumber();
-							if (ln == line.getLineNumber()) {
-								// Goto loop => Goto macro
-								sequence.replace(i, new LineNumberReferenceToken(lnGoto));
-								lineEdited = true;
+						if (i >= 0) {
+							if (sequence.get(i) instanceof LineNumberReferenceToken) {
+								int ln = ((LineNumberReferenceToken) sequence.get(i)).getLineNumber();
+								if (ln == line.getLineNumber()) {
+									// Goto loop => Goto macro
+									sequence.replace(i, new LineNumberReferenceToken(lnGoto));
+									lineEdited = true;
+								}
 							}
-							i = sequence.getNextIndexOf(GOTO, i + 1);
+							i = sequence.getNextIndexOf(GOTO, i);
 						}
 					}
 					if (lineEdited) {
@@ -129,19 +156,39 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 	}
 
-	private void handleProgramEndedInSeparateThread(final StagedBasicProgramLoaderSession session) {
-		runInSeparateThread(new Runnable() {
+	private void invokeEndingMacroAtEndOfCode(BasicSourceCode sourceCode, EndingMacro macro) throws BasicException {
+		int ln = sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
+		int lnGoto = macro.getLineNumberStart();
+		addCodeLine(sourceCode, ln, "GOTO " + lnGoto);
+	}
 
-			@Override
-			public void run() {
-				handleProgramEnded(session);
+	private void repeatInterruptMacroAfterClear(BasicSourceCode sourceCode, BasicLineNumberScope scope,
+			InterruptMacro macro) throws BasicException {
+		BasicSourceTokenSequence iSequence = sourceCode.getLineByLineNumber(macro.getLineNumberStart()).parse();
+		int iRem = iSequence.getFirstIndexOf(createKeywordToken("REM"));
+		iSequence = iSequence.subSequence(1, iRem > 0 ? iRem - 1 : iSequence.size());
+		BasicSourceToken CLEAR = createKeywordToken("CLEAR");
+		for (BasicSourceCodeLine line : sourceCode) {
+			if (scope.isInScope(line.getLineNumber())) {
+				BasicSourceTokenSequence sequence = line.parse();
+				boolean lineEdited = false;
+				int i = sequence.getFirstIndexOf(CLEAR);
+				while (i >= 0) {
+					// CLEAR command => repeat interrupt
+					sequence.insert(i + 1, new InstructionSeparatorToken());
+					sequence.insert(i + 2, iSequence);
+					lineEdited = true;
+					i = sequence.getNextIndexOf(CLEAR, i + 2 + iSequence.size());
+				}
+				if (lineEdited) {
+					addCodeLine(sourceCode, sequence);
+				}
 			}
-		});
+		}
 	}
 
 	protected void handleProgramEnded(StagedBasicProgramLoaderSession session) {
 		discloseCode(session);
-		clearScreen(session);
 		performEndingAction(session);
 	}
 
@@ -150,27 +197,18 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		EndingBasicCodeDisclosure disclosure = session.getCodeDisclosure();
 		if (EndingBasicCodeDisclosure.HIDE_CODE.equals(disclosure)) {
 			amstradPc.getMonitor().freezeFrame();
-			amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
-			amstradPc.getKeyboard().enter("NEW");
+			amstradPc.getKeyboard().exec("NEW");
+			amstradPc.getKeyboard().exec("CLS");
+			amstradPc.getMonitor().unfreezeFrame();
 		} else if (EndingBasicCodeDisclosure.ORIGINAL_CODE.equals(disclosure)) {
 			BasicProgramLoader loader = AmstradProgramLoaderFactory.getInstance()
 					.createOriginalBasicProgramLoader(amstradPc);
-			amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
 			try {
 				loader.load(session.getProgram());
 			} catch (AmstradProgramException e) {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	protected void clearScreen(StagedBasicProgramLoaderSession session) {
-		AmstradPc amstradPc = session.getAmstradPc();
-		amstradPc.getMonitor().freezeFrame();
-		amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
-		amstradPc.getKeyboard().enter("CLS");
-		amstradPc.getBasicRuntime().waitUntilPromptInDirectModus();
-		amstradPc.getMonitor().unfreezeFrame();
 	}
 
 	protected void performEndingAction(StagedBasicProgramLoaderSession session) {
@@ -192,8 +230,8 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 		private int memoryTrapAddress;
 
-		public EndingMacro(int lineNumberStart, int lineNumberEnd, int memoryTrapAddress) {
-			super(lineNumberStart, lineNumberEnd);
+		public EndingMacro(int lineNumber, int memoryTrapAddress) {
+			super(lineNumber, lineNumber);
 			this.memoryTrapAddress = memoryTrapAddress;
 		}
 
@@ -211,9 +249,9 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 		@Override
 		public void handleMemoryTrap(AmstradMemory memory, int memoryAddress, byte memoryValue) {
-			AmstradPc amstradPc = getSession().getAmstradPc();
-			amstradPc.getMonitor().freezeFrame();
-			amstradPc.getKeyboard().breakEscape(); // to Basic direct modus
+			getSession().getAmstradPc().getBasicRuntime().waitUntilPromptInDirectModus();
+			getSession().getProgramRuntime().dispose(true);
+			handleProgramEnded(getSession());
 		}
 
 	}
@@ -226,19 +264,16 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 		@Override
 		protected void stagedProgramIsRun() {
-			addMemoryTrap(getMacro().getMemoryTrapAddress(), new EndingMacroHandler(getMacro(), getSession()));
+			EndingMacro macro = getEndingMacro();
+			addMemoryTrap(macro.getMemoryTrapAddress(), new EndingMacroHandler(macro, getSession()));
 		}
 
 		@Override
 		protected void stagedProgramIsDisposed(boolean programRemainsLoaded) {
-			removeMemoryTrapsAt(getMacro().getMemoryTrapAddress());
-			if (programRemainsLoaded) {
-				// Break-Escape
-				handleProgramEndedInSeparateThread(getSession());
-			}
+			removeMemoryTrapsAt(getEndingMacro().getMemoryTrapAddress());
 		}
 
-		private EndingMacro getMacro() {
+		private EndingMacro getEndingMacro() {
 			return getSession().getMacroAdded(EndingMacro.class);
 		}
 

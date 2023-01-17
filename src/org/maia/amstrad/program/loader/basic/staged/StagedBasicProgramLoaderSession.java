@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderSession;
@@ -93,6 +94,34 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public Set<StagedBasicMacro> getMacrosAdded() {
 		return macrosAdded;
+	}
+
+	public BasicLineNumberScope getScopeOfMacros() {
+		return new BasicLineNumberScope() {
+
+			@Override
+			public boolean isInScope(int lineNumber) {
+				for (StagedBasicMacro macro : getMacrosAdded()) {
+					if (macro.containsLine(lineNumber))
+						return true;
+				}
+				return false;
+			}
+		};
+	}
+
+	public BasicLineNumberScope getScopeExcludingMacros() {
+		return new BasicLineNumberScope() {
+
+			@Override
+			public boolean isInScope(int lineNumber) {
+				for (StagedBasicMacro macro : getMacrosAdded()) {
+					if (macro.containsLine(lineNumber))
+						return false;
+				}
+				return true;
+			}
+		};
 	}
 
 	@Override
