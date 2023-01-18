@@ -11,11 +11,11 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderSession;
 
-public class BasicPreprocessedProgramLoader extends BasicProgramLoader {
+public class BasicPreprocessingProgramLoader extends BasicProgramLoader {
 
 	private List<BasicPreprocessor> preprocessors;
 
-	public BasicPreprocessedProgramLoader(AmstradPc amstradPc) {
+	public BasicPreprocessingProgramLoader(AmstradPc amstradPc) {
 		super(amstradPc);
 		this.preprocessors = new Vector<BasicPreprocessor>();
 	}

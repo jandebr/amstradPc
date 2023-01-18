@@ -4,9 +4,6 @@ import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
-import org.maia.amstrad.basic.BasicSyntaxException;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -51,14 +48,20 @@ public class BasicProgramLoader extends AmstradProgramLoader {
 
 	protected BasicSourceCode retrieveOriginalSourceCode(AmstradProgram program) throws AmstradProgramException {
 		try {
-			return new LocomotiveBasicSourceCode(program.getPayload().asTextPayload().getText());
-		} catch (BasicSyntaxException e) {
+			CharSequence code = program.getPayload().asTextPayload().getText();
+			return BasicLanguageKit.forLanguage(BasicLanguageKit.guessLanguageOfSourceCode(code)).parseSourceCode(code);
+		} catch (BasicException e) {
 			throw new AmstradProgramException(program, "Failed to retrieve Basic source code", e);
 		}
 	}
 
 	protected BasicByteCode retrieveOriginalByteCode(AmstradProgram program) throws AmstradProgramException {
-		return new LocomotiveBasicByteCode(program.getPayload().asBinaryPayload().getBytes());
+		try {
+			byte[] code = program.getPayload().asBinaryPayload().getBytes();
+			return BasicLanguageKit.forLanguage(BasicLanguageKit.guessLanguageOfByteCode(code)).parseByteCode(code);
+		} catch (BasicException e) {
+			throw new AmstradProgramException(program, "Failed to retrieve Basic byte code", e);
+		}
 	}
 
 	private static class BasicProgramRuntime extends AmstradProgramRuntime {

@@ -2,9 +2,9 @@ package org.maia.amstrad.program.loader.basic.staged;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgramRuntime;
-import org.maia.amstrad.program.loader.basic.BasicPreprocessedProgramLoader;
+import org.maia.amstrad.program.loader.basic.BasicPreprocessingProgramLoader;
 
-public class StagedBasicProgramLoader extends BasicPreprocessedProgramLoader {
+public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
 	private EndingBasicAction endingAction;
 
