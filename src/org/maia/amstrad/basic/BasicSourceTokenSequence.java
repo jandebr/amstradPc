@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
+public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSourceToken> {
 
 	private List<BasicSourceToken> tokens;
 
@@ -16,6 +16,11 @@ public class BasicSourceTokenSequence implements Iterable<BasicSourceToken> {
 		this();
 		for (BasicSourceToken token : tokens)
 			append(token);
+	}
+
+	@Override
+	public BasicSourceTokenSequence clone() {
+		return new BasicSourceTokenSequence(getTokens());
 	}
 
 	public boolean isEmpty() {

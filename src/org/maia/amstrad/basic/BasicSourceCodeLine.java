@@ -10,6 +10,8 @@ public abstract class BasicSourceCodeLine implements Cloneable, Comparable<Basic
 
 	private BasicSourceCode parentSourceCode;
 
+	private BasicSourceTokenSequence nativeTokenSequence;
+
 	protected BasicSourceCodeLine(BasicLanguage language, String text) throws BasicSyntaxException {
 		this.language = language;
 		setText(text);
@@ -32,6 +34,7 @@ public abstract class BasicSourceCodeLine implements Cloneable, Comparable<Basic
 		int newLineNumber = parseLineNumber(text);
 		setText(text);
 		setLineNumber(newLineNumber);
+		setNativeTokenSequence(null); // recreate on demand
 		if (hasParentSourceCode() && newLineNumber != oldLineNumber) {
 			if (oldLineNumber != 0) {
 				getParentSourceCode().removeLineNumber(oldLineNumber);
@@ -64,13 +67,18 @@ public abstract class BasicSourceCodeLine implements Cloneable, Comparable<Basic
 	}
 
 	public BasicSourceTokenSequence parse() throws BasicSyntaxException {
-		BasicSourceTokenSequence sequence = new BasicSourceTokenSequence();
-		BasicSourceCodeLineScanner scanner = createScanner();
-		sequence.append(scanner.firstToken());
-		while (!scanner.atEndOfText()) {
-			sequence.append(scanner.nextToken());
+		if (getNativeTokenSequence() != null) {
+			return getNativeTokenSequence().clone(); // can be edited independently
+		} else {
+			BasicSourceTokenSequence sequence = new BasicSourceTokenSequence();
+			BasicSourceCodeLineScanner scanner = createScanner();
+			sequence.append(scanner.firstToken());
+			while (!scanner.atEndOfText()) {
+				sequence.append(scanner.nextToken());
+			}
+			setNativeTokenSequence(sequence.clone());
+			return sequence; // can be edited independently
 		}
-		return sequence;
 	}
 
 	public abstract BasicSourceCodeLineScanner createScanner();
@@ -105,6 +113,14 @@ public abstract class BasicSourceCodeLine implements Cloneable, Comparable<Basic
 
 	void setParentSourceCode(BasicSourceCode parentSourceCode) {
 		this.parentSourceCode = parentSourceCode;
+	}
+
+	private BasicSourceTokenSequence getNativeTokenSequence() {
+		return nativeTokenSequence;
+	}
+
+	private void setNativeTokenSequence(BasicSourceTokenSequence nativeTokenSequence) {
+		this.nativeTokenSequence = nativeTokenSequence;
 	}
 
 	private static class LineNumberParser extends BasicSourceCodeLineScanner {
