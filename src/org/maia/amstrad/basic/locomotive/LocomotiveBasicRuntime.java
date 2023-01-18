@@ -62,6 +62,16 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	@Override
+	public void renew() {
+		clearProgramAndVariables();
+	}
+
+	@Override
+	public void clear() throws BasicException {
+		clearVariables();
+	}
+
+	@Override
 	public BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException {
 		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
 		BasicLineNumberLinearMapping mapping = byteCode.renum(lineNumberStart, lineNumberStep);
@@ -105,11 +115,6 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
-	}
-
-	@Override
-	public void renew() {
-		clearProgramAndVariables();
 	}
 
 	@Override

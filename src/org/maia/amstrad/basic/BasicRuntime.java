@@ -28,8 +28,30 @@ public abstract class BasicRuntime {
 	 * This method should be used only when no program is being run (in the Basic "direct modus"). When a program is
 	 * still running, it may lead to unexpected behaviour even blocking the entire Amstrad computer.
 	 * </p>
+	 * 
+	 * @throws BasicException
+	 *             If a problem is encountered while renewing
+	 * 
+	 * @see BasicRuntime#waitUntilPromptInDirectModus()
 	 */
-	public abstract void renew();
+	public abstract void renew() throws BasicException;
+
+	/**
+	 * Clears any variables but keeping the loaded program code.
+	 * <p>
+	 * This has a similar effect as when executing the Basic <code>CLEAR</code> instruction.
+	 * </p>
+	 * <p>
+	 * This method should be used only when no program is being run (in the Basic "direct modus"). When a program is
+	 * still running, it may lead to unexpected behaviour even blocking the entire Amstrad computer.
+	 * </p>
+	 * 
+	 * @throws BasicException
+	 *             If a problem is encountered while clearing
+	 * 
+	 * @see BasicRuntime#waitUntilPromptInDirectModus()
+	 */
+	public abstract void clear() throws BasicException;
 
 	public final void load(BasicCode code) throws BasicException {
 		if (!code.getLanguage().equals(getLanguage()))
