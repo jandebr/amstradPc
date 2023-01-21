@@ -10,6 +10,7 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class BasicRuntime {
 
@@ -18,6 +19,36 @@ public abstract class BasicRuntime {
 	protected BasicRuntime(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 	}
+
+	public abstract boolean isReady();
+
+	public void waitUntilReady() {
+		while (!isReady()) {
+			AmstradUtils.sleep(100L);
+		}
+	}
+
+	public void waitUntilReady(long maximumWaitTimeMs) {
+		long timeout = System.currentTimeMillis() + maximumWaitTimeMs;
+		while (!isReady() && System.currentTimeMillis() < timeout) {
+			AmstradUtils.sleep(100L);
+		}
+	}
+
+	public void interpretKeyboardInputIfReadyAndWait(CharSequence input) {
+		if (isReady()) {
+			getAmstradPc().getKeyboard().enter(input);
+			waitUntilReady();
+		}
+	}
+
+	public void interpretKeyboardInputIfReady(CharSequence input) {
+		if (isReady()) {
+			getAmstradPc().getKeyboard().enter(input);
+		}
+	}
+
+	public abstract void breakEscape();
 
 	/**
 	 * Clears any loaded program code and variables.
@@ -173,10 +204,6 @@ public abstract class BasicRuntime {
 	public void poke(int memoryAddress, byte value) {
 		getMemory().writeByte(memoryAddress, value);
 	}
-
-	public abstract boolean isPromptInDirectModus();
-
-	public abstract void waitUntilPromptInDirectModus();
 
 	public abstract int getDisplayCanvasWidth();
 

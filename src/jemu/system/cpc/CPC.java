@@ -355,19 +355,19 @@ public class CPC extends Computer {
 
 		// Set memorytype for all models
 		if (Switches.Memory.equals("TYPE_512K"))
-			memory = new CPCMemory(CPCMemory.TYPE_512K);
+			memory = new CPCMemory(this, CPCMemory.TYPE_512K);
 		else if (Switches.Memory.equals("TYPE_256K"))
-			memory = new CPCMemory(CPCMemory.TYPE_256K);
+			memory = new CPCMemory(this, CPCMemory.TYPE_256K);
 		else if (Switches.Memory.equals("TYPE_128K"))
-			memory = new CPCMemory(CPCMemory.TYPE_128K);
+			memory = new CPCMemory(this, CPCMemory.TYPE_128K);
 		else if (Switches.Memory.equals("TYPE_64K"))
-			memory = new CPCMemory(CPCMemory.TYPE_64K);
+			memory = new CPCMemory(this, CPCMemory.TYPE_64K);
 		else if (Switches.Memory.equals("TYPE_SILICON_DISC"))
-			memory = new CPCMemory(CPCMemory.TYPE_SILICON_DISC);
+			memory = new CPCMemory(this, CPCMemory.TYPE_SILICON_DISC);
 		else if (Switches.Memory.equals("TYPE_128_SILICON_DISC"))
-			memory = new CPCMemory(CPCMemory.TYPE_128_SILICON_DISC);
+			memory = new CPCMemory(this, CPCMemory.TYPE_128_SILICON_DISC);
 		else
-			memory = new CPCMemory(CPCMemory.TYPE_512K);
+			memory = new CPCMemory(this, CPCMemory.TYPE_512K);
 		//
 		System.out.println("Memory choosen: " + Switches.Memory);
 		if ("CPC464".equals(name)) {

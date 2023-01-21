@@ -1,0 +1,39 @@
+Direct modus
+------------
+// repeats every 15 writes when "idle"
+WRITE &b4e0 255
+WRITE &bfe6 86
+WRITE &bfe7 26
+WRITE &bfe4 0
+WRITE &bfe5 0
+WRITE &bfe2 0
+WRITE &bfe3 0 // variable
+WRITE &bfe0 97
+WRITE &bfe1 27
+WRITE &b53e 0
+WRITE &b53e 1
+WRITE &bfea 63
+WRITE &bfeb 26
+WRITE &bfe8 10 // cursor y when in steady state
+WRITE &bfe9 1 // cursor x when in steady state
+
+
+
+Input modus
+-----------
+// repeats every 15 writes when "idle"
+&b4e0 255
+&bfd8 86
+&bfd9 26
+&bfd6 2 // variable
+&bfd7 0
+&bfd4 0
+&bfd5 0
+&bfd2 97
+&bfd3 27
+&b53e 0
+&b53e 1
+&bfdc 63
+&bfdd 26
+&bfda 13 // cursor y when in steady state
+&bfdb 17 // cursor x when in steady state

@@ -20,7 +20,7 @@ public class LocomotiveBasicRunAction extends LocomotiveBasicAction {
 
 			@Override
 			public void run() {
-				getBasicRuntime().command_run();
+				getBasicRuntime().run();
 			}
 		});
 	}

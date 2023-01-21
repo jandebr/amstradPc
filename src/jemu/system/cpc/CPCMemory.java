@@ -1,5 +1,7 @@
 package jemu.system.cpc;
 
+import jemu.core.device.BasicKeyboardPromptModus;
+import jemu.core.device.Computer;
 import jemu.core.device.memory.DynamicMemory;
 import jemu.ui.Switches;
 
@@ -44,8 +46,13 @@ public class CPCMemory extends DynamicMemory {
 	protected static final int BASE_UPROM = BASE_LOWROM + 1;
 	protected static final int BASE_MULTIFACE = BASE_UPROM + 16;
 
-	public CPCMemory(int type) {
+	private Computer computer;
+	private BasicKeyboardInputScanningObserver basicObserver;
+
+	public CPCMemory(Computer computer, int type) {
 		super("CPC Memory", 0x10000, BASE_MULTIFACE + 1);
+		this.computer = computer;
+		this.basicObserver = new BasicKeyboardInputScanningObserver();
 		ramtype = type;
 		setRAMType(type); // Always happens first, first 64K always gets mapped in first
 		reset();
@@ -198,7 +205,9 @@ public class CPCMemory extends DynamicMemory {
 
 	public int writeByte(int address, int value) {
 		mem[writeMap[address >> 13] + (address & 0x1fff)] = (byte) value;
-		return value & 0xff;
+		int returnValue = value & 0xff;
+		basicObserver.writeOperation(address, returnValue);
+		return returnValue;
 	}
 
 	protected void remap() {
@@ -245,6 +254,87 @@ public class CPCMemory extends DynamicMemory {
 
 	public int readByte(int address, Object config) {
 		return readByte(address);
+	}
+
+	private Computer getComputer() {
+		return computer;
+	}
+
+	private abstract class MemoryObserver {
+
+		protected MemoryObserver() {
+		}
+
+		protected abstract void writeOperation(int address, int value);
+
+	}
+
+	private class BasicKeyboardInputScanningObserver extends MemoryObserver {
+
+		private boolean isScanning;
+
+		private boolean cycleStarted;
+
+		private int scanningCycle = 0;
+
+		private int notScanningCycle = 0;
+
+		private int writeTick = 0;
+
+		private BasicKeyboardPromptModus promptModus = BasicKeyboardPromptModus.INTERPRET;
+
+		private static final int FLIP_THRESHOLD = 10; // in number of cycles
+
+		public BasicKeyboardInputScanningObserver() {
+		}
+
+		@Override
+		protected void writeOperation(int address, int value) {
+			if (address == 0xb4e0 && value == 0xff) {
+				if (writeTick == 14) {
+					scanning();
+				} else {
+					notScanning();
+				}
+				writeTick = 0;
+				cycleStarted = true;
+			} else {
+				if (writeTick == 14) {
+					notScanning();
+					writeTick = 0;
+				} else {
+					if (cycleStarted) {
+						cycleStarted = false;
+						promptModus = address == 0xbfd8 ? BasicKeyboardPromptModus.INPUT
+								: BasicKeyboardPromptModus.INTERPRET;
+					}
+					writeTick++;
+				}
+			}
+		}
+
+		private void scanning() {
+			notScanningCycle = 0;
+			if (scanningCycle < 256) {
+				scanningCycle++;
+				if (scanningCycle == FLIP_THRESHOLD && !isScanning) {
+					isScanning = true;
+					getComputer().notifyEnterBasicKeyboardPrompt(promptModus);
+				}
+			}
+		}
+
+		private void notScanning() {
+			scanningCycle = 0;
+			if (notScanningCycle < 256) {
+				notScanningCycle++;
+				if (notScanningCycle == FLIP_THRESHOLD && isScanning) {
+					isScanning = false;
+					getComputer().notifyExitBasicKeyboardPrompt(promptModus);
+				}
+			}
+		}
+
 	}
 
 }

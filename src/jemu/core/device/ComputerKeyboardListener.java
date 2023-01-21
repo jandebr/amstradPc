@@ -9,5 +9,9 @@ public interface ComputerKeyboardListener {
 	void computerAutotypeStarted(Computer computer);
 
 	void computerAutotypeEnded(Computer computer);
+	
+	void computerEnterBasicKeyboardPrompt(Computer computer, BasicKeyboardPromptModus modus);
+	
+	void computerExitBasicKeyboardPrompt(Computer computer, BasicKeyboardPromptModus modus);
 
 }

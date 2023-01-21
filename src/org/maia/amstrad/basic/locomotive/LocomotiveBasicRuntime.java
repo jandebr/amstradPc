@@ -13,11 +13,9 @@ import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.util.AmstradUtils;
 
-public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBasicMemoryMap {
+public abstract class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBasicMemoryMap {
 
 	public static final int MINIMUM_LINE_NUMBER = 1;
 
@@ -28,37 +26,31 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	public void command_new() {
-		getKeyboard().enter("NEW");
+		interpretKeyboardInputIfReadyAndWait("NEW");
 	}
 
 	public void command_clear() {
-		getKeyboard().enter("CLEAR");
+		interpretKeyboardInputIfReadyAndWait("CLEAR");
 	}
 
 	public void command_cls() {
-		getKeyboard().enter("CLS");
+		interpretKeyboardInputIfReadyAndWait("CLS");
 	}
 
 	public void command_list() {
-		getKeyboard().enter("LIST");
-	}
-
-	public void command_run() {
-		getKeyboard().enter("RUN");
-	}
-
-	public void command_run(int lineNumber) {
-		getKeyboard().enter("RUN " + lineNumber);
+		interpretKeyboardInputIfReadyAndWait("LIST");
 	}
 
 	@Override
 	public void run() {
-		command_run();
+		waitUntilReady();
+		interpretKeyboardInputIfReady("RUN");
 	}
 
 	@Override
 	public void run(int lineNumber) {
-		command_run(lineNumber);
+		waitUntilReady();
+		interpretKeyboardInputIfReady("RUN " + lineNumber);
 	}
 
 	@Override
@@ -262,20 +254,6 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	}
 
 	@Override
-	public synchronized boolean isPromptInDirectModus() {
-		// TODO
-		return false;
-	}
-
-	@Override
-	public synchronized void waitUntilPromptInDirectModus() {
-		if (!isPromptInDirectModus()) {
-			// TODO
-			AmstradUtils.sleep(500L);
-		}
-	}
-
-	@Override
 	public int getDisplayCanvasWidth() {
 		return 640;
 	}
@@ -343,10 +321,6 @@ public class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBa
 	@Override
 	public final BasicLanguage getLanguage() {
 		return BasicLanguage.LOCOMOTIVE_BASIC;
-	}
-
-	protected AmstradKeyboard getKeyboard() {
-		return getAmstradPc().getKeyboard();
 	}
 
 }

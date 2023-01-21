@@ -251,7 +251,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 		@Override
 		public void handleMemoryTrap(AmstradMemory memory, int memoryAddress, byte memoryValue) {
-			getSession().getAmstradPc().getBasicRuntime().waitUntilPromptInDirectModus();
+			getSession().getAmstradPc().getBasicRuntime().waitUntilReady();
 			getSession().getProgramRuntime().dispose(true);
 			handleProgramEnded(getSession());
 		}

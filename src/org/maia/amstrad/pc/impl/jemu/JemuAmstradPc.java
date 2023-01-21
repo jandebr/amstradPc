@@ -1,6 +1,5 @@
 package org.maia.amstrad.pc.impl.jemu;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -42,6 +41,7 @@ import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
 import org.maia.swing.dialog.ActionableDialogListener;
 
+import jemu.core.device.BasicKeyboardPromptModus;
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerKeyboardListener;
 import jemu.settings.Settings;
@@ -237,29 +237,9 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 	}
 
 	private void waitUntilReady() {
-		waitUntilReady(500L, 4000L);
-	}
-
-	private void waitUntilReady(long minWaitTimeMs, long maxWaitTimeMs) {
-		System.out.println("Wait until Basic runtime is Ready");
-		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
-		AmstradUtils.sleep(minWaitTimeMs);
-		Display display = getJemuInstance().getDisplay();
-		BufferedImage image = display.getRawPrimaryImage();
-		double sx = image.getWidth() / 384.0;
-		double sy = image.getHeight() / 272.0;
-		int cursorX = (int) Math.round(sx * (32 + 4));
-		int cursorY = (int) Math.round(sy * (40 + 68));
-		Color color = new Color(image.getRGB(cursorX, cursorY));
-		while (color.getGreen() < 100 && System.currentTimeMillis() < timeout) {
-			AmstradUtils.sleep(100L);
-			System.out.println("Checking if Basic runtime is Ready");
-			image = display.getRawPrimaryImage();
-			color = new Color(image.getRGB(cursorX, cursorY));
-		}
-		if (System.currentTimeMillis() >= timeout) {
-			System.out.println("Timeout for Basic runtime is Ready");
-		}
+		System.out.println("Waiting until Basic runtime is Ready");
+		AmstradUtils.sleep(1000L); // making sure "ready" turns false first
+		getBasicRuntime().waitUntilReady(8000L);
 		System.out.println("Basic runtime is Ready");
 	}
 
@@ -361,6 +341,12 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		private boolean autotyping;
 
+		private boolean onBasicPrompt;
+
+		private long onBasicPromptSince;
+
+		private boolean inBasicInterpretModus;
+
 		public JemuKeyboardImpl() {
 			super(JemuAmstradPc.this);
 			this.controller = new AmstradKeyboardControllerImpl(this);
@@ -372,6 +358,42 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			getJemuInstance().getDisplay().addKeyListener(this);
 			getJemuInstance().addComputerKeyboardListener(this);
 			resetEscapeKeyCounter();
+		}
+
+		@Override
+		public boolean isTyping() {
+			if (isAutotyping())
+				return true;
+			if (getOnBasicPromptSince() >= System.currentTimeMillis() - 100L)
+				return true;
+			return false;
+		}
+
+		@Override
+		public synchronized void type(CharSequence text, boolean waitUntilTyped) {
+			checkStarted();
+			checkNotTerminated();
+			setAutotyping(true);
+			Autotype.typeText(text);
+			resetEscapeKeyCounter();
+			if (waitUntilTyped) {
+				waitUntilAutotypeEnded();
+			}
+		}
+
+		public void breakEscape() {
+			checkStarted();
+			checkNotTerminated();
+			getJemuInstance().breakEscape();
+		}
+
+		private synchronized void waitUntilAutotypeEnded() {
+			while (isAutotyping()) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+				}
+			}
 		}
 
 		@Override
@@ -429,6 +451,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public void computerAutotypeStarted(Computer computer) {
 			System.out.println("Autotype started");
+			setAutotyping(true);
 		}
 
 		@Override
@@ -439,32 +462,21 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		public synchronized void type(CharSequence text, boolean waitUntilTyped) {
-			checkStarted();
-			checkNotTerminated();
-			Autotype.typeText(text);
-			resetEscapeKeyCounter();
-			if (waitUntilTyped) {
-				waitUntilAutotypeEnded();
-				AmstradUtils.sleep(100L);
-			}
+		public void computerEnterBasicKeyboardPrompt(Computer computer, BasicKeyboardPromptModus modus) {
+			setOnBasicPrompt(true);
+			setOnBasicPromptSince(System.currentTimeMillis());
+			setInBasicInterpretModus(BasicKeyboardPromptModus.INTERPRET.equals(modus));
 		}
 
 		@Override
-		public void breakEscape() {
-			checkStarted();
-			checkNotTerminated();
-			getJemuInstance().breakEscape();
+		public void computerExitBasicKeyboardPrompt(Computer computer, BasicKeyboardPromptModus modus) {
+			setOnBasicPrompt(false);
+			setInBasicInterpretModus(BasicKeyboardPromptModus.INTERPRET.equals(modus));
 		}
 
-		private synchronized void waitUntilAutotypeEnded() {
-			setAutotyping(true);
-			while (isAutotyping()) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-				}
-			}
+		@Override
+		public AmstradKeyboardController getController() {
+			return controller;
 		}
 
 		private void resetEscapeKeyCounter() {
@@ -479,9 +491,28 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			this.autotyping = autotyping;
 		}
 
-		@Override
-		public AmstradKeyboardController getController() {
-			return controller;
+		public boolean isOnBasicPrompt() {
+			return onBasicPrompt;
+		}
+
+		private void setOnBasicPrompt(boolean onBasicPrompt) {
+			this.onBasicPrompt = onBasicPrompt;
+		}
+
+		private long getOnBasicPromptSince() {
+			return onBasicPromptSince;
+		}
+
+		private void setOnBasicPromptSince(long since) {
+			this.onBasicPromptSince = since;
+		}
+
+		public boolean isInBasicInterpretModus() {
+			return inBasicInterpretModus;
+		}
+
+		private void setInBasicInterpretModus(boolean interpretModus) {
+			this.inBasicInterpretModus = interpretModus;
 		}
 
 	}
@@ -725,9 +756,28 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
+		public boolean isReady() {
+			JemuKeyboardImpl keyboard = getKeyboardForBasic();
+			if (keyboard.isTyping())
+				return false;
+			if (!keyboard.isOnBasicPrompt())
+				return false;
+			return keyboard.isInBasicInterpretModus();
+		}
+
+		@Override
+		public void breakEscape() {
+			getKeyboardForBasic().breakEscape();
+		}
+
+		@Override
 		protected void loadByteCode(BasicByteCode code) {
 			super.loadByteCode(code);
 			fireProgramLoaded();
+		}
+
+		private JemuKeyboardImpl getKeyboardForBasic() {
+			return (JemuKeyboardImpl) getKeyboard();
 		}
 
 	}

@@ -20,7 +20,7 @@ public class LocomotiveBasicBreakEscapeAction extends LocomotiveBasicAction {
 
 			@Override
 			public void run() {
-				getAmstradPc().getKeyboard().breakEscape();
+				getBasicRuntime().breakEscape();
 			}
 		});
 	}

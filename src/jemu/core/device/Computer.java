@@ -458,6 +458,14 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		}
 	}
 
+	public void notifyEnterBasicKeyboardPrompt(BasicKeyboardPromptModus modus) {
+		fireEnterBasicKeyboardPrompt(modus);
+	}
+
+	public void notifyExitBasicKeyboardPrompt(BasicKeyboardPromptModus modus) {
+		fireExitBasicKeyboardPrompt(modus);
+	}
+
 	public abstract void recordKeys();
 
 	public abstract void playKeys();
@@ -857,6 +865,16 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	protected void fireAutotypeEnded() {
 		for (ComputerKeyboardListener listener : getKeyboardListeners())
 			listener.computerAutotypeEnded(this);
+	}
+
+	protected void fireEnterBasicKeyboardPrompt(BasicKeyboardPromptModus modus) {
+		for (ComputerKeyboardListener listener : getKeyboardListeners())
+			listener.computerEnterBasicKeyboardPrompt(this, modus);
+	}
+
+	protected void fireExitBasicKeyboardPrompt(BasicKeyboardPromptModus modus) {
+		for (ComputerKeyboardListener listener : getKeyboardListeners())
+			listener.computerExitBasicKeyboardPrompt(this, modus);
 	}
 
 }

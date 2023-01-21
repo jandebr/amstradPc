@@ -31,7 +31,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 						browser.getAmstradPc().reboot(true, true);
 						launchProgram(getProgram());
 						failed = false;
-						browser.closeModalWindow();
+						// browser.closeModalWindow();
 						browser.close(); // restores monitor mode & settings
 						if (mode != null) {
 							browser.getAmstradPc().getMonitor().setMonitorMode(mode);
