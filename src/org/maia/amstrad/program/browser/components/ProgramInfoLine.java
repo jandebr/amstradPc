@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.browser.navigate;
+package org.maia.amstrad.program.browser.components;
 
 import java.util.List;
 import java.util.Vector;

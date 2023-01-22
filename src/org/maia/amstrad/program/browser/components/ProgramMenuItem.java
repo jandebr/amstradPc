@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.browser.navigate;
+package org.maia.amstrad.program.browser.components;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
