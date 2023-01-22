@@ -30,8 +30,8 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 		addBlockMacro(sourceCode, lineNumberStep, session);
 	}
 
-	protected void addLineMacros(BasicSourceCode sourceCode, int lineNumberStep,
-			StagedBasicProgramLoaderSession session) throws BasicException {
+	private void addLineMacros(BasicSourceCode sourceCode, int lineNumberStep, StagedBasicProgramLoaderSession session)
+			throws BasicException {
 		for (int i = 0; i < getPreambleLineCount(); i++) {
 			int ln = (i + 1) * lineNumberStep;
 			if (session.produceRemarks()) {
@@ -41,29 +41,29 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 	}
 
-	protected void addBlockMacro(BasicSourceCode sourceCode, int lineNumberStep,
+	private void addBlockMacro(BasicSourceCode sourceCode, int lineNumberStep,
 			StagedBasicProgramLoaderSession session) {
 		int lnStart = lineNumberStep;
 		int lnEnd = getPreambleLineCount() * lineNumberStep;
 		session.addMacro(new PreambleBlockMacro(lnStart, lnEnd));
 	}
 
-	protected int getPreambleLineCount() {
+	public int getPreambleLineCount() {
 		return preambleLineCount;
-	}
-
-	public static class PreambleBlockMacro extends StagedBasicMacro {
-
-		public PreambleBlockMacro(int lineNumberStart, int lineNumberEnd) {
-			super(lineNumberStart, lineNumberEnd);
-		}
-
 	}
 
 	public static class PreambleLineMacro extends StagedBasicMacro {
 
 		public PreambleLineMacro(int lineNumber) {
 			super(lineNumber, lineNumber);
+		}
+
+	}
+
+	public static class PreambleBlockMacro extends StagedBasicMacro {
+
+		public PreambleBlockMacro(int lineNumberStart, int lineNumberEnd) {
+			super(lineNumberStart, lineNumberEnd);
 		}
 
 	}

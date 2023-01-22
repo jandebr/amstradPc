@@ -1,7 +1,14 @@
 package org.maia.amstrad.basic;
 
-public interface BasicLineNumberScope {
+public abstract class BasicLineNumberScope {
 
-	boolean isInScope(int lineNumber);
-	
+	protected BasicLineNumberScope() {
+	}
+
+	public boolean isInScope(BasicSourceCodeLine line) {
+		return isInScope(line.getLineNumber());
+	}
+
+	public abstract boolean isInScope(int lineNumber);
+
 }

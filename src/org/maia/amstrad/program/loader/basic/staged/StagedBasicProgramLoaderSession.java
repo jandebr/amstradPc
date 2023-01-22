@@ -5,9 +5,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.maia.amstrad.basic.BasicLineNumberScope;
+import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.loader.AmstradProgramLoaderSession;
+import org.maia.amstrad.program.loader.basic.staged.EndingBasicPreprocessor.EndingMacro;
 import org.maia.amstrad.program.loader.basic.staged.PreambleBasicPreprocessor.PreambleLineMacro;
 
 public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession implements LocomotiveBasicMemoryMap {
@@ -59,6 +61,19 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		}
 		removeMacro(macroLow);
 		return lnLow;
+	}
+
+	public synchronized int getEndingMacroLineNumber() {
+		EndingMacro macro = getEndingMacro();
+		if (macro == null) {
+			return -1;
+		} else {
+			return macro.getLineNumberStart();
+		}
+	}
+
+	public synchronized EndingMacro getEndingMacro() {
+		return getMacroAdded(EndingMacro.class);
 	}
 
 	public synchronized void addMacro(StagedBasicMacro macro) {
@@ -127,6 +142,10 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	@Override
 	public StagedBasicProgramLoader getLoader() {
 		return (StagedBasicProgramLoader) super.getLoader();
+	}
+
+	public BasicRuntime getBasicRuntime() {
+		return getAmstradPc().getBasicRuntime();
 	}
 
 	private int getHimemAddress() {

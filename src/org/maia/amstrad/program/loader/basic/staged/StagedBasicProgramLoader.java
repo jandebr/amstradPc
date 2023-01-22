@@ -22,9 +22,10 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 	}
 
 	protected void setupPreprocessors() {
-		addPreprocessor(new PreambleBasicPreprocessor(2)); // must come first
+		// The order is absolutely crucial
+		addPreprocessor(new PreambleBasicPreprocessor(2));
 		addPreprocessor(new EndingBasicPreprocessor());
-		addPreprocessor(new HimemBasicPreprocessor(16)); // must come last
+		addPreprocessor(new HimemBasicPreprocessor(16));
 	}
 
 	@Override

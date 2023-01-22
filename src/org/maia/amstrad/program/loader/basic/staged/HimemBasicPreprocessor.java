@@ -30,7 +30,7 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 		session.addMacro(new HimemMacro(ln));
 	}
 
-	protected int getMinimumReservedBytes() {
+	public int getMinimumReservedBytes() {
 		return minimumReservedBytes;
 	}
 
