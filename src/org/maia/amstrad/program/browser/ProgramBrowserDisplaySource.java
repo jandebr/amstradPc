@@ -249,7 +249,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private void renderProgramMenu(ProgramMenu menu, AmstradDisplayCanvas canvas) {
-		renderModalWindow(8, 8, 33, 18, menu.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
+		renderModalWindow(8, 8, 33, 19, menu.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
 		int tx0 = 10, ty0 = 12, ty = ty0;
 		int i = menu.getIndexOfFirstItemShowing();
 		while (i < menu.size() && ty < ty0 + menu.getMaxItemsShowing()) {
@@ -495,6 +495,12 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		setCurrentWindow(Window.PROGRAM_IMAGE_GALLERY_MODAL);
 	}
 
+	public void addReturnToProgramMenu() {
+		if (getProgramMenu() != null) {
+			getProgramMenu().addReturnMenuItem();
+		}
+	}
+
 	public void addListener(ProgramBrowserListener listener) {
 		getBrowserListeners().add(listener);
 	}
@@ -532,7 +538,11 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private AmstradProgram getCurrentProgram() {
-		return getProgramMenu().getProgram();
+		AmstradProgram program = null;
+		if (getProgramMenu() != null) {
+			program = getProgramMenu().getProgram();
+		}
+		return program;
 	}
 
 	public AmstradProgramRepository getProgramRepository() {

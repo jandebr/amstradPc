@@ -6,14 +6,14 @@ import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 
 public abstract class ProgramMenuItem {
 
-	private final ProgramBrowserDisplaySource programBrowser;
+	private final ProgramBrowserDisplaySource browser;
 
 	private AmstradProgram program;
 
 	private String label;
 
 	protected ProgramMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program, String label) {
-		this.programBrowser = browser;
+		this.browser = browser;
 		this.program = program;
 		this.label = label;
 	}
@@ -24,12 +24,12 @@ public abstract class ProgramMenuItem {
 		return true;
 	}
 
-	protected ProgramBrowserDisplaySource getProgramBrowser() {
-		return programBrowser;
+	protected ProgramBrowserDisplaySource getBrowser() {
+		return browser;
 	}
 
 	protected AmstradPc getAmstradPc() {
-		return getProgramBrowser().getAmstradPc();
+		return getBrowser().getAmstradPc();
 	}
 
 	public AmstradProgram getProgram() {

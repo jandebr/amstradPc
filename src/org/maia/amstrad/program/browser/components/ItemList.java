@@ -52,6 +52,15 @@ public abstract class ItemList {
 			browseOneItemUp();
 	}
 
+	public void browseTo(int itemIndex) {
+		while (getIndexOfSelectedItem() < itemIndex && getIndexOfSelectedItem() < size() - 1) {
+			browseOneItemDown();
+		}
+		while (getIndexOfSelectedItem() > itemIndex && getIndexOfSelectedItem() > 0) {
+			browseOneItemUp();
+		}
+	}
+
 	public boolean isEmpty() {
 		return size() == 0;
 	}

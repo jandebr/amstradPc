@@ -12,8 +12,8 @@ public class ProgramImagesMenuItem extends ProgramMenuItem {
 	@Override
 	public void execute() {
 		if (isEnabled()) {
-			getProgramBrowser().closeModalWindow();
-			getProgramBrowser().openProgramImageGalleryModalWindow(getProgram());
+			getBrowser().closeModalWindow();
+			getBrowser().openProgramImageGalleryModalWindow(getProgram());
 		}
 	}
 

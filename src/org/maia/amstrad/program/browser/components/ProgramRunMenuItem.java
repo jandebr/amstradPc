@@ -19,7 +19,7 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 	@Override
 	protected void launchProgram(AmstradProgram program) throws AmstradProgramException {
 		getProgramLoader(program).load(program).run();
-		getProgramBrowser().notifyProgramRun(program);
+		getBrowser().notifyProgramRun(program);
 	}
 
 	@Override
@@ -30,6 +30,7 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 
 						@Override
 						public void perform(AmstradProgramRuntime programRuntime) {
+							getBrowser().addReturnToProgramMenu();
 							AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(getAmstradPc());
 						}
 					});

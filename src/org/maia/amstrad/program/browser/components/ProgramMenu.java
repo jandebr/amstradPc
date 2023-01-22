@@ -8,18 +8,22 @@ import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 
 public class ProgramMenu extends ItemList {
 
+	private ProgramBrowserDisplaySource browser;
+
 	private AmstradProgram program;
 
 	private List<ProgramMenuItem> menuItems;
 
 	public ProgramMenu(ProgramBrowserDisplaySource browser, AmstradProgram program, int maxItemsShowing) {
 		super(maxItemsShowing);
+		this.browser = browser;
 		this.program = program;
 		this.menuItems = new Vector<ProgramMenuItem>();
-		populateMenu(browser);
+		populateMenu();
 	}
 
-	private void populateMenu(ProgramBrowserDisplaySource browser) {
+	private void populateMenu() {
+		ProgramBrowserDisplaySource browser = getBrowser();
 		AmstradProgram program = getProgram();
 		addMenuItem(new ProgramRunMenuItem(browser, program));
 		addMenuItem(new ProgramLoadMenuItem(browser, program));
@@ -30,6 +34,23 @@ public class ProgramMenu extends ItemList {
 
 	private void addMenuItem(ProgramMenuItem menuItem) {
 		getMenuItems().add(menuItem);
+	}
+
+	public void addReturnMenuItem() {
+		int insertionIndex = -1;
+		for (int i = 0; i < size(); i++) {
+			ProgramMenuItem item = getItem(i);
+			if (ProgramRunMenuItem.class.isAssignableFrom(item.getClass())) {
+				insertionIndex = i; // insert right before Run
+			} else if (ProgramReturnMenuItem.class.isAssignableFrom(item.getClass())) {
+				insertionIndex = -1; // already in the menu
+				break;
+			}
+		}
+		if (insertionIndex >= 0) {
+			getMenuItems().add(insertionIndex, new ProgramReturnMenuItem(getBrowser(), getProgram()));
+			browseTo(insertionIndex); // make it the selected item
+		}
 	}
 
 	@Override
@@ -47,6 +68,10 @@ public class ProgramMenu extends ItemList {
 
 	public ProgramMenuItem getItem(int index) {
 		return getMenuItems().get(index);
+	}
+
+	private ProgramBrowserDisplaySource getBrowser() {
+		return browser;
 	}
 
 	public AmstradProgram getProgram() {

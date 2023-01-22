@@ -3,15 +3,15 @@ package org.maia.amstrad.program.browser.components;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.ProgramBrowserDisplaySource;
 
-public class ProgramCloseMenuItem extends ProgramMenuItem {
+public class ProgramReturnMenuItem extends ProgramMenuItem {
 
-	public ProgramCloseMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program) {
-		super(browser, program, "Close");
+	public ProgramReturnMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program) {
+		super(browser, program, "Return");
 	}
 
 	@Override
 	public void execute() {
-		getBrowser().closeModalWindow();
+		getBrowser().close();
 	}
 
 }

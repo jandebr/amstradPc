@@ -24,7 +24,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					ProgramBrowserDisplaySource browser = getProgramBrowser();
+					ProgramBrowserDisplaySource browser = getBrowser();
 					AmstradMonitorMode mode = getProgram().getPreferredMonitorMode();
 					try {
 						browser.releaseKeyboard();
