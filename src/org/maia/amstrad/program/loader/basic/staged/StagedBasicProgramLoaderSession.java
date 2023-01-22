@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
@@ -137,6 +138,12 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 				return true;
 			}
 		};
+	}
+
+	public void renumMacros(BasicLineNumberLinearMapping mapping) {
+		for (StagedBasicMacro macro : getMacrosAdded()) {
+			macro.renum(mapping);
+		}
 	}
 
 	@Override

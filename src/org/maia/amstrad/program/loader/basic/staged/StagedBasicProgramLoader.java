@@ -23,6 +23,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
 	protected void setupPreprocessors() {
 		// The order is absolutely crucial
+		addPreprocessor(new DynamicLinkSetupBasicPreprocessor());
 		addPreprocessor(new PreambleBasicPreprocessor(2));
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new HimemBasicPreprocessor(16));

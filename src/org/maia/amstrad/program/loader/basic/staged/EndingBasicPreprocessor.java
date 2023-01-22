@@ -23,12 +23,16 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
 		if (!session.hasMacrosAdded(EndingMacro.class)) {
-			addEndingMacro(sourceCode, session);
-			addInterruptMacro(sourceCode, session);
+			addMacros(sourceCode, session);
 			session.getProgramRuntime().addListener(new EndingRuntimeListener(session));
 		}
-		addEndOfCodeMacro(sourceCode, session);
 		invokeMacrosFromCode(sourceCode, session);
+	}
+
+	protected void addMacros(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		addEndingMacro(sourceCode, session);
+		addInterruptMacro(sourceCode, session);
 	}
 
 	private void addEndingMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
@@ -47,16 +51,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		addCodeLine(sourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ON BREAK GOSUB " + lnGoto
 				+ (session.produceRemarks() ? ":REM @interrupt" : ""));
 		session.addMacro(new InterruptMacro(ln));
-	}
-
-	private void addEndOfCodeMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
-		if (sourceCode.getLargestLineNumber() > session.getEndingMacro().getLineNumberEnd()) {
-			int ln = sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
-			int lnGoto = session.getEndingMacroLineNumber();
-			addCodeLine(sourceCode, ln, "GOTO " + lnGoto);
-			session.addMacro(new EndOfCodeMacro(ln));
-		}
 	}
 
 	protected void invokeMacrosFromCode(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
@@ -211,14 +205,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	public static class InterruptMacro extends StagedBasicMacro {
 
 		public InterruptMacro(int lineNumber) {
-			super(lineNumber, lineNumber);
-		}
-
-	}
-
-	public static class EndOfCodeMacro extends StagedBasicMacro {
-
-		public EndOfCodeMacro(int lineNumber) {
 			super(lineNumber, lineNumber);
 		}
 

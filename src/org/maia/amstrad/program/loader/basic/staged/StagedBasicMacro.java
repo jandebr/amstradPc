@@ -1,5 +1,7 @@
 package org.maia.amstrad.program.loader.basic.staged;
 
+import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+
 public abstract class StagedBasicMacro {
 
 	private int lineNumberStart;
@@ -7,8 +9,17 @@ public abstract class StagedBasicMacro {
 	private int lineNumberEnd;
 
 	protected StagedBasicMacro(int lineNumberStart, int lineNumberEnd) {
-		this.lineNumberStart = lineNumberStart;
-		this.lineNumberEnd = lineNumberEnd;
+		setLineNumberStart(lineNumberStart);
+		setLineNumberEnd(lineNumberEnd);
+	}
+
+	public void renum(BasicLineNumberLinearMapping mapping) {
+		if (mapping.isMapped(getLineNumberStart())) {
+			setLineNumberStart(mapping.getNewLineNumber(getLineNumberStart()));
+		}
+		if (mapping.isMapped(getLineNumberEnd())) {
+			setLineNumberEnd(mapping.getNewLineNumber(getLineNumberEnd()));
+		}
 	}
 
 	public boolean containsLine(int lineNumber) {
@@ -19,8 +30,16 @@ public abstract class StagedBasicMacro {
 		return lineNumberStart;
 	}
 
+	private void setLineNumberStart(int lineNumberStart) {
+		this.lineNumberStart = lineNumberStart;
+	}
+
 	public int getLineNumberEnd() {
 		return lineNumberEnd;
+	}
+
+	private void setLineNumberEnd(int lineNumberEnd) {
+		this.lineNumberEnd = lineNumberEnd;
 	}
 
 }

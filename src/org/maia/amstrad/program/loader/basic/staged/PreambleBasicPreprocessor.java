@@ -1,6 +1,7 @@
 package org.maia.amstrad.program.loader.basic.staged;
 
 import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 import org.maia.amstrad.basic.BasicSourceCode;
 
 public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
@@ -18,7 +19,8 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 			int lnStep = sourceCode.getDominantLineNumberStep();
 			int lnOffset = (getPreambleLineCount() + 1) * lnStep;
 			if (lnLow < lnOffset) {
-				sourceCode.renum(lnOffset, lnStep);
+				BasicLineNumberLinearMapping mapping = sourceCode.renum(lnOffset, lnStep);
+				session.renumMacros(mapping);
 			}
 			addMacros(sourceCode, lnStep, session);
 		}
