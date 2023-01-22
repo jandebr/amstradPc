@@ -76,8 +76,8 @@ public abstract class BasicSourceCodeLine implements Cloneable, Comparable<Basic
 			while (!scanner.atEndOfText()) {
 				sequence.append(scanner.nextToken());
 			}
-			setNativeTokenSequence(sequence.clone());
-			return sequence; // can be edited independently
+			setNativeTokenSequence(sequence);
+			return sequence.clone(); // can be edited independently
 		}
 	}
 

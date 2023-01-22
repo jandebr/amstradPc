@@ -1,5 +1,6 @@
 package org.maia.amstrad.basic;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -8,14 +9,14 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 
 	private List<BasicSourceToken> tokens;
 
+	private boolean modified; // is modified structurally after creation
+
 	public BasicSourceTokenSequence() {
 		setTokens(new Vector<BasicSourceToken>());
 	}
 
 	public BasicSourceTokenSequence(List<BasicSourceToken> tokens) {
-		this();
-		for (BasicSourceToken token : tokens)
-			append(token);
+		setTokens(new Vector<BasicSourceToken>(tokens));
 	}
 
 	@Override
@@ -166,8 +167,11 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 	}
 
 	public void insert(int index, BasicSourceToken... tokens) {
-		for (int i = tokens.length - 1; i >= 0; i--) {
-			getTokens().add(index, tokens[i]);
+		if (tokens.length > 0) {
+			for (int i = tokens.length - 1; i >= 0; i--) {
+				getTokens().add(index, tokens[i]);
+			}
+			setModified(true);
 		}
 	}
 
@@ -176,7 +180,10 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 	}
 
 	public void clear() {
-		getTokens().clear();
+		if (!isEmpty()) {
+			getTokens().clear();
+			setModified(true);
+		}
 	}
 
 	public void removeFirst(BasicSourceToken token) {
@@ -238,6 +245,7 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 	}
 
 	public BasicSourceToken remove(int index) {
+		setModified(true);
 		return getTokens().remove(index);
 	}
 
@@ -283,8 +291,8 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 	/**
 	 * Creates a new token sequence that is a subset of this sequence.
 	 * <p>
-	 * The returned token sequence is backed by this sequence, so non-structural changes in the returned sequence are
-	 * reflected in this sequence, and vice-versa.
+	 * The returned token sequence is independent from this sequence. Any changes in the returned sequence are
+	 * <em>not</em> reflected in this sequence, and vice-versa.
 	 * </p>
 	 * 
 	 * @param fromIndex
@@ -295,13 +303,16 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 	 */
 	public BasicSourceTokenSequence subSequence(int fromIndex, int toIndex) {
 		BasicSourceTokenSequence sub = new BasicSourceTokenSequence();
-		sub.setTokens(getTokens().subList(fromIndex, toIndex));
+		for (int i = fromIndex; i < toIndex; i++) {
+			sub.append(get(i));
+		}
+		sub.setModified(false);
 		return sub;
 	}
 
 	@Override
 	public Iterator<BasicSourceToken> iterator() {
-		return getTokens().iterator();
+		return Collections.unmodifiableList(getTokens()).iterator();
 	}
 
 	@Override
@@ -342,6 +353,14 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 
 	private void setTokens(List<BasicSourceToken> tokens) {
 		this.tokens = tokens;
+	}
+
+	public boolean isModified() {
+		return modified;
+	}
+
+	private void setModified(boolean modified) {
+		this.modified = modified;
 	}
 
 }

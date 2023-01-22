@@ -74,7 +74,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line.getLineNumber())) {
 				BasicSourceTokenSequence sequence = line.parse();
-				boolean lineEdited = false;
 				int i = sequence.getFirstIndexOf(ON_BREAK);
 				while (i >= 0) {
 					i = sequence.getIndexFollowingWhitespace(i + 1);
@@ -83,12 +82,11 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 							// ON BREAK STOP => ON BREAK GOSUB macro
 							sequence.replace(i, createKeywordToken(language, "GOSUB"), new LiteralToken(" "),
 									new LineNumberReferenceToken(lnGoto));
-							lineEdited = true;
 						}
 						i = sequence.getNextIndexOf(ON_BREAK, i);
 					}
 				}
-				if (lineEdited) {
+				if (sequence.isModified()) {
 					addCodeLine(sourceCode, sequence);
 				}
 			}
@@ -109,16 +107,14 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line.getLineNumber())) {
 				BasicSourceTokenSequence sequence = line.parse();
-				boolean lineEdited = false;
 				int i = sequence.getFirstIndexOf(command);
 				while (i >= 0) {
 					// End command => Goto macro
 					sequence.replace(i, createKeywordToken(language, "GOTO"), new LiteralToken(" "),
 							new LineNumberReferenceToken(lnGoto));
-					lineEdited = true;
 					i = sequence.getNextIndexOf(command, i + 3);
 				}
-				if (lineEdited) {
+				if (sequence.isModified()) {
 					addCodeLine(sourceCode, sequence);
 				}
 			}
@@ -135,7 +131,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 			if (scope.isInScope(line.getLineNumber())) {
 				BasicSourceTokenSequence sequence = line.parse();
 				if (!sequence.contains(IF)) {
-					boolean lineEdited = false;
 					int i = sequence.getFirstIndexOf(GOTO);
 					while (i >= 0) {
 						i = sequence.getIndexFollowingWhitespace(i + 1);
@@ -145,13 +140,12 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 								if (ln == line.getLineNumber()) {
 									// Goto loop => Goto macro
 									sequence.replace(i, new LineNumberReferenceToken(lnGoto));
-									lineEdited = true;
 								}
 							}
 							i = sequence.getNextIndexOf(GOTO, i);
 						}
 					}
-					if (lineEdited) {
+					if (sequence.isModified()) {
 						addCodeLine(sourceCode, sequence);
 					}
 				}
@@ -177,16 +171,14 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line.getLineNumber())) {
 				BasicSourceTokenSequence sequence = line.parse();
-				boolean lineEdited = false;
 				int i = sequence.getFirstIndexOf(CLEAR);
 				while (i >= 0) {
 					// CLEAR command => repeat interrupt
 					sequence.insert(i + 1, new InstructionSeparatorToken());
 					sequence.insert(i + 2, iSequence);
-					lineEdited = true;
 					i = sequence.getNextIndexOf(CLEAR, i + 2 + iSequence.size());
 				}
-				if (lineEdited) {
+				if (sequence.isModified()) {
 					addCodeLine(sourceCode, sequence);
 				}
 			}
