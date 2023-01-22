@@ -40,7 +40,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		int addr = session.reserveMemoryTrapAddress();
 		int ln = sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
 		addCodeLine(sourceCode, ln,
-				"POKE &" + Integer.toHexString(addr) + ",1:END" + (session.leaveRemarks() ? ":REM @ending" : ""));
+				"POKE &" + Integer.toHexString(addr) + ",1:END" + (session.produceRemarks() ? ":REM @ending" : ""));
 		session.addMacro(new EndingMacro(ln, addr));
 	}
 
@@ -49,7 +49,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		int ln = session.acquireFirstAvailablePreambleLineNumber();
 		int lnGoto = session.getMacroAdded(EndingMacro.class).getLineNumberStart();
 		addCodeLine(sourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ON BREAK GOSUB " + lnGoto
-				+ (session.leaveRemarks() ? ":REM @interrupt" : ""));
+				+ (session.produceRemarks() ? ":REM @interrupt" : ""));
 		session.addMacro(new InterruptMacro(ln));
 	}
 

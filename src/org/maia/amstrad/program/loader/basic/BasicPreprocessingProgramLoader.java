@@ -1,8 +1,5 @@
 package org.maia.amstrad.program.loader.basic;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.maia.amstrad.basic.BasicCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
@@ -13,24 +10,30 @@ import org.maia.amstrad.program.loader.AmstradProgramLoaderSession;
 
 public class BasicPreprocessingProgramLoader extends BasicProgramLoader {
 
-	private List<BasicPreprocessor> preprocessors;
+	private BasicPreprocessorBatch preprocessorBatch;
 
 	public BasicPreprocessingProgramLoader(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.preprocessors = new Vector<BasicPreprocessor>();
+		this.preprocessorBatch = new BasicPreprocessorBatch();
 	}
 
-	public synchronized void addPreprocessor(BasicPreprocessor preprocessor) {
-		getPreprocessors().add(preprocessor);
+	public void addPreprocessor(BasicPreprocessor preprocessor) {
+		getPreprocessorBatch().add(preprocessor);
 	}
 
-	public synchronized void removePreprocessor(BasicPreprocessor preprocessor) {
-		getPreprocessors().remove(preprocessor);
+	public void removePreprocessor(BasicPreprocessor preprocessor) {
+		getPreprocessorBatch().remove(preprocessor);
 	}
 
 	@Override
-	protected synchronized BasicCode retrieveCode(AmstradProgram program, AmstradProgramLoaderSession session)
+	protected BasicCode retrieveCode(AmstradProgram program, AmstradProgramLoaderSession session)
 			throws AmstradProgramException {
+		BasicSourceCode sourceCode = retrieveSourceCode(program);
+		preprocess(sourceCode, session);
+		return sourceCode;
+	}
+
+	protected BasicSourceCode retrieveSourceCode(AmstradProgram program) throws AmstradProgramException {
 		BasicSourceCode sourceCode = null;
 		try {
 			if (program.getPayload().isText()) {
@@ -39,21 +42,23 @@ public class BasicPreprocessingProgramLoader extends BasicProgramLoader {
 				sourceCode = getAmstradPc().getBasicRuntime().getDecompiler()
 						.decompile(retrieveOriginalByteCode(program));
 			}
-			preprocess(sourceCode, session);
 		} catch (BasicException e) {
-			throw new AmstradProgramException(program, "Failed to extend Basic code", e);
+			throw new AmstradProgramException(program, "Failed to retrieve Basic source code", e);
 		}
 		return sourceCode;
 	}
 
-	private void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session) throws BasicException {
-		for (BasicPreprocessor preprocessor : getPreprocessors()) {
-			preprocessor.preprocess(sourceCode, session);
+	protected void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
+			throws AmstradProgramException {
+		try {
+			getPreprocessorBatch().preprocess(sourceCode, session);
+		} catch (BasicException e) {
+			throw new AmstradProgramException(session.getProgram(), "Failed to preprocess Basic source code", e);
 		}
 	}
 
-	private List<BasicPreprocessor> getPreprocessors() {
-		return preprocessors;
+	private BasicPreprocessorBatch getPreprocessorBatch() {
+		return preprocessorBatch;
 	}
 
 }

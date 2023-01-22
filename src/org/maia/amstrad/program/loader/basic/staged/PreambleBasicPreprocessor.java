@@ -34,7 +34,7 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		for (int i = 0; i < getPreambleLineCount(); i++) {
 			int ln = (i + 1) * lineNumberStep;
-			if (session.leaveRemarks()) {
+			if (session.produceRemarks()) {
 				addCodeLine(sourceCode, ln, "REM @preamble");
 			}
 			session.addMacro(new PreambleLineMacro(ln));

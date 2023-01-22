@@ -44,8 +44,8 @@ public class AmstradProgramLoaderFactory {
 	}
 
 	public StagedBasicProgramLoader createStagedBasicProgramLoader(AmstradPc amstradPc, EndingBasicAction endingAction,
-			EndingBasicCodeDisclosure codeDisclosure, boolean leaveRemarks) {
-		return new StagedBasicProgramLoader(amstradPc, endingAction, codeDisclosure, leaveRemarks);
+			EndingBasicCodeDisclosure codeDisclosure, boolean produceRemarks) {
+		return new StagedBasicProgramLoader(amstradPc, endingAction, codeDisclosure, produceRemarks);
 	}
 
 	public static AmstradProgramLoaderFactory getInstance() {

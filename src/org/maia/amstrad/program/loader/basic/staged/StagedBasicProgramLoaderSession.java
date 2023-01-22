@@ -20,7 +20,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private Set<StagedBasicMacro> macrosAdded;
 
-	private boolean leaveRemarks;
+	private boolean produceRemarks;
 
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
@@ -153,12 +153,12 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		this.codeDisclosure = codeDisclosure;
 	}
 
-	public boolean leaveRemarks() {
-		return leaveRemarks;
+	public boolean produceRemarks() {
+		return produceRemarks;
 	}
 
-	public void setLeaveRemarks(boolean leaveRemarks) {
-		this.leaveRemarks = leaveRemarks;
+	public void setProduceRemarks(boolean produceRemarks) {
+		this.produceRemarks = produceRemarks;
 	}
 
 }
