@@ -20,6 +20,11 @@ public abstract class BasicRuntime {
 		this.amstradPc = amstradPc;
 	}
 
+	/**
+	 * Tells whether Basic is operating in "direct modus" and ready to accept instructions from the keyboard
+	 * 
+	 * @return <code>true</code> when in direct modus, <code>false</code> otherwise
+	 */
 	public abstract boolean isReady();
 
 	public void waitUntilReady() {
@@ -28,21 +33,21 @@ public abstract class BasicRuntime {
 		}
 	}
 
-	public void waitUntilReady(long maximumWaitTimeMs) {
-		long timeout = System.currentTimeMillis() + maximumWaitTimeMs;
+	public void waitUntilReady(long maximumWaitTimeMillis) {
+		long timeout = System.currentTimeMillis() + maximumWaitTimeMillis;
 		while (!isReady() && System.currentTimeMillis() < timeout) {
 			AmstradUtils.sleep(100L);
 		}
 	}
 
-	public void interpretKeyboardInputIfReadyAndWait(CharSequence input) {
+	public void sendKeyboardInputIfReadyAndWait(CharSequence input) {
 		if (isReady()) {
 			getAmstradPc().getKeyboard().enter(input);
 			waitUntilReady();
 		}
 	}
 
-	public void interpretKeyboardInputIfReady(CharSequence input) {
+	public void sendKeyboardInputIfReady(CharSequence input) {
 		if (isReady()) {
 			getAmstradPc().getKeyboard().enter(input);
 		}
@@ -63,7 +68,7 @@ public abstract class BasicRuntime {
 	 * @throws BasicException
 	 *             If a problem is encountered while renewing
 	 * 
-	 * @see BasicRuntime#waitUntilPromptInDirectModus()
+	 * @see #isReady()
 	 */
 	public abstract void renew() throws BasicException;
 
@@ -80,7 +85,7 @@ public abstract class BasicRuntime {
 	 * @throws BasicException
 	 *             If a problem is encountered while clearing
 	 * 
-	 * @see BasicRuntime#waitUntilPromptInDirectModus()
+	 * @see #isReady()
 	 */
 	public abstract void clear() throws BasicException;
 
@@ -145,6 +150,37 @@ public abstract class BasicRuntime {
 	}
 
 	public abstract void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException;
+
+	/**
+	 * Replaces the loaded program code with the given code while preserving variables.
+	 * 
+	 * <p>
+	 * This method should be used with extreme care. Swapping code may lead to unexpected behaviour even blocking the
+	 * entire Amstrad computer. In general, it is only safe to swap when no program is being run (in the Basic "direct
+	 * modus"). When a program is still running (<em>hot swap</em>) it will only succeed under conditions that cause no
+	 * interference with the running Basic interpreter.
+	 * </p>
+	 * <p>
+	 * If it is not needed to preserve variables, it is advised to use the {@link #load(BasicCode)} method.
+	 * </p>
+	 * 
+	 * @param newCode
+	 *            The new code to swap in.
+	 * @see #isReady()
+	 */
+	public final void swap(BasicCode newCode) throws BasicException {
+		if (!newCode.getLanguage().equals(getLanguage()))
+			throw new BasicException("Basic language mismatch");
+		if (newCode instanceof BasicByteCode) {
+			swapByteCode((BasicByteCode) newCode);
+		} else if (newCode instanceof BasicSourceCode) {
+			swapByteCode(getCompiler().compile((BasicSourceCode) newCode));
+		} else {
+			throw new BasicException("Unrecognized Basic code");
+		}
+	}
+
+	protected abstract void swapByteCode(BasicByteCode newByteCode) throws BasicException;
 
 	public BasicSourceCode exportSourceCode() throws BasicException {
 		return getDecompiler().decompile(exportByteCode());

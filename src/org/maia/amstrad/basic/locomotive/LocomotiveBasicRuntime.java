@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.maia.amstrad.basic.BasicByteCode;
-import org.maia.amstrad.basic.BasicCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
@@ -26,31 +25,31 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	public void command_new() {
-		interpretKeyboardInputIfReadyAndWait("NEW");
+		sendKeyboardInputIfReadyAndWait("NEW");
 	}
 
 	public void command_clear() {
-		interpretKeyboardInputIfReadyAndWait("CLEAR");
+		sendKeyboardInputIfReadyAndWait("CLEAR");
 	}
 
 	public void command_cls() {
-		interpretKeyboardInputIfReadyAndWait("CLS");
+		sendKeyboardInputIfReadyAndWait("CLS");
 	}
 
 	public void command_list() {
-		interpretKeyboardInputIfReadyAndWait("LIST");
+		sendKeyboardInputIfReadyAndWait("LIST");
 	}
 
 	@Override
 	public void run() {
 		waitUntilReady();
-		interpretKeyboardInputIfReady("RUN");
+		sendKeyboardInputIfReady("RUN");
 	}
 
 	@Override
 	public void run(int lineNumber) {
 		waitUntilReady();
-		interpretKeyboardInputIfReady("RUN " + lineNumber);
+		sendKeyboardInputIfReady("RUN " + lineNumber);
 	}
 
 	@Override
@@ -61,31 +60,6 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	@Override
 	public void clear() throws BasicException {
 		clearVariables();
-	}
-
-	@Override
-	public BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException {
-		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
-		BasicLineNumberLinearMapping mapping = byteCode.renum(lineNumberStart, lineNumberStep);
-		swapByteCode(byteCode);
-		return mapping;
-	}
-
-	@Override
-	public void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException {
-		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
-		byteCode.renum(mapping, scope);
-		swapByteCode(byteCode);
-	}
-
-	@Override
-	protected LocomotiveBasicSourceCode readSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
-		return new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
-	}
-
-	@Override
-	protected LocomotiveBasicByteCode readByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
-		return new LocomotiveBasicByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
 	}
 
 	@Override
@@ -104,6 +78,48 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			// Marking end of heap space
 			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+	}
+
+	@Override
+	protected LocomotiveBasicSourceCode readSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
+		return new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
+	}
+
+	@Override
+	protected LocomotiveBasicByteCode readByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
+		return new LocomotiveBasicByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
+	}
+
+	@Override
+	public BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException {
+		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
+		BasicLineNumberLinearMapping mapping = byteCode.renum(lineNumberStart, lineNumberStep);
+		swapByteCode(byteCode);
+		return mapping;
+	}
+
+	@Override
+	public void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException {
+		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
+		byteCode.renum(mapping, scope);
+		swapByteCode(byteCode);
+	}
+
+	protected void swapByteCode(BasicByteCode newByteCode) {
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			// Move heap space
+			moveHeapSpace(newByteCode.getByteCount() - getByteCodeLength());
+			// Swap byte code
+			memory.writeBytes(ADDRESS_BYTECODE_START, newByteCode.getBytes());
+			// Marking end of byte code
+			int addrEnd = ADDRESS_BYTECODE_START + newByteCode.getByteCount();
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
@@ -133,64 +149,6 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		return getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
 	}
 
-	/**
-	 * Amends the loaded Basic byte code by merging a given byte code while preserving variables.
-	 * 
-	 * <p>
-	 * This method should be used with extreme care. Merging loaded byte code may lead to unexpected behaviour even
-	 * blocking the entire Amstrad computer. In general, it is only safe to merge when no program is being run (in the
-	 * Basic "direct modus"). When a program is still running (<em>hot merge</em>) it will only succeed under conditions
-	 * that cause no interference with the running Basic interpreter.
-	 * </p>
-	 * <p>
-	 * If it is not needed to preserve variables, it is advised to use the {@link #load(BasicCode)} method, passing a
-	 * merged byte code obtained from {@link LocomotiveBasicByteCode#merge(LocomotiveBasicByteCode)}.
-	 * </p>
-	 * 
-	 * @param byteCodeToMerge
-	 *            The byte code to merge with the currently loaded byte code
-	 * @throws BasicException
-	 *             When byte code interpretation is faulty
-	 */
-	public void swapMergedByteCode(LocomotiveBasicByteCode byteCodeToMerge) throws BasicException {
-		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
-		byteCode.merge(byteCodeToMerge);
-		swapByteCode(byteCode);
-	}
-
-	/**
-	 * Replaces the loaded Basic byte code with the given byte code while preserving variables.
-	 * 
-	 * <p>
-	 * This method should be used with extreme care. Swapping loaded byte code may lead to unexpected behaviour even
-	 * blocking the entire Amstrad computer. In general, it is only safe to swap when no program is being run (in the
-	 * Basic "direct modus"). When a program is still running (<em>hot swap</em>) it will only succeed under conditions
-	 * that cause no interference with the running Basic interpreter.
-	 * </p>
-	 * <p>
-	 * If it is not needed to preserve variables, it is advised to use the {@link #load(BasicCode)} method.
-	 * </p>
-	 * 
-	 * @param newByteCode
-	 *            The byte code to swap in.
-	 */
-	public void swapByteCode(BasicByteCode newByteCode) {
-		AmstradMemory memory = getMemory();
-		memory.startThreadExclusiveSession();
-		try {
-			// Move heap space
-			moveHeapSpace(newByteCode.getByteCount() - getByteCodeLength());
-			// Swap byte code
-			memory.writeBytes(ADDRESS_BYTECODE_START, newByteCode.getBytes());
-			// Marking end of byte code
-			int addrEnd = ADDRESS_BYTECODE_START + newByteCode.getByteCount();
-			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
-			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
-		} finally {
-			memory.endThreadExclusiveSession();
-		}
-	}
-
 	private void moveHeapSpace(int distanceInBytes) {
 		if (distanceInBytes == 0)
 			return;
@@ -215,7 +173,7 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	/**
 	 * Similar effect as the Basic <code>NEW</code> instruction
 	 */
-	protected void clearProgramAndVariables() {
+	private void clearProgramAndVariables() {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
@@ -236,12 +194,12 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	/**
 	 * Similar effect as the Basic <code>CLEAR</code> instruction
 	 */
-	protected void clearVariables() throws BasicException {
+	private void clearVariables() throws BasicException {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
 			// Sanitize byte code to clear any variable memory pointers
-			loadBinaryData(exportByteCode().getBytes(), ADDRESS_BYTECODE_START);
+			memory.writeBytes(ADDRESS_BYTECODE_START, exportByteCode().getBytes());
 			// Erase heap
 			int addrEnd = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
 			memory.eraseBytesBetween(addrEnd, memory.readWord(ADDRESS_HEAP_END_POINTER));
