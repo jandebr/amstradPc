@@ -29,6 +29,11 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		invokeMacrosFromCode(sourceCode, session);
 	}
 
+	@Override
+	protected int getDesiredPreambleLineCount() {
+		return 1; // for interrupt macro
+	}
+
 	protected void addMacros(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		addEndingMacro(sourceCode, session);

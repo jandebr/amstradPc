@@ -19,4 +19,6 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 	protected abstract void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException;
 
+	protected abstract int getDesiredPreambleLineCount();
+
 }

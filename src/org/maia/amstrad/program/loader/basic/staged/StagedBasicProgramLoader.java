@@ -3,6 +3,7 @@ package org.maia.amstrad.program.loader.basic.staged;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.loader.basic.BasicPreprocessingProgramLoader;
+import org.maia.amstrad.program.loader.basic.BasicPreprocessor;
 
 public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
@@ -23,10 +24,23 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
 	protected void setupPreprocessors() {
 		// The order is absolutely crucial
-		addPreprocessor(new DynamicLinkSetupBasicPreprocessor());
-		addPreprocessor(new PreambleBasicPreprocessor(2));
+		PreambleBasicPreprocessor preamble = new PreambleBasicPreprocessor();
+		addPreprocessor(new DynamicLinkBasicPreprocessor());
+		addPreprocessor(preamble);
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new HimemBasicPreprocessor(16));
+		// Number of preamble lines needed
+		preamble.setPreambleLineCount(getDesiredPreambleLineCount());
+	}
+
+	protected int getDesiredPreambleLineCount() {
+		int lineCount = 0;
+		for (BasicPreprocessor preprocessor : getPreprocessorBatch()) {
+			if (preprocessor instanceof StagedBasicPreprocessor) {
+				lineCount += ((StagedBasicPreprocessor) preprocessor).getDesiredPreambleLineCount();
+			}
+		}
+		return lineCount;
 	}
 
 	@Override

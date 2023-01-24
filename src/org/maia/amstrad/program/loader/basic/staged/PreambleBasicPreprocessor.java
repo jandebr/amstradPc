@@ -8,8 +8,12 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 
 	private int preambleLineCount;
 
+	public PreambleBasicPreprocessor() {
+		this(0);
+	}
+
 	public PreambleBasicPreprocessor(int preambleLineCount) {
-		this.preambleLineCount = preambleLineCount;
+		setPreambleLineCount(preambleLineCount);
 	}
 
 	@Override
@@ -50,8 +54,17 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 		session.addMacro(new PreambleBlockMacro(lnStart, lnEnd));
 	}
 
+	@Override
+	protected int getDesiredPreambleLineCount() {
+		return 0; // no need itself
+	}
+
 	public int getPreambleLineCount() {
 		return preambleLineCount;
+	}
+
+	public void setPreambleLineCount(int preambleLineCount) {
+		this.preambleLineCount = preambleLineCount;
 	}
 
 	public static class PreambleLineMacro extends StagedBasicMacro {

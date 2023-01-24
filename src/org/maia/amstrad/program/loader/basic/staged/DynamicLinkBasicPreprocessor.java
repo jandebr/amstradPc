@@ -12,35 +12,33 @@ import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 
-public class DynamicLinkSetupBasicPreprocessor extends StagedBasicPreprocessor {
+public class DynamicLinkBasicPreprocessor extends StagedBasicPreprocessor {
 
-	public DynamicLinkSetupBasicPreprocessor() {
+	public DynamicLinkBasicPreprocessor() {
 	}
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
-		List<Integer> internalLineNumbers = sourceCode.getAscendingLineNumbers();
-		markEndOfCode(sourceCode, session);
-		setupExternalLinks(sourceCode, internalLineNumbers, session);
+		detectExternalLinks(sourceCode, session);
 	}
 
-	private void markEndOfCode(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+	@Override
+	protected int getDesiredPreambleLineCount() {
+		return 0;
+	}
+
+	private void detectExternalLinks(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		int ln = sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
-		addCodeLine(sourceCode, ln, "END");
-	}
-
-	private void setupExternalLinks(BasicSourceCode sourceCode, List<Integer> internalLineNumbers,
-			StagedBasicProgramLoaderSession session) throws BasicException {
+		List<Integer> internalLineNumbers = sourceCode.getAscendingLineNumbers();
 		Map<Integer, DynamicLinkMacro> externalLinkMap = new HashMap<Integer, DynamicLinkMacro>();
 		BasicLanguage language = sourceCode.getLanguage();
-		setupExternalLinks(sourceCode, createKeywordToken(language, "GOTO"), internalLineNumbers, externalLinkMap,
+		detectExternalLinks(sourceCode, createKeywordToken(language, "GOTO"), internalLineNumbers, externalLinkMap,
 				session);
-		setupExternalLinks(sourceCode, createKeywordToken(language, "GOSUB"), internalLineNumbers, externalLinkMap,
+		detectExternalLinks(sourceCode, createKeywordToken(language, "GOSUB"), internalLineNumbers, externalLinkMap,
 				session);
 	}
 
-	private void setupExternalLinks(BasicSourceCode sourceCode, BasicSourceToken lineReferenceCommand,
+	private void detectExternalLinks(BasicSourceCode sourceCode, BasicSourceToken lineReferenceCommand,
 			List<Integer> internalLineNumbers, Map<Integer, DynamicLinkMacro> externalLinkMap,
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		int lnStep = sourceCode.getDominantLineNumberStep();

@@ -64,6 +64,21 @@ public class BasicProgramLoader extends AmstradProgramLoader {
 		}
 	}
 
+	protected BasicSourceCode retrieveSourceCode(AmstradProgram program) throws AmstradProgramException {
+		BasicSourceCode sourceCode = null;
+		try {
+			if (program.getPayload().isText()) {
+				sourceCode = retrieveOriginalSourceCode(program);
+			} else {
+				sourceCode = getAmstradPc().getBasicRuntime().getDecompiler()
+						.decompile(retrieveOriginalByteCode(program));
+			}
+		} catch (BasicException e) {
+			throw new AmstradProgramException(program, "Failed to retrieve Basic source code", e);
+		}
+		return sourceCode;
+	}
+
 	private static class BasicProgramRuntime extends AmstradProgramRuntime {
 
 		public BasicProgramRuntime(AmstradProgram program, AmstradPc amstradPc) {

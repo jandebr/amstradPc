@@ -33,21 +33,6 @@ public class BasicPreprocessingProgramLoader extends BasicProgramLoader {
 		return sourceCode;
 	}
 
-	protected BasicSourceCode retrieveSourceCode(AmstradProgram program) throws AmstradProgramException {
-		BasicSourceCode sourceCode = null;
-		try {
-			if (program.getPayload().isText()) {
-				sourceCode = retrieveOriginalSourceCode(program);
-			} else {
-				sourceCode = getAmstradPc().getBasicRuntime().getDecompiler()
-						.decompile(retrieveOriginalByteCode(program));
-			}
-		} catch (BasicException e) {
-			throw new AmstradProgramException(program, "Failed to retrieve Basic source code", e);
-		}
-		return sourceCode;
-	}
-
 	protected void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
 			throws AmstradProgramException {
 		try {
@@ -57,7 +42,7 @@ public class BasicPreprocessingProgramLoader extends BasicProgramLoader {
 		}
 	}
 
-	private BasicPreprocessorBatch getPreprocessorBatch() {
+	protected BasicPreprocessorBatch getPreprocessorBatch() {
 		return preprocessorBatch;
 	}
 

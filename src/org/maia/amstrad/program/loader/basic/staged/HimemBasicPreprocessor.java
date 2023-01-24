@@ -22,6 +22,11 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 		}
 	}
 
+	@Override
+	protected int getDesiredPreambleLineCount() {
+		return 1; // for himem macro
+	}
+
 	protected void addMacro(BasicSourceCode sourceCode, int himemAddress, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int ln = session.acquireFirstAvailablePreambleLineNumber();
