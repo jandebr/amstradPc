@@ -8,6 +8,10 @@ public class SingleDigitDecimalToken extends NumericToken {
 		super(sourceFragment);
 	}
 
+	public SingleDigitDecimalToken(int value) {
+		this(String.valueOf(value));
+	}
+
 	@Override
 	public void invite(LocomotiveBasicSourceTokenVisitor visitor) {
 		visitor.visitSingleDigitDecimal(this);

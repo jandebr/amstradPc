@@ -23,6 +23,10 @@ public class FloatingPointNumberToken extends NumericToken {
 		super(sourceFragment);
 	}
 
+	public FloatingPointNumberToken(double value) {
+		this(format(value));
+	}
+
 	@Override
 	public void invite(LocomotiveBasicSourceTokenVisitor visitor) {
 		visitor.visitFloatingPointNumber(this);

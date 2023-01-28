@@ -36,10 +36,6 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		this.macrosAdded = new HashSet<StagedBasicMacro>();
 	}
 
-	public int reserveMemoryTrapAddress() {
-		return reserveMemory(1);
-	}
-
 	public synchronized int reserveMemory(int numberOfBytes) {
 		setHimemAddress(getHimemAddress() - numberOfBytes);
 		int memoryOffset = getHimemAddress() + 1;

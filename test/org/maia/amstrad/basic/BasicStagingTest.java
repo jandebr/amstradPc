@@ -18,21 +18,21 @@ public class BasicStagingTest {
 
 	public static void main(String[] args) throws AmstradProgramException {
 		BasicStagingTest test = new BasicStagingTest();
-		test.run();
+		AmstradProgram program = new AmstradBasicProgramFile(new File("resources/test/staging/program-1.bas"));
+		test.run(program);
 	}
 
 	public BasicStagingTest() {
 	}
 
-	public void run() throws AmstradProgramException {
-		File basFile = new File("resources/test/staging/test.bas");
+	public void run(AmstradProgram program) throws AmstradProgramException {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		AmstradProgram program = new AmstradBasicProgramFile(basFile);
 		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(
 				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE, true);
 		amstradPc.start();
 		AmstradProgramRuntime rt = loader.load(program);
+		// rt.getAmstradPc().getBasicRuntime().sendKeyboardInputIfReady("LIST");
 		rt.run();
 	}
 

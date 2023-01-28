@@ -76,7 +76,7 @@ public class LocomotiveBasicSourceTokenFactory {
 	}
 
 	public FloatingPointNumberToken createFloatingPointNumber(double value) {
-		return new FloatingPointNumberToken(FloatingPointNumberToken.format(value));
+		return new FloatingPointNumberToken(value);
 	}
 
 	public NumericToken createIntegerNumber(int value) throws BasicSyntaxException {
@@ -93,17 +93,17 @@ public class LocomotiveBasicSourceTokenFactory {
 
 	public SingleDigitDecimalToken createIntegerSingleDigitDecimal(int value) throws BasicSyntaxException {
 		checkValueInRange(value, 0, 9);
-		return new SingleDigitDecimalToken(String.valueOf(value));
+		return new SingleDigitDecimalToken(value);
 	}
 
 	public Integer8BitDecimalToken createInteger8BitDecimal(int value) throws BasicSyntaxException {
 		checkValueInRange(value, 0, 0xff);
-		return new Integer8BitDecimalToken(String.valueOf(value));
+		return new Integer8BitDecimalToken(value);
 	}
 
 	public Integer16BitDecimalToken createInteger16BitDecimal(int value) throws BasicSyntaxException {
 		checkValueInRange(value, 0, 0x7fff);
-		return new Integer16BitDecimalToken(String.valueOf(value));
+		return new Integer16BitDecimalToken(value);
 	}
 
 	public Integer16BitBinaryToken createInteger16BitBinary(int value) throws BasicSyntaxException {
@@ -125,7 +125,7 @@ public class LocomotiveBasicSourceTokenFactory {
 	public LineNumberReferenceToken createLineNumberReference(int lineNumber) throws BasicSyntaxException {
 		checkValueInRange(lineNumber, LocomotiveBasicRuntime.MINIMUM_LINE_NUMBER,
 				LocomotiveBasicRuntime.MAXIMUM_LINE_NUMBER);
-		return new LineNumberReferenceToken(String.valueOf(lineNumber));
+		return new LineNumberReferenceToken(lineNumber);
 	}
 
 	public OperatorToken createOperator(String sourceFragment) throws BasicSyntaxException {

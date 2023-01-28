@@ -30,18 +30,18 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		if (!session.hasMacrosAdded(EndingMacro.class)) {
 			addEndingMacro(sourceCode, session);
 			addInterruptMacro(sourceCode, session);
-			session.getProgramRuntime().addListener(new EndingRuntimeListener(session));
 		}
 		invokeMacrosFromCode(sourceCode, session);
 	}
 
 	private void addEndingMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		int addr = session.reserveMemoryTrapAddress();
+		int addrTrap = session.reserveMemory(1);
 		int ln = getNextAvailableLineNumber(sourceCode);
 		addCodeLine(sourceCode, ln,
-				"POKE &" + Integer.toHexString(addr) + ",1:END" + (session.produceRemarks() ? ":REM @ending" : ""));
-		session.addMacro(new EndingMacro(ln, addr));
+				"POKE &" + Integer.toHexString(addrTrap) + ",1:END" + (session.produceRemarks() ? ":REM @ending" : ""));
+		session.addMacro(new EndingMacro(ln));
+		session.getProgramRuntime().addListener(new EndingRuntimeListener(session, addrTrap));
 	}
 
 	private void addInterruptMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
@@ -204,15 +204,8 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static class EndingMacro extends StagedBasicMacro {
 
-		private int memoryTrapAddress;
-
-		public EndingMacro(int lineNumber, int memoryTrapAddress) {
+		public EndingMacro(int lineNumber) {
 			super(lineNumber);
-			this.memoryTrapAddress = memoryTrapAddress;
-		}
-
-		public int getMemoryTrapAddress() {
-			return memoryTrapAddress;
 		}
 
 	}
@@ -221,6 +214,32 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 		public InterruptMacro(int lineNumber) {
 			super(lineNumber);
+		}
+
+	}
+
+	private class EndingRuntimeListener extends StagedBasicProgramRuntimeListener {
+
+		private int memoryTrapAddress;
+
+		public EndingRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
+			super(session);
+			this.memoryTrapAddress = memoryTrapAddress;
+		}
+
+		@Override
+		protected void stagedProgramIsRun() {
+			EndingMacro macro = getSession().getEndingMacro();
+			addMemoryTrap(getMemoryTrapAddress(), new EndingMacroHandler(macro, getSession()));
+		}
+
+		@Override
+		protected void stagedProgramIsDisposed(boolean programRemainsLoaded) {
+			removeMemoryTrapsAt(getMemoryTrapAddress());
+		}
+
+		private int getMemoryTrapAddress() {
+			return memoryTrapAddress;
 		}
 
 	}
@@ -236,26 +255,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 			getSession().getBasicRuntime().waitUntilReady();
 			getSession().getProgramRuntime().dispose(true);
 			handleProgramEnded(getSession());
-		}
-
-	}
-
-	private class EndingRuntimeListener extends StagedBasicProgramRuntimeListener {
-
-		public EndingRuntimeListener(StagedBasicProgramLoaderSession session) {
-			super(session);
-		}
-
-		@Override
-		protected void stagedProgramIsRun() {
-			EndingMacro macro = getSession().getEndingMacro();
-			addMemoryTrap(macro.getMemoryTrapAddress(), new EndingMacroHandler(macro, getSession()));
-		}
-
-		@Override
-		protected void stagedProgramIsDisposed(boolean programRemainsLoaded) {
-			EndingMacro macro = getSession().getEndingMacro();
-			removeMemoryTrapsAt(macro.getMemoryTrapAddress());
 		}
 
 	}

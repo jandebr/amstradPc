@@ -8,6 +8,10 @@ public class Integer16BitDecimalToken extends NumericToken {
 		super(sourceFragment);
 	}
 
+	public Integer16BitDecimalToken(int value) {
+		this(String.valueOf(value));
+	}
+
 	@Override
 	public void invite(LocomotiveBasicSourceTokenVisitor visitor) {
 		visitor.visitInteger16BitDecimal(this);
