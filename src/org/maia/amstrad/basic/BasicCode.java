@@ -84,67 +84,21 @@ public abstract class BasicCode implements Cloneable {
 
 	public BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException {
 		BasicLineNumberLinearMapping lineNumberMapping = createLineNumberMapping(lineNumberStart, lineNumberStep);
-		if (!lineNumberMapping.isEmpty()) {
-			renum(lineNumberMapping);
-		}
+		renum(lineNumberMapping);
 		return lineNumberMapping;
 	}
 
-	public void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
-		renum(mapping, new BasicLineNumberScope() {
-
-			@Override
-			public boolean isInScope(int lineNumber) {
-				return true;
-			}
-		});
-	}
-
-	public abstract void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException;
+	public abstract void renum(BasicLineNumberLinearMapping mapping) throws BasicException;
 
 	private BasicLineNumberLinearMapping createLineNumberMapping(int lineNumberStart, int lineNumberStep) {
+		BasicLineNumberLinearMappingImpl mapping = new BasicLineNumberLinearMappingImpl();
 		List<Integer> lineNumbers = getAscendingLineNumbers();
-		Map<Integer, Integer> mapping = new HashMap<Integer, Integer>(lineNumbers.size());
 		for (int i = 0; i < lineNumbers.size(); i++) {
 			int currentLineNumber = lineNumbers.get(i);
 			int newLineNumber = lineNumberStart + i * lineNumberStep;
-			mapping.put(currentLineNumber, newLineNumber);
+			mapping.addMapping(currentLineNumber, newLineNumber);
 		}
-		return new BasicLineNumberLinearMappingImpl(mapping);
-	}
-
-	private static class BasicLineNumberLinearMappingImpl implements BasicLineNumberLinearMapping {
-
-		private Map<Integer, Integer> mapping;
-
-		public BasicLineNumberLinearMappingImpl(Map<Integer, Integer> mapping) {
-			this.mapping = mapping;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return getMapping().isEmpty();
-		}
-
-		@Override
-		public boolean isMapped(int oldLineNumber) {
-			return getMapping().containsKey(oldLineNumber);
-		}
-
-		@Override
-		public int getNewLineNumber(int oldLineNumber) {
-			Integer result = getMapping().get(oldLineNumber);
-			if (result != null) {
-				return result.intValue();
-			} else {
-				return 0;
-			}
-		}
-
-		private Map<Integer, Integer> getMapping() {
-			return mapping;
-		}
-
+		return mapping;
 	}
 
 }

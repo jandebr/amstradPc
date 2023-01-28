@@ -21,29 +21,24 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
+	protected int getDesiredPreambleLineCount() {
+		return 1; // for interrupt macro
+	}
+
+	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
 		if (!session.hasMacrosAdded(EndingMacro.class)) {
-			addMacros(sourceCode, session);
+			addEndingMacro(sourceCode, session);
+			addInterruptMacro(sourceCode, session);
 			session.getProgramRuntime().addListener(new EndingRuntimeListener(session));
 		}
 		invokeMacrosFromCode(sourceCode, session);
 	}
 
-	@Override
-	protected int getDesiredPreambleLineCount() {
-		return 1; // for interrupt macro
-	}
-
-	protected void addMacros(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
-		addEndingMacro(sourceCode, session);
-		addInterruptMacro(sourceCode, session);
-	}
-
 	private void addEndingMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int addr = session.reserveMemoryTrapAddress();
-		int ln = sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
+		int ln = getNextAvailableLineNumber(sourceCode);
 		addCodeLine(sourceCode, ln,
 				"POKE &" + Integer.toHexString(addr) + ",1:END" + (session.produceRemarks() ? ":REM @ending" : ""));
 		session.addMacro(new EndingMacro(ln, addr));
@@ -207,25 +202,25 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 	}
 
-	public static class InterruptMacro extends StagedBasicMacro {
-
-		public InterruptMacro(int lineNumber) {
-			super(lineNumber, lineNumber);
-		}
-
-	}
-
 	public static class EndingMacro extends StagedBasicMacro {
 
 		private int memoryTrapAddress;
 
 		public EndingMacro(int lineNumber, int memoryTrapAddress) {
-			super(lineNumber, lineNumber);
+			super(lineNumber);
 			this.memoryTrapAddress = memoryTrapAddress;
 		}
 
 		public int getMemoryTrapAddress() {
 			return memoryTrapAddress;
+		}
+
+	}
+
+	public static class InterruptMacro extends StagedBasicMacro {
+
+		public InterruptMacro(int lineNumber) {
+			super(lineNumber);
 		}
 
 	}

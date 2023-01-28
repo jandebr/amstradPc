@@ -15,7 +15,11 @@ import org.maia.amstrad.program.loader.basic.staged.PreambleBasicPreprocessor.Pr
 
 public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession implements LocomotiveBasicMemoryMap {
 
+	private boolean produceRemarks;
+
 	private int himemAddress;
+
+	private int endingMacroLineNumber;
 
 	private EndingBasicAction endingAction;
 
@@ -23,11 +27,12 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private Set<StagedBasicMacro> macrosAdded;
 
-	private boolean produceRemarks;
+	private StagedLineNumberMapping originalToStagedLineNumberMapping;
 
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
 		setHimemAddress(ADDRESS_HIMEM);
+		this.endingMacroLineNumber = -1;
 		this.macrosAdded = new HashSet<StagedBasicMacro>();
 	}
 
@@ -62,15 +67,6 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		}
 		removeMacro(macroLow);
 		return lnLow;
-	}
-
-	public synchronized int getEndingMacroLineNumber() {
-		EndingMacro macro = getEndingMacro();
-		if (macro == null) {
-			return -1;
-		} else {
-			return macro.getLineNumberStart();
-		}
 	}
 
 	public synchronized EndingMacro getEndingMacro() {
@@ -108,10 +104,6 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		return macros;
 	}
 
-	public Set<StagedBasicMacro> getMacrosAdded() {
-		return macrosAdded;
-	}
-
 	public BasicLineNumberScope getScopeOfMacros() {
 		return new BasicLineNumberScope() {
 
@@ -141,8 +133,12 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	}
 
 	public void renumMacros(BasicLineNumberLinearMapping mapping) {
+		EndingMacro ending = getEndingMacro();
 		for (StagedBasicMacro macro : getMacrosAdded()) {
 			macro.renum(mapping);
+			if (macro.equals(ending)) {
+				setEndingMacroLineNumber(macro.getLineNumberStart());
+			}
 		}
 	}
 
@@ -161,6 +157,20 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private void setHimemAddress(int himemAddress) {
 		this.himemAddress = himemAddress;
+	}
+
+	public synchronized int getEndingMacroLineNumber() {
+		if (endingMacroLineNumber < 0) {
+			EndingMacro macro = getEndingMacro();
+			if (macro != null) {
+				endingMacroLineNumber = macro.getLineNumberStart();
+			}
+		}
+		return endingMacroLineNumber;
+	}
+
+	private void setEndingMacroLineNumber(int lineNumber) {
+		endingMacroLineNumber = lineNumber;
 	}
 
 	public EndingBasicAction getEndingAction() {
@@ -185,6 +195,18 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public void setProduceRemarks(boolean produceRemarks) {
 		this.produceRemarks = produceRemarks;
+	}
+
+	public Set<StagedBasicMacro> getMacrosAdded() {
+		return macrosAdded;
+	}
+
+	public StagedLineNumberMapping getOriginalToStagedLineNumberMapping() {
+		return originalToStagedLineNumberMapping;
+	}
+
+	public void setOriginalToStagedLineNumberMapping(StagedLineNumberMapping mapping) {
+		this.originalToStagedLineNumberMapping = mapping;
 	}
 
 }

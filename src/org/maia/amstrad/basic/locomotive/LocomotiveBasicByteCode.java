@@ -8,7 +8,6 @@ import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
-import org.maia.amstrad.basic.BasicLineNumberScope;
 
 public class LocomotiveBasicByteCode extends BasicByteCode {
 
@@ -160,18 +159,17 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 	}
 
 	@Override
-	public synchronized void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope)
-			throws BasicException {
-		if (isEmpty() || mapping.isEmpty())
+	public synchronized void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
+		if (isEmpty())
 			return;
 		// Map line number references (must go first)
-		new LineReferenceMapper(mapping, scope).map();
+		new LineReferenceMapper(mapping).map();
 		// Map line numbers (must go second)
 		int[] indices = getLineOffsetIndices();
 		for (int i = 0; i < indices.length; i++) {
 			int j = indices[i] + 2;
 			int lineNumber = getWord(j);
-			if (scope.isInScope(lineNumber) && mapping.isMapped(lineNumber)) {
+			if (mapping.isMapped(lineNumber)) {
 				setWord(j, mapping.getNewLineNumber(lineNumber));
 			}
 		}
@@ -280,13 +278,10 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 
 		private BasicLineNumberLinearMapping mapping;
 
-		private BasicLineNumberScope scope;
-
 		private int currentLineNumber;
 
-		public LineReferenceMapper(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) {
+		public LineReferenceMapper(BasicLineNumberLinearMapping mapping) {
 			this.mapping = mapping;
-			this.scope = scope;
 		}
 
 		public void map() throws BasicException {
@@ -300,29 +295,21 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 
 		@Override
 		protected void encounteredLineNumberReferenceByAddress(int bytecodeOffset, int addressPointer, int lineNumber) {
-			if (getScope().isInScope(getCurrentLineNumber())) {
-				if (getMapping().isMapped(lineNumber)) {
-					setByte(bytecodeOffset, (byte) 0x1e); // make absolute
-					setWord(bytecodeOffset + 1, getMapping().getNewLineNumber(lineNumber));
-				}
+			if (getMapping().isMapped(lineNumber)) {
+				setByte(bytecodeOffset, (byte) 0x1e); // make absolute
+				setWord(bytecodeOffset + 1, getMapping().getNewLineNumber(lineNumber));
 			}
 		}
 
 		@Override
 		protected void encounteredLineNumberReferenceByValue(int bytecodeOffset, int lineNumber) {
-			if (getScope().isInScope(getCurrentLineNumber())) {
-				if (getMapping().isMapped(lineNumber)) {
-					setWord(bytecodeOffset + 1, getMapping().getNewLineNumber(lineNumber));
-				}
+			if (getMapping().isMapped(lineNumber)) {
+				setWord(bytecodeOffset + 1, getMapping().getNewLineNumber(lineNumber));
 			}
 		}
 
 		private BasicLineNumberLinearMapping getMapping() {
 			return mapping;
-		}
-
-		private BasicLineNumberScope getScope() {
-			return scope;
 		}
 
 		private int getCurrentLineNumber() {

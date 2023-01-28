@@ -139,17 +139,7 @@ public abstract class BasicRuntime {
 
 	public abstract BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException;
 
-	public void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
-		renum(mapping, new BasicLineNumberScope() {
-
-			@Override
-			public boolean isInScope(int lineNumber) {
-				return true;
-			}
-		});
-	}
-
-	public abstract void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException;
+	public abstract void renum(BasicLineNumberLinearMapping mapping) throws BasicException;
 
 	/**
 	 * Replaces the loaded program code with the given code while preserving variables.

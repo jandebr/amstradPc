@@ -8,7 +8,6 @@ import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
-import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
@@ -102,9 +101,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	@Override
-	public void renum(BasicLineNumberLinearMapping mapping, BasicLineNumberScope scope) throws BasicException {
+	public void renum(BasicLineNumberLinearMapping mapping) throws BasicException {
 		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
-		byteCode.renum(mapping, scope);
+		byteCode.renum(mapping);
 		swapByteCode(byteCode);
 	}
 

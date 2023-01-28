@@ -15,8 +15,6 @@ package org.maia.amstrad.basic;
  */
 public interface BasicLineNumberLinearMapping {
 
-	boolean isEmpty();
-
 	boolean isMapped(int oldLineNumber);
 
 	int getNewLineNumber(int oldLineNumber);

@@ -519,7 +519,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	private class JemuMemoryImpl extends AmstradMemory {
 
-		private boolean jemuRunningAtStartOfMMO;
+		private boolean jemuRunningAtStartOfTES;
 
 		public JemuMemoryImpl() {
 			super(JemuAmstradPc.this);
@@ -531,8 +531,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			if (!isNestedThreadExclusiveSession()) {
 				// Pause computer when running
 				synchronized (JemuAmstradPc.this) {
-					jemuRunningAtStartOfMMO = getJemuInstance().isRunning();
-					if (jemuRunningAtStartOfMMO) {
+					jemuRunningAtStartOfTES = getJemuInstance().isRunning();
+					if (jemuRunningAtStartOfTES) {
 						getJemuInstance().pauseComputer();
 					}
 				}
@@ -543,7 +543,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		public void endThreadExclusiveSession() {
 			if (!isNestedThreadExclusiveSession()) {
 				// Resume computer when paused
-				if (jemuRunningAtStartOfMMO) {
+				if (jemuRunningAtStartOfTES) {
 					synchronized (JemuAmstradPc.this) {
 						getJemuInstance().goComputer();
 					}

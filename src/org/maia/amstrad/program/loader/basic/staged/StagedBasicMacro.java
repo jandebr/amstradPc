@@ -8,6 +8,10 @@ public abstract class StagedBasicMacro {
 
 	private int lineNumberEnd;
 
+	protected StagedBasicMacro(int lineNumber) {
+		this(lineNumber, lineNumber);
+	}
+
 	protected StagedBasicMacro(int lineNumberStart, int lineNumberEnd) {
 		setLineNumberStart(lineNumberStart);
 		setLineNumberEnd(lineNumberEnd);
