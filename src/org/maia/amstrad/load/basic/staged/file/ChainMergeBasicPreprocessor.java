@@ -100,7 +100,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected void handleChainMerge(ChainMergeCommand command, BasicSourceCode currentSourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("HANDLE CHAIN MERGE");
+		System.out.println(command);
 		// TODO
 	}
 

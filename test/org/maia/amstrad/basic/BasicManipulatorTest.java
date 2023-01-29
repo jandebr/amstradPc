@@ -36,7 +36,8 @@ public class BasicManipulatorTest {
 
 	private static void manipulate() throws BasicException, AmstradProgramException {
 		AmstradBasicProgramFile program = new AmstradBasicProgramFile(new File("resources/test/manipulator/test.bas"));
-		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(program.getPayload().asTextPayload().getText());
+		CharSequence text = program.getPayload().asTextPayload().getText();
+		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(text);
 		manipulate(sourceCode);
 		System.out.println(sourceCode);
 		System.out.println();

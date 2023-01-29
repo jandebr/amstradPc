@@ -1,25 +1,58 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import org.maia.amstrad.basic.BasicSourceToken;
+import org.maia.amstrad.basic.locomotive.token.LiteralQuotedToken;
+
 public abstract class FileCommand {
 
-	private String filename;
+	private String sourceFilename;
 
 	private boolean suppressMessages;
 
-	protected FileCommand(String filename) {
-		this.filename = filename;
+	private static final String SUPPRESS_INDICATOR = "!";
+
+	private static String parseFilenameFrom(LiteralQuotedToken token) {
+		String str = token.getSourceFragment();
+		int i = str.lastIndexOf(LiteralQuotedToken.QUOTE);
+		if (i > 0) {
+			return str.substring(1, i); // between quotes
+		} else {
+			return str.substring(1); // no ending quote, as in RUN" or RUN"!
+		}
 	}
 
-	public String getFilename() {
+	public static int parseLineNumberFrom(BasicSourceToken token) {
+		int ln = -1;
+		try {
+			ln = Integer.parseInt(token.getSourceFragment());
+		} catch (NumberFormatException e) {
+		}
+		return ln;
+	}
+
+	protected FileCommand(LiteralQuotedToken filenameToken) {
+		this(parseFilenameFrom(filenameToken));
+	}
+
+	protected FileCommand(String sourceFilename) {
+		this.sourceFilename = sourceFilename;
+		this.suppressMessages = sourceFilename.startsWith(SUPPRESS_INDICATOR);
+	}
+
+	public String getBareFilename() {
+		String filename = getSourceFilename();
+		if (isSuppressMessages()) {
+			filename = filename.substring(SUPPRESS_INDICATOR.length());
+		}
 		return filename;
+	}
+
+	public String getSourceFilename() {
+		return sourceFilename;
 	}
 
 	public boolean isSuppressMessages() {
 		return suppressMessages;
-	}
-
-	public void setSuppressMessages(boolean suppressMessages) {
-		this.suppressMessages = suppressMessages;
 	}
 
 }
