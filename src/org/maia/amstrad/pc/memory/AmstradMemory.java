@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.maia.amstrad.AmstradDevice;
+import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.util.AmstradUtils;
 

@@ -5,7 +5,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.io.AmstradFileType;
+import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcSnapshotFile;
 

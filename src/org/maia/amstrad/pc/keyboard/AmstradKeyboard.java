@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.AmstradDevice;
-import org.maia.amstrad.io.AmstradIO;
+import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.util.AmstradIO;
 
 public abstract class AmstradKeyboard extends AmstradDevice {
 

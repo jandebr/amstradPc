@@ -7,9 +7,9 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.util.AmstradIO;
 import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class BasicRuntime {

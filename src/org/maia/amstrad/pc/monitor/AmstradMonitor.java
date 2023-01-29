@@ -5,8 +5,8 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.AmstradDevice;
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.AmstradCoverImageDisplaySource;

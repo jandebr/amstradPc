@@ -7,12 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.io.AmstradFileType;
-import org.maia.amstrad.io.AmstradIO;
+import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.util.AmstradIO;
 
 public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 

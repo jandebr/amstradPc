@@ -3,16 +3,16 @@ package org.maia.amstrad.basic;
 import java.io.File;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.load.AmstradProgramLoader;
+import org.maia.amstrad.load.AmstradProgramLoaderFactory;
+import org.maia.amstrad.load.basic.staged.EndingBasicAction;
+import org.maia.amstrad.load.basic.staged.EndingBasicCodeDisclosure;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
-import org.maia.amstrad.program.loader.AmstradProgramLoader;
-import org.maia.amstrad.program.loader.AmstradProgramLoaderFactory;
-import org.maia.amstrad.program.loader.basic.staged.EndingBasicAction;
-import org.maia.amstrad.program.loader.basic.staged.EndingBasicCodeDisclosure;
 
 public class BasicStagingTest {
 

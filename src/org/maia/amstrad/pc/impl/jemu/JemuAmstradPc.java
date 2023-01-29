@@ -18,10 +18,10 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
-import org.maia.amstrad.io.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcSnapshotFile;

@@ -2,7 +2,7 @@ package org.maia.amstrad.program.repo.file;
 
 import java.io.File;
 
-import org.maia.amstrad.io.AmstradFileType;
+import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 

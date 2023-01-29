@@ -3,8 +3,8 @@ package org.maia.amstrad.program;
 import java.io.File;
 import java.io.IOException;
 
-import org.maia.amstrad.io.AmstradFileType;
-import org.maia.amstrad.io.AmstradIO;
+import org.maia.amstrad.AmstradFileType;
+import org.maia.amstrad.util.AmstradIO;
 
 public class AmstradProgramStoredInFile extends AmstradProgram {
 

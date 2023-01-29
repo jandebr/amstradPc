@@ -9,9 +9,9 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 import org.maia.amstrad.basic.BasicRuntime;
-import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.util.AmstradIO;
 
 public abstract class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBasicMemoryMap {
 

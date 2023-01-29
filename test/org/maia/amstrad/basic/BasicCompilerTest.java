@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeComparator;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeComparator.ComparisonResult;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCodeFormatter;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
-import org.maia.amstrad.io.AmstradFileType;
-import org.maia.amstrad.io.AmstradIO;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.util.AmstradIO;
 import org.maia.amstrad.util.AmstradUtils;
 
 public class BasicCompilerTest {
