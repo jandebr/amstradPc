@@ -9,7 +9,7 @@ public abstract class FileCommand {
 
 	private boolean suppressMessages;
 
-	private static final String SUPPRESS_INDICATOR = "!";
+	private static final String FILENAME_FLAG_SUPPRESS_MESSAGES = "!";
 
 	private static String parseFilenameFrom(LiteralQuotedToken token) {
 		String str = token.getSourceFragment();
@@ -30,19 +30,19 @@ public abstract class FileCommand {
 		return ln;
 	}
 
-	protected FileCommand(LiteralQuotedToken filenameToken) {
-		this(parseFilenameFrom(filenameToken));
+	protected FileCommand(LiteralQuotedToken sourceFilenameToken) {
+		this(parseFilenameFrom(sourceFilenameToken));
 	}
 
 	protected FileCommand(String sourceFilename) {
 		this.sourceFilename = sourceFilename;
-		this.suppressMessages = sourceFilename.startsWith(SUPPRESS_INDICATOR);
+		this.suppressMessages = sourceFilename.startsWith(FILENAME_FLAG_SUPPRESS_MESSAGES);
 	}
 
-	public String getBareFilename() {
+	public String getSourceFilenameWithoutFlags() {
 		String filename = getSourceFilename();
 		if (isSuppressMessages()) {
-			filename = filename.substring(SUPPRESS_INDICATOR.length());
+			filename = filename.substring(FILENAME_FLAG_SUPPRESS_MESSAGES.length());
 		}
 		return filename;
 	}

@@ -56,7 +56,7 @@ public class ChainMergeCommand extends FileCommand {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("ChainMergeCommand '").append(getBareFilename()).append("'");
+		sb.append("ChainMergeCommand '").append(getSourceFilenameWithoutFlags()).append("'");
 		if (hasStartingLineNumber()) {
 			sb.append(" starting at ");
 			sb.append(getStartingLineNumber());

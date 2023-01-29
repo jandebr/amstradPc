@@ -6,7 +6,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcSnapshotFile;
+import org.maia.amstrad.program.AmstradPcSnapshotFile;
 
 public class LoadSnapshotFileAction extends SnapshotFileAction {
 

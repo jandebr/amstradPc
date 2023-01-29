@@ -1,5 +1,7 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import java.io.IOException;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberScope;
@@ -14,6 +16,10 @@ import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.load.basic.staged.StagedBasicMacro;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.AmstradBasicProgramFile;
+import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgram.FileReference;
+import org.maia.amstrad.program.AmstradProgramBuilder;
 
 public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
@@ -77,15 +83,17 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 							if (j < 0)
 								j = sequence.size();
 							ChainMergeCommand command = ChainMergeCommand.parseFrom(sequence.subSequence(i, j));
-							int ref = listener.registerCommand(command).getReferenceNumber();
-							sequence.replaceRange(i, j, createKeywordToken(language, "POKE"), new LiteralToken(" "),
-									new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrResume)),
-									new LiteralToken(","), new SingleDigitDecimalToken(0), SEP,
-									createKeywordToken(language, "POKE"), new LiteralToken(" "),
-									new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrTrap)),
-									new LiteralToken(","), new SingleDigitDecimalToken(ref), SEP,
-									createKeywordToken(language, "GOTO"), new LiteralToken(" "),
-									new LineNumberReferenceToken(lnGoto));
+							if (command != null) {
+								int ref = listener.registerCommand(command).getReferenceNumber();
+								sequence.replaceRange(i, j, createKeywordToken(language, "POKE"), new LiteralToken(" "),
+										new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrResume)),
+										new LiteralToken(","), new SingleDigitDecimalToken(0), SEP,
+										createKeywordToken(language, "POKE"), new LiteralToken(" "),
+										new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrTrap)),
+										new LiteralToken(","), new SingleDigitDecimalToken(ref), SEP,
+										createKeywordToken(language, "GOTO"), new LiteralToken(" "),
+										new LineNumberReferenceToken(lnGoto));
+							}
 						}
 					}
 					i = sequence.getNextIndexOf(CHAIN, i + 1);
@@ -95,12 +103,13 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 				}
 			}
 		}
-		session.getProgramRuntime().addListener(listener);
+		listener.install();
 	}
 
-	protected void handleChainMerge(ChainMergeCommand command, BasicSourceCode currentSourceCode,
-			StagedBasicProgramLoaderSession session) {
+	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
+			BasicSourceCode currentSourceCode, StagedBasicProgramLoaderSession session) {
 		System.out.println(command);
+		System.out.println(chainedProgram);
 		// TODO
 	}
 
@@ -168,8 +177,24 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 
 		@Override
-		protected void execute(FileCommand command) {
-			handleChainMerge((ChainMergeCommand) command, getSourceCode(), getSession());
+		protected void execute(FileCommand command, FileReference fileReference) {
+			AmstradProgram chainedProgram = getChainedProgram(fileReference);
+			handleChainMerge((ChainMergeCommand) command, chainedProgram, getSourceCode(), getSession());
+		}
+
+		private AmstradProgram getChainedProgram(FileReference fileReference) {
+			AmstradProgram chainedProgram = null;
+			if (fileReference != null) {
+				chainedProgram = new AmstradBasicProgramFile(fileReference.getTargetFile());
+				AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(chainedProgram);
+				try {
+					builder.loadAmstradMetaData(fileReference.getMetadataFile());
+				} catch (IOException e) {
+					System.err.println("Failed to load the metadata of chained program: " + fileReference);
+				}
+				chainedProgram = builder.build();
+			}
+			return chainedProgram;
 		}
 
 		private BasicSourceCode getSourceCode() {

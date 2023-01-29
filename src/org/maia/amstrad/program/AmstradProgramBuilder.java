@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.util.StringUtils;
@@ -95,6 +96,14 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return this;
 	}
 
+	public AmstradProgramBuilder withFileReferences(List<FileReference> fileReferences) {
+		getProgram().clearFileReferences();
+		for (FileReference reference : fileReferences) {
+			getProgram().addFileReference(reference);
+		}
+		return this;
+	}
+
 	public AmstradProgramBuilder loadAmstradMetaData(File file) throws IOException {
 		if (file != null) {
 			Reader reader = new FileReader(file);
@@ -122,33 +131,9 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			withPreferredMonitorMode(StringUtils.toMonitorMode(props.getProperty(AMD_MONITOR), null));
 			withProgramDescription(props.getProperty(AMD_DESCRIPTION));
 			withAuthoringInformation(props.getProperty(AMD_AUTHORING));
-			// User controls
-			List<UserControl> userControls = new Vector<UserControl>();
-			int i = 1;
-			String key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
-			while (key != null) {
-				String desc = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_DESCRIPTION);
-				String heading = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_HEADING);
-				UserControl control = new UserControl(key, desc);
-				control.setHeading(heading);
-				userControls.add(control);
-				i++;
-				key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
-			}
-			withUserControls(userControls);
-			// Images
-			List<ProgramImage> images = new Vector<ProgramImage>();
-			i = 1;
-			String fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
-			while (fileRef != null) {
-				File file = new File(relativePath, fileRef);
-				String caption = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_CAPTION);
-				ProgramImage image = new FileReferenceProgramImage(file, caption);
-				images.add(image);
-				i++;
-				fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
-			}
-			withImages(images);
+			withUserControls(extractUserControlsFromMetaData(props));
+			withImages(extractProgramImagesFromMetaData(props, relativePath));
+			withFileReferences(extractFileReferencesFromMetaData(props, relativePath));
 		}
 		return this;
 	}
@@ -169,6 +154,64 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		}
 	}
 
+	private List<UserControl> extractUserControlsFromMetaData(Properties props) {
+		List<UserControl> userControls = new Vector<UserControl>();
+		int i = 1;
+		String key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
+		while (key != null) {
+			String desc = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_DESCRIPTION);
+			String heading = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_HEADING);
+			UserControl control = new UserControl(key, desc);
+			control.setHeading(heading);
+			userControls.add(control);
+			i++;
+			key = props.getProperty(AMD_CONTROLS_PREFIX + '[' + i + ']' + AMD_CONTROLS_SUFFIX_KEY);
+		}
+		return userControls;
+	}
+
+	private List<ProgramImage> extractProgramImagesFromMetaData(Properties props, File relativePath) {
+		List<ProgramImage> images = new Vector<ProgramImage>();
+		int i = 1;
+		String fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
+		while (fileRef != null) {
+			File file = new File(relativePath, fileRef);
+			String caption = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_CAPTION);
+			ProgramImage image = new ProgramImageStoredInFile(file, caption);
+			images.add(image);
+			i++;
+			fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
+		}
+		return images;
+	}
+
+	private List<FileReference> extractFileReferencesFromMetaData(Properties props, File relativePath) {
+		List<FileReference> fileReferences = new Vector<FileReference>();
+		for (String key : props.stringPropertyNames()) {
+			if (key.startsWith(AMD_FILEREFS_PREFIX)) {
+				int i = key.indexOf('[');
+				int j = key.indexOf(']');
+				if (i >= 0 && j >= 0 && j > i) {
+					String sourceFilename = key.substring(i + 1, j);
+					String targetFilename = null;
+					String metadataFilename = null;
+					String value = props.getProperty(key);
+					int d = value.indexOf(AMD_FILEREFS_DESCRIBED_BY);
+					if (d >= 0) {
+						targetFilename = value.substring(0, d).trim();
+						metadataFilename = value.substring(d + AMD_FILEREFS_DESCRIBED_BY.length()).trim();
+					} else {
+						targetFilename = value.trim();
+					}
+					FileReference reference = new RelativePathFileReference(sourceFilename, relativePath,
+							targetFilename, metadataFilename);
+					fileReferences.add(reference);
+				}
+			}
+		}
+		return fileReferences;
+	}
+
 	public AmstradProgram build() {
 		return getProgram();
 	}
@@ -177,11 +220,11 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return program;
 	}
 
-	private static class FileReferenceProgramImage extends ProgramImage {
+	private static class ProgramImageStoredInFile extends ProgramImage {
 
 		private File file;
 
-		public FileReferenceProgramImage(File file, String caption) {
+		public ProgramImageStoredInFile(File file, String caption) {
 			super(caption);
 			this.file = file;
 		}
@@ -193,6 +236,27 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 
 		public File getFile() {
 			return file;
+		}
+
+	}
+
+	private static class RelativePathFileReference extends FileReference {
+
+		private File relativePath;
+
+		public RelativePathFileReference(String sourceFilename, File relativePath, String targetFilename,
+				String metadataFilename) {
+			super(sourceFilename, targetFilename, metadataFilename);
+			this.relativePath = relativePath;
+		}
+
+		@Override
+		protected File getFile(String filename) {
+			return new File(getRelativePath(), filename);
+		}
+
+		public File getRelativePath() {
+			return relativePath;
 		}
 
 	}

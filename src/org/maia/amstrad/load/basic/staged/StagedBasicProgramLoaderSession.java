@@ -11,6 +11,7 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
 import org.maia.amstrad.load.AmstradProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.EndingBasicPreprocessor.EndingMacro;
 import org.maia.amstrad.load.basic.staged.PreambleBasicPreprocessor.PreambleLineMacro;
+import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession implements LocomotiveBasicMemoryMap {
@@ -159,6 +160,11 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	@Override
 	public StagedBasicProgramLoader getLoader() {
 		return (StagedBasicProgramLoader) super.getLoader();
+	}
+
+	public AmstradProgram getLastProgramInChain() {
+		// TODO
+		return getProgram();
 	}
 
 	public BasicRuntime getBasicRuntime() {

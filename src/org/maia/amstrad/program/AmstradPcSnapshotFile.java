@@ -1,9 +1,6 @@
-package org.maia.amstrad.pc;
+package org.maia.amstrad.program;
 
 import java.io.File;
-
-import org.maia.amstrad.program.AmstradProgramStoredInFile;
-import org.maia.amstrad.program.AmstradProgramType;
 
 public class AmstradPcSnapshotFile extends AmstradProgramStoredInFile {
 

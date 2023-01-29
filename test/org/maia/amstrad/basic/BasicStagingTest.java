@@ -1,6 +1,7 @@
 package org.maia.amstrad.basic;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.load.AmstradProgramLoader;
@@ -11,6 +12,7 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 
@@ -18,11 +20,23 @@ public class BasicStagingTest {
 
 	public static void main(String[] args) throws AmstradProgramException {
 		BasicStagingTest test = new BasicStagingTest();
-		AmstradProgram program = new AmstradBasicProgramFile(new File("resources/test/staging/program-1.bas"));
+		AmstradProgram program = test.getTestProgram();
 		test.run(program);
 	}
 
-	public BasicStagingTest() {
+	private BasicStagingTest() {
+	}
+
+	private AmstradProgram getTestProgram() throws AmstradProgramException {
+		File dir = new File("resources/test/staging");
+		AmstradProgram program = new AmstradBasicProgramFile(new File(dir, "program-1.bas"));
+		AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(program);
+		try {
+			builder.loadAmstradMetaData(new File(dir, "program-1.amd"));
+		} catch (IOException e) {
+			throw new AmstradProgramException(program, e);
+		}
+		return builder.build();
 	}
 
 	public void run(AmstradProgram program) throws AmstradProgramException {
@@ -31,6 +45,7 @@ public class BasicStagingTest {
 		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(
 				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE, true);
 		amstradPc.start();
+		System.out.println(program);
 		AmstradProgramRuntime rt = loader.load(program);
 		// rt.getAmstradPc().getBasicRuntime().sendKeyboardInputIfReady("LIST");
 		rt.run();

@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramRuntimeListener;
+import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public abstract class FileCommandRuntimeListener extends StagedBasicProgramRuntimeListener {
 
@@ -23,6 +24,15 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 		FileCommandReference reference = new FileCommandReference(command, n);
 		getCommandReferences().add(reference);
 		return reference;
+	}
+
+	public void install() {
+		AmstradProgramRuntime rt = getSession().getProgramRuntime();
+		rt.addListener(this);
+		if (rt.isRun()) {
+			// already running
+			stagedProgramIsRun();
+		}
 	}
 
 	@Override

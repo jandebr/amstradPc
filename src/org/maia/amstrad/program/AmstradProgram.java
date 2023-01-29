@@ -1,6 +1,7 @@
 package org.maia.amstrad.program;
 
 import java.awt.Image;
+import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
@@ -32,6 +33,8 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private List<ProgramImage> images;
 
+	private List<FileReference> fileReferences;
+
 	private AmstradMonitorMode preferredMonitorMode;
 
 	private AmstradProgramPayload payload;
@@ -45,6 +48,7 @@ public abstract class AmstradProgram implements Cloneable {
 		this.programName = programName;
 		this.userControls = new Vector<UserControl>();
 		this.images = new Vector<ProgramImage>();
+		this.fileReferences = new Vector<FileReference>();
 	}
 
 	@Override
@@ -72,6 +76,8 @@ public abstract class AmstradProgram implements Cloneable {
 		builder.append(userControls);
 		builder.append(", images=");
 		builder.append(images);
+		builder.append(", fileReferences=");
+		builder.append(fileReferences);
 		builder.append(", preferredMonitorMode=");
 		builder.append(preferredMonitorMode);
 		builder.append("]");
@@ -85,6 +91,7 @@ public abstract class AmstradProgram implements Cloneable {
 			clone = (AmstradProgram) super.clone();
 			clone.setUserControls(new Vector<UserControl>(getUserControls()));
 			clone.setImages(new Vector<ProgramImage>(getImages()));
+			clone.setFileReferences(new Vector<FileReference>(getFileReferences()));
 		} catch (CloneNotSupportedException e) {
 			// not the case
 		}
@@ -118,6 +125,22 @@ public abstract class AmstradProgram implements Cloneable {
 
 	public void addImage(ProgramImage image) {
 		getImages().add(image);
+	}
+
+	public void clearFileReferences() {
+		getFileReferences().clear();
+	}
+
+	public void addFileReference(FileReference fileReference) {
+		getFileReferences().add(fileReference);
+	}
+
+	public FileReference lookupFileReference(String sourceFilename) {
+		for (FileReference reference : getFileReferences()) {
+			if (reference.getSourceFilename().equals(sourceFilename))
+				return reference;
+		}
+		return null;
 	}
 
 	public AmstradProgramType getProgramType() {
@@ -214,6 +237,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private void setImages(List<ProgramImage> images) {
 		this.images = images;
+	}
+
+	public List<FileReference> getFileReferences() {
+		return fileReferences;
+	}
+
+	private void setFileReferences(List<FileReference> fileReferences) {
+		this.fileReferences = fileReferences;
 	}
 
 	public AmstradProgramPayload getPayload() throws AmstradProgramException {
@@ -317,6 +348,69 @@ public abstract class AmstradProgram implements Cloneable {
 
 		public String getCaption() {
 			return caption;
+		}
+
+	}
+
+	public static abstract class FileReference {
+
+		private String sourceFilename;
+
+		private String targetFilename;
+
+		private String metadataFilename;
+
+		protected FileReference(String sourceFilename, String targetFilename) {
+			this(sourceFilename, targetFilename, null);
+		}
+
+		protected FileReference(String sourceFilename, String targetFilename, String metadataFilename) {
+			this.sourceFilename = sourceFilename;
+			this.targetFilename = targetFilename;
+			this.metadataFilename = metadataFilename;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("FileReference [sourceFilename=");
+			builder.append(sourceFilename);
+			builder.append(", targetFilename=");
+			builder.append(targetFilename);
+			builder.append(", metadataFilename=");
+			builder.append(metadataFilename);
+			builder.append("]");
+			return builder.toString();
+		}
+
+		public File getTargetFile() {
+			if (getTargetFilename() != null) {
+				return getFile(getTargetFilename());
+			} else {
+				return null;
+			}
+		}
+
+		public File getMetadataFile() {
+			if (getMetadataFilename() != null) {
+				return getFile(getMetadataFilename());
+			} else {
+				return null;
+			}
+		}
+
+		protected abstract File getFile(String filename);
+
+		public String getSourceFilename() {
+			return sourceFilename;
+		}
+
+		public String getTargetFilename() {
+			return targetFilename;
+		}
+
+		public String getMetadataFilename() {
+			return metadataFilename;
 		}
 
 	}
