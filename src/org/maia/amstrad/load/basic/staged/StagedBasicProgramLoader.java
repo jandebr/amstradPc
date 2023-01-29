@@ -2,6 +2,7 @@ package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.load.basic.BasicPreprocessingProgramLoader;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
+import org.maia.amstrad.load.basic.staged.file.ChainMergeBasicPreprocessor;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 

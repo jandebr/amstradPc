@@ -1,7 +1,4 @@
-package org.maia.amstrad.load.basic.staged;
-
-import java.util.List;
-import java.util.Vector;
+package org.maia.amstrad.load.basic.staged.file;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
@@ -15,10 +12,10 @@ import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
-import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
+import org.maia.amstrad.load.basic.staged.StagedBasicMacro;
+import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 
-public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor {
+public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public ChainMergeBasicPreprocessor() {
 	}
@@ -61,7 +58,7 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor {
 		int lnGoto = macro.getLineNumberStart();
 		int addrResume = macro.getResumeMemoryAddress();
 		int addrTrap = session.reserveMemory(1);
-		ChainMergeRuntimeListener listener = new ChainMergeRuntimeListener(session, addrTrap);
+		ChainMergeRuntimeListener listener = new ChainMergeRuntimeListener(sourceCode, session, addrTrap);
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken CHAIN = createKeywordToken(language, "CHAIN");
 		BasicSourceToken MERGE = createKeywordToken(language, "MERGE");
@@ -79,7 +76,8 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor {
 							j = sequence.getNextIndexOf(SEP, j + 1);
 							if (j < 0)
 								j = sequence.size();
-							int ref = listener.registerSourceInstruction(sequence.subSequence(i, j));
+							ChainMergeCommand command = ChainMergeCommand.parseFrom(sequence.subSequence(i, j));
+							int ref = listener.registerCommand(command).getReferenceNumber();
 							sequence.replaceRange(i, j, createKeywordToken(language, "POKE"), new LiteralToken(" "),
 									new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrResume)),
 									new LiteralToken(","), new SingleDigitDecimalToken(0), SEP,
@@ -98,6 +96,12 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor {
 			}
 		}
 		session.getProgramRuntime().addListener(listener);
+	}
+
+	protected void handleChainMerge(ChainMergeCommand command, BasicSourceCode currentSourceCode,
+			StagedBasicProgramLoaderSession session) {
+		System.out.println("HANDLE CHAIN MERGE");
+		// TODO
 	}
 
 	public static class JumpingMacro extends StagedBasicMacro {
@@ -131,77 +135,45 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor {
 
 	}
 
-	private class ChainMergeRuntimeListener extends StagedBasicProgramRuntimeListener {
+	private class ChainMergeRuntimeListener extends FileCommandRuntimeListener {
 
-		private int memoryTrapAddress;
+		private BasicSourceCode sourceCode;
 
-		private List<BasicSourceTokenSequence> sourceInstructions;
-
-		public ChainMergeRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
-			super(session);
-			this.memoryTrapAddress = memoryTrapAddress;
-			this.sourceInstructions = new Vector<BasicSourceTokenSequence>();
-		}
-
-		public int registerSourceInstruction(BasicSourceTokenSequence sequence) {
-			getSourceInstructions().add(sequence);
-			return getSourceInstructions().size();
+		public ChainMergeRuntimeListener(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session,
+				int memoryTrapAddress) {
+			super(session, memoryTrapAddress);
+			this.sourceCode = sourceCode;
 		}
 
 		@Override
-		protected void stagedProgramIsRun() {
+		protected FileCommandMacroHandler createMacroHandler(FileCommandResolver resolver) {
 			ChainMergeMacro macro = getSession().getMacroAdded(ChainMergeMacro.class);
-			addMemoryTrap(getMemoryTrapAddress(),
-					new ChainMergeMacroHandler(macro, getSession(), new SourceInstructionResolver() {
-
-						@Override
-						public BasicSourceTokenSequence resolve(int referenceValue) {
-							return getSourceInstructions().get(referenceValue - 1);
-						}
-					}));
+			return new ChainMergeMacroHandler(macro, getSourceCode(), getSession(), resolver);
 		}
 
-		@Override
-		protected void stagedProgramIsDisposed(boolean programRemainsLoaded) {
-			removeMemoryTrapsAt(getMemoryTrapAddress());
-		}
-
-		private int getMemoryTrapAddress() {
-			return memoryTrapAddress;
-		}
-
-		private List<BasicSourceTokenSequence> getSourceInstructions() {
-			return sourceInstructions;
+		private BasicSourceCode getSourceCode() {
+			return sourceCode;
 		}
 
 	}
 
-	private static interface SourceInstructionResolver {
+	private class ChainMergeMacroHandler extends FileCommandMacroHandler {
 
-		BasicSourceTokenSequence resolve(int referenceValue);
+		private BasicSourceCode sourceCode;
 
-	}
-
-	private class ChainMergeMacroHandler extends StagedBasicMacroHandler implements AmstradMemoryTrapHandler {
-
-		private SourceInstructionResolver resolver;
-
-		public ChainMergeMacroHandler(ChainMergeMacro macro, StagedBasicProgramLoaderSession session,
-				SourceInstructionResolver resolver) {
-			super(macro, session);
-			this.resolver = resolver;
+		public ChainMergeMacroHandler(ChainMergeMacro macro, BasicSourceCode sourceCode,
+				StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
+			super(macro, session, resolver);
+			this.sourceCode = sourceCode;
 		}
 
 		@Override
-		public void handleMemoryTrap(AmstradMemory memory, int memoryAddress, byte memoryValue) {
-			BasicSourceTokenSequence sequence = getResolver().resolve(memoryValue);
-			System.out.println(sequence);
-			// TODO parse sequence for filename etc.
-			// TODO handle
+		protected void execute(FileCommand command) {
+			handleChainMerge((ChainMergeCommand) command, getSourceCode(), getSession());
 		}
 
-		private SourceInstructionResolver getResolver() {
-			return resolver;
+		private BasicSourceCode getSourceCode() {
+			return sourceCode;
 		}
 
 	}

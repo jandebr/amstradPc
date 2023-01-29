@@ -11,11 +11,11 @@ public abstract class StagedBasicMacroHandler {
 		this.session = session;
 	}
 
-	protected StagedBasicMacro getMacro() {
+	public StagedBasicMacro getMacro() {
 		return macro;
 	}
 
-	protected StagedBasicProgramLoaderSession getSession() {
+	public StagedBasicProgramLoaderSession getSession() {
 		return session;
 	}
 
