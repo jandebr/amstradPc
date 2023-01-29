@@ -46,7 +46,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	private void addInterruptMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		int ln = session.acquireFirstAvailablePreambleLineNumber();
+		int ln = session.acquireSmallestAvailablePreambleLineNumber();
 		int lnGoto = session.getEndingMacroLineNumber();
 		addCodeLine(sourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ON BREAK GOSUB " + lnGoto
 				+ (session.produceRemarks() ? ":REM @interrupt" : ""));

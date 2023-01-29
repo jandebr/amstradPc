@@ -29,7 +29,7 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 
 	private void addHimemMacro(BasicSourceCode sourceCode, int himemAddress, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		int ln = session.acquireFirstAvailablePreambleLineNumber();
+		int ln = session.acquireSmallestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln, "SYMBOL AFTER 256:MEMORY &" + Integer.toHexString(himemAddress)
 				+ (session.produceRemarks() ? ":REM @himem" : ""));
 		session.addMacro(new HimemMacro(ln));

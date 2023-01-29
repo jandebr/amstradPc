@@ -41,10 +41,10 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor {
 	private void addChainMergeMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int addrResume = session.reserveMemory(1);
-		int ln1 = session.acquireFirstAvailablePreambleLineNumber();
-		int ln2 = session.acquireFirstAvailablePreambleLineNumber();
-		int ln3 = session.acquireFirstAvailablePreambleLineNumber();
-		int ln4 = session.acquireFirstAvailablePreambleLineNumber();
+		int ln4 = session.acquireLargestAvailablePreambleLineNumber();
+		int ln3 = session.acquireLargestAvailablePreambleLineNumber();
+		int ln2 = session.acquireLargestAvailablePreambleLineNumber();
+		int ln1 = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln1, "GOTO " + ln4 + (session.produceRemarks() ? ":REM @jump" : ""));
 		addCodeLine(sourceCode, ln2, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln2
 				+ (session.produceRemarks() ? ":REM @chainmerge" : ""));

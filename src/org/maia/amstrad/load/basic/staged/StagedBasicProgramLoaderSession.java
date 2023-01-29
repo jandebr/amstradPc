@@ -47,22 +47,40 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		return ADDRESS_HIMEM - getHimemAddress();
 	}
 
-	public synchronized int acquireFirstAvailablePreambleLineNumber() {
+	public synchronized int acquireSmallestAvailablePreambleLineNumber() {
 		Iterator<PreambleLineMacro> it = getMacrosAdded(PreambleLineMacro.class).iterator();
 		if (!it.hasNext())
 			return -1;
-		PreambleLineMacro macroLow = it.next();
-		int lnLow = macroLow.getLineNumberStart();
+		PreambleLineMacro macroMin = it.next();
+		int lnMin = macroMin.getLineNumberStart();
 		while (it.hasNext()) {
 			PreambleLineMacro macro = it.next();
 			int ln = macro.getLineNumberStart();
-			if (ln < lnLow) {
-				lnLow = ln;
-				macroLow = macro;
+			if (ln < lnMin) {
+				lnMin = ln;
+				macroMin = macro;
 			}
 		}
-		removeMacro(macroLow);
-		return lnLow;
+		removeMacro(macroMin);
+		return lnMin;
+	}
+
+	public synchronized int acquireLargestAvailablePreambleLineNumber() {
+		Iterator<PreambleLineMacro> it = getMacrosAdded(PreambleLineMacro.class).iterator();
+		if (!it.hasNext())
+			return -1;
+		PreambleLineMacro macroMax = it.next();
+		int lnMax = macroMax.getLineNumberStart();
+		while (it.hasNext()) {
+			PreambleLineMacro macro = it.next();
+			int ln = macro.getLineNumberStart();
+			if (ln > lnMax) {
+				lnMax = ln;
+				macroMax = macro;
+			}
+		}
+		removeMacro(macroMax);
+		return lnMax;
 	}
 
 	public synchronized EndingMacro getEndingMacro() {
