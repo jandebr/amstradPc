@@ -1,6 +1,8 @@
 package org.maia.amstrad.load.basic.staged;
 
-public abstract class StagedBasicMacroHandler {
+import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
+
+public abstract class StagedBasicMacroHandler implements AmstradMemoryTrapHandler {
 
 	private StagedBasicMacro macro;
 

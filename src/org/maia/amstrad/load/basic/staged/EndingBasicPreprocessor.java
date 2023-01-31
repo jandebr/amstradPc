@@ -14,6 +14,7 @@ import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.load.basic.BasicProgramLoader;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
+import org.maia.amstrad.program.AmstradProgramException;
 
 public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
@@ -41,7 +42,9 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		addCodeLine(sourceCode, ln,
 				"POKE &" + Integer.toHexString(addrTrap) + ",1:END" + (session.produceRemarks() ? ":REM @ending" : ""));
 		session.addMacro(new EndingMacro(ln));
-		session.getProgramRuntime().addListener(new EndingRuntimeListener(session, addrTrap));
+		// Install global macro handler via listener
+		EndingRuntimeListener listener = new EndingRuntimeListener(session, addrTrap);
+		listener.install();
 	}
 
 	private void addInterruptMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
@@ -190,7 +193,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 						.createOriginalBasicProgramLoader(session.getAmstradPc());
 				loader.load(session.getProgram());
 			}
-		} catch (Exception e) {
+		} catch (BasicException | AmstradProgramException e) {
 			e.printStackTrace();
 		}
 	}
@@ -220,31 +223,19 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	private class EndingRuntimeListener extends StagedBasicProgramRuntimeListener {
 
-		private int memoryTrapAddress;
-
 		public EndingRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
-			super(session);
-			this.memoryTrapAddress = memoryTrapAddress;
+			super(session, memoryTrapAddress);
 		}
 
 		@Override
-		protected void stagedProgramIsRun() {
+		protected AmstradMemoryTrapHandler createMemoryTrapHandler() {
 			EndingMacro macro = getSession().getEndingMacro();
-			addMemoryTrap(getMemoryTrapAddress(), new EndingMacroHandler(macro, getSession()));
-		}
-
-		@Override
-		protected void stagedProgramIsDisposed(boolean programRemainsLoaded) {
-			removeMemoryTrapsAt(getMemoryTrapAddress());
-		}
-
-		private int getMemoryTrapAddress() {
-			return memoryTrapAddress;
+			return new EndingMacroHandler(macro, getSession());
 		}
 
 	}
 
-	private class EndingMacroHandler extends StagedBasicMacroHandler implements AmstradMemoryTrapHandler {
+	private class EndingMacroHandler extends StagedBasicMacroHandler {
 
 		public EndingMacroHandler(EndingMacro macro, StagedBasicProgramLoaderSession session) {
 			super(macro, session);

@@ -30,18 +30,18 @@ public class ChainMergeCommand extends FileCommand {
 			BasicSourceTokenSequence sub = sequence.subSequence(i + 1, di >= 0 ? di : sequence.size());
 			int j = sub.getFirstIndexOf(NumericToken.class);
 			if (j >= 0) {
-				command.setStartingLineNumber(FileCommand.parseLineNumberFrom(sub.get(j)));
+				command.setStartingLineNumber(FileCommand.parseAsIntegerNumber(sub.get(j)));
 			}
 			// deletion
 			if (di >= 0) {
 				sub = sequence.subSequence(di + 1, sequence.size());
 				j = sub.getFirstIndexOf(NumericToken.class);
 				if (j >= 0) {
-					command.setDeletionLineNumberFrom(FileCommand.parseLineNumberFrom(sub.get(j)));
+					command.setDeletionLineNumberFrom(FileCommand.parseAsIntegerNumber(sub.get(j)));
 					if (command.getDeletionLineNumberFrom() >= 0) {
 						int k = sub.getNextIndexOf(NumericToken.class, j + 1);
 						if (k >= 0) {
-							command.setDeletionLineNumberTo(FileCommand.parseLineNumberFrom(sub.get(k)));
+							command.setDeletionLineNumberTo(FileCommand.parseAsIntegerNumber(sub.get(k)));
 						}
 						if (command.getDeletionLineNumberTo() < 0) {
 							command.setDeletionLineNumberTo(command.getDeletionLineNumberFrom());

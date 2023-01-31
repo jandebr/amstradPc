@@ -5,17 +5,14 @@ import java.util.Vector;
 
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramRuntimeListener;
-import org.maia.amstrad.program.AmstradProgramRuntime;
+import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
 
 public abstract class FileCommandRuntimeListener extends StagedBasicProgramRuntimeListener {
-
-	private int memoryTrapAddress;
 
 	private Collection<FileCommandReference> commandReferences;
 
 	protected FileCommandRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
-		super(session);
-		this.memoryTrapAddress = memoryTrapAddress;
+		super(session, memoryTrapAddress);
 		this.commandReferences = new Vector<FileCommandReference>();
 	}
 
@@ -26,23 +23,9 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 		return reference;
 	}
 
-	public void install() {
-		AmstradProgramRuntime rt = getSession().getProgramRuntime();
-		rt.addListener(this);
-		if (rt.isRun()) {
-			// already running
-			stagedProgramIsRun();
-		}
-	}
-
 	@Override
-	protected void stagedProgramIsRun() {
-		addMemoryTrap(getMemoryTrapAddress(), createMacroHandler(createResolver()));
-	}
-
-	@Override
-	protected void stagedProgramIsDisposed(boolean programRemainsLoaded) {
-		removeMemoryTrapsAt(getMemoryTrapAddress());
+	protected final AmstradMemoryTrapHandler createMemoryTrapHandler() {
+		return createMacroHandler(createResolver());
 	}
 
 	protected abstract FileCommandMacroHandler createMacroHandler(FileCommandResolver resolver);
@@ -59,10 +42,6 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 				return null;
 			}
 		};
-	}
-
-	public int getMemoryTrapAddress() {
-		return memoryTrapAddress;
 	}
 
 	private Collection<FileCommandReference> getCommandReferences() {

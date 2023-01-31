@@ -1,7 +1,5 @@
 package org.maia.amstrad.load.basic.staged.file;
 
-import java.io.IOException;
-
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberScope;
@@ -16,12 +14,12 @@ import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.load.basic.staged.StagedBasicMacro;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
-import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
-import org.maia.amstrad.program.AmstradProgramBuilder;
 
 public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
+
+	private static final int ERROR_PROGRAM_NOT_FOUND = 32;
 
 	public ChainMergeBasicPreprocessor() {
 	}
@@ -108,9 +106,37 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
 			BasicSourceCode currentSourceCode, StagedBasicProgramLoaderSession session) {
-		System.out.println(command);
-		System.out.println(chainedProgram);
-		// TODO
+		if (chainedProgram == null) {
+			resumeWithError(ERROR_PROGRAM_NOT_FOUND, currentSourceCode, session);
+		} else {
+			// TODO IF chainedProgram already merged, do nothing ELSE merge
+			System.out.println(command);
+			System.out.println(chainedProgram);
+		}
+	}
+
+	private void resumeWithError(int errorCode, BasicSourceCode currentSourceCode,
+			StagedBasicProgramLoaderSession session) {
+		int ln = session.getMacroAdded(ChainMergeMacro.class).getLineNumberEnd();
+		try {
+			addCodeLine(currentSourceCode, ln,
+					"ERROR " + errorCode + (session.produceRemarks() ? ":REM @chainmerge###" : "")); // TODO fix filler
+			System.out.println(currentSourceCode);
+			replaceRunningCode(currentSourceCode, session);
+			resumeRun(session);
+		} catch (BasicException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void replaceRunningCode(BasicSourceCode newSourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		session.getBasicRuntime().swap(newSourceCode);
+	}
+
+	private void resumeRun(StagedBasicProgramLoaderSession session) {
+		int addr = session.getMacroAdded(ChainMergeMacro.class).getResumeMemoryAddress();
+		session.getBasicRuntime().poke(addr, (byte) 1);
 	}
 
 	public static class JumpingMacro extends StagedBasicMacro {
@@ -178,23 +204,8 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 		@Override
 		protected void execute(FileCommand command, FileReference fileReference) {
-			AmstradProgram chainedProgram = getChainedProgram(fileReference);
+			AmstradProgram chainedProgram = getReferencedProgram(fileReference);
 			handleChainMerge((ChainMergeCommand) command, chainedProgram, getSourceCode(), getSession());
-		}
-
-		private AmstradProgram getChainedProgram(FileReference fileReference) {
-			AmstradProgram chainedProgram = null;
-			if (fileReference != null) {
-				chainedProgram = new AmstradBasicProgramFile(fileReference.getTargetFile());
-				AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(chainedProgram);
-				try {
-					builder.loadAmstradMetaData(fileReference.getMetadataFile());
-				} catch (IOException e) {
-					System.err.println("Failed to load the metadata of chained program: " + fileReference);
-				}
-				chainedProgram = builder.build();
-			}
-			return chainedProgram;
 		}
 
 		private BasicSourceCode getSourceCode() {

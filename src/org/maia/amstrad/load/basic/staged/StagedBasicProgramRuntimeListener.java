@@ -9,36 +9,54 @@ public abstract class StagedBasicProgramRuntimeListener implements AmstradProgra
 
 	private StagedBasicProgramLoaderSession session;
 
-	protected StagedBasicProgramRuntimeListener(StagedBasicProgramLoaderSession session) {
+	private int memoryTrapAddress;
+
+	protected StagedBasicProgramRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
 		this.session = session;
+		this.memoryTrapAddress = memoryTrapAddress;
+	}
+
+	public void install() {
+		AmstradProgramRuntime rt = getSession().getProgramRuntime();
+		rt.addListener(this);
+		if (rt.isRun()) {
+			// already running
+			amstradProgramIsRun();
+		}
+	}
+
+	public void amstradProgramIsRun() {
+		amstradProgramIsRun(getSession().getProgramRuntime());
 	}
 
 	@Override
-	public final void amstradProgramIsRun(AmstradProgramRuntime programRuntime) {
-		stagedProgramIsRun();
+	public void amstradProgramIsRun(AmstradProgramRuntime programRuntime) {
+		addMemoryTrap(getMemoryTrapAddress(), createMemoryTrapHandler());
 	}
-
-	protected abstract void stagedProgramIsRun();
 
 	@Override
-	public final void amstradProgramIsDisposed(AmstradProgramRuntime programRuntime, boolean programRemainsLoaded) {
-		stagedProgramIsDisposed(programRemainsLoaded);
+	public void amstradProgramIsDisposed(AmstradProgramRuntime programRuntime, boolean programRemainsLoaded) {
+		removeMemoryTrapsAt(getMemoryTrapAddress());
 	}
 
-	protected abstract void stagedProgramIsDisposed(boolean programRemainsLoaded);
+	protected abstract AmstradMemoryTrapHandler createMemoryTrapHandler();
 
-	protected void addMemoryTrap(int memoryAddress, AmstradMemoryTrapHandler handler) {
+	private void addMemoryTrap(int memoryAddress, AmstradMemoryTrapHandler handler) {
 		AmstradMemory memory = getSession().getAmstradPc().getMemory();
 		memory.addMemoryTrap(memoryAddress, false, handler);
 	}
 
-	protected void removeMemoryTrapsAt(int memoryAddress) {
+	private void removeMemoryTrapsAt(int memoryAddress) {
 		AmstradMemory memory = getSession().getAmstradPc().getMemory();
 		memory.removeMemoryTrapsAt(memoryAddress);
 	}
 
 	protected StagedBasicProgramLoaderSession getSession() {
 		return session;
+	}
+
+	protected int getMemoryTrapAddress() {
+		return memoryTrapAddress;
 	}
 
 }

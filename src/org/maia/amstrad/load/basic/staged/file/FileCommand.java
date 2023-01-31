@@ -21,7 +21,7 @@ public abstract class FileCommand {
 		}
 	}
 
-	public static int parseLineNumberFrom(BasicSourceToken token) {
+	public static int parseAsIntegerNumber(BasicSourceToken token) {
 		int ln = -1;
 		try {
 			ln = Integer.parseInt(token.getSourceFragment());
