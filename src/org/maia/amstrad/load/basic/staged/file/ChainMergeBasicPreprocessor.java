@@ -122,7 +122,6 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		try {
 			addCodeLine(currentSourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ERROR " + errorCode
 					+ (session.produceRemarks() ? ":REM @chainmerge" : ""));
-			System.out.println(currentSourceCode);
 			replaceRunningCode(currentSourceCode, session);
 			resumeRun(session);
 		} catch (BasicException e) {
