@@ -107,7 +107,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
 			BasicSourceCode currentSourceCode, StagedBasicProgramLoaderSession session) {
 		if (chainedProgram == null) {
-			resumeWithError(ERROR_PROGRAM_NOT_FOUND, currentSourceCode, session);
+			endWithError(ERROR_PROGRAM_NOT_FOUND, currentSourceCode, session);
 		} else {
 			// TODO IF chainedProgram already merged, do nothing ELSE merge
 			System.out.println(command);
@@ -115,7 +115,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 	}
 
-	private void resumeWithError(int errorCode, BasicSourceCode currentSourceCode,
+	private void endWithError(int errorCode, BasicSourceCode currentSourceCode,
 			StagedBasicProgramLoaderSession session) {
 		int ln = session.getMacroAdded(ChainMergeMacro.class).getLineNumberEnd();
 		int lnGoto = session.getEndingMacro().getLineNumberStart();
