@@ -118,9 +118,10 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private void resumeWithError(int errorCode, BasicSourceCode currentSourceCode,
 			StagedBasicProgramLoaderSession session) {
 		int ln = session.getMacroAdded(ChainMergeMacro.class).getLineNumberEnd();
+		int lnGoto = session.getEndingMacro().getLineNumberStart();
 		try {
-			addCodeLine(currentSourceCode, ln,
-					"ERROR " + errorCode + (session.produceRemarks() ? ":REM @chainmerge###" : "")); // TODO fix filler
+			addCodeLine(currentSourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ERROR " + errorCode
+					+ (session.produceRemarks() ? ":REM @chainmerge" : ""));
 			System.out.println(currentSourceCode);
 			replaceRunningCode(currentSourceCode, session);
 			resumeRun(session);
