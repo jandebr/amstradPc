@@ -7,11 +7,11 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
-import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.load.basic.BasicProgramLoader;
+import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -23,14 +23,13 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	@Override
 	protected int getDesiredPreambleLineCount() {
-		return 1; // for interrupt macro
+		return 1; // for ending macro
 	}
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
 		if (!session.hasMacrosAdded(EndingMacro.class)) {
 			addEndingMacro(sourceCode, session);
-			addInterruptMacro(sourceCode, session);
 		}
 		invokeMacrosFromCode(sourceCode, session);
 	}
@@ -38,31 +37,29 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	private void addEndingMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int addrTrap = session.reserveMemory(1);
-		int ln = getNextAvailableLineNumber(sourceCode);
+		int ln = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln,
-				"POKE &" + Integer.toHexString(addrTrap) + ",1:END" + (session.produceRemarks() ? ":REM @ending" : ""));
+				"POKE &" + Integer.toHexString(addrTrap) + ",1:END" + (session.produceRemarks() ? ":REM @end" : ""));
 		session.addMacro(new EndingMacro(ln));
 		// Install global macro handler via listener
 		EndingRuntimeListener listener = new EndingRuntimeListener(session, addrTrap);
 		listener.install();
 	}
 
-	private void addInterruptMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
-		int ln = session.acquireSmallestAvailablePreambleLineNumber();
-		int lnGoto = session.getEndingMacroLineNumber();
-		addCodeLine(sourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ON BREAK GOSUB " + lnGoto
-				+ (session.produceRemarks() ? ":REM @interrupt" : ""));
-		session.addMacro(new InterruptMacro(ln));
-	}
-
 	protected void invokeMacrosFromCode(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		BasicLineNumberScope scope = session.getScopeExcludingMacros();
+		invokeEndingMacroAtCodeHorizon(sourceCode, session);
 		invokeEndingMacroOnBreak(sourceCode, scope, session);
 		invokeEndingMacroOnEndCommands(sourceCode, scope, session);
 		invokeEndingMacroOnGotoLoops(sourceCode, scope, session);
-		repeatInterruptMacroAfterClear(sourceCode, scope, session);
+	}
+
+	private void invokeEndingMacroAtCodeHorizon(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		int ln = session.getMacroAdded(ProgramBridgeMacro.class).getLineNumberStart();
+		int lnGoto = session.getEndingMacroLineNumber();
+		substituteGotoLineNumber(ln, lnGoto, sourceCode, session);
 	}
 
 	private void invokeEndingMacroOnBreak(BasicSourceCode sourceCode, BasicLineNumberScope scope,
@@ -153,31 +150,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 	}
 
-	private void repeatInterruptMacroAfterClear(BasicSourceCode sourceCode, BasicLineNumberScope scope,
-			StagedBasicProgramLoaderSession session) throws BasicException {
-		InterruptMacro iMacro = session.getMacroAdded(InterruptMacro.class);
-		BasicSourceTokenSequence iSequence = sourceCode.getLineByLineNumber(iMacro.getLineNumberStart()).parse();
-		BasicLanguage language = sourceCode.getLanguage();
-		int iRem = iSequence.getFirstIndexOf(createKeywordToken(language, "REM"));
-		iSequence = iSequence.subSequence(1, iRem > 0 ? iRem - 1 : iSequence.size());
-		BasicSourceToken CLEAR = createKeywordToken(language, "CLEAR");
-		for (BasicSourceCodeLine line : sourceCode) {
-			if (scope.isInScope(line)) {
-				BasicSourceTokenSequence sequence = line.parse();
-				int i = sequence.getFirstIndexOf(CLEAR);
-				while (i >= 0) {
-					// CLEAR command => repeat interrupt
-					sequence.insert(i + 1, new InstructionSeparatorToken());
-					sequence.insert(i + 2, iSequence);
-					i = sequence.getNextIndexOf(CLEAR, i + 2 + iSequence.size());
-				}
-				if (sequence.isModified()) {
-					addCodeLine(sourceCode, sequence);
-				}
-			}
-		}
-	}
-
 	protected void handleProgramEnded(StagedBasicProgramLoaderSession session) {
 		handleCodeDisclosure(session);
 		performEndingAction(session);
@@ -208,14 +180,6 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	public static class EndingMacro extends StagedBasicMacro {
 
 		public EndingMacro(int lineNumber) {
-			super(lineNumber);
-		}
-
-	}
-
-	public static class InterruptMacro extends StagedBasicMacro {
-
-		public InterruptMacro(int lineNumber) {
 			super(lineNumber);
 		}
 

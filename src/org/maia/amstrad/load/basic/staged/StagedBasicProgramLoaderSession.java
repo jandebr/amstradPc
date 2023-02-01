@@ -20,8 +20,6 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private int himemAddress;
 
-	private int endingMacroLineNumber;
-
 	private EndingBasicAction endingAction;
 
 	private EndingBasicCodeDisclosure codeDisclosure;
@@ -33,7 +31,6 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
 		setHimemAddress(ADDRESS_HIMEM);
-		this.endingMacroLineNumber = -1;
 		this.macrosAdded = new HashSet<StagedBasicMacro>();
 	}
 
@@ -82,6 +79,15 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		}
 		removeMacro(macroMax);
 		return lnMax;
+	}
+
+	public synchronized int getEndingMacroLineNumber() {
+		EndingMacro macro = getEndingMacro();
+		if (macro != null) {
+			return macro.getLineNumberStart();
+		} else {
+			return -1;
+		}
 	}
 
 	public synchronized EndingMacro getEndingMacro() {
@@ -148,12 +154,8 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	}
 
 	public void renumMacros(BasicLineNumberLinearMapping mapping) {
-		EndingMacro ending = getEndingMacro();
 		for (StagedBasicMacro macro : getMacrosAdded()) {
 			macro.renum(mapping);
-			if (macro.equals(ending)) {
-				setEndingMacroLineNumber(macro.getLineNumberStart());
-			}
 		}
 	}
 
@@ -177,20 +179,6 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private void setHimemAddress(int himemAddress) {
 		this.himemAddress = himemAddress;
-	}
-
-	public synchronized int getEndingMacroLineNumber() {
-		if (endingMacroLineNumber < 0) {
-			EndingMacro macro = getEndingMacro();
-			if (macro != null) {
-				endingMacroLineNumber = macro.getLineNumberStart();
-			}
-		}
-		return endingMacroLineNumber;
-	}
-
-	private void setEndingMacroLineNumber(int lineNumber) {
-		endingMacroLineNumber = lineNumber;
 	}
 
 	public EndingBasicAction getEndingAction() {

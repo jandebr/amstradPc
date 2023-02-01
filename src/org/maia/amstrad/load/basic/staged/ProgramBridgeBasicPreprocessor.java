@@ -33,12 +33,8 @@ public class ProgramBridgeBasicPreprocessor extends StagedBasicPreprocessor {
 	private void addProgramBridgeMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int ln = getNextAvailableLineNumber(sourceCode);
-		int lnEnd = session.getEndingMacroLineNumber();
-		if (lnEnd < 0) {
-			addCodeLine(sourceCode, ln, "'GOTO 0" + (session.produceRemarks() ? ":REM @bridge" : ""));
-		} else {
-			addCodeLine(sourceCode, ln, "GOTO " + lnEnd + (session.produceRemarks() ? ":REM @bridge" : ""));
-		}
+		// line number will be replaced by EndingBasicPreprocessor
+		addCodeLine(sourceCode, ln, "GOTO 0" + (session.produceRemarks() ? ":REM @bridge" : ""));
 		session.addMacro(new ProgramBridgeMacro(ln));
 	}
 
@@ -70,10 +66,10 @@ public class ProgramBridgeBasicPreprocessor extends StagedBasicPreprocessor {
 								DynamicLinkMacro macro = externalLinkMap.get(ln);
 								if (macro == null) {
 									int lnMacro = getNextAvailableLineNumber(sourceCode);
-									macro = new DynamicLinkMacro(lnMacro);
+									macro = new DynamicLinkMacro(lnMacro, ln);
 									externalLinkMap.put(ln, macro);
 									addCodeLine(sourceCode, lnMacro,
-											"'GOTO " + ln + (session.produceRemarks() ? ":REM @link" : ""));
+											"GOTO 0" + (session.produceRemarks() ? ":REM @link" : ""));
 									session.addMacro(macro);
 								}
 								sequence.replace(i, new LineNumberReferenceToken(macro.getLineNumberStart()));
@@ -99,8 +95,15 @@ public class ProgramBridgeBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static class DynamicLinkMacro extends StagedBasicMacro {
 
-		public DynamicLinkMacro(int lineNumber) {
+		private int originalLineNumber;
+
+		public DynamicLinkMacro(int lineNumber, int originalLineNumber) {
 			super(lineNumber);
+			this.originalLineNumber = originalLineNumber;
+		}
+
+		public int getOriginalLineNumber() {
+			return originalLineNumber;
 		}
 
 	}

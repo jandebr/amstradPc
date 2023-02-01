@@ -12,21 +12,21 @@ import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
+import org.maia.amstrad.load.basic.staged.ErrorOutBasicPreprocessor.ErrorOutMacro;
+import org.maia.amstrad.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.load.basic.staged.StagedBasicMacro;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 
-public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
-
-	private static final int ERROR_PROGRAM_NOT_FOUND = 32;
+public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor implements ErrorOutCodes {
 
 	public ChainMergeBasicPreprocessor() {
 	}
 
 	@Override
 	protected int getDesiredPreambleLineCount() {
-		return 4; // for jumping, chainmerge and landing macro
+		return 2; // for chainmerge macro
 	}
 
 	@Override
@@ -42,18 +42,12 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private void addChainMergeMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int addrResume = session.reserveMemory(1);
-		int ln4 = session.acquireLargestAvailablePreambleLineNumber();
-		int ln3 = session.acquireLargestAvailablePreambleLineNumber();
 		int ln2 = session.acquireLargestAvailablePreambleLineNumber();
 		int ln1 = session.acquireLargestAvailablePreambleLineNumber();
-		addCodeLine(sourceCode, ln1, "GOTO " + ln4 + (session.produceRemarks() ? ":REM @jump" : ""));
-		addCodeLine(sourceCode, ln2, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln2
+		addCodeLine(sourceCode, ln1, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln1
 				+ (session.produceRemarks() ? ":REM @chainmerge" : ""));
-		addCodeLine(sourceCode, ln3, "RESTORE:GOTO 0" + (session.produceRemarks() ? ":REM @chainmerge" : ""));
-		addCodeLine(sourceCode, ln4, session.produceRemarks() ? "REM @land" : "'");
-		session.addMacro(new JumpingMacro(ln1));
-		session.addMacro(new ChainMergeMacro(ln2, ln3, addrResume));
-		session.addMacro(new LandingMacro(ln4));
+		addCodeLine(sourceCode, ln2, "RESTORE:GOTO 0" + (session.produceRemarks() ? ":REM @chainmerge" : ""));
+		session.addMacro(new ChainMergeMacro(ln1, ln2, addrResume));
 	}
 
 	private void invokeChainMergeMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
@@ -107,7 +101,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
 			BasicSourceCode currentSourceCode, StagedBasicProgramLoaderSession session) {
 		if (chainedProgram == null) {
-			endWithError(ERROR_PROGRAM_NOT_FOUND, currentSourceCode, session);
+			endWithError(ERR_PROGRAM_NOT_FOUND, currentSourceCode, session);
 		} else {
 			// TODO IF chainedProgram already merged, do nothing ELSE merge
 			System.out.println(command);
@@ -117,11 +111,12 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	private void endWithError(int errorCode, BasicSourceCode currentSourceCode,
 			StagedBasicProgramLoaderSession session) {
-		int ln = session.getMacroAdded(ChainMergeMacro.class).getLineNumberEnd();
-		int lnGoto = session.getEndingMacro().getLineNumberStart();
 		try {
-			addCodeLine(currentSourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ERROR " + errorCode
-					+ (session.produceRemarks() ? ":REM @chainmerge" : ""));
+			int ln = session.getMacroAdded(ChainMergeMacro.class).getLineNumberEnd();
+			int lnResume = session.getMacroAdded(ErrorOutMacro.class).getLineNumberStart();
+			substituteGotoLineNumber(ln, lnResume, currentSourceCode, session);
+			substituteErrorCode(errorCode, currentSourceCode, session);
+			System.out.println(currentSourceCode);
 			replaceRunningCode(currentSourceCode, session);
 			resumeRun(session);
 		} catch (BasicException e) {
@@ -137,22 +132,6 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private void resumeRun(StagedBasicProgramLoaderSession session) {
 		int addr = session.getMacroAdded(ChainMergeMacro.class).getResumeMemoryAddress();
 		session.getBasicRuntime().poke(addr, (byte) 1);
-	}
-
-	public static class JumpingMacro extends StagedBasicMacro {
-
-		public JumpingMacro(int lineNumber) {
-			super(lineNumber);
-		}
-
-	}
-
-	public static class LandingMacro extends StagedBasicMacro {
-
-		public LandingMacro(int lineNumber) {
-			super(lineNumber);
-		}
-
 	}
 
 	public static class ChainMergeMacro extends StagedBasicMacro {

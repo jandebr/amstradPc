@@ -28,8 +28,12 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		PreambleBasicPreprocessor preamble = new PreambleBasicPreprocessor();
 		addPreprocessor(new ProgramBridgeBasicPreprocessor());
 		addPreprocessor(preamble);
+		addPreprocessor(new PreambleLandingBasicPreprocessor());
 		addPreprocessor(new ChainMergeBasicPreprocessor());
 		addPreprocessor(new EndingBasicPreprocessor());
+		addPreprocessor(new ErrorOutBasicPreprocessor());
+		addPreprocessor(new PreambleJumpingBasicPreprocessor());
+		addPreprocessor(new InterruptBasicPreprocessor());
 		addPreprocessor(new HimemBasicPreprocessor(16));
 		// Number of preamble lines needed
 		preamble.setPreambleLineCount(getDesiredPreambleLineCount());
