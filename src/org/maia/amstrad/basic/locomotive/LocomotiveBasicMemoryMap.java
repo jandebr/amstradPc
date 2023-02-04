@@ -12,6 +12,8 @@ public interface LocomotiveBasicMemoryMap {
 
 	int ADDRESS_HEAP_END_POINTER_BIS = 0xAE89;
 
-	int ADDRESS_HIMEM = 0xA67B;
+	int ADDRESS_HIMEM_POINTER = 0xAE7B; // points to HIMEM memory address
+	
+	int DEFAULT_HIMEM = 0xA67B;
 	
 }

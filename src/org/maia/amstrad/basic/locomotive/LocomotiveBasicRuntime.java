@@ -8,6 +8,7 @@ import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicMemoryFullException;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
@@ -62,7 +63,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	@Override
-	protected void loadByteCode(BasicByteCode code) {
+	protected void loadByteCode(BasicByteCode code) throws BasicMemoryFullException {
+		int addrEnd = ADDRESS_BYTECODE_START + code.getByteCount();
+		checkFitsInsideBasicMemory(addrEnd);
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
@@ -71,7 +74,6 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			// Write byte code
 			memory.writeBytes(ADDRESS_BYTECODE_START, code.getBytes());
 			// Marking end of byte code
-			int addrEnd = ADDRESS_BYTECODE_START + code.getByteCount();
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
 			// Marking end of heap space
@@ -107,7 +109,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		swapByteCode(byteCode);
 	}
 
-	protected void swapByteCode(BasicByteCode newByteCode) {
+	protected void swapByteCode(BasicByteCode newByteCode) throws BasicMemoryFullException {
+		int addrEnd = ADDRESS_BYTECODE_START + newByteCode.getByteCount();
+		checkFitsInsideBasicMemory(addrEnd);
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
@@ -116,7 +120,6 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			// Swap byte code
 			memory.writeBytes(ADDRESS_BYTECODE_START, newByteCode.getBytes());
 			// Marking end of byte code
-			int addrEnd = ADDRESS_BYTECODE_START + newByteCode.getByteCount();
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
 		} finally {
@@ -148,20 +151,27 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		return getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
 	}
 
-	private void moveHeapSpace(int distanceInBytes) {
+	protected void checkFitsInsideBasicMemory(int memoryAddress) throws BasicMemoryFullException {
+		if (memoryAddress > getHimem()) {
+			throw new BasicMemoryFullException();
+		}
+	}
+
+	private void moveHeapSpace(int distanceInBytes) throws BasicMemoryFullException {
 		if (distanceInBytes == 0)
 			return;
 		AmstradMemory memory = getMemory();
+		int heapStart = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
+		int heapEnd = memory.readWord(ADDRESS_HEAP_END_POINTER);
+		int heapEndNew = heapEnd + distanceInBytes;
+		checkFitsInsideBasicMemory(heapEndNew);
 		memory.startThreadExclusiveSession();
 		try {
-			int heapStart = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
-			int heapEnd = memory.readWord(ADDRESS_HEAP_END_POINTER);
 			if (heapEnd > heapStart) {
 				byte[] heap = memory.readBytes(heapStart, heapEnd - heapStart);
 				memory.eraseBytesBetween(heapStart, heapEnd);
 				memory.writeBytes(heapStart + distanceInBytes, heap);
 			}
-			int heapEndNew = heapEnd + distanceInBytes;
 			memory.writeWord(ADDRESS_HEAP_END_POINTER, heapEndNew);
 			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, heapEndNew);
 		} finally {
@@ -208,6 +218,16 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
+	}
+
+	@Override
+	public int getHimem() {
+		return getMemory().readWord(ADDRESS_HIMEM_POINTER);
+	}
+
+	@Override
+	public int getFreeMemory() {
+		return getHimem() - getMemory().readWord(ADDRESS_HEAP_END_POINTER);
 	}
 
 	@Override

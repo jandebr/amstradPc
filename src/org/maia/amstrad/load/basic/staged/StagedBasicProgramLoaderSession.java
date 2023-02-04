@@ -2,7 +2,9 @@ package org.maia.amstrad.load.basic.staged;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 import org.maia.amstrad.basic.BasicLineNumberScope;
@@ -28,10 +30,14 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private StagedLineNumberMapping originalToStagedLineNumberMapping;
 
+	private List<AmstradProgram> chainedPrograms;
+
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
-		setHimemAddress(ADDRESS_HIMEM);
+		setHimemAddress(DEFAULT_HIMEM);
 		this.macrosAdded = new HashSet<StagedBasicMacro>();
+		this.chainedPrograms = new Vector<AmstradProgram>();
+		addProgramToChain(getProgram());
 	}
 
 	public synchronized int reserveMemory(int numberOfBytes) {
@@ -42,7 +48,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	}
 
 	public synchronized int getReservedMemoryInBytes() {
-		return ADDRESS_HIMEM - getHimemAddress();
+		return DEFAULT_HIMEM - getHimemAddress();
 	}
 
 	public synchronized int acquireSmallestAvailablePreambleLineNumber() {
@@ -159,14 +165,21 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		}
 	}
 
-	@Override
-	public StagedBasicProgramLoader getLoader() {
-		return (StagedBasicProgramLoader) super.getLoader();
+	public void addProgramToChain(AmstradProgram program) {
+		getChainedPrograms().add(program);
 	}
 
 	public AmstradProgram getLastProgramInChain() {
-		// TODO
-		return getProgram();
+		return getChainedPrograms().get(getChainedPrograms().size() - 1);
+	}
+
+	public List<AmstradProgram> getChainedPrograms() {
+		return chainedPrograms;
+	}
+
+	@Override
+	public StagedBasicProgramLoader getLoader() {
+		return (StagedBasicProgramLoader) super.getLoader();
 	}
 
 	public BasicRuntime getBasicRuntime() {

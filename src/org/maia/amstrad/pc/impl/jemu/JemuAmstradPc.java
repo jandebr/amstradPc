@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.basic.BasicByteCode;
+import org.maia.amstrad.basic.BasicMemoryFullException;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
@@ -771,7 +772,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		protected void loadByteCode(BasicByteCode code) {
+		protected void loadByteCode(BasicByteCode code) throws BasicMemoryFullException {
 			super.loadByteCode(code);
 			fireProgramLoaded();
 		}

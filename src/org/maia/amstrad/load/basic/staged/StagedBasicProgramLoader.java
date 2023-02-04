@@ -24,7 +24,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 	}
 
 	protected void setupPreprocessors() {
-		// The order is absolutely crucial
+		// The order is crucial
 		PreambleBasicPreprocessor preamble = new PreambleBasicPreprocessor();
 		addPreprocessor(new ProgramBridgeBasicPreprocessor());
 		addPreprocessor(preamble);

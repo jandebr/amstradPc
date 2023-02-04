@@ -31,10 +31,10 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor im
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
+		if (!session.hasMacrosAdded(ChainMergeMacro.class)) {
+			addChainMergeMacro(sourceCode, session);
+		}
 		if (originalCodeContainsKeyword(sourceCode, "CHAIN", session)) {
-			if (!session.hasMacrosAdded(ChainMergeMacro.class)) {
-				addChainMergeMacro(sourceCode, session);
-			}
 			invokeChainMergeMacro(sourceCode, session);
 		}
 	}
@@ -101,7 +101,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor im
 	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
 			BasicSourceCode currentSourceCode, StagedBasicProgramLoaderSession session) {
 		if (chainedProgram == null) {
-			endWithError(ERR_PROGRAM_NOT_FOUND, currentSourceCode, session);
+			endWithError(ERR_FILE_NOT_FOUND, currentSourceCode, session);
 		} else {
 			// TODO IF chainedProgram already merged, do nothing ELSE merge
 			System.out.println(command);

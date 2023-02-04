@@ -223,6 +223,10 @@ public abstract class BasicRuntime {
 		}
 	}
 
+	public abstract int getHimem();
+
+	public abstract int getFreeMemory();
+
 	public byte peek(int memoryAddress) {
 		return getMemory().readByte(memoryAddress);
 	}

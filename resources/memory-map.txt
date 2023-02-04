@@ -7,8 +7,8 @@
 
 &0170	   368	Basic first address
 				Code ends with word 0 (&0000) then followed by variables
-				Default available memory is 42.249 bytes = FRE(0), excluding the ending word 0
-&A67B	42.619	First address following Basic memory space = HIMEM
+				Default available memory is 42.249 bytes = FRE(0)
+&A67B	42.619	Default upper bound of the Basic memory space = HIMEM
 
 -----	------	-----------------------------
 
@@ -16,6 +16,7 @@
 
 -----	------	-----------------------------
 
+&AE7B	44.667	Pointer to current HIMEM address
 &AE83	44.675	Pointer to address following Basic code ending word 0
 &AE85	44.677	Pointer to address following Basic code ending word 0
 &AE87	44.679	Pointer to address following Basic heap (start of next variable)
