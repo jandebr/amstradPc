@@ -2,7 +2,10 @@ package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.load.basic.BasicPreprocessingProgramLoader;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
+import org.maia.amstrad.load.basic.staged.file.BinaryLoadBasicPreprocessor;
+import org.maia.amstrad.load.basic.staged.file.BinarySaveBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.ChainMergeBasicPreprocessor;
+import org.maia.amstrad.load.basic.staged.file.ChainRunBasicPreprocessor;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 
@@ -29,6 +32,9 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(new ProgramBridgeBasicPreprocessor());
 		addPreprocessor(preamble);
 		addPreprocessor(new PreambleLandingBasicPreprocessor());
+		addPreprocessor(new BinaryLoadBasicPreprocessor());
+		addPreprocessor(new BinarySaveBasicPreprocessor());
+		addPreprocessor(new ChainRunBasicPreprocessor());
 		addPreprocessor(new ChainMergeBasicPreprocessor());
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new ErrorOutBasicPreprocessor());
