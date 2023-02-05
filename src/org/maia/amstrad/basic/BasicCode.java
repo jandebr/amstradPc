@@ -60,7 +60,7 @@ public abstract class BasicCode implements Cloneable {
 		if (lineNumbers.isEmpty()) {
 			return 10;
 		} else if (lineNumbers.size() == 1) {
-			return lineNumbers.get(0);
+			return Math.min(lineNumbers.get(0), 10);
 		} else {
 			Map<Integer, Integer> stepCount = new HashMap<Integer, Integer>();
 			int winnerStep = 0;

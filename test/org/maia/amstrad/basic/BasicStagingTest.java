@@ -45,7 +45,6 @@ public class BasicStagingTest {
 		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(
 				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE, true);
 		amstradPc.start();
-		System.out.println(program);
 		AmstradProgramRuntime rt = loader.load(program);
 		// rt.getAmstradPc().getBasicRuntime().sendKeyboardInputIfReady("LIST");
 		rt.run();

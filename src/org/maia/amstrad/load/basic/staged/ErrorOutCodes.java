@@ -6,4 +6,6 @@ public interface ErrorOutCodes {
 
 	int ERR_FILE_NOT_FOUND = 32;
 
+	int ERR_CHAIN_MERGE_FAILURE = 33;
+
 }

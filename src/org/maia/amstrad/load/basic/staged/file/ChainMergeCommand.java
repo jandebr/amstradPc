@@ -4,8 +4,8 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
+import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralQuotedToken;
-import org.maia.amstrad.basic.locomotive.token.NumericToken;
 
 public class ChainMergeCommand extends FileCommand {
 
@@ -28,24 +28,21 @@ public class ChainMergeCommand extends FileCommand {
 			int di = sequence.getFirstIndexOf(DELETE);
 			// starting line
 			BasicSourceTokenSequence sub = sequence.subSequence(i + 1, di >= 0 ? di : sequence.size());
-			int j = sub.getFirstIndexOf(NumericToken.class);
+			int j = sub.getFirstIndexOf(LineNumberReferenceToken.class);
 			if (j >= 0) {
-				command.setStartingLineNumber(FileCommand.parseAsIntegerNumber(sub.get(j)));
+				command.setStartingLineNumber(((LineNumberReferenceToken) sub.get(j)).getLineNumber());
 			}
 			// deletion
 			if (di >= 0) {
 				sub = sequence.subSequence(di + 1, sequence.size());
-				j = sub.getFirstIndexOf(NumericToken.class);
+				j = sub.getFirstIndexOf(LineNumberReferenceToken.class);
 				if (j >= 0) {
-					command.setDeletionLineNumberFrom(FileCommand.parseAsIntegerNumber(sub.get(j)));
-					if (command.getDeletionLineNumberFrom() >= 0) {
-						int k = sub.getNextIndexOf(NumericToken.class, j + 1);
-						if (k >= 0) {
-							command.setDeletionLineNumberTo(FileCommand.parseAsIntegerNumber(sub.get(k)));
-						}
-						if (command.getDeletionLineNumberTo() < 0) {
-							command.setDeletionLineNumberTo(command.getDeletionLineNumberFrom());
-						}
+					command.setDeletionLineNumberFrom(((LineNumberReferenceToken) sub.get(j)).getLineNumber());
+					int k = sub.getNextIndexOf(LineNumberReferenceToken.class, j + 1);
+					if (k >= 0) {
+						command.setDeletionLineNumberTo(((LineNumberReferenceToken) sub.get(k)).getLineNumber());
+					} else {
+						command.setDeletionLineNumberTo(command.getDeletionLineNumberFrom());
 					}
 				}
 			}

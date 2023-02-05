@@ -64,7 +64,7 @@ public class BasicProgramLoader extends AmstradProgramLoader {
 		}
 	}
 
-	protected BasicSourceCode retrieveSourceCode(AmstradProgram program) throws AmstradProgramException {
+	public BasicSourceCode retrieveSourceCode(AmstradProgram program) throws AmstradProgramException {
 		BasicSourceCode sourceCode = null;
 		try {
 			if (program.getPayload().isText()) {

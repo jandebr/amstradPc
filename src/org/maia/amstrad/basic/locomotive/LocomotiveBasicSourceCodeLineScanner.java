@@ -104,7 +104,6 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 					}
 				} else if (c == LiteralQuotedToken.QUOTE) {
 					token = scanLiteralQuotedToken();
-					lineNumberCanFollow = false;
 				} else {
 					int p0 = getPosition();
 					advancePosition();

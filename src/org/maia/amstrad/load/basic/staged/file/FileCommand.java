@@ -1,6 +1,5 @@
 package org.maia.amstrad.load.basic.staged.file;
 
-import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralQuotedToken;
 
 public abstract class FileCommand {
@@ -19,15 +18,6 @@ public abstract class FileCommand {
 		} else {
 			return str.substring(1); // no ending quote, as in RUN" or RUN"!
 		}
-	}
-
-	public static int parseAsIntegerNumber(BasicSourceToken token) {
-		int ln = -1;
-		try {
-			ln = Integer.parseInt(token.getSourceFragment());
-		} catch (NumberFormatException e) {
-		}
-		return ln;
 	}
 
 	protected FileCommand(LiteralQuotedToken sourceFilenameToken) {

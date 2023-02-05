@@ -1,5 +1,6 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -7,11 +8,14 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
 import org.maia.amstrad.load.AmstradProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.EndingBasicPreprocessor.EndingMacro;
+import org.maia.amstrad.load.basic.staged.ErrorOutBasicPreprocessor.ErrorOutMacro;
 import org.maia.amstrad.load.basic.staged.PreambleBasicPreprocessor.PreambleLineMacro;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramRuntime;
@@ -40,6 +44,17 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		addProgramToChain(getProgram());
 	}
 
+	public StagedBasicProgramLoaderSession createNewSession() {
+		StagedBasicProgramLoaderSession session = new StagedBasicProgramLoaderSession(getLoader(), getProgramRuntime());
+		session.setProduceRemarks(produceRemarks());
+		session.setEndingAction(getEndingAction());
+		session.setCodeDisclosure(getCodeDisclosure());
+		session.getChainedPrograms().clear();
+		for (AmstradProgram program : getChainedPrograms())
+			session.addProgramToChain(program);
+		return session;
+	}
+
 	public synchronized int reserveMemory(int numberOfBytes) {
 		setHimemAddress(getHimemAddress() - numberOfBytes);
 		int memoryOffset = getHimemAddress() + 1;
@@ -56,10 +71,10 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		if (!it.hasNext())
 			return -1;
 		PreambleLineMacro macroMin = it.next();
-		int lnMin = macroMin.getLineNumberStart();
+		int lnMin = macroMin.getLineNumberFrom();
 		while (it.hasNext()) {
 			PreambleLineMacro macro = it.next();
-			int ln = macro.getLineNumberStart();
+			int ln = macro.getLineNumberFrom();
 			if (ln < lnMin) {
 				lnMin = ln;
 				macroMin = macro;
@@ -74,10 +89,10 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		if (!it.hasNext())
 			return -1;
 		PreambleLineMacro macroMax = it.next();
-		int lnMax = macroMax.getLineNumberStart();
+		int lnMax = macroMax.getLineNumberFrom();
 		while (it.hasNext()) {
 			PreambleLineMacro macro = it.next();
-			int ln = macro.getLineNumberStart();
+			int ln = macro.getLineNumberFrom();
 			if (ln > lnMax) {
 				lnMax = ln;
 				macroMax = macro;
@@ -90,7 +105,16 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	public synchronized int getEndingMacroLineNumber() {
 		EndingMacro macro = getEndingMacro();
 		if (macro != null) {
-			return macro.getLineNumberStart();
+			return macro.getLineNumberFrom();
+		} else {
+			return -1;
+		}
+	}
+
+	public synchronized int getErrorOutMacroLineNumber() {
+		ErrorOutMacro macro = getErrorOutMacro();
+		if (macro != null) {
+			return macro.getLineNumberFrom();
 		} else {
 			return -1;
 		}
@@ -98,6 +122,16 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public synchronized EndingMacro getEndingMacro() {
 		return getMacroAdded(EndingMacro.class);
+	}
+
+	public synchronized ErrorOutMacro getErrorOutMacro() {
+		return getMacroAdded(ErrorOutMacro.class);
+	}
+
+	public synchronized void addMacrosFrom(StagedBasicProgramLoaderSession otherSession) {
+		for (StagedBasicMacro macro : otherSession.getMacrosAdded()) {
+			addMacro(macro);
+		}
 	}
 
 	public synchronized void addMacro(StagedBasicMacro macro) {
@@ -131,32 +165,12 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		return macros;
 	}
 
-	public BasicLineNumberScope getScopeOfMacros() {
-		return new BasicLineNumberScope() {
-
-			@Override
-			public boolean isInScope(int lineNumber) {
-				for (StagedBasicMacro macro : getMacrosAdded()) {
-					if (macro.containsLine(lineNumber))
-						return true;
-				}
-				return false;
-			}
-		};
+	public BasicLineNumberScope getSnapshotScopeOfMacros() {
+		return new MacrosSnapshotScope(getMacrosAdded());
 	}
 
-	public BasicLineNumberScope getScopeExcludingMacros() {
-		return new BasicLineNumberScope() {
-
-			@Override
-			public boolean isInScope(int lineNumber) {
-				for (StagedBasicMacro macro : getMacrosAdded()) {
-					if (macro.containsLine(lineNumber))
-						return false;
-				}
-				return true;
-			}
-		};
+	public BasicLineNumberScope getSnapshotScopeOfCodeExcludingMacros(BasicSourceCode sourceCode) {
+		return new ExcludingScope(new CodeSnapshotScope(sourceCode), getSnapshotScopeOfMacros());
 	}
 
 	public void renumMacros(BasicLineNumberLinearMapping mapping) {
@@ -228,6 +242,78 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public void setOriginalToStagedLineNumberMapping(StagedLineNumberMapping mapping) {
 		this.originalToStagedLineNumberMapping = mapping;
+	}
+
+	private static class MacrosSnapshotScope extends BasicLineNumberScope {
+
+		private Collection<BasicLineNumberRange> ranges;
+
+		public MacrosSnapshotScope(Set<StagedBasicMacro> macros) {
+			this.ranges = new Vector<BasicLineNumberRange>(macros.size());
+			for (StagedBasicMacro macro : macros) {
+				this.ranges.add(macro.getLineNumberRange());
+			}
+		}
+
+		@Override
+		public boolean isInScope(int lineNumber) {
+			for (BasicLineNumberRange range : getRanges()) {
+				if (range.containsLineNumber(lineNumber)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private Collection<BasicLineNumberRange> getRanges() {
+			return ranges;
+		}
+
+	}
+
+	private static class CodeSnapshotScope extends BasicLineNumberScope {
+
+		private Set<Integer> lineNumbersInScope;
+
+		public CodeSnapshotScope(BasicSourceCode sourceCode) {
+			this.lineNumbersInScope = new HashSet<Integer>(sourceCode.getAscendingLineNumbers());
+		}
+
+		@Override
+		public boolean isInScope(int lineNumber) {
+			return getLineNumbersInScope().contains(lineNumber);
+		}
+
+		private Set<Integer> getLineNumbersInScope() {
+			return lineNumbersInScope;
+		}
+
+	}
+
+	private static class ExcludingScope extends BasicLineNumberScope {
+
+		private BasicLineNumberScope scopeIn;
+
+		private BasicLineNumberScope scopeOut;
+
+		public ExcludingScope(BasicLineNumberScope scopeIn, BasicLineNumberScope scopeOut) {
+			this.scopeIn = scopeIn;
+			this.scopeOut = scopeOut;
+		}
+
+		@Override
+		public boolean isInScope(int lineNumber) {
+			return getScopeIn().isInScope(lineNumber) && !getScopeOut().isInScope(lineNumber);
+		}
+
+		private BasicLineNumberScope getScopeIn() {
+			return scopeIn;
+		}
+
+		private BasicLineNumberScope getScopeOut() {
+			return scopeOut;
+		}
+
 	}
 
 }

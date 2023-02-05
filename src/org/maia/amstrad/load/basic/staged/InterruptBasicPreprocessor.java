@@ -2,6 +2,7 @@ package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
+import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
@@ -33,14 +34,14 @@ public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 		int lnGoto = session.getEndingMacroLineNumber();
 		addCodeLine(sourceCode, ln, "ON ERROR GOTO " + lnGoto + ":ON BREAK GOSUB " + lnGoto
 				+ (session.produceRemarks() ? ":REM @interrupt" : ""));
-		session.addMacro(new InterruptMacro(ln));
+		session.addMacro(new InterruptMacro(new BasicLineNumberRange(ln)));
 	}
 
 	private void repeatInterruptMacroAfterClear(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		BasicLineNumberScope scope = session.getScopeExcludingMacros();
+		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		InterruptMacro iMacro = session.getMacroAdded(InterruptMacro.class);
-		BasicSourceTokenSequence iSequence = sourceCode.getLineByLineNumber(iMacro.getLineNumberStart()).parse();
+		BasicSourceTokenSequence iSequence = sourceCode.getLineByLineNumber(iMacro.getLineNumberFrom()).parse();
 		BasicLanguage language = sourceCode.getLanguage();
 		int iRem = iSequence.getFirstIndexOf(createKeywordToken(language, "REM"));
 		iSequence = iSequence.subSequence(1, iRem > 0 ? iRem - 1 : iSequence.size());
@@ -64,8 +65,8 @@ public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static class InterruptMacro extends StagedBasicMacro {
 
-		public InterruptMacro(int lineNumber) {
-			super(lineNumber);
+		public InterruptMacro(BasicLineNumberRange range) {
+			super(range);
 		}
 
 	}

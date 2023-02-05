@@ -1,6 +1,7 @@
 package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.basic.staged.PreambleLandingBasicPreprocessor.PreambleLandingMacro;
 
@@ -24,15 +25,15 @@ public class PreambleJumpingBasicPreprocessor extends StagedBasicPreprocessor {
 	private void addPreambleJumpingMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int ln = session.acquireLargestAvailablePreambleLineNumber();
-		int lnGoto = session.getMacroAdded(PreambleLandingMacro.class).getLineNumberStart();
+		int lnGoto = session.getMacroAdded(PreambleLandingMacro.class).getLineNumberFrom();
 		addCodeLine(sourceCode, ln, "GOTO " + lnGoto + (session.produceRemarks() ? ":REM @jump" : ""));
-		session.addMacro(new PreambleJumpingMacro(ln));
+		session.addMacro(new PreambleJumpingMacro(new BasicLineNumberRange(ln)));
 	}
 
 	public static class PreambleJumpingMacro extends StagedBasicMacro {
 
-		public PreambleJumpingMacro(int lineNumber) {
-			super(lineNumber);
+		public PreambleJumpingMacro(BasicLineNumberRange range) {
+			super(range);
 		}
 
 	}

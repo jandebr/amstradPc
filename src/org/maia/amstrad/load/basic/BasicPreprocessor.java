@@ -15,7 +15,7 @@ public abstract class BasicPreprocessor {
 	protected BasicPreprocessor() {
 	}
 
-	protected abstract void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
+	public abstract void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
 			throws BasicException;
 
 	protected int getNextAvailableLineNumber(BasicSourceCode sourceCode) {

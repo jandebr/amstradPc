@@ -34,8 +34,8 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	protected abstract void execute(FileCommand command, FileReference fileReference);
 
-	protected AmstradProgram getReferencedProgram(FileReference fileReference) {
-		AmstradProgram refProgram = null;
+	protected AmstradBasicProgramFile getReferencedProgram(FileReference fileReference) {
+		AmstradBasicProgramFile refProgram = null;
 		if (fileReference != null) {
 			refProgram = new AmstradBasicProgramFile(fileReference.getTargetFile());
 			AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(refProgram);
@@ -44,7 +44,7 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 			} catch (IOException e) {
 				System.err.println("Failed to load the metadata of the referenced program: " + fileReference);
 			}
-			refProgram = builder.build();
+			refProgram = (AmstradBasicProgramFile) builder.build();
 		}
 		return refProgram;
 	}

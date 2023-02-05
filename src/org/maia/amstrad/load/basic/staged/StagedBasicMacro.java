@@ -1,49 +1,50 @@
 package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicLineNumberRange;
 
 public abstract class StagedBasicMacro {
 
-	private int lineNumberStart;
+	private BasicLineNumberRange lineNumberRange;
 
-	private int lineNumberEnd;
-
-	protected StagedBasicMacro(int lineNumber) {
-		this(lineNumber, lineNumber);
+	protected StagedBasicMacro(BasicLineNumberRange range) {
+		setLineNumberRange(range);
 	}
 
-	protected StagedBasicMacro(int lineNumberStart, int lineNumberEnd) {
-		setLineNumberStart(lineNumberStart);
-		setLineNumberEnd(lineNumberEnd);
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getClass().getSimpleName());
+		builder.append("[");
+		builder.append(getLineNumberFrom());
+		builder.append(",");
+		builder.append(getLineNumberTo());
+		builder.append("]");
+		return builder.toString();
 	}
 
 	public void renum(BasicLineNumberLinearMapping mapping) {
-		if (mapping.isMapped(getLineNumberStart())) {
-			setLineNumberStart(mapping.getNewLineNumber(getLineNumberStart()));
+		if (mapping.isMapped(getLineNumberFrom()) && mapping.isMapped(getLineNumberTo())) {
+			int lnFrom = mapping.getNewLineNumber(getLineNumberFrom());
+			int lnTo = mapping.getNewLineNumber(getLineNumberTo());
+			setLineNumberRange(new BasicLineNumberRange(lnFrom, lnTo));
 		}
-		if (mapping.isMapped(getLineNumberEnd())) {
-			setLineNumberEnd(mapping.getNewLineNumber(getLineNumberEnd()));
-		}
 	}
 
-	public boolean containsLine(int lineNumber) {
-		return lineNumber >= getLineNumberStart() && lineNumber <= getLineNumberEnd();
+	public int getLineNumberFrom() {
+		return getLineNumberRange().getLineNumberFrom();
 	}
 
-	public int getLineNumberStart() {
-		return lineNumberStart;
+	public int getLineNumberTo() {
+		return getLineNumberRange().getLineNumberTo();
 	}
 
-	private void setLineNumberStart(int lineNumberStart) {
-		this.lineNumberStart = lineNumberStart;
+	public BasicLineNumberRange getLineNumberRange() {
+		return lineNumberRange;
 	}
 
-	public int getLineNumberEnd() {
-		return lineNumberEnd;
-	}
-
-	private void setLineNumberEnd(int lineNumberEnd) {
-		this.lineNumberEnd = lineNumberEnd;
+	private void setLineNumberRange(BasicLineNumberRange range) {
+		this.lineNumberRange = range;
 	}
 
 }

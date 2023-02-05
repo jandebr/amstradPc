@@ -9,7 +9,6 @@ import org.maia.amstrad.basic.locomotive.token.Integer8BitDecimalToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.load.AmstradProgramLoaderSession;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
-import org.maia.amstrad.load.basic.staged.ErrorOutBasicPreprocessor.ErrorOutMacro;
 
 public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 
@@ -19,7 +18,7 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 	protected abstract int getDesiredPreambleLineCount();
 
 	@Override
-	protected final void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
+	public final void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)
 			throws BasicException {
 		stage(sourceCode, (StagedBasicProgramLoaderSession) session);
 	}
@@ -36,13 +35,13 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 
 	protected boolean originalCodeContainsKeyword(BasicSourceCode sourceCode, String keyword,
 			StagedBasicProgramLoaderSession session) throws BasicException {
-		return codeContainsKeyword(sourceCode, session.getScopeExcludingMacros(), keyword);
+		return codeContainsKeyword(sourceCode, session.getSnapshotScopeOfCodeExcludingMacros(sourceCode), keyword);
 	}
 
 	protected void substituteErrorCode(int errorCode, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) throws BasicException {
-		int ln = session.getMacroAdded(ErrorOutMacro.class).getLineNumberStart();
-		BasicSourceTokenSequence sequence = sourceCode.getLineByLineNumber(ln).parse();
+		BasicSourceTokenSequence sequence = sourceCode.getLineByLineNumber(session.getErrorOutMacroLineNumber())
+				.parse();
 		BasicSourceToken ERROR = createKeywordToken(sourceCode.getLanguage(), "ERROR");
 		int i = sequence.getFirstIndexOf(ERROR);
 		if (i >= 0) {

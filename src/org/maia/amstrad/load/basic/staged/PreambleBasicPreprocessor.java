@@ -2,6 +2,7 @@ package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
+import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicSourceCode;
 
@@ -25,18 +26,20 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
 		if (!session.hasMacrosAdded(PreambleBlockMacro.class)) {
-			BasicLineNumberLinearMapping mapping = null;
+			BasicLineNumberScope originalCodeScope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode); // before
+																												// renum
+			BasicLineNumberLinearMapping renumMapping = null;
 			if (getPreambleLineCount() > 0) {
 				int lnLow = sourceCode.getSmallestLineNumber();
 				int lnStep = sourceCode.getDominantLineNumberStep();
 				int lnOffset = (getPreambleLineCount() + 1) * lnStep;
 				if (lnLow < lnOffset) {
-					mapping = renum(sourceCode, lnOffset, lnStep, session);
+					renumMapping = renum(sourceCode, lnOffset, lnStep, session);
 				}
 				addPreambleLineMacros(sourceCode, lnStep, session);
 				addPreambleBlockMacro(sourceCode, lnStep, session);
 			}
-			initializeOriginalToStagedLineNumberMapping(sourceCode, mapping, session);
+			initializeOriginalToStagedLineNumberMapping(sourceCode, originalCodeScope, renumMapping, session);
 		}
 	}
 
@@ -47,27 +50,27 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 			if (session.produceRemarks()) {
 				addCodeLine(sourceCode, ln, "REM @preamble");
 			}
-			session.addMacro(new PreambleLineMacro(ln));
+			session.addMacro(new PreambleLineMacro(new BasicLineNumberRange(ln)));
 		}
 	}
 
 	private void addPreambleBlockMacro(BasicSourceCode sourceCode, int lineNumberStep,
 			StagedBasicProgramLoaderSession session) {
-		int lnStart = lineNumberStep;
-		int lnEnd = getPreambleLineCount() * lineNumberStep;
-		session.addMacro(new PreambleBlockMacro(lnStart, lnEnd));
+		int lnFrom = lineNumberStep;
+		int lnTo = getPreambleLineCount() * lineNumberStep;
+		session.addMacro(new PreambleBlockMacro(new BasicLineNumberRange(lnFrom, lnTo)));
 	}
 
 	private void initializeOriginalToStagedLineNumberMapping(BasicSourceCode sourceCode,
-			BasicLineNumberLinearMapping renumMapping, StagedBasicProgramLoaderSession session) {
-		StagedLineNumberMapping mapping = null;
-		BasicLineNumberScope scope = session.getScopeExcludingMacros();
+			BasicLineNumberScope originalCodeScope, BasicLineNumberLinearMapping renumMapping,
+			StagedBasicProgramLoaderSession session) {
+		StagedLineNumberMapping stagedMapping = null;
 		if (renumMapping != null) {
-			mapping = StagedLineNumberMapping.renumMapping(renumMapping, scope);
+			stagedMapping = StagedLineNumberMapping.renumMapping(renumMapping, originalCodeScope);
 		} else {
-			mapping = StagedLineNumberMapping.identityMapping(sourceCode, scope);
+			stagedMapping = StagedLineNumberMapping.identityMapping(sourceCode, originalCodeScope);
 		}
-		session.setOriginalToStagedLineNumberMapping(mapping);
+		session.setOriginalToStagedLineNumberMapping(stagedMapping);
 	}
 
 	public int getPreambleLineCount() {
@@ -80,16 +83,16 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static class PreambleLineMacro extends StagedBasicMacro {
 
-		public PreambleLineMacro(int lineNumber) {
-			super(lineNumber);
+		public PreambleLineMacro(BasicLineNumberRange range) {
+			super(range);
 		}
 
 	}
 
 	public static class PreambleBlockMacro extends StagedBasicMacro {
 
-		public PreambleBlockMacro(int lineNumberStart, int lineNumberEnd) {
-			super(lineNumberStart, lineNumberEnd);
+		public PreambleBlockMacro(BasicLineNumberRange range) {
+			super(range);
 		}
 
 	}

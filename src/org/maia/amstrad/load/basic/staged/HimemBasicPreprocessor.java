@@ -1,6 +1,7 @@
 package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
 
@@ -32,7 +33,7 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 		int ln = session.acquireSmallestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln, "SYMBOL AFTER 256:MEMORY &" + Integer.toHexString(himemAddress)
 				+ (session.produceRemarks() ? ":REM @himem" : ""));
-		session.addMacro(new HimemMacro(ln));
+		session.addMacro(new HimemMacro(new BasicLineNumberRange(ln)));
 	}
 
 	public int getMinimumReservedBytes() {
@@ -41,8 +42,8 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 
 	public static class HimemMacro extends StagedBasicMacro {
 
-		public HimemMacro(int lineNumber) {
-			super(lineNumber);
+		public HimemMacro(BasicLineNumberRange range) {
+			super(range);
 		}
 
 	}

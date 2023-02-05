@@ -2,6 +2,7 @@ package org.maia.amstrad.load.basic.staged;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
+import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
@@ -40,7 +41,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		int ln = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln,
 				"POKE &" + Integer.toHexString(addrTrap) + ",1:END" + (session.produceRemarks() ? ":REM @end" : ""));
-		session.addMacro(new EndingMacro(ln));
+		session.addMacro(new EndingMacro(new BasicLineNumberRange(ln)));
 		// Install global macro handler via listener
 		EndingRuntimeListener listener = new EndingRuntimeListener(session, addrTrap);
 		listener.install();
@@ -48,18 +49,11 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	protected void invokeMacrosFromCode(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		BasicLineNumberScope scope = session.getScopeExcludingMacros();
-		invokeEndingMacroAtCodeHorizon(sourceCode, session);
+		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		invokeEndingMacroOnBreak(sourceCode, scope, session);
 		invokeEndingMacroOnEndCommands(sourceCode, scope, session);
 		invokeEndingMacroOnGotoLoops(sourceCode, scope, session);
-	}
-
-	private void invokeEndingMacroAtCodeHorizon(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
-		int ln = session.getMacroAdded(ProgramBridgeMacro.class).getLineNumberStart();
-		int lnGoto = session.getEndingMacroLineNumber();
-		substituteGotoLineNumber(ln, lnGoto, sourceCode, session);
+		invokeEndingMacroAtCodeHorizon(sourceCode, session);
 	}
 
 	private void invokeEndingMacroOnBreak(BasicSourceCode sourceCode, BasicLineNumberScope scope,
@@ -150,6 +144,13 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 	}
 
+	private void invokeEndingMacroAtCodeHorizon(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		int ln = session.getMacroAdded(ProgramBridgeMacro.class).getLineNumberFrom();
+		int lnGoto = session.getEndingMacroLineNumber();
+		substituteGotoLineNumber(ln, lnGoto, sourceCode, session);
+	}
+
 	protected void handleProgramEnded(StagedBasicProgramLoaderSession session) {
 		handleCodeDisclosure(session);
 		performEndingAction(session);
@@ -179,8 +180,8 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static class EndingMacro extends StagedBasicMacro {
 
-		public EndingMacro(int lineNumber) {
-			super(lineNumber);
+		public EndingMacro(BasicLineNumberRange range) {
+			super(range);
 		}
 
 	}
