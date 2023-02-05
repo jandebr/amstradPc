@@ -11,8 +11,13 @@ public class PreambleJumpingBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 1; // for jumping macro
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return false;
 	}
 
 	@Override

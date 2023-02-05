@@ -14,8 +14,13 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 1; // for himem macro
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return false;
 	}
 
 	@Override

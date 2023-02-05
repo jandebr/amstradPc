@@ -10,8 +10,17 @@ public class BinaryLoadBasicPreprocessor extends BinaryIOBasicPreprocessor {
 	}
 
 	@Override
-	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
-		// TODO Auto-generated method stub
+	public int getDesiredPreambleLineCount() {
+		return 1; // for binaryio macro
+	}
+
+	@Override
+	protected void invokeBinaryIOMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		if (!originalCodeContainsKeyword(sourceCode, "LOAD", session))
+			return;
+		BinaryIOMacro macro = session.getMacroAdded(BinaryIOMacro.class);
+		// TODO
 	}
 
 }

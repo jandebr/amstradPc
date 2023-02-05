@@ -5,7 +5,6 @@ import java.util.Vector;
 
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramRuntimeListener;
-import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
 
 public abstract class FileCommandRuntimeListener extends StagedBasicProgramRuntimeListener {
 
@@ -24,7 +23,7 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 	}
 
 	@Override
-	protected final AmstradMemoryTrapHandler createMemoryTrapHandler() {
+	protected final FileCommandMacroHandler createMemoryTrapHandler() {
 		return createMacroHandler(createResolver());
 	}
 

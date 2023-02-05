@@ -1,5 +1,7 @@
 package org.maia.amstrad.load.basic;
 
+import java.util.Iterator;
+
 import org.maia.amstrad.basic.BasicCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
@@ -25,6 +27,10 @@ public class BasicPreprocessingProgramLoader extends BasicProgramLoader {
 		getPreprocessorBatch().remove(preprocessor);
 	}
 
+	public Iterator<BasicPreprocessor> getPreprocessors() {
+		return getPreprocessorBatch().iterator();
+	}
+
 	@Override
 	protected BasicCode retrieveCode(AmstradProgram program, AmstradProgramLoaderSession session)
 			throws AmstradProgramException {
@@ -42,7 +48,7 @@ public class BasicPreprocessingProgramLoader extends BasicProgramLoader {
 		}
 	}
 
-	protected BasicPreprocessorBatch getPreprocessorBatch() {
+	private BasicPreprocessorBatch getPreprocessorBatch() {
 		return preprocessorBatch;
 	}
 

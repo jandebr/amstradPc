@@ -1,6 +1,7 @@
 package org.maia.amstrad.load.basic.staged.file;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
@@ -17,14 +18,12 @@ import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
+import org.maia.amstrad.load.basic.BasicPreprocessor;
 import org.maia.amstrad.load.basic.BasicPreprocessorBatch;
-import org.maia.amstrad.load.basic.staged.EndingBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.load.basic.staged.InterruptBasicPreprocessor;
-import org.maia.amstrad.load.basic.staged.LinkResolveBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
-import org.maia.amstrad.load.basic.staged.StagedBasicMacro;
 import org.maia.amstrad.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.StagedLineNumberMapping;
@@ -39,16 +38,21 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 2; // for chainmerge macro
 	}
 
 	@Override
+	public boolean isApplicableToMergedCode() {
+		return true;
+	}
+
+	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
-		if (!session.hasMacrosAdded(ChainMergeMacro.class)) {
-			addChainMergeMacro(sourceCode, session);
-		}
 		if (originalCodeContainsKeyword(sourceCode, "CHAIN", session)) {
+			if (!session.hasMacrosAdded(ChainMergeMacro.class)) {
+				addChainMergeMacro(sourceCode, session);
+			}
 			invokeChainMergeMacro(sourceCode, session);
 		}
 	}
@@ -151,7 +155,10 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 		// Preprocess chained code
 		BasicSourceCode chainedSourceCode = session.getLoader().retrieveSourceCode(chainedProgram);
 		StagedBasicProgramLoaderSession chainedSession = session.createNewSession();
-		preprocessChainedSourceCode(chainedSourceCode, lnChainedOffset, chainedSession, stagedMapping);
+		BasicSourceTokenSequence interruptSequence = InterruptBasicPreprocessor.extractInterruptSequence(sourceCode,
+				session);
+		preprocessChainedSourceCode(chainedSourceCode, lnChainedOffset, chainedSession, interruptSequence,
+				stagedMapping);
 		// Bridge programs in current code
 		bridgePrograms(sourceCode, lnChainedOffset, session);
 		// Merge
@@ -160,18 +167,18 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 		session.addMacrosFrom(chainedSession);
 		session.addProgramToChain(chainedProgram);
 		// Preprocess the entire merged code
-		getPreprocessorsForMergedCode().preprocess(sourceCode, session);
+		getPreprocessorsForMergedCode(session).preprocess(sourceCode, session);
 	}
 
 	private void preprocessChainedSourceCode(BasicSourceCode chainedSourceCode, int chainedLineNumberOffset,
-			StagedBasicProgramLoaderSession chainedSession, StagedLineNumberMapping stagedMapping)
-			throws BasicException {
+			StagedBasicProgramLoaderSession chainedSession, BasicSourceTokenSequence interruptSequence,
+			StagedLineNumberMapping stagedMapping) throws BasicException {
 		new ProgramBridgeBasicPreprocessor().preprocess(chainedSourceCode, chainedSession);
+		new ChainedInterruptBasicPreprocessor(interruptSequence).preprocess(chainedSourceCode, chainedSession);
 		BasicLineNumberScope chainedCodeScope = chainedSession.getSnapshotScopeOfCodeExcludingMacros(chainedSourceCode); // before
 																															// renum
-		int lnStep = chainedSourceCode.getDominantLineNumberStep();
-		BasicLineNumberLinearMapping mapping = renum(chainedSourceCode, chainedLineNumberOffset, lnStep,
-				chainedSession);
+		BasicLineNumberLinearMapping mapping = renum(chainedSourceCode, chainedLineNumberOffset,
+				chainedSourceCode.getDominantLineNumberStep(), chainedSession);
 		stagedMapping.union(mapping, chainedCodeScope);
 	}
 
@@ -190,15 +197,17 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 		}
 	}
 
-	private BasicPreprocessorBatch getPreprocessorsForMergedCode() {
+	private BasicPreprocessorBatch getPreprocessorsForMergedCode(StagedBasicProgramLoaderSession session) {
 		BasicPreprocessorBatch batch = new BasicPreprocessorBatch();
-		batch.add(new LinkResolveBasicPreprocessor());
-		batch.add(new BinaryLoadBasicPreprocessor());
-		batch.add(new BinarySaveBasicPreprocessor());
-		batch.add(new ChainRunBasicPreprocessor());
-		batch.add(new ChainMergeBasicPreprocessor());
-		batch.add(new EndingBasicPreprocessor());
-		batch.add(new InterruptBasicPreprocessor());
+		Iterator<BasicPreprocessor> it = session.getLoader().getPreprocessors();
+		while (it.hasNext()) {
+			BasicPreprocessor preprocessor = it.next();
+			if (preprocessor instanceof StagedBasicPreprocessor) {
+				if (((StagedBasicPreprocessor) preprocessor).isApplicableToMergedCode()) {
+					batch.add(preprocessor);
+				}
+			}
+		}
 		return batch;
 	}
 
@@ -239,17 +248,10 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 		return false;
 	}
 
-	public static class ChainMergeMacro extends StagedBasicMacro {
-
-		private int resumeMemoryAddress;
+	public static class ChainMergeMacro extends FileCommandMacro {
 
 		public ChainMergeMacro(BasicLineNumberRange range, int resumeMemoryAddress) {
-			super(range);
-			this.resumeMemoryAddress = resumeMemoryAddress;
-		}
-
-		public int getResumeMemoryAddress() {
-			return resumeMemoryAddress;
+			super(range, resumeMemoryAddress);
 		}
 
 	}
@@ -265,7 +267,7 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 		}
 
 		@Override
-		protected FileCommandMacroHandler createMacroHandler(FileCommandResolver resolver) {
+		protected ChainMergeMacroHandler createMacroHandler(FileCommandResolver resolver) {
 			ChainMergeMacro macro = getSession().getMacroAdded(ChainMergeMacro.class);
 			return new ChainMergeMacroHandler(macro, getSourceCode(), getSession(), resolver);
 		}
@@ -294,6 +296,32 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 
 		private BasicSourceCode getSourceCode() {
 			return sourceCode;
+		}
+
+	}
+
+	private static class ChainedInterruptBasicPreprocessor extends InterruptBasicPreprocessor {
+
+		private BasicSourceTokenSequence interruptSequence;
+
+		public ChainedInterruptBasicPreprocessor(BasicSourceTokenSequence interruptSequence) {
+			this.interruptSequence = interruptSequence;
+		}
+
+		@Override
+		protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+				throws BasicException {
+			repeatInterruptMacroAfterClear(sourceCode, session);
+		}
+
+		@Override
+		protected BasicSourceTokenSequence getInterruptSequence(BasicSourceCode sourceCode,
+				StagedBasicProgramLoaderSession session) throws BasicException {
+			return getInterruptSequence();
+		}
+
+		private BasicSourceTokenSequence getInterruptSequence() {
+			return interruptSequence;
 		}
 
 	}

@@ -19,8 +19,13 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 0; // no need itself
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return false;
 	}
 
 	@Override

@@ -15,7 +15,9 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 	protected StagedBasicPreprocessor() {
 	}
 
-	protected abstract int getDesiredPreambleLineCount();
+	public abstract int getDesiredPreambleLineCount();
+
+	public abstract boolean isApplicableToMergedCode();
 
 	@Override
 	public final void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)

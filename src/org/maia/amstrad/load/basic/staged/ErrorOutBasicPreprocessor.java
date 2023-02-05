@@ -10,8 +10,13 @@ public class ErrorOutBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 1; // for error out macro
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return false;
 	}
 
 	@Override

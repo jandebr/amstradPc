@@ -2,7 +2,6 @@ package org.maia.amstrad.load.basic.staged.file;
 
 import java.io.IOException;
 
-import org.maia.amstrad.load.basic.staged.StagedBasicMacro;
 import org.maia.amstrad.load.basic.staged.StagedBasicMacroHandler;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.pc.memory.AmstradMemory;
@@ -17,7 +16,7 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	private AmstradProgram program;
 
-	protected FileCommandMacroHandler(StagedBasicMacro macro, StagedBasicProgramLoaderSession session,
+	protected FileCommandMacroHandler(FileCommandMacro macro, StagedBasicProgramLoaderSession session,
 			FileCommandResolver resolver) {
 		super(macro, session);
 		this.resolver = resolver;

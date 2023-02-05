@@ -17,8 +17,13 @@ public class ProgramBridgeBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 0;
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return false;
 	}
 
 	@Override

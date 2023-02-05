@@ -9,6 +9,7 @@ import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
+import org.maia.amstrad.load.basic.BasicLanguageKit;
 
 public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 
@@ -16,8 +17,13 @@ public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 1; // for interrupt macro
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return false;
 	}
 
 	@Override
@@ -37,14 +43,11 @@ public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 		session.addMacro(new InterruptMacro(new BasicLineNumberRange(ln)));
 	}
 
-	private void repeatInterruptMacroAfterClear(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+	protected void repeatInterruptMacroAfterClear(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
-		InterruptMacro iMacro = session.getMacroAdded(InterruptMacro.class);
-		BasicSourceTokenSequence iSequence = sourceCode.getLineByLineNumber(iMacro.getLineNumberFrom()).parse();
+		BasicSourceTokenSequence iSequence = getInterruptSequence(sourceCode, session);
 		BasicLanguage language = sourceCode.getLanguage();
-		int iRem = iSequence.getFirstIndexOf(createKeywordToken(language, "REM"));
-		iSequence = iSequence.subSequence(1, iRem > 0 ? iRem - 1 : iSequence.size());
 		BasicSourceToken CLEAR = createKeywordToken(language, "CLEAR");
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
@@ -61,6 +64,24 @@ public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 				}
 			}
 		}
+	}
+
+	protected BasicSourceTokenSequence getInterruptSequence(BasicSourceCode sourceCode,
+			StagedBasicProgramLoaderSession session) throws BasicException {
+		return extractInterruptSequence(sourceCode, session);
+	}
+
+	public static BasicSourceTokenSequence extractInterruptSequence(BasicSourceCode sourceCode,
+			StagedBasicProgramLoaderSession session) throws BasicException {
+		BasicSourceTokenSequence iSequence = null;
+		InterruptMacro iMacro = session.getMacroAdded(InterruptMacro.class);
+		if (iMacro != null) {
+			iSequence = sourceCode.getLineByLineNumber(iMacro.getLineNumberFrom()).parse();
+			BasicSourceToken REM = BasicLanguageKit.forLanguage(sourceCode.getLanguage()).createKeywordToken("REM");
+			int iRem = iSequence.getFirstIndexOf(REM);
+			iSequence = iSequence.subSequence(1, iRem > 0 ? iRem - 1 : iSequence.size());
+		}
+		return iSequence;
 	}
 
 	public static class InterruptMacro extends StagedBasicMacro {

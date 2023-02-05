@@ -10,8 +10,13 @@ public class LinkResolveBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 0;
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return true;
 	}
 
 	@Override

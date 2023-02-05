@@ -14,7 +14,6 @@ import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.load.basic.BasicProgramLoader;
 import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
 import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
 import org.maia.amstrad.program.AmstradProgramException;
 
 public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
@@ -23,8 +22,13 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	@Override
-	protected int getDesiredPreambleLineCount() {
+	public int getDesiredPreambleLineCount() {
 		return 1; // for ending macro
+	}
+
+	@Override
+	public boolean isApplicableToMergedCode() {
+		return true;
 	}
 
 	@Override
@@ -193,7 +197,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 
 		@Override
-		protected AmstradMemoryTrapHandler createMemoryTrapHandler() {
+		protected EndingMacroHandler createMemoryTrapHandler() {
 			EndingMacro macro = getSession().getEndingMacro();
 			return new EndingMacroHandler(macro, getSession());
 		}

@@ -1,11 +1,14 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Iterator;
+
 import org.maia.amstrad.load.basic.BasicPreprocessingProgramLoader;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.BinaryLoadBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.BinarySaveBasicPreprocessor;
+import org.maia.amstrad.load.basic.staged.file.ChainBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.ChainMergeBasicPreprocessor;
-import org.maia.amstrad.load.basic.staged.file.ChainRunBasicPreprocessor;
+import org.maia.amstrad.load.basic.staged.file.RunBasicPreprocessor;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgramRuntime;
 
@@ -32,10 +35,12 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(new ProgramBridgeBasicPreprocessor());
 		addPreprocessor(preamble);
 		addPreprocessor(new PreambleLandingBasicPreprocessor());
+		addPreprocessor(new LinkResolveBasicPreprocessor());
+		addPreprocessor(new ChainMergeBasicPreprocessor());
+		addPreprocessor(new ChainBasicPreprocessor());
+		addPreprocessor(new RunBasicPreprocessor());
 		addPreprocessor(new BinaryLoadBasicPreprocessor());
 		addPreprocessor(new BinarySaveBasicPreprocessor());
-		addPreprocessor(new ChainRunBasicPreprocessor());
-		addPreprocessor(new ChainMergeBasicPreprocessor());
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new ErrorOutBasicPreprocessor());
 		addPreprocessor(new PreambleJumpingBasicPreprocessor());
@@ -47,7 +52,9 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
 	protected int getDesiredPreambleLineCount() {
 		int lineCount = 0;
-		for (BasicPreprocessor preprocessor : getPreprocessorBatch()) {
+		Iterator<BasicPreprocessor> it = getPreprocessors();
+		while (it.hasNext()) {
+			BasicPreprocessor preprocessor = it.next();
 			if (preprocessor instanceof StagedBasicPreprocessor) {
 				lineCount += ((StagedBasicPreprocessor) preprocessor).getDesiredPreambleLineCount();
 			}
