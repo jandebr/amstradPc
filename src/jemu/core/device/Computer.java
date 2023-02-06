@@ -31,6 +31,7 @@ import jemu.core.Util;
 import jemu.core.cpu.Processor;
 import jemu.core.device.floppy.Drive;
 import jemu.core.device.memory.Memory;
+import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
 import jemu.ui.Display;
 import jemu.ui.Switches;
@@ -423,6 +424,22 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	public abstract Processor getProcessor();
 
 	public abstract Memory getMemory();
+
+	public void addMemoryWriteObserver(MemoryWriteObserver observer) {
+		getMemory().addWriteObserver(observer);
+	}
+
+	public void removeMemoryWriteObserver(MemoryWriteObserver observer) {
+		getMemory().removeWriteObserver(observer);
+	}
+
+	public void removeAllMemoryWriteObservers() {
+		getMemory().removeAllWriteObservers();
+	}
+
+	public List<MemoryWriteObserver> getMemoryWriteObservers() {
+		return getMemory().getWriteObservers();
+	}
 
 	public void breakEscape() {
 		processKeyEvent(escapeKeyEventPressed);

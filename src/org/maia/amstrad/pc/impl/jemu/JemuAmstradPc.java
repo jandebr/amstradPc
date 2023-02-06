@@ -13,6 +13,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -31,6 +33,8 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
+import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
@@ -45,6 +49,7 @@ import org.maia.swing.dialog.ActionableDialogListener;
 import jemu.core.device.BasicKeyboardPromptModus;
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerKeyboardListener;
+import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
 import jemu.ui.Display;
@@ -571,6 +576,65 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public void writeBytes(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
 			getJemuInstance().writeBytesToUnmappedMemory(memoryOffset, data, dataOffset, dataLength);
+		}
+
+		@Override
+		protected synchronized void addMemoryTrap(AmstradMemoryTrap memoryTrap) {
+			getJemuInstance().addMemoryWriteObserver(new JemuMemoryTrapBridge(memoryTrap));
+		}
+
+		@Override
+		public synchronized void removeMemoryTrapsAt(int memoryAddress) {
+			List<MemoryWriteObserver> observers = new Vector<MemoryWriteObserver>(
+					getJemuInstance().getMemoryWriteObservers());
+			for (MemoryWriteObserver observer : observers) {
+				if (observer.getObservedMemoryAddress() == memoryAddress) {
+					getJemuInstance().removeMemoryWriteObserver(observer);
+				}
+			}
+		}
+
+		@Override
+		public synchronized void removeAllMemoryTraps() {
+			getJemuInstance().removeAllMemoryWriteObservers();
+		}
+
+	}
+
+	private class JemuMemoryTrapBridge implements MemoryWriteObserver {
+
+		private AmstradMemoryTrap memoryTrap;
+
+		public JemuMemoryTrapBridge(AmstradMemoryTrap memoryTrap) {
+			this.memoryTrap = memoryTrap;
+		}
+
+		@Override
+		public int getObservedMemoryAddress() {
+			return getMemoryTrap().getMemoryAddress();
+		}
+
+		@Override
+		public void notifyWrite(int memoryAddress, byte memoryValue) {
+			if (memoryValue != getMemoryTrap().getMemoryValueOff()) {
+				handleMemoryTrapInSeparateThread(memoryValue);
+			}
+		}
+
+		private void handleMemoryTrapInSeparateThread(final byte memoryValue) {
+			final AmstradMemoryTrap memoryTrap = getMemoryTrap();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					memoryTrap.reset();
+					AmstradMemoryTrapHandler handler = memoryTrap.getHandler();
+					handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), memoryValue);
+				}
+			}).start();
+		}
+
+		private AmstradMemoryTrap getMemoryTrap() {
+			return memoryTrap;
 		}
 
 	}

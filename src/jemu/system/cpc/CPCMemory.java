@@ -3,6 +3,7 @@ package jemu.system.cpc;
 import jemu.core.device.BasicKeyboardPromptModus;
 import jemu.core.device.Computer;
 import jemu.core.device.memory.DynamicMemory;
+import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.ui.Switches;
 
 /**
@@ -47,12 +48,15 @@ public class CPCMemory extends DynamicMemory {
 	protected static final int BASE_MULTIFACE = BASE_UPROM + 16;
 
 	private Computer computer;
-	private BasicKeyboardInputScanningObserver basicObserver;
+
+	private BasicKeyboardInputScanningObserver keyboardScanningObserver;
+	private WriteObserverDispatcher writeObserverDispatcher;
 
 	public CPCMemory(Computer computer, int type) {
 		super("CPC Memory", 0x10000, BASE_MULTIFACE + 1);
 		this.computer = computer;
-		this.basicObserver = new BasicKeyboardInputScanningObserver();
+		this.keyboardScanningObserver = new BasicKeyboardInputScanningObserver();
+		this.writeObserverDispatcher = new WriteObserverDispatcher();
 		ramtype = type;
 		setRAMType(type); // Always happens first, first 64K always gets mapped in first
 		reset();
@@ -206,7 +210,8 @@ public class CPCMemory extends DynamicMemory {
 	public int writeByte(int address, int value) {
 		mem[writeMap[address >> 13] + (address & 0x1fff)] = (byte) value;
 		int returnValue = value & 0xff;
-		basicObserver.writeOperation(address, returnValue);
+		keyboardScanningObserver.writeOperation(address, returnValue);
+		writeObserverDispatcher.writeOperation(address, returnValue);
 		return returnValue;
 	}
 
@@ -266,6 +271,26 @@ public class CPCMemory extends DynamicMemory {
 		}
 
 		protected abstract void writeOperation(int address, int value);
+
+	}
+
+	private class WriteObserverDispatcher extends MemoryObserver {
+
+		public WriteObserverDispatcher() {
+		}
+
+		@Override
+		protected void writeOperation(int address, int value) {
+			if (!getWriteObservers().isEmpty()) {
+				synchronized (CPCMemory.this) {
+					for (MemoryWriteObserver observer : getWriteObservers()) {
+						if (observer.getObservedMemoryAddress() == address) {
+							observer.notifyWrite(address, (byte) value);
+						}
+					}
+				}
+			}
+		}
 
 	}
 

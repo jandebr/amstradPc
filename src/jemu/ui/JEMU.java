@@ -95,6 +95,7 @@ import jemu.core.device.floppy.Drive;
 import jemu.core.device.floppy.DriveListener;
 import jemu.core.device.floppy.UPD765A;
 import jemu.core.device.floppy.virtualDrive;
+import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.core.device.sound.YMControl;
 import jemu.core.samples.Samples;
 import jemu.settings.Settings;
@@ -1298,6 +1299,22 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void removeComputerKeyboardListener(ComputerKeyboardListener listener) {
 		computer.removeKeyboardListener(listener);
+	}
+
+	public void addMemoryWriteObserver(MemoryWriteObserver observer) {
+		computer.addMemoryWriteObserver(observer);
+	}
+
+	public void removeMemoryWriteObserver(MemoryWriteObserver observer) {
+		computer.removeMemoryWriteObserver(observer);
+	}
+
+	public void removeAllMemoryWriteObservers() {
+		computer.removeAllMemoryWriteObservers();
+	}
+
+	public List<MemoryWriteObserver> getMemoryWriteObservers() {
+		return computer.getMemoryWriteObservers();
 	}
 
 	public void quit() {
@@ -2545,6 +2562,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					for (ComputerKeyboardListener listener : computer.getKeyboardListeners()) {
 						computer.removeKeyboardListener(listener);
 						newComputer.addKeyboardListener(listener);
+					}
+					for (MemoryWriteObserver observer : computer.getMemoryWriteObservers()) {
+						computer.removeMemoryWriteObserver(observer);
+						newComputer.addMemoryWriteObserver(observer);
 					}
 					computer.dispose();
 					computer = null;
