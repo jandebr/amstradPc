@@ -13,7 +13,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -74,6 +76,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 	private AmstradGraphicsContextImpl graphicsContext;
 
 	private AlternativeDisplaySourceRenderer alternativeDisplaySourceRenderer;
+
+	private MemoryTrapProcessor memoryTrapProcessor;
 
 	private boolean started;
 
@@ -149,6 +153,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		getGraphicsContext().setPrimaryDisplaySourceResolution(
 				new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
 		getFrameBridge().pack();
+		setMemoryTrapProcessor(new MemoryTrapProcessor());
+		getMemoryTrapProcessor().start();
 		setStarted(true);
 		setInstanceRunning(true);
 		fireStartedEvent();
@@ -215,6 +221,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 				}
 				Autotype.clearText();
 				getJemuInstance().quit();
+				getMemoryTrapProcessor().stopProcessing();
 			}
 			setTerminated(true);
 			setInstanceRunning(false);
@@ -305,6 +312,14 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	private void setAlternativeDisplaySourceRenderer(AlternativeDisplaySourceRenderer renderer) {
 		this.alternativeDisplaySourceRenderer = renderer;
+	}
+
+	private MemoryTrapProcessor getMemoryTrapProcessor() {
+		return memoryTrapProcessor;
+	}
+
+	private void setMemoryTrapProcessor(MemoryTrapProcessor processor) {
+		this.memoryTrapProcessor = processor;
 	}
 
 	@Override
@@ -617,20 +632,9 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public void notifyWrite(int memoryAddress, byte memoryValue) {
 			if (memoryValue != getMemoryTrap().getMemoryValueOff()) {
-				handleMemoryTrapInSeparateThread(memoryValue);
+				MemoryTrapTask task = new MemoryTrapTask(getMemoryTrap(), memoryValue);
+				getMemoryTrapProcessor().processTaskDeferred(task);
 			}
-		}
-
-		private void handleMemoryTrapInSeparateThread(final byte memoryValue) {
-			final AmstradMemoryTrap memoryTrap = getMemoryTrap();
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					memoryTrap.reset();
-					AmstradMemoryTrapHandler handler = memoryTrap.getHandler();
-					handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), memoryValue);
-				}
-			}).start();
 		}
 
 		private AmstradMemoryTrap getMemoryTrap() {
@@ -1228,6 +1232,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		private boolean stop;
 
 		public AlternativeDisplaySourceRenderer() {
+			super("AlternativeDisplaySourceRenderer");
 			setDaemon(true);
 		}
 
@@ -1247,6 +1252,94 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		public boolean isStopped() {
 			return stop;
+		}
+
+	}
+
+	private class MemoryTrapProcessor extends Thread {
+
+		private boolean stop;
+
+		private Queue<MemoryTrapTask> taskQueue;
+
+		public MemoryTrapProcessor() {
+			super("MemoryTrapProcessor");
+			setDaemon(true);
+			this.taskQueue = new LinkedList<MemoryTrapTask>();
+		}
+
+		@Override
+		public synchronized void run() {
+			System.out.println("Memorytrap processor thread started");
+			while (!isStopped()) {
+				try {
+					MemoryTrapTask task = getTaskQueue().poll();
+					if (task != null) {
+						processTask(task);
+					} else {
+						wait();
+					}
+				} catch (InterruptedException e) {
+				}
+			}
+			System.out.println("Memorytrap processor thread stopped");
+		}
+
+		private void processTask(MemoryTrapTask task) {
+			AmstradMemoryTrap memoryTrap = task.getMemoryTrap();
+			memoryTrap.reset();
+			AmstradMemoryTrapHandler handler = memoryTrap.getHandler();
+			handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), task.getMemoryValue());
+		}
+
+		public synchronized void processTaskDeferred(MemoryTrapTask task) {
+			if (getTaskQueue().offer(task)) {
+				notify();
+			}
+		}
+
+		public void stopProcessing() {
+			stop = true;
+		}
+
+		public boolean isStopped() {
+			return stop;
+		}
+
+		private Queue<MemoryTrapTask> getTaskQueue() {
+			return taskQueue;
+		}
+
+	}
+
+	private class MemoryTrapTask {
+
+		private AmstradMemoryTrap memoryTrap;
+
+		private byte memoryValue;
+
+		public MemoryTrapTask(AmstradMemoryTrap memoryTrap, byte memoryValue) {
+			this.memoryTrap = memoryTrap;
+			this.memoryValue = memoryValue;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("MemoryTrapTask [memoryAddress=");
+			builder.append(getMemoryTrap().getMemoryAddress());
+			builder.append(", memoryValue=");
+			builder.append(getMemoryValue());
+			builder.append("]");
+			return builder.toString();
+		}
+
+		public AmstradMemoryTrap getMemoryTrap() {
+			return memoryTrap;
+		}
+
+		public byte getMemoryValue() {
+			return memoryValue;
 		}
 
 	}

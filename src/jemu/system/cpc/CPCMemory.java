@@ -281,7 +281,7 @@ public class CPCMemory extends DynamicMemory {
 
 		@Override
 		protected void writeOperation(int address, int value) {
-			if (!getWriteObservers().isEmpty()) {
+			if (hasWriteObserversAt(address)) {
 				synchronized (CPCMemory.this) {
 					for (MemoryWriteObserver observer : getWriteObservers()) {
 						if (observer.getObservedMemoryAddress() == address) {

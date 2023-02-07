@@ -18,10 +18,13 @@ public abstract class Memory extends Device {
 
 	private List<MemoryWriteObserver> writeObservers;
 
+	private boolean[] writeObserversMask;
+
 	public Memory(String type, int size) {
 		super(type);
 		this.size = size;
 		this.writeObservers = new Vector<MemoryWriteObserver>();
+		this.writeObserversMask = new boolean[size];
 	}
 
 	public int getAddressSize() {
@@ -37,15 +40,47 @@ public abstract class Memory extends Device {
 	}
 
 	public synchronized void addWriteObserver(MemoryWriteObserver observer) {
-		getWriteObservers().add(observer);
+		int addr = observer.getObservedMemoryAddress();
+		if (addr < 0 || addr >= getAddressSize())
+			throw new IllegalArgumentException(
+					"Observed memory address is out of range: " + addr + " (max " + getAddressSize() + ")");
+		if (!getWriteObservers().contains(observer)) {
+			getWriteObservers().add(observer);
+			getWriteObserversMask()[addr] = true;
+		}
 	}
 
 	public synchronized void removeWriteObserver(MemoryWriteObserver observer) {
-		getWriteObservers().remove(observer);
+		if (getWriteObservers().remove(observer)) {
+			int addr = observer.getObservedMemoryAddress();
+			boolean moreOnAddr = false;
+			for (MemoryWriteObserver obs : getWriteObservers()) {
+				if (obs.getObservedMemoryAddress() == addr) {
+					moreOnAddr = true;
+					break;
+				}
+			}
+			if (!moreOnAddr) {
+				getWriteObserversMask()[addr] = false;
+			}
+		}
 	}
 
 	public synchronized void removeAllWriteObservers() {
-		getWriteObservers().clear();
+		if (!getWriteObservers().isEmpty()) {
+			for (MemoryWriteObserver obs : getWriteObservers()) {
+				getWriteObserversMask()[obs.getObservedMemoryAddress()] = false;
+			}
+			getWriteObservers().clear();
+		}
+	}
+
+	protected boolean hasWriteObserversAt(int memoryAddress) {
+		return getWriteObserversMask()[memoryAddress];
+	}
+
+	private boolean[] getWriteObserversMask() {
+		return writeObserversMask;
 	}
 
 	public List<MemoryWriteObserver> getWriteObservers() {
