@@ -1272,14 +1272,20 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		public synchronized void run() {
 			System.out.println("Memorytrap processor thread started");
 			while (!isStopped()) {
-				try {
-					MemoryTrapTask task = getTaskQueue().poll();
-					if (task != null) {
-						processTask(task);
-					} else {
-						wait();
+				MemoryTrapTask task = null;
+				synchronized (getTaskQueue()) {
+					task = getTaskQueue().peek();
+				}
+				if (task != null) {
+					processTask(task);
+					synchronized (getTaskQueue()) {
+						getTaskQueue().remove(task);
 					}
-				} catch (InterruptedException e) {
+				} else {
+					try {
+						wait();
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 			System.out.println("Memorytrap processor thread stopped");
@@ -1292,9 +1298,20 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), task.getMemoryValue());
 		}
 
-		public synchronized void processTaskDeferred(MemoryTrapTask task) {
-			if (getTaskQueue().offer(task)) {
-				notify();
+		public void processTaskDeferred(MemoryTrapTask task) {
+			boolean shouldNotify = false;
+			synchronized (getTaskQueue()) {
+				if (getTaskQueue().offer(task)) {
+					if (getTaskQueue().size() == 1) {
+						// Was idle, should notify
+						shouldNotify = true;
+					}
+				}
+			}
+			if (shouldNotify) {
+				synchronized (this) {
+					notify();
+				}
 			}
 		}
 
