@@ -1276,12 +1276,15 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 				synchronized (getTaskQueue()) {
 					task = getTaskQueue().peek();
 				}
+				boolean shouldWait = task == null;
 				if (task != null) {
 					processTask(task);
 					synchronized (getTaskQueue()) {
 						getTaskQueue().remove(task);
+						shouldWait = getTaskQueue().isEmpty();
 					}
-				} else {
+				}
+				if (shouldWait) {
 					try {
 						wait();
 					} catch (InterruptedException e) {
@@ -1291,19 +1294,11 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			System.out.println("Memorytrap processor thread stopped");
 		}
 
-		private void processTask(MemoryTrapTask task) {
-			AmstradMemoryTrap memoryTrap = task.getMemoryTrap();
-			memoryTrap.reset();
-			AmstradMemoryTrapHandler handler = memoryTrap.getHandler();
-			handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), task.getMemoryValue());
-		}
-
 		public void processTaskDeferred(MemoryTrapTask task) {
 			boolean shouldNotify = false;
 			synchronized (getTaskQueue()) {
 				if (getTaskQueue().offer(task)) {
 					if (getTaskQueue().size() == 1) {
-						// Was idle, should notify
 						shouldNotify = true;
 					}
 				}
@@ -1313,6 +1308,13 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 					notify();
 				}
 			}
+		}
+
+		private void processTask(MemoryTrapTask task) {
+			AmstradMemoryTrap memoryTrap = task.getMemoryTrap();
+			memoryTrap.reset();
+			AmstradMemoryTrapHandler handler = memoryTrap.getHandler();
+			handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), task.getMemoryValue());
 		}
 
 		public void stopProcessing() {

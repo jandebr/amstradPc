@@ -46,7 +46,7 @@ public abstract class Memory extends Device {
 					"Observed memory address is out of range: " + addr + " (max " + getAddressSize() + ")");
 		if (!getWriteObservers().contains(observer)) {
 			getWriteObservers().add(observer);
-			getWriteObserversMask()[addr] = true;
+			writeObserversMask[addr] = true;
 		}
 	}
 
@@ -61,7 +61,7 @@ public abstract class Memory extends Device {
 				}
 			}
 			if (!moreOnAddr) {
-				getWriteObserversMask()[addr] = false;
+				writeObserversMask[addr] = false;
 			}
 		}
 	}
@@ -69,18 +69,14 @@ public abstract class Memory extends Device {
 	public synchronized void removeAllWriteObservers() {
 		if (!getWriteObservers().isEmpty()) {
 			for (MemoryWriteObserver obs : getWriteObservers()) {
-				getWriteObserversMask()[obs.getObservedMemoryAddress()] = false;
+				writeObserversMask[obs.getObservedMemoryAddress()] = false;
 			}
 			getWriteObservers().clear();
 		}
 	}
 
 	protected boolean hasWriteObserversAt(int memoryAddress) {
-		return getWriteObserversMask()[memoryAddress];
-	}
-
-	private boolean[] getWriteObserversMask() {
-		return writeObserversMask;
+		return memoryAddress >= 0 && memoryAddress < writeObserversMask.length && writeObserversMask[memoryAddress];
 	}
 
 	public List<MemoryWriteObserver> getWriteObservers() {
