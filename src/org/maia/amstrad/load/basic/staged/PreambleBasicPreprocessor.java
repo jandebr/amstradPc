@@ -36,7 +36,7 @@ public class PreambleBasicPreprocessor extends StagedBasicPreprocessor {
 			BasicLineNumberLinearMapping renumMapping = null;
 			if (getPreambleLineCount() > 0) {
 				int lnLow = sourceCode.getSmallestLineNumber();
-				int lnStep = sourceCode.getDominantLineNumberStep();
+				int lnStep = 1;
 				int lnOffset = (getPreambleLineCount() + 1) * lnStep;
 				if (lnLow < lnOffset) {
 					renumMapping = renum(sourceCode, lnOffset, lnStep, session);

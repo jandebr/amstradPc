@@ -19,7 +19,7 @@ public abstract class BasicPreprocessor {
 			throws BasicException;
 
 	protected int getNextAvailableLineNumber(BasicSourceCode sourceCode) {
-		return sourceCode.getNextAvailableLineNumber(sourceCode.getDominantLineNumberStep());
+		return sourceCode.getNextAvailableLineNumber(1);
 	}
 
 	protected void addCodeLine(BasicSourceCode sourceCode, int lineNumber, String lineCode) throws BasicException {

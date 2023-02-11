@@ -177,8 +177,7 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 		new ChainedInterruptBasicPreprocessor(interruptSequence).preprocess(chainedSourceCode, chainedSession);
 		BasicLineNumberScope chainedCodeScope = chainedSession.getSnapshotScopeOfCodeExcludingMacros(chainedSourceCode); // before
 																															// renum
-		BasicLineNumberLinearMapping mapping = renum(chainedSourceCode, chainedLineNumberOffset,
-				chainedSourceCode.getDominantLineNumberStep(), chainedSession);
+		BasicLineNumberLinearMapping mapping = renum(chainedSourceCode, chainedLineNumberOffset, 1, chainedSession);
 		stagedMapping.union(mapping, chainedCodeScope);
 	}
 

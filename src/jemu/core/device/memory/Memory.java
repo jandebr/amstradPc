@@ -76,7 +76,7 @@ public abstract class Memory extends Device {
 	}
 
 	protected boolean hasWriteObserversAt(int memoryAddress) {
-		return memoryAddress >= 0 && memoryAddress < writeObserversMask.length && writeObserversMask[memoryAddress];
+		return memoryAddress < writeObserversMask.length && writeObserversMask[memoryAddress];
 	}
 
 	public List<MemoryWriteObserver> getWriteObservers() {
