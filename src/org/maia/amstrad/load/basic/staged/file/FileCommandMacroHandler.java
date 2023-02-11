@@ -2,6 +2,7 @@ package org.maia.amstrad.load.basic.staged.file;
 
 import java.io.IOException;
 
+import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.basic.staged.StagedBasicMacroHandler;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.pc.memory.AmstradMemory;
@@ -12,13 +13,16 @@ import org.maia.amstrad.program.AmstradProgramBuilder;
 
 public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
+	private BasicSourceCode sourceCode;
+
 	private FileCommandResolver resolver;
 
 	private AmstradProgram program;
 
-	protected FileCommandMacroHandler(FileCommandMacro macro, StagedBasicProgramLoaderSession session,
-			FileCommandResolver resolver) {
+	protected FileCommandMacroHandler(FileCommandMacro macro, BasicSourceCode sourceCode,
+			StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
 		super(macro, session);
+		this.sourceCode = sourceCode;
 		this.resolver = resolver;
 		this.program = session.getLastProgramInChain();
 	}
@@ -50,6 +54,10 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	private FileReference lookupFileReference(FileCommand command) {
 		return getProgram().lookupFileReference(command.getSourceFilenameWithoutFlags());
+	}
+
+	protected BasicSourceCode getSourceCode() {
+		return sourceCode;
 	}
 
 	private FileCommandResolver getResolver() {

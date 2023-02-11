@@ -29,10 +29,10 @@ public class BasicStagingTest {
 
 	private AmstradProgram getTestProgram() throws AmstradProgramException {
 		File dir = new File("resources/test/staging");
-		AmstradProgram program = new AmstradBasicProgramFile(new File(dir, "program-1.bas"));
+		AmstradProgram program = new AmstradBasicProgramFile(new File(dir, "binarysave.bas"));
 		AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(program);
 		try {
-			builder.loadAmstradMetaData(new File(dir, "program-1.amd"));
+			builder.loadAmstradMetaData(new File(dir, "binarysave.amd"));
 		} catch (IOException e) {
 			throw new AmstradProgramException(program, e);
 		}

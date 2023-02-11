@@ -11,7 +11,7 @@ public class BinaryLoadBasicPreprocessor extends BinaryIOBasicPreprocessor {
 
 	@Override
 	public int getDesiredPreambleLineCount() {
-		return 1; // for binaryio macro
+		return 2; // for binaryio macro
 	}
 
 	@Override

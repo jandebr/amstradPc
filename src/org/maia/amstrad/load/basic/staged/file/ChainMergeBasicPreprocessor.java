@@ -20,7 +20,6 @@ import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
 import org.maia.amstrad.load.basic.BasicPreprocessorBatch;
-import org.maia.amstrad.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.load.basic.staged.InterruptBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
@@ -32,7 +31,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgramException;
 
-public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor implements ErrorOutCodes {
+public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public ChainMergeBasicPreprocessor() {
 	}
@@ -127,7 +126,7 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 				if (!isProgramAlreadyChained(chainedProgram, session)) {
 					performChainMerge(command, chainedProgram, sourceCode, session);
 				}
-				resumeWithNewSourceCode(command, sourceCode, session);
+				resumeWithNewSourceCode(getResumeLineNumber(command, sourceCode), sourceCode, session);
 				System.out.println("ChainMerge completed successfully");
 			} catch (BasicMemoryFullException e) {
 				endWithError(ERR_MEMORY_FULL, sourceCodeBeforeMerge, session);
@@ -210,20 +209,11 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 		return batch;
 	}
 
-	private void resumeWithNewSourceCode(ChainMergeCommand command, BasicSourceCode newSourceCode,
-			StagedBasicProgramLoaderSession session) throws BasicException {
-		resumeWithNewSourceCode(getResumeLineNumber(command, newSourceCode), newSourceCode, session);
-	}
-
 	private void resumeWithNewSourceCode(int resumeLineNumber, BasicSourceCode newSourceCode,
 			StagedBasicProgramLoaderSession session) throws BasicException {
-		// Edit resume line number
 		ChainMergeMacro macro = session.getMacroAdded(ChainMergeMacro.class);
 		substituteGotoLineNumber(macro.getLineNumberTo(), resumeLineNumber, newSourceCode, session);
-		// Swap code
-		session.getBasicRuntime().swap(newSourceCode);
-		// Resume run
-		session.getBasicRuntime().poke(macro.getResumeMemoryAddress(), (byte) 1);
+		resumeWithNewSourceCode(newSourceCode, macro, session);
 	}
 
 	private int getResumeLineNumber(ChainMergeCommand command, BasicSourceCode sourceCode) {
@@ -257,12 +247,9 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 
 	private class ChainMergeRuntimeListener extends FileCommandRuntimeListener {
 
-		private BasicSourceCode sourceCode;
-
 		public ChainMergeRuntimeListener(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session,
 				int memoryTrapAddress) {
-			super(session, memoryTrapAddress);
-			this.sourceCode = sourceCode;
+			super(sourceCode, session, memoryTrapAddress);
 		}
 
 		@Override
@@ -271,30 +258,19 @@ public class ChainMergeBasicPreprocessor extends StagedBasicPreprocessor impleme
 			return new ChainMergeMacroHandler(macro, getSourceCode(), getSession(), resolver);
 		}
 
-		private BasicSourceCode getSourceCode() {
-			return sourceCode;
-		}
-
 	}
 
 	private class ChainMergeMacroHandler extends FileCommandMacroHandler {
 
-		private BasicSourceCode sourceCode;
-
 		public ChainMergeMacroHandler(ChainMergeMacro macro, BasicSourceCode sourceCode,
 				StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
-			super(macro, session, resolver);
-			this.sourceCode = sourceCode;
+			super(macro, sourceCode, session, resolver);
 		}
 
 		@Override
 		protected void execute(FileCommand command, FileReference fileReference) {
 			AmstradBasicProgramFile chainedProgram = getReferencedProgram(fileReference);
 			handleChainMerge((ChainMergeCommand) command, chainedProgram, getSourceCode(), getSession());
-		}
-
-		private BasicSourceCode getSourceCode() {
-			return sourceCode;
 		}
 
 	}

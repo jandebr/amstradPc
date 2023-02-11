@@ -3,15 +3,20 @@ package org.maia.amstrad.load.basic.staged.file;
 import java.util.Collection;
 import java.util.Vector;
 
+import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramRuntimeListener;
 
 public abstract class FileCommandRuntimeListener extends StagedBasicProgramRuntimeListener {
 
+	private BasicSourceCode sourceCode;
+
 	private Collection<FileCommandReference> commandReferences;
 
-	protected FileCommandRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
+	protected FileCommandRuntimeListener(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session,
+			int memoryTrapAddress) {
 		super(session, memoryTrapAddress);
+		this.sourceCode = sourceCode;
 		this.commandReferences = new Vector<FileCommandReference>();
 	}
 
@@ -41,6 +46,10 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 				return null;
 			}
 		};
+	}
+
+	protected BasicSourceCode getSourceCode() {
+		return sourceCode;
 	}
 
 	private Collection<FileCommandReference> getCommandReferences() {

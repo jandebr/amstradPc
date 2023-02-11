@@ -11,7 +11,7 @@ public class ChainBasicPreprocessor extends ChainRunBasicPreprocessor {
 
 	@Override
 	public int getDesiredPreambleLineCount() {
-		return 1; // for chainrun macro
+		return 2; // for chainrun macro
 	}
 
 	@Override

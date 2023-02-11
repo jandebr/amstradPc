@@ -3,10 +3,9 @@ package org.maia.amstrad.load.basic.staged.file;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicSourceCode;
-import org.maia.amstrad.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 
-public abstract class ChainRunBasicPreprocessor extends StagedBasicPreprocessor {
+public abstract class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected ChainRunBasicPreprocessor() {
 	}
@@ -28,10 +27,12 @@ public abstract class ChainRunBasicPreprocessor extends StagedBasicPreprocessor 
 	private void addChainRunMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int addrResume = session.reserveMemory(1);
-		int ln = session.acquireLargestAvailablePreambleLineNumber();
-		addCodeLine(sourceCode, ln, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln + " ELSE END"
+		int ln2 = session.acquireLargestAvailablePreambleLineNumber();
+		int ln1 = session.acquireLargestAvailablePreambleLineNumber();
+		addCodeLine(sourceCode, ln1, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln1
 				+ (session.produceRemarks() ? ":REM @chainrun" : ""));
-		session.addMacro(new ChainRunMacro(new BasicLineNumberRange(ln), addrResume));
+		addCodeLine(sourceCode, ln2, "END" + (session.produceRemarks() ? ":REM @chainrun" : ""));
+		session.addMacro(new ChainRunMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 
 	protected abstract void invokeChainRunMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)

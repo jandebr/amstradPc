@@ -8,4 +8,6 @@ public interface ErrorOutCodes {
 
 	int ERR_CHAIN_MERGE_FAILURE = 33;
 
+	int ERR_BINARY_SAVE_FAILURE = 34;
+
 }
