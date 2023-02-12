@@ -116,7 +116,7 @@ public class BinaryLoadBasicPreprocessor extends BinaryIOBasicPreprocessor imple
 		for (int i = 0; i < data.length; i++) {
 			rt.poke(addr++, data[i]);
 			boolean newBlock = addr % BLOCK_BYTESIZE == 0 && i < data.length - 1;
-			AmstradUtils.sleep(newBlock ? 800L : 1L);
+			AmstradUtils.sleep(newBlock ? 500L : (i % 8 == 7 ? 8L : 0L));
 		}
 	}
 
