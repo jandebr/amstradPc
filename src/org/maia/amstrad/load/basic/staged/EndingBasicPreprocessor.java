@@ -57,7 +57,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 			throws BasicException {
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		invokeEndingMacroOnBreak(sourceCode, scope, session);
-		invokeEndingMacroOnEndCommands(sourceCode, scope, session);
+		invokeEndingMacroOnEndInstructions(sourceCode, scope, session);
 		// invokeEndingMacroOnGotoLoops(sourceCode, scope, session);
 		invokeEndingMacroAtCodeHorizon(sourceCode, session);
 	}
@@ -90,26 +90,26 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 	}
 
-	private void invokeEndingMacroOnEndCommands(BasicSourceCode sourceCode, BasicLineNumberScope scope,
+	private void invokeEndingMacroOnEndInstructions(BasicSourceCode sourceCode, BasicLineNumberScope scope,
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		BasicLanguage language = sourceCode.getLanguage();
-		invokeEndingMacroOnEndCommand(sourceCode, scope, createKeywordToken(language, "END"), session);
-		invokeEndingMacroOnEndCommand(sourceCode, scope, createKeywordToken(language, "STOP"), session);
+		invokeEndingMacroOnEndInstruction(sourceCode, scope, createKeywordToken(language, "END"), session);
+		invokeEndingMacroOnEndInstruction(sourceCode, scope, createKeywordToken(language, "STOP"), session);
 	}
 
-	private void invokeEndingMacroOnEndCommand(BasicSourceCode sourceCode, BasicLineNumberScope scope,
-			BasicSourceToken command, StagedBasicProgramLoaderSession session) throws BasicException {
+	private void invokeEndingMacroOnEndInstruction(BasicSourceCode sourceCode, BasicLineNumberScope scope,
+			BasicSourceToken instruction, StagedBasicProgramLoaderSession session) throws BasicException {
 		int lnGoto = session.getEndingMacroLineNumber();
 		BasicLanguage language = sourceCode.getLanguage();
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
 				BasicSourceTokenSequence sequence = line.parse();
-				int i = sequence.getFirstIndexOf(command);
+				int i = sequence.getFirstIndexOf(instruction);
 				while (i >= 0) {
 					// End command => Goto ending macro
 					sequence.replace(i, createKeywordToken(language, "GOTO"), new LiteralToken(" "),
 							new LineNumberReferenceToken(lnGoto));
-					i = sequence.getNextIndexOf(command, i + 3);
+					i = sequence.getNextIndexOf(instruction, i + 3);
 				}
 				if (sequence.isModified()) {
 					addCodeLine(sourceCode, sequence);

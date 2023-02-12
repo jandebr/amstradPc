@@ -1,0 +1,17 @@
+package org.maia.amstrad.load.basic.staged.file;
+
+public interface FileCommandDelays {
+
+	long DELAYMILLIS_CHAIN_MERGE = 2000L;
+
+	long DELAYMILLIS_CHAIN_RUN = 2000L;
+
+	long DELAYMILLIS_BINARY_LOAD_NEW_BLOCK = 500L;
+
+	long DELAYMILLIS_BINARY_LOAD_DWORD = 8L;
+
+	long DELAYMILLIS_BINARY_LOAD = 2000L;
+
+	long DELAYMILLIS_BINARY_SAVE = 2000L;
+
+}

@@ -45,7 +45,7 @@ public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
 		}
 
 		@Override
-		protected void doRun() {
+		protected void doRun(String... args) {
 			// a snapshot resumes from loading, no run needed
 		}
 

@@ -86,8 +86,24 @@ public class BasicProgramLoader extends AmstradProgramLoader {
 		}
 
 		@Override
-		protected void doRun() {
-			getAmstradPc().getBasicRuntime().run();
+		protected void doRun(String... args) {
+			int lineNumber = extractLineNumber(args);
+			if (lineNumber < 0) {
+				getAmstradPc().getBasicRuntime().run();
+			} else {
+				getAmstradPc().getBasicRuntime().run(lineNumber);
+			}
+		}
+
+		private int extractLineNumber(String... args) {
+			int lineNumber = -1;
+			if (args.length > 0) {
+				try {
+					lineNumber = Integer.parseInt(args[0]);
+				} catch (NumberFormatException e) {
+				}
+			}
+			return lineNumber;
 		}
 
 	}

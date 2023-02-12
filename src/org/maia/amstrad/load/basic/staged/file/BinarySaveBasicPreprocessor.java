@@ -92,6 +92,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			try {
 				session.getBasicRuntime().saveBinaryFile(fileReference.getTargetFile(), command.getMemoryOffset(),
 						command.getMemoryLength());
+				delay(DELAYMILLIS_BINARY_SAVE);
 				resumeRun(macro, session);
 				System.out.println("BinarySave completed successfully");
 			} catch (IOException e) {

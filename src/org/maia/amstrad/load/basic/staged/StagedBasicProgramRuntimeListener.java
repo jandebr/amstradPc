@@ -55,7 +55,7 @@ public abstract class StagedBasicProgramRuntimeListener implements AmstradProgra
 		return session;
 	}
 
-	protected int getMemoryTrapAddress() {
+	public int getMemoryTrapAddress() {
 		return memoryTrapAddress;
 	}
 

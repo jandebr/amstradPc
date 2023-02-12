@@ -20,7 +20,6 @@ import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.util.AmstradIO;
-import org.maia.amstrad.util.AmstradUtils;
 
 public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor implements LocomotiveBasicMemoryMap {
 
@@ -101,6 +100,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 				} else if (shouldLoadInBlocks(command)) {
 					loadInBlocks(command, fileReference, session);
 				} else {
+					delay(DELAYMILLIS_BINARY_LOAD);
 					session.getBasicRuntime().loadBinaryFile(fileReference.getTargetFile(), command.getMemoryOffset());
 				}
 				resumeRun(macro, session);
@@ -121,13 +121,18 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 
 	private void loadInBytes(BinaryLoadCommand command, FileReference fileReference,
 			StagedBasicProgramLoaderSession session) throws IOException {
+		delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
 		BasicRuntime rt = session.getBasicRuntime();
 		int addr = command.getMemoryOffset();
 		byte[] data = AmstradIO.readBinaryFileContents(fileReference.getTargetFile());
 		for (int i = 0; i < data.length; i++) {
 			rt.poke(addr++, data[i]);
-			boolean newBlock = addr % BLOCK_BYTESIZE == 0 && i < data.length - 1;
-			AmstradUtils.sleep(newBlock ? 500L : (i % 8 == 7 ? 8L : 0L));
+			boolean newBlockAhead = addr % BLOCK_BYTESIZE == 0 && i < data.length - 1;
+			if (newBlockAhead) {
+				delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
+			} else if (i % 8 == 7) {
+				delay(DELAYMILLIS_BINARY_LOAD_DWORD);
+			}
 		}
 	}
 
@@ -140,8 +145,8 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 			for (int bi = 0; bi < blocks; bi++) {
 				int offset = bi * BLOCK_BYTESIZE;
 				int end = Math.min(offset + BLOCK_BYTESIZE, data.length);
+				delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
 				rt.loadBinaryData(data, offset, end - offset, command.getMemoryOffset() + offset);
-				AmstradUtils.sleep(250L);
 			}
 		}
 	}

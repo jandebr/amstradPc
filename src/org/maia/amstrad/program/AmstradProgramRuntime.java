@@ -31,16 +31,16 @@ public abstract class AmstradProgramRuntime {
 		getListeners().remove(listener);
 	}
 
-	public final synchronized void run() throws AmstradProgramException {
+	public final synchronized void run(String... args) throws AmstradProgramException {
 		checkNotDisposed();
-		doRun();
+		doRun(args);
 		setRun(true);
 		for (AmstradProgramRuntimeListener listener : getListenersFixedList()) {
 			listener.amstradProgramIsRun(this);
 		}
 	}
 
-	protected abstract void doRun() throws AmstradProgramException;
+	protected abstract void doRun(String... args) throws AmstradProgramException;
 
 	public synchronized void dispose(boolean programRemainsLoaded) {
 		if (!isDisposed()) {

@@ -22,6 +22,8 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
 	private boolean produceRemarks;
 
+	private StagedBasicProgramLoaderSession lastSession;
+
 	public StagedBasicProgramLoader(AmstradPc amstradPc, EndingBasicAction endingAction,
 			EndingBasicCodeDisclosure codeDisclosure, boolean produceRemarks) {
 		super(amstradPc);
@@ -34,6 +36,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 	protected void setupPreprocessors() {
 		// The order is crucial
 		PreambleBasicPreprocessor preamble = new PreambleBasicPreprocessor();
+		addPreprocessor(new CompactBasicPreprocessor());
 		addPreprocessor(new ProgramBridgeBasicPreprocessor());
 		addPreprocessor(preamble);
 		addPreprocessor(new PreambleLandingBasicPreprocessor());
@@ -72,6 +75,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		session.setEndingAction(getEndingAction());
 		session.setCodeDisclosure(getCodeDisclosure());
 		session.setProduceRemarks(produceRemarks());
+		setLastSession(session);
 		return session;
 	}
 
@@ -85,6 +89,14 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
 	private boolean produceRemarks() {
 		return produceRemarks;
+	}
+
+	public StagedBasicProgramLoaderSession getLastSession() {
+		return lastSession;
+	}
+
+	private void setLastSession(StagedBasicProgramLoaderSession session) {
+		this.lastSession = session;
 	}
 
 }

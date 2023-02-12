@@ -5,10 +5,16 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.util.AmstradUtils;
 
-public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocessor implements ErrorOutCodes {
+public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocessor
+		implements ErrorOutCodes, FileCommandDelays {
 
 	protected FileCommandBasicPreprocessor() {
+	}
+
+	protected void delay(long delayMillis) {
+		AmstradUtils.sleep(delayMillis);
 	}
 
 	protected void endWithError(int errorCode, BasicSourceCode sourceCode, FileCommandMacro macro,

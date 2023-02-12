@@ -42,10 +42,11 @@ public class LocomotiveBasicKeyword {
 
 	public boolean canBeFollowedByLineNumber() {
 		String sf = getSourceForm();
+		// excluding "CHAIN" to prevent renum of external line numbers <> "CHAIN MERGE" is internal (after merging)
 		return sf.equals("GOTO") || sf.equals("GOSUB") || sf.equals("ON ERROR GOTO") || sf.equals("THEN")
 				|| sf.equals("ELSE") || sf.equals("DELETE") || sf.equals("EDIT") || sf.equals("LIST")
 				|| sf.equals("RESUME") || sf.equals("RENUM") || sf.equals("RESTORE") || sf.equals("RUN")
-				|| sf.equals("CHAIN") || sf.equals("MERGE");
+				|| sf.equals("MERGE");
 	}
 
 	public boolean isRemark() {
