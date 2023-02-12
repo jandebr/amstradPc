@@ -69,8 +69,17 @@ public class AmstradFactory {
 
 	private Map<AmstradPc, ProgramBrowserAction> programBrowserActions;
 
+	private Map<AmstradPc, SaveBasicSourceFileAction> saveBasicSourceFileActions;
+
+	private Map<AmstradPc, SaveBasicBinaryFileAction> saveBasicBinaryFileActions;
+
+	private Map<AmstradPc, SaveSnapshotFileAction> saveSnapshotFileActions;
+
 	private AmstradFactory() {
 		this.programBrowserActions = new HashMap<AmstradPc, ProgramBrowserAction>();
+		this.saveBasicSourceFileActions = new HashMap<AmstradPc, SaveBasicSourceFileAction>();
+		this.saveBasicBinaryFileActions = new HashMap<AmstradPc, SaveBasicBinaryFileAction>();
+		this.saveSnapshotFileActions = new HashMap<AmstradPc, SaveSnapshotFileAction>();
 	}
 
 	public AmstradContext getAmstradContext() {
@@ -116,9 +125,9 @@ public class AmstradFactory {
 		menu.add(new JMenuItem(new LoadBasicBinaryFileAction(amstradPc)));
 		menu.add(new JMenuItem(new LoadSnapshotFileAction(amstradPc)));
 		menu.add(new JSeparator());
-		menu.add(new JMenuItem(new SaveBasicSourceFileAction(amstradPc)));
-		menu.add(new JMenuItem(new SaveBasicBinaryFileAction(amstradPc)));
-		menu.add(new JMenuItem(new SaveSnapshotFileAction(amstradPc)));
+		menu.add(new JMenuItem(getSaveBasicSourceFileAction(amstradPc)));
+		menu.add(new JMenuItem(getSaveBasicBinaryFileAction(amstradPc)));
+		menu.add(new JMenuItem(getSaveSnapshotFileAction(amstradPc)));
 		menu.add(new JSeparator());
 		item = new JMenuItem(new QuitAction(amstradPc));
 		item.setAccelerator(
@@ -229,6 +238,33 @@ public class AmstradFactory {
 		return action;
 	}
 
+	private SaveBasicSourceFileAction getSaveBasicSourceFileAction(AmstradPc amstradPc) {
+		SaveBasicSourceFileAction action = saveBasicSourceFileActions.get(amstradPc);
+		if (action == null) {
+			action = new SaveBasicSourceFileAction(amstradPc);
+			saveBasicSourceFileActions.put(amstradPc, action);
+		}
+		return action;
+	}
+
+	private SaveBasicBinaryFileAction getSaveBasicBinaryFileAction(AmstradPc amstradPc) {
+		SaveBasicBinaryFileAction action = saveBasicBinaryFileActions.get(amstradPc);
+		if (action == null) {
+			action = new SaveBasicBinaryFileAction(amstradPc);
+			saveBasicBinaryFileActions.put(amstradPc, action);
+		}
+		return action;
+	}
+
+	private SaveSnapshotFileAction getSaveSnapshotFileAction(AmstradPc amstradPc) {
+		SaveSnapshotFileAction action = saveSnapshotFileActions.get(amstradPc);
+		if (action == null) {
+			action = new SaveSnapshotFileAction(amstradPc);
+			saveSnapshotFileActions.put(amstradPc, action);
+		}
+		return action;
+	}
+
 	public static AmstradFactory getInstance() {
 		if (instance == null) {
 			setInstance(new AmstradFactory());
@@ -250,11 +286,14 @@ public class AmstradFactory {
 
 		private PrintStream consoleErrorStream;
 
+		private Map<AmstradPc, Boolean> basicProtectiveModes;
+
 		public AmstradContextImpl(AmstradSettings userSettings, PrintStream consoleOutputStream,
 				PrintStream consoleErrorStream) {
 			this.userSettings = userSettings;
 			this.consoleOutputStream = consoleOutputStream;
 			this.consoleErrorStream = consoleErrorStream;
+			this.basicProtectiveModes = new HashMap<AmstradPc, Boolean>();
 		}
 
 		@Override
@@ -278,6 +317,20 @@ public class AmstradFactory {
 			if (browserAction != null && !browserAction.isProgramBrowserShowing()) {
 				browserAction.showProgramBrowser();
 			}
+		}
+
+		@Override
+		public boolean isBasicProtectiveMode(AmstradPc amstradPc) {
+			Boolean protective = basicProtectiveModes.get(amstradPc);
+			return protective != null && protective.booleanValue();
+		}
+
+		@Override
+		public void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective) {
+			basicProtectiveModes.put(amstradPc, Boolean.valueOf(protective));
+			getSaveBasicSourceFileAction(amstradPc).setEnabled(!protective);
+			getSaveBasicBinaryFileAction(amstradPc).setEnabled(!protective);
+			getSaveSnapshotFileAction(amstradPc).setEnabled(!protective);
 		}
 
 	}

@@ -5,6 +5,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
@@ -25,13 +26,19 @@ public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
 			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
-					File file = getSelectedFile();
-					try {
-						getAmstradPc().getBasicRuntime().loadByteCodeFromFile(file);
-					} catch (Exception e) {
-						System.err.println("Failed to load Basic binary file: " + e.getMessage());
-						showErrorMessageDialog("Error loading Basic binary file", "Failed to load " + file.getName(),
-								e);
+					BasicRuntime rt = getAmstradPc().getBasicRuntime();
+					if (!rt.isReady()) {
+						showErrorMessageDialog("Cannot load now",
+								"Another program is still running. Stop it and then retry");
+					} else {
+						File file = getSelectedFile();
+						try {
+							getAmstradPc().getBasicRuntime().loadByteCodeFromFile(file);
+						} catch (Exception e) {
+							System.err.println("Failed to load Basic binary file: " + e.getMessage());
+							showErrorMessageDialog("Error loading Basic binary file",
+									"Failed to load " + file.getName(), e);
+						}
 					}
 				}
 			});

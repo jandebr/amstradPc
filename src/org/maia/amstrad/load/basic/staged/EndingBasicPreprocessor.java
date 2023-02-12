@@ -1,5 +1,6 @@
 package org.maia.amstrad.load.basic.staged;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberRange;
@@ -15,6 +16,7 @@ import org.maia.amstrad.load.basic.BasicProgramLoader;
 import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
@@ -194,6 +196,20 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 		public EndingRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
 			super(session, memoryTrapAddress);
+		}
+
+		@Override
+		public void amstradProgramIsRun(AmstradProgramRuntime programRuntime) {
+			super.amstradProgramIsRun(programRuntime);
+			AmstradFactory.getInstance().getAmstradContext().setBasicProtectiveMode(programRuntime.getAmstradPc(),
+					true);
+		}
+
+		@Override
+		public void amstradProgramIsDisposed(AmstradProgramRuntime programRuntime, boolean programRemainsLoaded) {
+			super.amstradProgramIsDisposed(programRuntime, programRemainsLoaded);
+			AmstradFactory.getInstance().getAmstradContext().setBasicProtectiveMode(programRuntime.getAmstradPc(),
+					false);
 		}
 
 		@Override

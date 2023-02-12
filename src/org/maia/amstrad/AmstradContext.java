@@ -34,6 +34,10 @@ public abstract class AmstradContext {
 
 	public abstract void showProgramBrowser(AmstradPc amstradPc);
 
+	public abstract boolean isBasicProtectiveMode(AmstradPc amstradPc);
+
+	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
+
 	public File getCurrentDirectory() {
 		String dir = getUserSettings().get(SETTING_CURRENT_DIR, null);
 		if (dir != null) {
