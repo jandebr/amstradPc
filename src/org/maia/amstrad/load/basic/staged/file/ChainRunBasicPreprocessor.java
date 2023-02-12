@@ -5,9 +5,14 @@ import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 
-public abstract class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
+public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 
-	protected ChainRunBasicPreprocessor() {
+	public ChainRunBasicPreprocessor() {
+	}
+
+	@Override
+	public int getDesiredPreambleLineCount() {
+		return 2; // for chainrun macro
 	}
 
 	@Override
@@ -16,8 +21,7 @@ public abstract class ChainRunBasicPreprocessor extends FileCommandBasicPreproce
 	}
 
 	@Override
-	protected final void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
+	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
 		if (!session.hasMacrosAdded(ChainRunMacro.class)) {
 			addChainRunMacro(sourceCode, session);
 		}
@@ -35,8 +39,10 @@ public abstract class ChainRunBasicPreprocessor extends FileCommandBasicPreproce
 		session.addMacro(new ChainRunMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 
-	protected abstract void invokeChainRunMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException;
+	private void invokeChainRunMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		// TODO
+	}
 
 	public static class ChainRunMacro extends FileCommandMacro {
 

@@ -21,8 +21,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 	}
 
 	@Override
-	protected final void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
+	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
 		if (!session.hasMacrosAdded(TextLoadMacro.class)) {
 			addTextLoadMacro(sourceCode, session);
 		}

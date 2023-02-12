@@ -15,24 +15,34 @@ import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 
-public class BinarySaveBasicPreprocessor extends BinaryIOBasicPreprocessor {
+public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public BinarySaveBasicPreprocessor() {
 	}
 
 	@Override
 	public int getDesiredPreambleLineCount() {
-		return 0; // shares the binaryio macro
+		return 0; // reusing waitresume macro
 	}
 
 	@Override
-	protected void invokeBinaryIOMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+	public boolean isApplicableToMergedCode() {
+		return true;
+	}
+
+	@Override
+	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
+		if (originalCodeContainsKeyword(sourceCode, "SAVE", session)) {
+			invokeBinarySave(sourceCode, session);
+		}
+	}
+
+	private void invokeBinarySave(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		if (!originalCodeContainsKeyword(sourceCode, "SAVE", session))
-			return;
-		BinaryIOMacro macro = session.getMacroAdded(BinaryIOMacro.class);
+		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		int lnGoto = macro.getLineNumberFrom();
 		int addrResume = macro.getResumeMemoryAddress();
 		int addrTrap = session.reserveMemory(1);
@@ -75,16 +85,17 @@ public class BinarySaveBasicPreprocessor extends BinaryIOBasicPreprocessor {
 	protected void handleBinarySave(BinarySaveCommand command, FileReference fileReference, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
 		System.out.println("Handling " + command);
+		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		if (fileReference == null) {
-			endWithError(ERR_FILE_NOT_FOUND, sourceCode, session);
+			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
 				session.getBasicRuntime().saveBinaryFile(fileReference.getTargetFile(), command.getMemoryOffset(),
 						command.getMemoryLength());
-				resumeRun(session.getMacroAdded(BinaryIOMacro.class), session);
+				resumeRun(macro, session);
 				System.out.println("BinarySave completed successfully");
 			} catch (IOException e) {
-				endWithError(ERR_BINARY_SAVE_FAILURE, sourceCode, session);
+				endWithError(ERR_BINARY_SAVE_FAILURE, sourceCode, macro, session);
 			}
 		}
 	}
@@ -98,7 +109,7 @@ public class BinarySaveBasicPreprocessor extends BinaryIOBasicPreprocessor {
 
 		@Override
 		protected BinarySaveMacroHandler createMacroHandler(FileCommandResolver resolver) {
-			BinaryIOMacro macro = getSession().getMacroAdded(BinaryIOMacro.class);
+			WaitResumeMacro macro = getSession().getMacroAdded(WaitResumeMacro.class);
 			return new BinarySaveMacroHandler(macro, getSourceCode(), getSession(), resolver);
 		}
 
@@ -106,7 +117,7 @@ public class BinarySaveBasicPreprocessor extends BinaryIOBasicPreprocessor {
 
 	private class BinarySaveMacroHandler extends FileCommandMacroHandler {
 
-		public BinarySaveMacroHandler(BinaryIOMacro macro, BasicSourceCode sourceCode,
+		public BinarySaveMacroHandler(WaitResumeMacro macro, BasicSourceCode sourceCode,
 				StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
 			super(macro, sourceCode, session, resolver);
 		}

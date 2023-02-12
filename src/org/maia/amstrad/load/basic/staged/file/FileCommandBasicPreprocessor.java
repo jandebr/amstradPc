@@ -11,6 +11,18 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 	protected FileCommandBasicPreprocessor() {
 	}
 
+	protected void endWithError(int errorCode, BasicSourceCode sourceCode, FileCommandMacro macro,
+			StagedBasicProgramLoaderSession session) {
+		System.err.println("FileCommand ended with ERROR " + errorCode);
+		try {
+			substituteErrorCode(errorCode, sourceCode, session);
+			addCodeLine(sourceCode, macro.getLineNumberTo(), "GOTO " + session.getErrorOutMacroLineNumber());
+			resumeWithNewSourceCode(sourceCode, macro, session);
+		} catch (BasicException e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected void resumeWithNewSourceCode(BasicSourceCode newSourceCode, FileCommandMacro macro,
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		session.getBasicRuntime().swap(newSourceCode);
