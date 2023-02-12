@@ -135,7 +135,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 				} else {
 					chainedProgramRuntime.run();
 				}
-				delay(200L); // avoid seeing "RUN" on display
+				delay(DELAYMILLIS_CHAIN_RUN_DISPLAY); // avoid seeing "RUN" on display
 				monitor.unfreezeFrame();
 				System.out.println("ChainRun completed successfully");
 			} catch (AmstradProgramException e) {
