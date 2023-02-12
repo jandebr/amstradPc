@@ -200,10 +200,14 @@ public abstract class BasicRuntime {
 	}
 
 	public void loadBinaryData(byte[] data, int memoryStartAddress) {
+		loadBinaryData(data, 0, data.length, memoryStartAddress);
+	}
+
+	public void loadBinaryData(byte[] data, int dataOffset, int dataLength, int memoryStartAddress) {
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
-			memory.writeBytes(memoryStartAddress, data);
+			memory.writeBytes(memoryStartAddress, data, dataOffset, dataLength);
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
