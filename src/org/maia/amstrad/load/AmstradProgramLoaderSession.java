@@ -2,7 +2,6 @@ package org.maia.amstrad.load;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public class AmstradProgramLoaderSession {
 

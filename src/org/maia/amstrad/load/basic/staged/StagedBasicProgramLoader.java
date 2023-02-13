@@ -2,6 +2,7 @@ package org.maia.amstrad.load.basic.staged;
 
 import java.util.Iterator;
 
+import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.BasicPreprocessingProgramLoader;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.BinaryLoadBasicPreprocessor;
@@ -12,7 +13,8 @@ import org.maia.amstrad.load.basic.staged.file.TextLoadBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.TextSaveBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.program.AmstradProgramRuntime;
+import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramException;
 
 public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
@@ -67,6 +69,11 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 			}
 		}
 		return lineCount;
+	}
+
+	@Override
+	protected AmstradProgramRuntime createProgramRuntime(AmstradProgram program) throws AmstradProgramException {
+		return new StagedBasicProgramRuntime(program, getAmstradPc());
 	}
 
 	@Override

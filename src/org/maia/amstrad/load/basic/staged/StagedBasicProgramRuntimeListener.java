@@ -1,9 +1,9 @@
 package org.maia.amstrad.load.basic.staged;
 
+import org.maia.amstrad.load.AmstradProgramRuntime;
+import org.maia.amstrad.load.AmstradProgramRuntimeListener;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
-import org.maia.amstrad.program.AmstradProgramRuntime;
-import org.maia.amstrad.program.AmstradProgramRuntimeListener;
 
 public abstract class StagedBasicProgramRuntimeListener implements AmstradProgramRuntimeListener {
 
@@ -20,18 +20,20 @@ public abstract class StagedBasicProgramRuntimeListener implements AmstradProgra
 		AmstradProgramRuntime rt = getSession().getProgramRuntime();
 		rt.addListener(this);
 		if (rt.isRun()) {
-			// already running
-			amstradProgramIsRun();
+			// catching up, already running
+			amstradProgramIsAboutToRun(rt);
+			amstradProgramIsRun(rt);
 		}
 	}
 
-	public void amstradProgramIsRun() {
-		amstradProgramIsRun(getSession().getProgramRuntime());
+	@Override
+	public void amstradProgramIsAboutToRun(AmstradProgramRuntime programRuntime) {
+		addMemoryTrap(getMemoryTrapAddress(), createMemoryTrapHandler());
 	}
 
 	@Override
 	public void amstradProgramIsRun(AmstradProgramRuntime programRuntime) {
-		addMemoryTrap(getMemoryTrapAddress(), createMemoryTrapHandler());
+		// no action
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public abstract class StagedBasicProgramRuntimeListener implements AmstradProgra
 
 	private void addMemoryTrap(int memoryAddress, AmstradMemoryTrapHandler handler) {
 		AmstradMemory memory = getSession().getAmstradPc().getMemory();
-		memory.addMemoryTrap(memoryAddress, false, handler);
+		memory.addMemoryTrap(memoryAddress, true, handler);
 	}
 
 	private void removeMemoryTrapsAt(int memoryAddress) {

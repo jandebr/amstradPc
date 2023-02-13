@@ -52,13 +52,12 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 		}
 	}
 
-	protected void substituteGotoLineNumber(int lineNumber, int gotoLineNumber, BasicSourceCode sourceCode,
-			StagedBasicProgramLoaderSession session) throws BasicException {
+	protected void substituteLineNumberReference(int lineNumber, int lineNumberReference, BasicSourceCode sourceCode)
+			throws BasicException {
 		BasicSourceTokenSequence sequence = sourceCode.getLineByLineNumber(lineNumber).parse();
-		BasicSourceToken GOTO = createKeywordToken(sourceCode.getLanguage(), "GOTO");
-		int i = sequence.getFirstIndexOf(GOTO);
+		int i = sequence.getFirstIndexOf(LineNumberReferenceToken.class);
 		if (i >= 0) {
-			sequence.replace(i + 2, new LineNumberReferenceToken(gotoLineNumber));
+			sequence.replace(i, new LineNumberReferenceToken(lineNumberReference));
 			addCodeLine(sourceCode, sequence);
 		}
 	}

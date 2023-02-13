@@ -1,9 +1,11 @@
-package org.maia.amstrad.program;
+package org.maia.amstrad.load;
 
 import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramException;
 
 public abstract class AmstradProgramRuntime {
 
@@ -33,9 +35,13 @@ public abstract class AmstradProgramRuntime {
 
 	public final synchronized void run(String... args) throws AmstradProgramException {
 		checkNotDisposed();
+		List<AmstradProgramRuntimeListener> listeners = getListenersFixedList();
+		for (AmstradProgramRuntimeListener listener : listeners) {
+			listener.amstradProgramIsAboutToRun(this);
+		}
 		doRun(args);
 		setRun(true);
-		for (AmstradProgramRuntimeListener listener : getListenersFixedList()) {
+		for (AmstradProgramRuntimeListener listener : listeners) {
 			listener.amstradProgramIsRun(this);
 		}
 	}

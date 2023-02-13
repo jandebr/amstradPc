@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import org.maia.amstrad.load.AmstradProgramLoader;
 import org.maia.amstrad.load.AmstradProgramLoaderSession;
+import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
 
@@ -36,19 +36,6 @@ public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
 			throw new AmstradProgramException(program,
 					"Failed to load snapshot file " + snapshotFile.getFile().getPath(), e);
 		}
-	}
-
-	private static class AmstradPcSnapshotRuntime extends AmstradProgramRuntime {
-
-		public AmstradPcSnapshotRuntime(AmstradPcSnapshotFile snapshotFile, AmstradPc amstradPc) {
-			super(snapshotFile, amstradPc);
-		}
-
-		@Override
-		protected void doRun(String... args) {
-			// a snapshot resumes from loading, no run needed
-		}
-
 	}
 
 }

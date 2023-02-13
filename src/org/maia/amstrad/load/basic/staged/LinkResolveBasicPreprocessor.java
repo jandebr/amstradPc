@@ -26,7 +26,7 @@ public class LinkResolveBasicPreprocessor extends StagedBasicPreprocessor {
 			int ln = macro.getOriginalLineNumber();
 			if (stagedMapping.isMapped(ln)) {
 				int lnGoto = stagedMapping.getNewLineNumber(ln);
-				substituteGotoLineNumber(macro.getLineNumberFrom(), lnGoto, sourceCode, session);
+				substituteLineNumberReference(macro.getLineNumberFrom(), lnGoto, sourceCode);
 				session.removeMacro(macro);
 			}
 		}

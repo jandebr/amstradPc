@@ -6,11 +6,10 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.AmstradProgramLoader;
 import org.maia.amstrad.load.AmstradProgramLoaderSession;
+import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
-import org.maia.amstrad.program.AmstradProgramType;
 
 public class BasicProgramLoader extends AmstradProgramLoader {
 
@@ -20,9 +19,6 @@ public class BasicProgramLoader extends AmstradProgramLoader {
 
 	@Override
 	protected AmstradProgramRuntime createProgramRuntime(AmstradProgram program) throws AmstradProgramException {
-		if (!AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType()))
-			throw new AmstradProgramException(program,
-					"Program " + program.getProgramName() + " is not a Basic program");
 		return new BasicProgramRuntime(program, getAmstradPc());
 	}
 
@@ -77,35 +73,6 @@ public class BasicProgramLoader extends AmstradProgramLoader {
 			throw new AmstradProgramException(program, "Failed to retrieve Basic source code", e);
 		}
 		return sourceCode;
-	}
-
-	private static class BasicProgramRuntime extends AmstradProgramRuntime {
-
-		public BasicProgramRuntime(AmstradProgram program, AmstradPc amstradPc) {
-			super(program, amstradPc);
-		}
-
-		@Override
-		protected void doRun(String... args) {
-			int lineNumber = extractLineNumber(args);
-			if (lineNumber < 0) {
-				getAmstradPc().getBasicRuntime().run();
-			} else {
-				getAmstradPc().getBasicRuntime().run(lineNumber);
-			}
-		}
-
-		private int extractLineNumber(String... args) {
-			int lineNumber = -1;
-			if (args.length > 0) {
-				try {
-					lineNumber = Integer.parseInt(args[0]);
-				} catch (NumberFormatException e) {
-				}
-			}
-			return lineNumber;
-		}
-
 	}
 
 }

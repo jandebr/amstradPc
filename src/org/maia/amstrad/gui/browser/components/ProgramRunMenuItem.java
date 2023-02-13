@@ -4,10 +4,10 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.load.AmstradProgramLoader;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
+import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.AmstradProgramType;
 
 public class ProgramRunMenuItem extends ProgramLaunchMenuItem {

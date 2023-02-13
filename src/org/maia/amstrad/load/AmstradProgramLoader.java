@@ -7,8 +7,6 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
-import org.maia.amstrad.program.AmstradProgramRuntimeListener;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
 public abstract class AmstradProgramLoader {
@@ -42,7 +40,7 @@ public abstract class AmstradProgramLoader {
 	protected abstract void loadProgramIntoAmstradPc(AmstradProgram program, AmstradProgramLoaderSession session)
 			throws AmstradProgramException;
 
-	protected AmstradPc getAmstradPc() {
+	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}
 
@@ -73,6 +71,11 @@ public abstract class AmstradProgramLoader {
 		@Override
 		public void amstradPcTerminated(AmstradPc amstradPc) {
 			getProgramRuntime().dispose(false);
+		}
+
+		@Override
+		public void amstradProgramIsAboutToRun(AmstradProgramRuntime programRuntime) {
+			// no action
 		}
 
 		@Override

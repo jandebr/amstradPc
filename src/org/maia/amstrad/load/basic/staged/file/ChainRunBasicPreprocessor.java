@@ -14,12 +14,13 @@ import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
+import org.maia.amstrad.load.AmstradProgramRuntime;
+import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoader;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
-import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.load.basic.staged.StagedBasicProgramRuntime;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 
@@ -54,7 +55,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		int ln1 = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln1, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln1
 				+ (session.produceRemarks() ? ":REM @chainrun" : ""));
-		addCodeLine(sourceCode, ln2, "END" + (session.produceRemarks() ? ":REM @chainrun" : ""));
+		addCodeLine(sourceCode, ln2, "RUN 0" + (session.produceRemarks() ? ":REM @chainrun" : ""));
 		session.addMacro(new ChainRunMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 
@@ -114,34 +115,34 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		if (chainedProgram == null) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
+			delay(DELAYMILLIS_CHAIN_RUN);
 			try {
-				delay(DELAYMILLIS_CHAIN_RUN / 2L);
-				AmstradMonitor monitor = session.getAmstradPc().getMonitor();
-				monitor.freezeFrame();
-				resumeRun(macro, session);
-				session.getAmstradPc().getBasicRuntime().waitUntilReady();
-				session.getProgramRuntime().dispose(true);
-				delay(DELAYMILLIS_CHAIN_RUN / 2L);
-				AmstradProgramRuntime chainedProgramRuntime = session.getLoader().load(chainedProgram);
-				if (command.hasStartingLineNumber()) {
-					int ln = command.getStartingLineNumber();
-					BasicLineNumberLinearMapping mapping = session.getLoader().getLastSession()
-							.getOriginalToStagedLineNumberMapping();
-					if (mapping.isMapped(ln)) {
-						chainedProgramRuntime.run(String.valueOf(mapping.getNewLineNumber(ln)));
-					} else {
-						chainedProgramRuntime.run();
-					}
-				} else {
-					chainedProgramRuntime.run();
-				}
-				delay(DELAYMILLIS_CHAIN_RUN_DISPLAY); // avoid seeing "RUN" on display
-				monitor.unfreezeFrame();
+				performChainRun(command, chainedProgram, session.getLoader());
 				System.out.println("ChainRun completed successfully");
-			} catch (AmstradProgramException e) {
+			} catch (AmstradProgramException | BasicException e) {
 				endWithError(ERR_CHAIN_RUN_FAILURE, sourceCode, macro, session);
 			}
 		}
+	}
+
+	private void performChainRun(ChainRunCommand command, AmstradBasicProgramFile chainedProgram,
+			StagedBasicProgramLoader loader) throws AmstradProgramException, BasicException {
+		AmstradProgramRuntime chainedRuntime = loader.load(chainedProgram); // disposes the current program runtime,
+																			// removes its associated memory traps (and
+																			// loads the chained program code)
+		chainedRuntime.run(StagedBasicProgramRuntime.RUN_ARG_CHAINRUN); // installs the new memory traps, nothing more
+		StagedBasicProgramLoaderSession chainedSession = loader.getLastSession();
+		BasicSourceCode sourceCode = chainedSession.getBasicRuntime().exportSourceCode();
+		int lnStart = sourceCode.getSmallestLineNumber();
+		if (command.hasStartingLineNumber()) {
+			BasicLineNumberLinearMapping mapping = chainedSession.getOriginalToStagedLineNumberMapping();
+			if (mapping.isMapped(command.getStartingLineNumber())) {
+				lnStart = mapping.getNewLineNumber(command.getStartingLineNumber());
+			}
+		}
+		ChainRunMacro macro = chainedSession.getMacroAdded(ChainRunMacro.class);
+		substituteLineNumberReference(macro.getLineNumberTo(), lnStart, sourceCode);
+		resumeWithNewSourceCode(sourceCode, macro, chainedSession);
 	}
 
 	public static class ChainRunMacro extends FileCommandMacro {

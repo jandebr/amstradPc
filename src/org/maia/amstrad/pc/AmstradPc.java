@@ -8,13 +8,13 @@ import java.util.Vector;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.load.AmstradProgramLoader;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
+import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.swing.dialog.ActionableDialog;
 

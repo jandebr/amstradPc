@@ -49,10 +49,10 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
+		if (!session.hasMacrosAdded(ChainMergeMacro.class)) {
+			addChainMergeMacro(sourceCode, session);
+		}
 		if (originalCodeContainsKeyword(sourceCode, "CHAIN", session)) {
-			if (!session.hasMacrosAdded(ChainMergeMacro.class)) {
-				addChainMergeMacro(sourceCode, session);
-			}
 			invokeChainMergeMacro(sourceCode, session);
 		}
 	}
@@ -177,7 +177,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private void bridgePrograms(BasicSourceCode sourceCode, int chainedLineNumberOffset,
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		ProgramBridgeMacro bridgeMacro = session.getMacroAdded(ProgramBridgeMacro.class);
-		substituteGotoLineNumber(bridgeMacro.getLineNumberFrom(), chainedLineNumberOffset, sourceCode, session);
+		substituteLineNumberReference(bridgeMacro.getLineNumberFrom(), chainedLineNumberOffset, sourceCode);
 		session.removeMacro(bridgeMacro);
 	}
 
@@ -206,7 +206,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private void resumeWithNewSourceCode(int resumeLineNumber, BasicSourceCode newSourceCode,
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		ChainMergeMacro macro = session.getMacroAdded(ChainMergeMacro.class);
-		substituteGotoLineNumber(macro.getLineNumberTo(), resumeLineNumber, newSourceCode, session);
+		substituteLineNumberReference(macro.getLineNumberTo(), resumeLineNumber, newSourceCode);
 		resumeWithNewSourceCode(newSourceCode, macro, session);
 	}
 

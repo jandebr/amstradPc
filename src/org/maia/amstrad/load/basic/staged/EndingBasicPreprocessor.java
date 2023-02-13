@@ -12,11 +12,11 @@ import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
+import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.BasicProgramLoader;
 import org.maia.amstrad.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramRuntime;
 
 public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
@@ -154,7 +154,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 			throws BasicException {
 		int ln = session.getMacroAdded(ProgramBridgeMacro.class).getLineNumberFrom();
 		int lnGoto = session.getEndingMacroLineNumber();
-		substituteGotoLineNumber(ln, lnGoto, sourceCode, session);
+		substituteLineNumberReference(ln, lnGoto, sourceCode);
 	}
 
 	protected void handleProgramEnded(StagedBasicProgramLoaderSession session) {
@@ -199,8 +199,8 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 
 		@Override
-		public void amstradProgramIsRun(AmstradProgramRuntime programRuntime) {
-			super.amstradProgramIsRun(programRuntime);
+		public void amstradProgramIsAboutToRun(AmstradProgramRuntime programRuntime) {
+			super.amstradProgramIsAboutToRun(programRuntime);
 			AmstradFactory.getInstance().getAmstradContext().setBasicProtectiveMode(programRuntime.getAmstradPc(),
 					true);
 		}
