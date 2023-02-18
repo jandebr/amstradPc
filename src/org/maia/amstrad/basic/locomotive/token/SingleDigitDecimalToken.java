@@ -18,7 +18,7 @@ public class SingleDigitDecimalToken extends NumericToken {
 	}
 
 	public int getValue() {
-		return parseAsInt();
+		return getInt();
 	}
 
 }

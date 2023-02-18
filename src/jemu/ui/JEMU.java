@@ -2380,7 +2380,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else {
 			setPaused(0);
 			goComputer();
-			System.out.println("System started");
+			System.out.println("System resumed");
 		}
 		firePauseStateChanged();
 	}

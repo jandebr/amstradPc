@@ -6,6 +6,7 @@ import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicNumericRepresentation.NumberOverflowException;
 import org.maia.amstrad.basic.locomotive.token.AbstractLiteralToken;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
@@ -155,7 +156,12 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 		@Override
 		public void visitInteger16BitDecimal(Integer16BitDecimalToken token) {
 			getByteBuffer().appendByte((byte) 0x1a);
-			getByteBuffer().appendWord(token.getValue());
+			try {
+				getByteBuffer().appendWord(LocomotiveBasicNumericRepresentation.integerToWord(token.getValue()));
+			} catch (NumberOverflowException e) {
+				// should not occur
+				getByteBuffer().appendWord(0);
+			}
 		}
 
 		@Override
@@ -172,63 +178,12 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 
 		@Override
 		public void visitFloatingPointNumber(FloatingPointNumberToken token) {
-			double value = token.getValue(); // assuming this is a positive number
-			double fractionalPart = value % 1;
-			long integralPart = (long) (value - fractionalPart);
-			int[] mantissaBits = new int[32];
-			int exponent = 128;
-			int mi = 0;
-			boolean zeros = true;
-			// Integral part
-			if (integralPart > 0L) {
-				String binaryStr = Long.toString(integralPart, 2);
-				for (int i = 0; i < binaryStr.length(); i++)
-					mantissaBits[mi++] = binaryStr.charAt(i) - '0';
-				exponent += binaryStr.length();
-				zeros = false;
-			}
-			// Fractional part
-			while (fractionalPart != 0 && mi < 32) {
-				fractionalPart *= 2.0;
-				if (fractionalPart >= 1.0) {
-					mantissaBits[mi++] = 1;
-					fractionalPart = fractionalPart % 1;
-					zeros = false;
-				} else {
-					if (zeros) {
-						exponent--;
-					} else {
-						mantissaBits[mi++] = 0;
-					}
-				}
-			}
-			if (fractionalPart >= 0.5) {
-				// Round up one binary digit
-				mi = 31;
-				while (mi > 0 && mantissaBits[mi] == 1)
-					mantissaBits[mi--] = 0;
-				mantissaBits[mi] = 1;
-				if (mi == 0)
-					exponent++;
-			}
-			// Assemble in bytes
-			int m4 = bitsToInteger(mantissaBits, 1, 8); // make first bit=0 to represent +sign
-			int m3 = bitsToInteger(mantissaBits, 8, 16);
-			int m2 = bitsToInteger(mantissaBits, 16, 24);
-			int m1 = bitsToInteger(mantissaBits, 24, 32);
-			// Special case 0.0
-			if (zeros) {
-				m4 = 0x28; // convention?
-				exponent = 0;
-			}
-			// Output
+			byte[] bytes = LocomotiveBasicNumericRepresentation.floatingPointToBytes(token.getValue());
 			ByteBuffer byteBuffer = getByteBuffer();
 			byteBuffer.appendByte((byte) 0x1f);
-			byteBuffer.appendByte((byte) m1);
-			byteBuffer.appendByte((byte) m2);
-			byteBuffer.appendByte((byte) m3);
-			byteBuffer.appendByte((byte) m4);
-			byteBuffer.appendByte((byte) exponent);
+			for (int i = 0; i < bytes.length; i++) {
+				byteBuffer.appendByte(bytes[i]);
+			}
 		}
 
 		@Override
@@ -347,16 +302,6 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 				byteBuffer.appendByte((byte) variableNameWithoutTypeIndicator.charAt(i));
 			}
 			byteBuffer.appendByte((byte) (128 + variableNameWithoutTypeIndicator.charAt(n - 1)));
-		}
-
-		private int bitsToInteger(int[] bits, int fromIndex, int toIndex) {
-			int value = 0;
-			int f = 1;
-			for (int i = 0; i < toIndex - fromIndex; i++) {
-				value += f * bits[toIndex - 1 - i];
-				f *= 2;
-			}
-			return value;
 		}
 
 		public ByteBuffer getByteBuffer() {

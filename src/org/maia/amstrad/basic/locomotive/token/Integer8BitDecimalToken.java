@@ -18,7 +18,7 @@ public class Integer8BitDecimalToken extends NumericToken {
 	}
 
 	public int getValue() {
-		return parseAsInt();
+		return getInt();
 	}
 
 }

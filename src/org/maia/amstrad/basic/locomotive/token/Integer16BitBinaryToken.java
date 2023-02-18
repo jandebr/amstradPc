@@ -19,7 +19,7 @@ public class Integer16BitBinaryToken extends NumericToken {
 	}
 
 	public int getValue() {
-		return parseAsInt();
+		return getInt();
 	}
 
 }

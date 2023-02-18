@@ -33,7 +33,7 @@ public class FloatingPointNumberToken extends NumericToken {
 	}
 
 	public double getValue() {
-		return parseAsDouble();
+		return getDouble();
 	}
 
 }

@@ -18,7 +18,7 @@ public class LineNumberReferenceToken extends NumericToken {
 	}
 
 	public int getLineNumber() {
-		return parseAsInt();
+		return getInt();
 	}
 
 }

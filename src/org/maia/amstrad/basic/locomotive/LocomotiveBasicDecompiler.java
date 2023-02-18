@@ -117,12 +117,12 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 				// 16-bit integer
 				int v = nextWord();
 				if (b == 0x1a) {
-					line.append(v); // decimal
+					line.append(LocomotiveBasicNumericRepresentation.wordToInteger(v)); // signed decimal
 				} else if (b == 0x1b) {
-					line.append("&X"); // binary
+					line.append("&X"); // unsigned binary
 					line.append(Integer.toBinaryString(v));
 				} else if (b == 0x1c) {
-					line.append("&"); // hexadecimal
+					line.append("&"); // unsigned hexadecimal
 					line.append(Integer.toHexString(v));
 				} else if (b == 0x1d) {
 					int lineNr = wordAt(v - ADDRESS_BYTECODE_START + 3); // line pointer (to preceding 0x00)
@@ -228,17 +228,13 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 	}
 
 	private double nextFloatingPoint() throws EndOfByteCodeException {
-		// Mantissa and sign
-		long m1 = nextByte();
-		long m2 = nextByte();
-		long m3 = nextByte();
-		long m4 = nextByte();
-		long sign = (m4 & 0x80) == 0 ? 1L : -1L;
-		long mantissa = (m4 | 0x80) << 24 | m3 << 16 | m2 << 8 | m1;
-		// Exponent
-		int e = nextByte() - 128;
-		// Value
-		return sign * mantissa / Math.pow(2, 32 - e);
+		// Mantissa and exponent
+		byte m1 = (byte) nextByte();
+		byte m2 = (byte) nextByte();
+		byte m3 = (byte) nextByte();
+		byte m4 = (byte) nextByte();
+		byte e = (byte) nextByte();
+		return LocomotiveBasicNumericRepresentation.bytesToFloatingPoint(m1, m2, m3, m4, e);
 	}
 
 	private CharSequence nextSymbolicName() throws EndOfByteCodeException {

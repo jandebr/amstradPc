@@ -23,7 +23,7 @@ public class Integer16BitHexadecimalToken extends NumericToken {
 	}
 
 	public int getValue() {
-		return parseAsInt();
+		return getInt();
 	}
 
 }

@@ -28,7 +28,7 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 		if (!session.hasMacrosAdded(HimemMacro.class)) {
 			int n = Math.max(session.getReservedMemoryInBytes(), getMinimumReservedBytes());
 			if (n > 0) {
-				addHimemMacro(sourceCode, DEFAULT_HIMEM - n, session);
+				addHimemMacro(sourceCode, INITIAL_HIMEM - n, session);
 			}
 		}
 	}

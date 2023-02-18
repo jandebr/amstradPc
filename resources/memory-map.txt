@@ -17,10 +17,11 @@
 -----	------	-----------------------------
 
 &AE7B	44.667	Pointer to current HIMEM address
-&AE83	44.675	Pointer to address following Basic code ending word 0
-&AE85	44.677	Pointer to address following Basic code ending word 0
-&AE87	44.679	Pointer to address following Basic heap (start of next variable)
-&AE89	44.681	Pointer to address following Basic heap (start of next variable)
+&AE83	44.675	Pointer to address following Basic code (after ending word 0)
+&AE85	44.677	Pointer to address following Basic code (after ending word 0)
+&AE87	44.679	Pointer to address following Basic variable space (start of next variable)
+&AE89	44.681	Pointer to address following Basic variable space (start of next variable)
+&B08D	45.197	Pointer to address preceding Basic heap space (first available heap byte, with heap growing down)
 
 -----	------	-----------------------------
 

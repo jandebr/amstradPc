@@ -596,16 +596,18 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			while (running) {
 				try {
 					// System.out.println("stopping...");
-					Thread.sleep(200);
+					Thread.sleep(100);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		// System.out.println("Entering synchronized");
+		// System.out.println("Entering synchronized, action:" + action);
 		synchronized (thread) {
 			action = value;
+			// System.out.println("Going to notify, action:" + action);
 			thread.notify();
+			// System.out.println("Notified, action:" + action);
 		}
 	}
 
@@ -676,18 +678,19 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public void run() {
+		System.out.println("Computer thread start");
 		while (!stopped) {
 			try {
-				if (action == STOP) {
-					synchronized (thread) {
-						// System.out.println(this + " Waiting");
+				synchronized (thread) {
+					if (action == STOP) {
+						// System.out.println(this + " Waiting, action:" + action);
 						thread.wait();
-						// System.out.println(this + " Not Waiting");
+						// System.out.println(this + " Not Waiting, action:" + action);
 					}
 				}
 				if (action != STOP) {
 					try {
-						// System.out.println(this + " Running");
+						// System.out.println(this + " Running, action:" + action);
 						running = true;
 						synchronized (thread) {
 							mode = action;
@@ -698,7 +701,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 						emulate(mode);
 					} finally {
 						running = false;
-						// System.out.println(this + " Not running");
+						// System.out.println(this + " Not running, action:" + action);
 						fireActionEvent();
 					}
 				}
@@ -757,7 +760,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		return result;
 	}
 
-	public boolean isRunning() {
+	public synchronized boolean isRunning() {
 		return running;
 	}
 

@@ -58,7 +58,9 @@ public class AmstradSettingsImpl extends AmstradSettings {
 				t.setDaemon(true);
 				t.start();
 			}
-			System.out.println("User setting '" + key + "' changed to '" + value + "'");
+			if (!key.equals("frame_xpos") && !key.equals("frame_ypos")) {
+				System.out.println("User setting '" + key + "' changed to '" + value + "'");
+			}
 		}
 	}
 

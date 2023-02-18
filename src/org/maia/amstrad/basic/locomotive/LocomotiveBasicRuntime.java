@@ -16,6 +16,8 @@ import org.maia.amstrad.util.AmstradIO;
 
 public abstract class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBasicMemoryMap {
 
+	private LocomotiveBasicVariableSpace variableSpace;
+
 	public static final int MINIMUM_LINE_NUMBER = 1;
 
 	public static final int MAXIMUM_LINE_NUMBER = 65535;
@@ -76,9 +78,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			// Marking end of byte code
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
-			// Marking end of heap space
-			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
-			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+			// Marking end of variable space
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER_BIS, addrEnd);
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
@@ -115,8 +117,8 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
-			// Move heap space
-			moveHeapSpace(newByteCode.getByteCount() - getByteCodeLength());
+			// Move variable space
+			moveVariableSpace(newByteCode.getByteCount() - getByteCodeLength());
 			// Swap byte code
 			memory.writeBytes(ADDRESS_BYTECODE_START, newByteCode.getBytes());
 			// Marking end of byte code
@@ -157,23 +159,23 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		}
 	}
 
-	private void moveHeapSpace(int distanceInBytes) throws BasicMemoryFullException {
+	private void moveVariableSpace(int distanceInBytes) throws BasicMemoryFullException {
 		if (distanceInBytes == 0)
 			return;
 		AmstradMemory memory = getMemory();
-		int heapStart = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
-		int heapEnd = memory.readWord(ADDRESS_HEAP_END_POINTER);
-		int heapEndNew = heapEnd + distanceInBytes;
-		checkFitsInsideBasicMemory(heapEndNew);
+		int varStart = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
+		int varEnd = memory.readWord(ADDRESS_VARIABLE_SPACE_END_POINTER);
+		int varEndNew = varEnd + distanceInBytes;
+		checkFitsInsideBasicMemory(varEndNew);
 		memory.startThreadExclusiveSession();
 		try {
-			if (heapEnd > heapStart) {
-				byte[] heap = memory.readBytes(heapStart, heapEnd - heapStart);
-				memory.eraseBytesBetween(heapStart, heapEnd);
-				memory.writeBytes(heapStart + distanceInBytes, heap);
+			if (varEnd > varStart) {
+				byte[] varSpace = memory.readBytes(varStart, varEnd - varStart);
+				memory.eraseBytesBetween(varStart, varEnd);
+				memory.writeBytes(varStart + distanceInBytes, varSpace);
 			}
-			memory.writeWord(ADDRESS_HEAP_END_POINTER, heapEndNew);
-			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, heapEndNew);
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER, varEndNew);
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER_BIS, varEndNew);
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
@@ -186,15 +188,15 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
-			// Erase code and heap
-			memory.eraseBytesBetween(ADDRESS_BYTECODE_START, memory.readWord(ADDRESS_HEAP_END_POINTER));
-			// Reset end of byte code
+			// Reset code and variables
+			memory.eraseBytesBetween(ADDRESS_BYTECODE_START, memory.readWord(ADDRESS_VARIABLE_SPACE_END_POINTER));
 			int addrEnd = ADDRESS_BYTECODE_START + 2;
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
-			// Reset end of heap space
-			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
-			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER, addrEnd);
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER_BIS, addrEnd);
+			// Reset heap space
+			clearHeap();
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
@@ -209,15 +211,36 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		try {
 			// Sanitize byte code to clear any variable memory pointers
 			memory.writeBytes(ADDRESS_BYTECODE_START, exportByteCode().getBytes());
-			// Erase heap
-			int addrEnd = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
-			memory.eraseBytesBetween(addrEnd, memory.readWord(ADDRESS_HEAP_END_POINTER));
-			// Reset end of heap space
-			memory.writeWord(ADDRESS_HEAP_END_POINTER, addrEnd);
-			memory.writeWord(ADDRESS_HEAP_END_POINTER_BIS, addrEnd);
+			// Reset variable space
+			int codeEnd = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
+			memory.eraseBytesBetween(codeEnd, memory.readWord(ADDRESS_VARIABLE_SPACE_END_POINTER));
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER, codeEnd);
+			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER_BIS, codeEnd);
+			// Reset heap space
+			clearHeap();
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
+	}
+
+	private void clearHeap() {
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			int heapStart = memory.readWord(ADDRESS_HEAP_SPACE_POINTER) + 1;
+			int himem = getHimem();
+			memory.eraseBytesBetween(heapStart, himem + 1);
+			memory.writeWord(ADDRESS_HEAP_SPACE_POINTER, himem);
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+	}
+
+	public LocomotiveBasicVariableSpace getVariableSpace() {
+		if (variableSpace == null) {
+			variableSpace = new LocomotiveBasicVariableSpace(getMemory());
+		}
+		return variableSpace;
 	}
 
 	@Override
@@ -227,7 +250,8 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	@Override
 	public int getFreeMemory() {
-		return getHimem() - getMemory().readWord(ADDRESS_HEAP_END_POINTER);
+		return getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER)
+				- getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER);
 	}
 
 	@Override
