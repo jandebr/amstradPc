@@ -99,11 +99,12 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 
 	protected Applet applet;
 	// protected String name;
-	protected Thread thread = new Thread(this);
-	protected boolean stopped = false;
-	protected int action = STOP;
-	protected boolean running = false;
-	protected boolean waiting = false;
+	private Thread thread = new Thread(this);
+	private boolean stopped = false;
+	private int action = STOP;
+	private boolean running = false;
+	private boolean confirmStep;
+	private boolean debugStopStart = true;
 	protected long startTime;
 	protected long startCycles;
 	protected String romPath;
@@ -571,51 +572,98 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		return large ? Display.SCALE_2 : Display.SCALE_1;
 	}
 
-	public void start() {
-		setAction(RUN);
-	}
-
-	public void stop() {
-		setAction(STOP);
-	}
-
-	public void step() {
-		setAction(STEP);
-	}
-
-	public void stepOver() {
-		setAction(STEP_OVER);
-	}
-
-	public synchronized void setAction(int value) {
-		if (running && value != RUN) {
-			action = STOP;
-			// System.out.println(this + " Stopping " + getProcessor());
-			getProcessor().stop();
-			display.setPainted(true);
-			while (running) {
+	public void run() {
+		System.out.println(this + " Thread start");
+		while (!stopped) {
+			boolean shouldRun = false;
+			int shouldRunAction = 0;
+			synchronized (this) {
+				while (!stopped && action == STOP) {
+					setRunning(false);
+					fireActionEvent();
+					waitUninterrupted();
+				}
+				shouldRun = !stopped && action != STOP;
+				shouldRunAction = action;
+			}
+			if (shouldRun) {
+				synchronized (this) {
+					mode = shouldRunAction;
+					getProcessor().canRun();
+					setRunning(true);
+					setAction(STOP);
+				}
 				try {
-					// System.out.println("stopping...");
-					Thread.sleep(100);
-				} catch (Exception e) {
+					startCycles = getProcessor().getCycles();
+					startTime = System.currentTimeMillis();
+					System.out.println(this + " Emulate start (mode " + mode + ")");
+					emulate(mode);
+					System.out.println(this + " Emulate end");
+				} catch (RuntimeException e) {
 					e.printStackTrace();
+				} finally {
+					if (mode == STEP || mode == STEP_OVER) {
+						setConfirmStep(true);
+					}
 				}
 			}
 		}
-		// System.out.println("Entering synchronized, action:" + action);
+		setRunning(false);
+		fireActionEvent();
+		System.out.println(this + " Thread end");
+	}
+
+	public synchronized void start() {
 		synchronized (thread) {
-			action = value;
-			// System.out.println("Going to notify, action:" + action);
-			thread.notify();
-			// System.out.println("Notified, action:" + action);
+			if (!running) {
+				setAction(RUN);
+				while (!running) {
+					waitUninterrupted();
+				}
+			}
+		}
+	}
+
+	public synchronized void stop() {
+		synchronized (thread) {
+			if (running) {
+				setAction(STOP);
+				display.setPainted(true);
+				getProcessor().shouldStop(); // async
+				while (running) {
+					waitUninterrupted();
+				}
+			}
+		}
+	}
+
+	public synchronized void step() {
+		synchronized (thread) {
+			stop();
+			setAction(STEP);
+			setConfirmStep(false);
+			while (!confirmStep) {
+				waitUninterrupted();
+			}
+		}
+	}
+
+	public synchronized void stepOver() {
+		synchronized (thread) {
+			stop();
+			setAction(STEP_OVER);
+			setConfirmStep(false);
+			while (!confirmStep) {
+				waitUninterrupted();
+			}
 		}
 	}
 
 	public void dispose() {
+		System.out.println(this + " Dispose");
 		stopped = true;
-		// System.out.println(this + " thread stopped: " + thread);
 		stop();
-		// System.out.println(this + " has stopped");
+		setAction(STOP); // awake when in stop-wait
 		try {
 			thread.join();
 		} catch (Exception e) {
@@ -626,22 +674,48 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		applet = null;
 	}
 
+	public synchronized boolean isRunning() {
+		return running;
+	}
+
+	private synchronized void setRunning(boolean newRunning) {
+		running = newRunning;
+		this.notifyAll();
+	}
+
+	private synchronized void setAction(int newAction) {
+		action = newAction;
+		this.notifyAll();
+	}
+
+	private synchronized void setConfirmStep(boolean newConfirmStep) {
+		confirmStep = newConfirmStep;
+		this.notifyAll();
+	}
+
+	private synchronized void waitUninterrupted() {
+		boolean interrupted;
+		do {
+			interrupted = false;
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+		} while (interrupted);
+	}
+
 	protected void emulate(int mode) {
-		switch (mode) {
-		case STEP:
+		if (mode == STEP) {
 			getProcessor().step();
-			break;
-
-		case STEP_OVER:
+		} else if (mode == STEP_OVER) {
 			getProcessor().stepOver();
-			break;
-
-		case RUN:
-			if (runTo == -1)
+		} else if (mode == RUN) {
+			if (runTo == -1) {
 				getProcessor().run();
-			else
+			} else {
 				getProcessor().runTo(runTo);
-			break;
+			}
 		}
 	}
 
@@ -675,41 +749,6 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public void eject() {
-	}
-
-	public void run() {
-		System.out.println("Computer thread start");
-		while (!stopped) {
-			try {
-				synchronized (thread) {
-					if (action == STOP) {
-						// System.out.println(this + " Waiting, action:" + action);
-						thread.wait();
-						// System.out.println(this + " Not Waiting, action:" + action);
-					}
-				}
-				if (action != STOP) {
-					try {
-						// System.out.println(this + " Running, action:" + action);
-						running = true;
-						synchronized (thread) {
-							mode = action;
-							action = STOP;
-						}
-						startCycles = getProcessor().getCycles();
-						startTime = System.currentTimeMillis();
-						emulate(mode);
-					} finally {
-						running = false;
-						// System.out.println(this + " Not running, action:" + action);
-						fireActionEvent();
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		System.out.println("Computer thread end");
 	}
 
 	public Vector<FileDescriptor> getFiles() {
@@ -758,10 +797,6 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			}
 		}
 		return result;
-	}
-
-	public synchronized boolean isRunning() {
-		return running;
 	}
 
 	protected void syncProcessor() {

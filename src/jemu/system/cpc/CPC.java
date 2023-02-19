@@ -680,7 +680,7 @@ public class CPC extends Computer {
 		if (Switches.breakinsts && z80.getPC() != 0 && (PEEK(z80.getPC() - 1) == 0xED && PEEK(z80.getPC()) == 0xFF)) {
 			jemu.ui.JEMU.debugthis.setSelected(true);
 			Samples.BREAKI.play();
-			z80.stop();
+			z80.shouldStop();
 		}
 		if (Switches.overrideP)
 			if (Switches.ROM.equals("CPC6128") || Switches.ROM.equals("CPC664"))

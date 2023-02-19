@@ -32,7 +32,12 @@ public class QuitAction extends AmstradPcAction {
 	}
 
 	private void quit() {
-		getAmstradPc().terminate();
+		runInSeparateThread(new Runnable() {
+			@Override
+			public void run() {
+				getAmstradPc().terminate();
+			}
+		});
 	}
 
 }

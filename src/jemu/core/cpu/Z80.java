@@ -741,7 +741,7 @@ public class Z80 extends Processor {
   public void stepOver() {
     int opcode = memory.readByte(PC);
     switch(opcode) {
-      case 0x76: runTo((PC + 1) & 0xffff);        break;
+      case 0x76: canRun(); runTo((PC + 1) & 0xffff); break;
 
       case 0xed: stepOverED();                    break;
 
@@ -752,7 +752,7 @@ public class Z80 extends Processor {
       case 0xdc:
       case 0xe4:
       case 0xf4:
-      case 0xfc: runTo((PC + 3) & 0xffff);        break;
+      case 0xfc: canRun(); runTo((PC + 3) & 0xffff);        break;
 
       default:   step();                          break;
     }
@@ -768,7 +768,7 @@ public class Z80 extends Processor {
       case 0xb8:
       case 0xb9:
       case 0xba:
-      case 0xbb: runTo((PC + 2) & 0xffff);        break;
+      case 0xbb: canRun(); runTo((PC + 2) & 0xffff);        break;
 
       default:   step();                          break;
     }

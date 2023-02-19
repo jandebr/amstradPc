@@ -23,7 +23,7 @@ public class StopBreakpoint extends ProcessorBreakpoint {
 	public void update(int address) {
 		// If the processor PC matches the break address, stop the processor
 		if (address == getAddress()) {
-			getProcessor().stop();
+			getProcessor().shouldStop();
 			// TODO: remove direct reference to debugger
 			jemu.ui.Debugger.setDisass(address);
             System.out.println("StopBreakpoint at address &"+Util.hex(address));
