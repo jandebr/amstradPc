@@ -103,8 +103,8 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	private boolean stopped = false;
 	private int action = STOP;
 	private boolean running = false;
-	private boolean confirmStep;
-	private boolean debugStopStart = true;
+	private boolean confirmStep = false;
+	private boolean verboseStopStart = false;
 	protected long startTime;
 	protected long startCycles;
 	protected String romPath;
@@ -596,9 +596,11 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				try {
 					startCycles = getProcessor().getCycles();
 					startTime = System.currentTimeMillis();
-					System.out.println(this + " Emulate start (mode " + mode + ")");
+					if (verboseStopStart)
+						System.out.println(this + " Emulate start (mode " + mode + ")");
 					emulate(mode);
-					System.out.println(this + " Emulate end");
+					if (verboseStopStart)
+						System.out.println(this + " Emulate end");
 				} catch (RuntimeException e) {
 					e.printStackTrace();
 				} finally {
@@ -660,7 +662,8 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public void dispose() {
-		System.out.println(this + " Dispose");
+		if (verboseStopStart)
+			System.out.println(this + " Dispose");
 		stopped = true;
 		stop();
 		setAction(STOP); // awake when in stop-wait
