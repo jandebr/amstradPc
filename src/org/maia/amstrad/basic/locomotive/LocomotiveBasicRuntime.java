@@ -113,7 +113,6 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	protected void swapByteCode(BasicByteCode newByteCode) throws BasicMemoryFullException {
 		int addrEnd = ADDRESS_BYTECODE_START + newByteCode.getByteCount();
-		checkFitsInsideBasicMemory(addrEnd);
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {
@@ -154,7 +153,15 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	protected void checkFitsInsideBasicMemory(int memoryAddress) throws BasicMemoryFullException {
-		if (memoryAddress > getHimem()) {
+		int addrMax = getHimem();
+		if (memoryAddress > addrMax) {
+			throw new BasicMemoryFullException();
+		}
+	}
+
+	protected void checkFitsBelowHeapMemory(int memoryAddress) throws BasicMemoryFullException {
+		int addrMax = getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
+		if (memoryAddress > addrMax) {
 			throw new BasicMemoryFullException();
 		}
 	}
@@ -166,7 +173,7 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		int varStart = memory.readWord(ADDRESS_BYTECODE_END_POINTER);
 		int varEnd = memory.readWord(ADDRESS_VARIABLE_SPACE_END_POINTER);
 		int varEndNew = varEnd + distanceInBytes;
-		checkFitsInsideBasicMemory(varEndNew);
+		checkFitsBelowHeapMemory(varEndNew);
 		memory.startThreadExclusiveSession();
 		try {
 			if (varEnd > varStart) {
