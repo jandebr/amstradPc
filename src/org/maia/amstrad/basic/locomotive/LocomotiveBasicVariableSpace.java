@@ -1,5 +1,6 @@
 package org.maia.amstrad.basic.locomotive;
 
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Vector;
@@ -229,6 +230,33 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 		}
 	}
 
+	public IntegerTypedVariableToken generateNewIntegerVariable() {
+		return generateNewIntegerVariable(getAllVariables());
+	}
+
+	public static IntegerTypedVariableToken generateNewIntegerVariable(
+			Collection<? extends VariableToken> existingVariables) {
+		return generateNewTypedVariable(IntegerTypedVariableToken.class, existingVariables);
+	}
+
+	public FloatingPointTypedVariableToken generateNewFloatingPointVariable() {
+		return generateNewFloatingPointVariable(getAllVariables());
+	}
+
+	public static FloatingPointTypedVariableToken generateNewFloatingPointVariable(
+			Collection<? extends VariableToken> existingVariables) {
+		return generateNewTypedVariable(FloatingPointTypedVariableToken.class, existingVariables);
+	}
+
+	public StringTypedVariableToken generateNewStringVariable() {
+		return generateNewStringVariable(getAllVariables());
+	}
+
+	public static StringTypedVariableToken generateNewStringVariable(
+			Collection<? extends VariableToken> existingVariables) {
+		return generateNewTypedVariable(StringTypedVariableToken.class, existingVariables);
+	}
+
 	private int findPayloadValueMemoryOffset(VariableToken variable) throws VariableNotFoundException {
 		int mo = findMemoryOffset(variable);
 		return mo + 3 + getVariableNameLengthStartingAt(mo + 2);
@@ -305,6 +333,52 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 
 	private AmstradMemory getMemory() {
 		return memory;
+	}
+
+	private static <T extends TypedVariableToken> T generateNewTypedVariable(Class<T> variableType,
+			Collection<? extends VariableToken> existingVariables) {
+		T variable = null;
+		int n = 0;
+		int nt = 10;
+		int length = 1;
+		int lengthMax = 4;
+		do {
+			if (++n > nt && length < lengthMax) {
+				length++;
+				nt *= 10;
+			}
+			variable = createTypedVariable(variableType, generateRandomVariableName(length));
+		} while (existingVariables.contains(variable));
+		return variable;
+	}
+
+	private static <T extends TypedVariableToken> T createTypedVariable(Class<T> variableType,
+			String variableNameWithoutTypeIndicator) {
+		T variable = null;
+		try {
+			Method method = variableType.getDeclaredMethod("forName", String.class);
+			variable = variableType.cast(method.invoke(null, variableNameWithoutTypeIndicator));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return variable;
+	}
+
+	private static String generateRandomVariableName(int nameLength) {
+		String name = null;
+		StringBuilder sb = nameLength > 1 ? new StringBuilder(nameLength) : null;
+		do {
+			if (nameLength > 1) {
+				sb.setLength(0);
+				for (int i = 0; i < nameLength; i++) {
+					sb.append((char) ('A' + (int) Math.floor(Math.random() * 26.0)));
+				}
+				name = sb.toString();
+			} else {
+				name = String.valueOf((char) ('A' + (int) Math.floor(Math.random() * 26.0)));
+			}
+		} while (LocomotiveBasicKeywords.getInstance().hasKeyword(name));
+		return name;
 	}
 
 	public static class VariableNotFoundException extends BasicException {
