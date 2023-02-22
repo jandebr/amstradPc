@@ -13,11 +13,8 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
-import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
-import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
-import org.maia.amstrad.basic.locomotive.token.LiteralToken;
-import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
 import org.maia.amstrad.load.basic.BasicPreprocessorBatch;
 import org.maia.amstrad.load.basic.staged.CompactBasicPreprocessor;
@@ -79,6 +76,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		BasicSourceToken CHAIN = createKeywordToken(language, "CHAIN");
 		BasicSourceToken MERGE = createKeywordToken(language, "MERGE");
 		BasicSourceToken SEP = new InstructionSeparatorToken();
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
@@ -95,14 +93,13 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 							ChainMergeCommand command = ChainMergeCommand.parseFrom(sequence.subSequence(i, j));
 							if (command != null) {
 								int ref = listener.registerCommand(command).getReferenceNumber();
-								sequence.replaceRange(i, j, createKeywordToken(language, "POKE"), new LiteralToken(" "),
-										new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrResume)),
-										new LiteralToken(","), new SingleDigitDecimalToken(0), SEP,
-										createKeywordToken(language, "POKE"), new LiteralToken(" "),
-										new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrTrap)),
-										new LiteralToken(","), new SingleDigitDecimalToken(ref), SEP,
-										createKeywordToken(language, "GOTO"), new LiteralToken(" "),
-										new LineNumberReferenceToken(lnGoto));
+								sequence.replaceRange(i, j, stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
+										stf.createPositiveInteger16BitHexadecimal(addrResume), stf.createLiteral(","),
+										stf.createPositiveIntegerSingleDigitDecimal(0), SEP,
+										stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
+										stf.createPositiveInteger16BitHexadecimal(addrTrap), stf.createLiteral(","),
+										stf.createPositiveInteger8BitDecimal(ref), SEP, stf.createBasicKeyword("GOTO"),
+										stf.createLiteral(" "), stf.createLineNumberReference(lnGoto));
 							}
 						}
 					}
@@ -133,7 +130,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 				System.out.println("ChainMerge completed successfully");
 			} catch (BasicMemoryFullException e) {
 				endWithError(ERR_MEMORY_FULL, sourceCodeBeforeMerge, macro, session);
-			} catch (BasicException | AmstradProgramException e) {
+			} catch (Exception e) {
 				endWithError(ERR_CHAIN_MERGE_FAILURE, sourceCodeBeforeMerge, macro, session);
 			}
 		}

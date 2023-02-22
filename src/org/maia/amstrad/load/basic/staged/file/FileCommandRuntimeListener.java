@@ -3,6 +3,7 @@ package org.maia.amstrad.load.basic.staged.file;
 import java.util.Collection;
 import java.util.Vector;
 
+import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramRuntimeListener;
@@ -13,6 +14,8 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 
 	private Collection<FileCommandReference> commandReferences;
 
+	private static final int MAX_REFERENCE_NUMBER = 0xff; // 8bit number that can be POKE'd
+
 	protected FileCommandRuntimeListener(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session,
 			int memoryTrapAddress) {
 		super(session, memoryTrapAddress);
@@ -20,11 +23,16 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 		this.commandReferences = new Vector<FileCommandReference>();
 	}
 
-	public FileCommandReference registerCommand(FileCommand command) {
-		int n = getCommandReferences().size() + 1;
-		FileCommandReference reference = new FileCommandReference(command, n);
-		getCommandReferences().add(reference);
-		return reference;
+	public FileCommandReference registerCommand(FileCommand command) throws BasicException {
+		int referenceNumber = getCommandReferences().size() + 1;
+		if (referenceNumber <= MAX_REFERENCE_NUMBER) {
+			FileCommandReference reference = new FileCommandReference(command, referenceNumber);
+			getCommandReferences().add(reference);
+			return reference;
+		} else {
+			throw new BasicException(
+					"Reached the maximum file command reference number (" + MAX_REFERENCE_NUMBER + ")");
+		}
 	}
 
 	@Override

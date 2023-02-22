@@ -104,12 +104,11 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 				byte payloadTypeIndicator = memory.readByte(h++);
 				h += getPayloadValueByteSize(payloadTypeIndicator);
 				if (payloadTypeIndicator == PAYLOAD_TYPE_INTEGER) {
-					variables.add(new IntegerTypedVariableToken(name + IntegerTypedVariableToken.TYPE_INDICATOR));
+					variables.add(IntegerTypedVariableToken.forName(name));
 				} else if (payloadTypeIndicator == PAYLOAD_TYPE_STRING) {
-					variables.add(new StringTypedVariableToken(name + StringTypedVariableToken.TYPE_INDICATOR));
+					variables.add(StringTypedVariableToken.forName(name));
 				} else if (payloadTypeIndicator == PAYLOAD_TYPE_FLOATINGPOINT) {
-					variables.add(
-							new FloatingPointTypedVariableToken(name + FloatingPointTypedVariableToken.TYPE_INDICATOR));
+					variables.add(FloatingPointTypedVariableToken.forName(name));
 				}
 			}
 		} finally {

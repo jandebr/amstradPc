@@ -7,8 +7,15 @@ public abstract class TypedVariableToken extends VariableToken {
 	}
 
 	@Override
-	public String getVariableNameWithoutTypeIndicator() {
+	public final String getVariableNameWithoutTypeIndicator() {
 		return getSourceFragment().substring(0, getSourceFragment().length() - 1);
 	}
+
+	@Override
+	protected final String getCanonicalSourceForm() {
+		return getVariableNameWithoutTypeIndicator().toUpperCase() + getTypeIndicator();
+	}
+
+	protected abstract char getTypeIndicator();
 
 }

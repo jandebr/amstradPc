@@ -9,11 +9,8 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
-import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
-import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
-import org.maia.amstrad.basic.locomotive.token.LiteralToken;
-import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoader;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
@@ -77,6 +74,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		int addrTrap = listener.getMemoryTrapAddress();
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken SEP = new InstructionSeparatorToken();
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
@@ -90,14 +88,13 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 					ChainRunCommand command = ChainRunCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
 						int ref = listener.registerCommand(command).getReferenceNumber();
-						sequence.replaceRange(i, j, createKeywordToken(language, "POKE"), new LiteralToken(" "),
-								new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrResume)),
-								new LiteralToken(","), new SingleDigitDecimalToken(0), SEP,
-								createKeywordToken(language, "POKE"), new LiteralToken(" "),
-								new Integer16BitHexadecimalToken("&" + Integer.toHexString(addrTrap)),
-								new LiteralToken(","), new SingleDigitDecimalToken(ref), SEP,
-								createKeywordToken(language, "GOTO"), new LiteralToken(" "),
-								new LineNumberReferenceToken(lnGoto));
+						sequence.replaceRange(i, j, stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
+								stf.createPositiveInteger16BitHexadecimal(addrResume), stf.createLiteral(","),
+								stf.createPositiveIntegerSingleDigitDecimal(0), SEP, stf.createBasicKeyword("POKE"),
+								stf.createLiteral(" "), stf.createPositiveInteger16BitHexadecimal(addrTrap),
+								stf.createLiteral(","), stf.createPositiveInteger8BitDecimal(ref), SEP,
+								stf.createBasicKeyword("GOTO"), stf.createLiteral(" "),
+								stf.createLineNumberReference(lnGoto));
 					}
 					i = sequence.getNextIndexOf(instruction, i + 1);
 				}
@@ -119,7 +116,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 			try {
 				performChainRun(command, chainedProgram, session.getLoader());
 				System.out.println("ChainRun completed successfully");
-			} catch (AmstradProgramException | BasicException e) {
+			} catch (Exception e) {
 				endWithError(ERR_CHAIN_RUN_FAILURE, sourceCode, macro, session);
 			}
 		}

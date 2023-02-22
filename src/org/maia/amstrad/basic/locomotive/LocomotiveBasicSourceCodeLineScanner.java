@@ -10,9 +10,7 @@ import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
 import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.basic.locomotive.token.Integer16BitBinaryToken;
-import org.maia.amstrad.basic.locomotive.token.Integer16BitDecimalToken;
 import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
-import org.maia.amstrad.basic.locomotive.token.Integer8BitDecimalToken;
 import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralDataToken;
@@ -21,7 +19,6 @@ import org.maia.amstrad.basic.locomotive.token.LiteralRemarkToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.NumericToken;
 import org.maia.amstrad.basic.locomotive.token.OperatorToken;
-import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 
@@ -175,15 +172,7 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 				return new LineNumberReferenceToken(sourceFragment);
 			} else {
 				int value = Integer.parseInt(sourceFragment);
-				if (value < 10) {
-					return new SingleDigitDecimalToken(sourceFragment);
-				} else if (value <= 0xff) {
-					return new Integer8BitDecimalToken(sourceFragment);
-				} else if (value <= 0x7fff) {
-					return new Integer16BitDecimalToken(sourceFragment);
-				} else {
-					return new FloatingPointNumberToken(sourceFragment);
-				}
+				return LocomotiveBasicSourceTokenFactory.getInstance().createPositiveIntegerNumber(value);
 			}
 		}
 	}

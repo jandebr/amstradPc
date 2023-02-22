@@ -79,40 +79,42 @@ public class LocomotiveBasicSourceTokenFactory {
 		return new FloatingPointNumberToken(value);
 	}
 
-	public NumericToken createIntegerNumber(int value) throws BasicSyntaxException {
-		if (value < 10) {
-			return createIntegerSingleDigitDecimal(value);
+	public NumericToken createPositiveIntegerNumber(int value) throws BasicSyntaxException {
+		if (value < 0) {
+			throw new BasicSyntaxException("Value " + value + " is negative", String.valueOf(value));
+		} else if (value < 10) {
+			return createPositiveIntegerSingleDigitDecimal(value);
 		} else if (value <= 0xff) {
-			return createInteger8BitDecimal(value);
+			return createPositiveInteger8BitDecimal(value);
 		} else if (value <= 0x7fff) {
-			return createInteger16BitDecimal(value);
+			return createPositiveInteger16BitDecimal(value);
 		} else {
 			return createFloatingPointNumber(value);
 		}
 	}
 
-	public SingleDigitDecimalToken createIntegerSingleDigitDecimal(int value) throws BasicSyntaxException {
+	public SingleDigitDecimalToken createPositiveIntegerSingleDigitDecimal(int value) throws BasicSyntaxException {
 		checkValueInRange(value, 0, 9);
 		return new SingleDigitDecimalToken(value);
 	}
 
-	public Integer8BitDecimalToken createInteger8BitDecimal(int value) throws BasicSyntaxException {
+	public Integer8BitDecimalToken createPositiveInteger8BitDecimal(int value) throws BasicSyntaxException {
 		checkValueInRange(value, 0, 0xff);
 		return new Integer8BitDecimalToken(value);
 	}
 
-	public Integer16BitDecimalToken createInteger16BitDecimal(int value) throws BasicSyntaxException {
+	public Integer16BitDecimalToken createPositiveInteger16BitDecimal(int value) throws BasicSyntaxException {
 		checkValueInRange(value, 0, 0x7fff);
 		return new Integer16BitDecimalToken(value);
 	}
 
-	public Integer16BitBinaryToken createInteger16BitBinary(int value) throws BasicSyntaxException {
-		checkValueInRange(value, 0, 0x7fff);
+	public Integer16BitBinaryToken createPositiveInteger16BitBinary(int value) throws BasicSyntaxException {
+		checkValueInRange(value, 0, 0xffff);
 		return new Integer16BitBinaryToken("&X" + Integer.toBinaryString(value));
 	}
 
-	public Integer16BitHexadecimalToken createInteger16BitHexadecimal(int value) throws BasicSyntaxException {
-		checkValueInRange(value, 0, 0x7fff);
+	public Integer16BitHexadecimalToken createPositiveInteger16BitHexadecimal(int value) throws BasicSyntaxException {
+		checkValueInRange(value, 0, 0xffff);
 		return new Integer16BitHexadecimalToken("&" + Integer.toHexString(value));
 	}
 
@@ -154,17 +156,15 @@ public class LocomotiveBasicSourceTokenFactory {
 	}
 
 	public IntegerTypedVariableToken createVariableOfIntegerType(String variableNameWithoutTypeIndicator) {
-		return new IntegerTypedVariableToken(
-				variableNameWithoutTypeIndicator + IntegerTypedVariableToken.TYPE_INDICATOR);
+		return IntegerTypedVariableToken.forName(variableNameWithoutTypeIndicator);
 	}
 
 	public FloatingPointTypedVariableToken createVariableOfFloatingPointType(String variableNameWithoutTypeIndicator) {
-		return new FloatingPointTypedVariableToken(
-				variableNameWithoutTypeIndicator + FloatingPointTypedVariableToken.TYPE_INDICATOR);
+		return FloatingPointTypedVariableToken.forName(variableNameWithoutTypeIndicator);
 	}
 
 	public StringTypedVariableToken createVariableOfStringType(String variableNameWithoutTypeIndicator) {
-		return new StringTypedVariableToken(variableNameWithoutTypeIndicator + StringTypedVariableToken.TYPE_INDICATOR);
+		return StringTypedVariableToken.forName(variableNameWithoutTypeIndicator);
 	}
 
 	public UntypedVariableToken createVariableUntyped(String variableName) {

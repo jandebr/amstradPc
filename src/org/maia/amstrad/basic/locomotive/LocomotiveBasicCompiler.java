@@ -160,6 +160,7 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 				getByteBuffer().appendWord(LocomotiveBasicNumericRepresentation.integerToWord(token.getValue()));
 			} catch (NumberOverflowException e) {
 				// should not occur
+				e.printStackTrace();
 				getByteBuffer().appendWord(0);
 			}
 		}

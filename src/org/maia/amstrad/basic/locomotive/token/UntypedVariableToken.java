@@ -9,13 +9,18 @@ public class UntypedVariableToken extends VariableToken {
 	}
 
 	@Override
+	public void invite(LocomotiveBasicSourceTokenVisitor visitor) {
+		visitor.visitUntypedVariable(this);
+	}
+
+	@Override
 	public String getVariableNameWithoutTypeIndicator() {
 		return getSourceFragment();
 	}
 
 	@Override
-	public void invite(LocomotiveBasicSourceTokenVisitor visitor) {
-		visitor.visitUntypedVariable(this);
+	protected String getCanonicalSourceForm() {
+		return getVariableNameWithoutTypeIndicator().toUpperCase() + FloatingPointTypedVariableToken.TYPE_INDICATOR;
 	}
 
 }
