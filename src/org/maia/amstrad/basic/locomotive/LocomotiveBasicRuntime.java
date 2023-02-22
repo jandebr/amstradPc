@@ -262,6 +262,18 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	@Override
+	public int getUsedMemory() {
+		int used = getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER) - ADDRESS_BYTECODE_START;
+		used += getHimem() - getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
+		return used;
+	}
+
+	@Override
+	public int getTotalMemory() {
+		return getHimem() - ADDRESS_BYTECODE_START;
+	}
+
+	@Override
 	public int getDisplayCanvasWidth() {
 		return 640;
 	}

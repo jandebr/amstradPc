@@ -231,6 +231,10 @@ public abstract class BasicRuntime {
 
 	public abstract int getFreeMemory();
 
+	public abstract int getUsedMemory();
+
+	public abstract int getTotalMemory();
+
 	public byte peek(int memoryAddress) {
 		return getMemory().readByte(memoryAddress);
 	}
