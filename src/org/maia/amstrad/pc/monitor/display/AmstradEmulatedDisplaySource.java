@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
 public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		implements AmstradAlternativeDisplaySource, MouseListener, MouseMotionListener {
@@ -54,8 +55,8 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	 * until it is swapped back in.
 	 * </p>
 	 * 
-	 * @see AmstradPc#resetDisplaySource()
-	 * @see AmstradPc#swapDisplaySource(AmstradAlternativeDisplaySource)
+	 * @see AmstradMonitor#resetDisplaySource()
+	 * @see AmstradMonitor#swapDisplaySource(AmstradAlternativeDisplaySource)
 	 */
 	public void close() {
 		getAmstradPc().getMonitor().resetDisplaySource(); // will invoke dispose()

@@ -27,11 +27,11 @@ static String dot = ":";
 
         protected Font font;
     protected boolean playing = false;
-      public JButton btnREC = new JButton(" ● Rec ");
-      public JButton btnPLAY = new JButton(" ► Play ");
-      public JButton btnLOAD = new JButton(" ▲ Open ");
-      public JButton btnSTOP = new JButton(" ■ Stop ");
-      public JButton btnSAVE = new JButton(" ▼ Save ");
+      public JButton btnREC = new JButton(" Rec ");
+      public JButton btnPLAY = new JButton(" Play ");
+      public JButton btnLOAD = new JButton(" Open ");
+      public JButton btnSTOP = new JButton(" Stop ");
+      public JButton btnSAVE = new JButton(" Save ");
       public static int counter = 0;
       public static JButton YM_Counter = new JButton(" 00:00\"00 ");
       
