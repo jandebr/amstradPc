@@ -2264,15 +2264,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public byte[] readBytesFromUnmappedMemory(int memoryOffset, int memoryLength) {
-		boolean running = isRunning();
-		if (running) {
-			pauseComputer();
-		}
-		byte[] data = computer.readBytesFromUnmappedMemory(memoryOffset, memoryLength);
-		if (running) {
-			goComputer();
-		}
-		return data;
+		return computer.readBytesFromUnmappedMemory(memoryOffset, memoryLength);
 	}
 
 	public void writeByteToUnmappedMemory(int memoryAddress, byte value) {
@@ -2284,14 +2276,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void writeBytesToUnmappedMemory(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
-		boolean running = isRunning();
-		if (running) {
-			pauseComputer();
-		}
 		computer.writeBytesToUnmappedMemory(memoryOffset, data, dataOffset, dataLength);
-		if (running) {
-			goComputer();
-		}
 	}
 
 	public void resetComputer() {
