@@ -378,7 +378,8 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 			} else {
 				name = String.valueOf((char) ('A' + (int) Math.floor(Math.random() * 26.0)));
 			}
-		} while (LocomotiveBasicKeywords.getInstance().hasKeyword(name));
+		} while (LocomotiveBasicKeywords.getInstance().hasKeyword(name)
+				|| LocomotiveBasicOperators.getInstance().hasOperator(name));
 		return name;
 	}
 

@@ -35,7 +35,7 @@ This work is a 100% Java software that builds on *JavaCPC (JEMU)* and provides a
 
 
 ## Getting started
-An instance of `AmstradPc` can be obtained from [AmstradFactory](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/pc/AmstradFactory.java) 
+An instance of `AmstradPc` can be obtained from [AmstradFactory](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/AmstradFactory.java) 
 
 See also the main class [AmstradMain](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/AmstradMain.java)
 
