@@ -3,7 +3,8 @@ package org.maia.amstrad.basic.locomotive;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicNumericRepresentation.NumberOverflowException;
@@ -90,8 +91,8 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 		return sb.toString();
 	}
 
-	public Collection<TypedVariableToken> getAllVariables() {
-		Collection<TypedVariableToken> variables = new Vector<TypedVariableToken>();
+	public Set<TypedVariableToken> getAllVariables() {
+		Set<TypedVariableToken> variables = new HashSet<TypedVariableToken>();
 		AmstradMemory memory = getMemory();
 		memory.startThreadExclusiveSession();
 		try {

@@ -1,7 +1,7 @@
 package org.maia.amstrad.basic;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.Set;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
@@ -46,7 +46,7 @@ public class BasicVariablesTest {
 		variableSpace.setValue(new FloatingPointTypedVariableToken("fp!"), -0.86);
 		variableSpace.setCharAt(new StringTypedVariableToken("text$"), 1, 'o');
 		System.out.println(variableSpace);
-		Collection<TypedVariableToken> vars = variableSpace.getAllVariables();
+		Set<TypedVariableToken> vars = variableSpace.getAllVariables();
 		for (int i = 0; i < 10; i++) {
 			IntegerTypedVariableToken newVar = LocomotiveBasicVariableSpace.generateNewIntegerVariable(vars);
 			System.out.println(newVar);

@@ -2,9 +2,11 @@ package org.maia.amstrad.basic.locomotive;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -17,6 +19,7 @@ import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
+import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.util.StringUtils;
 
 public class LocomotiveBasicSourceCode extends BasicSourceCode {
@@ -64,6 +67,19 @@ public class LocomotiveBasicSourceCode extends BasicSourceCode {
 			line.editTo(sequence.getSourceCode());
 			addLine(line); // attach line again
 		}
+	}
+
+	public Set<VariableToken> getUniqueVariables() throws BasicSyntaxException {
+		Set<VariableToken> variables = new HashSet<VariableToken>();
+		for (BasicSourceCodeLine line : this) {
+			BasicSourceTokenSequence sequence = line.parse();
+			int i = sequence.getFirstIndexOf(VariableToken.class);
+			while (i >= 0) {
+				variables.add((VariableToken) sequence.get(i));
+				i = sequence.getNextIndexOf(VariableToken.class, i + 1);
+			}
+		}
+		return variables;
 	}
 
 	@Override
