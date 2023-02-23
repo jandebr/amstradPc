@@ -13,23 +13,25 @@ Enhanced Emulator Version 6.5 by Markus Hohmann (http://cpc-live.com)
 
 
 ## Modifications
-This work is a 100% Java software that builds on *JavaCPC (JEMU)* and provides features including
+This work is a 100% Java software that builds on *JavaCPC (JEMU)* and provides additional features including
 
 - An integrated program browser
 
 - Instant loading and saving of Basic source code
 
-- Quick access to program info (e.g. game controls) depending on available metadata
-
 - Text-based program metadata files
 
-- A much simplified menu bar, in sync with the API
+- Quick access to program info (e.g. game controls) depending on available metadata
 
-- Minor fixes and improvements to *JavaCPC* (e.g., fullscreen, pause mode, keyboard mapping)
+- Fixes and improvements to *JavaCPC* including keyboard mapping, fullscreen, fast pause/resume
 
-- An easy API for integrators via the abstract class [AmstradPc](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/pc/AmstradPc.java)
+- An API for integrators, starting from [AmstradPc](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/pc/AmstradPc.java)
 
-- A Basic compiler and decompiler developed in Java
+- A simplified menu bar, in sync with the API
+
+- A Basic compiler and decompiler written in Java
+
+- A Basic source code parser written in Java
 
 
 ## Getting started
