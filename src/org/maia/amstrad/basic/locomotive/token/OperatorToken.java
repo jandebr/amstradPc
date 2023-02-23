@@ -1,25 +1,16 @@
 package org.maia.amstrad.basic.locomotive.token;
 
-import org.maia.amstrad.basic.BasicSourceToken;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicOperator;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceToken;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenVisitor;
 
 public class OperatorToken extends LocomotiveBasicSourceToken {
 
-	private static String[] operators = { ">", "=", ">=", "<", "<>", "<=", "+", "-", "*", "/", "^", "\\", "AND", "MOD",
-			"OR", "XOR", "NOT" };
+	private LocomotiveBasicOperator operator;
 
-	public static boolean isOperator(String sourceFragment) {
-		String usymbol = sourceFragment.toUpperCase();
-		for (int i = 0; i < operators.length; i++) {
-			if (operators[i].equals(usymbol))
-				return true;
-		}
-		return false;
-	}
-
-	public OperatorToken(String sourceFragment) {
-		super(sourceFragment);
+	public OperatorToken(LocomotiveBasicOperator operator) {
+		super(operator.getSourceForm());
+		this.operator = operator;
 	}
 
 	@Override
@@ -29,7 +20,7 @@ public class OperatorToken extends LocomotiveBasicSourceToken {
 
 	@Override
 	public int hashCode() {
-		return getSourceFragment().toUpperCase().hashCode();
+		return getOperator().hashCode();
 	}
 
 	@Override
@@ -41,7 +32,11 @@ public class OperatorToken extends LocomotiveBasicSourceToken {
 		if (getClass() != obj.getClass())
 			return false;
 		OperatorToken other = (OperatorToken) obj;
-		return getSourceFragment().toUpperCase().equals(other.getSourceFragment().toUpperCase());
+		return getOperator().equals(other.getOperator());
+	}
+
+	public LocomotiveBasicOperator getOperator() {
+		return operator;
 	}
 
 }

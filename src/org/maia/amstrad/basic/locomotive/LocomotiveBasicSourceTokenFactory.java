@@ -1,5 +1,7 @@
 package org.maia.amstrad.basic.locomotive;
 
+import java.util.Collection;
+
 import org.maia.amstrad.basic.BasicLineNumberToken;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
@@ -27,11 +29,14 @@ public class LocomotiveBasicSourceTokenFactory {
 
 	private LocomotiveBasicKeywords basicKeywords;
 
+	private LocomotiveBasicOperators basicOperators;
+
 	private static LocomotiveBasicSourceTokenFactory instance;
 
 	public static LocomotiveBasicSourceTokenFactory getInstance() {
 		if (instance == null) {
-			setInstance(new LocomotiveBasicSourceTokenFactory(LocomotiveBasicKeywords.getInstance()));
+			setInstance(new LocomotiveBasicSourceTokenFactory(LocomotiveBasicKeywords.getInstance(),
+					LocomotiveBasicOperators.getInstance()));
 		}
 		return instance;
 	}
@@ -42,12 +47,22 @@ public class LocomotiveBasicSourceTokenFactory {
 		}
 	}
 
-	private LocomotiveBasicSourceTokenFactory(LocomotiveBasicKeywords basicKeywords) {
+	private LocomotiveBasicSourceTokenFactory(LocomotiveBasicKeywords basicKeywords,
+			LocomotiveBasicOperators basicOperators) {
 		this.basicKeywords = basicKeywords;
+		this.basicOperators = basicOperators;
+	}
+
+	public boolean isKeyword(String sourceFragment) {
+		return getBasicKeywords().hasKeyword(sourceFragment);
+	}
+
+	void collectKeywordsStartingWithSymbol(String symbol, Collection<LocomotiveBasicKeyword> result) {
+		getBasicKeywords().collectKeywordsStartingWithSymbol(symbol, result);
 	}
 
 	public BasicKeywordToken createBasicKeyword(String sourceFragment) throws BasicSyntaxException {
-		LocomotiveBasicKeyword keyword = getBasicKeywords().getKeyword(sourceFragment.toUpperCase());
+		LocomotiveBasicKeyword keyword = getBasicKeywords().getKeyword(sourceFragment);
 		if (keyword != null) {
 			return new BasicKeywordToken(keyword);
 		} else {
@@ -130,9 +145,14 @@ public class LocomotiveBasicSourceTokenFactory {
 		return new LineNumberReferenceToken(lineNumber);
 	}
 
+	public boolean isOperator(String sourceFragment) {
+		return getBasicOperators().hasOperator(sourceFragment);
+	}
+
 	public OperatorToken createOperator(String sourceFragment) throws BasicSyntaxException {
-		if (OperatorToken.isOperator(sourceFragment)) {
-			return new OperatorToken(sourceFragment);
+		LocomotiveBasicOperator operator = getBasicOperators().getOperator(sourceFragment);
+		if (operator != null) {
+			return new OperatorToken(operator);
 		} else {
 			throw new BasicSyntaxException("Unrecognized operator", sourceFragment);
 		}
@@ -179,6 +199,10 @@ public class LocomotiveBasicSourceTokenFactory {
 
 	private LocomotiveBasicKeywords getBasicKeywords() {
 		return basicKeywords;
+	}
+
+	private LocomotiveBasicOperators getBasicOperators() {
+		return basicOperators;
 	}
 
 }

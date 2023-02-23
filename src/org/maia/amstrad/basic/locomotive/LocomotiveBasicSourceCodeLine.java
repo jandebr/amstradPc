@@ -17,7 +17,7 @@ public class LocomotiveBasicSourceCodeLine extends BasicSourceCodeLine {
 
 	@Override
 	public LocomotiveBasicSourceCodeLineScanner createScanner() {
-		return new LocomotiveBasicSourceCodeLineScanner(getText(), LocomotiveBasicKeywords.getInstance());
+		return new LocomotiveBasicSourceCodeLineScanner(getText());
 	}
 
 }

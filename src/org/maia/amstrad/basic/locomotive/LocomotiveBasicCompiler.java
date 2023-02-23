@@ -227,43 +227,7 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 
 		@Override
 		public void visitOperator(OperatorToken token) {
-			ByteBuffer byteBuffer = getByteBuffer();
-			String symbol = token.getSourceFragment().toUpperCase();
-			if (symbol.equals(">")) {
-				byteBuffer.appendByte((byte) 0xee);
-			} else if (symbol.equals("=")) {
-				byteBuffer.appendByte((byte) 0xef);
-			} else if (symbol.equals(">=")) {
-				byteBuffer.appendByte((byte) 0xf0);
-			} else if (symbol.equals("<")) {
-				byteBuffer.appendByte((byte) 0xf1);
-			} else if (symbol.equals("<>")) {
-				byteBuffer.appendByte((byte) 0xf2);
-			} else if (symbol.equals("<=")) {
-				byteBuffer.appendByte((byte) 0xf3);
-			} else if (symbol.equals("+")) {
-				byteBuffer.appendByte((byte) 0xf4);
-			} else if (symbol.equals("-")) {
-				byteBuffer.appendByte((byte) 0xf5);
-			} else if (symbol.equals("*")) {
-				byteBuffer.appendByte((byte) 0xf6);
-			} else if (symbol.equals("/")) {
-				byteBuffer.appendByte((byte) 0xf7);
-			} else if (symbol.equals("^")) {
-				byteBuffer.appendByte((byte) 0xf8);
-			} else if (symbol.equals("\\")) {
-				byteBuffer.appendByte((byte) 0xf9);
-			} else if (symbol.equals("AND")) {
-				byteBuffer.appendByte((byte) 0xfa);
-			} else if (symbol.equals("MOD")) {
-				byteBuffer.appendByte((byte) 0xfb);
-			} else if (symbol.equals("OR")) {
-				byteBuffer.appendByte((byte) 0xfc);
-			} else if (symbol.equals("XOR")) {
-				byteBuffer.appendByte((byte) 0xfd);
-			} else if (symbol.equals("NOT")) {
-				byteBuffer.appendByte((byte) 0xfe);
-			}
+			getByteBuffer().appendByte(token.getOperator().getCodeByte());
 		}
 
 		@Override

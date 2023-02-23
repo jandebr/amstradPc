@@ -25,7 +25,7 @@ public class LocomotiveBasicKeyword {
 
 	@Override
 	public int hashCode() {
-		return 31 + ((sourceForm == null) ? 0 : sourceForm.hashCode());
+		return sourceForm.hashCode();
 	}
 
 	@Override

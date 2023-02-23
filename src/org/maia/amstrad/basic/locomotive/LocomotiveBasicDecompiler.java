@@ -144,40 +144,9 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 				nextByte(); // byte offset
 				line.append('|');
 				line.append(nextSymbolicName());
-			} else if (b == 0xee) {
-				line.append('>');
-			} else if (b == 0xef) {
-				line.append('=');
-			} else if (b == 0xf0) {
-				line.append(">=");
-			} else if (b == 0xf1) {
-				line.append('<');
-			} else if (b == 0xf2) {
-				line.append("<>");
-			} else if (b == 0xf3) {
-				line.append("<=");
-			} else if (b == 0xf4) {
-				line.append('+');
-			} else if (b == 0xf5) {
-				line.append('-');
-			} else if (b == 0xf6) {
-				line.append('*');
-			} else if (b == 0xf7) {
-				line.append('/');
-			} else if (b == 0xf8) {
-				line.append('^');
-			} else if (b == 0xf9) {
-				line.append('\\');
-			} else if (b == 0xfa) {
-				line.append("AND");
-			} else if (b == 0xfb) {
-				line.append("MOD");
-			} else if (b == 0xfc) {
-				line.append("OR");
-			} else if (b == 0xfd) {
-				line.append("XOR");
-			} else if (b == 0xfe) {
-				line.append("NOT");
+			} else if (b >= 0xee && b <= 0xfe) {
+				// operator
+				line.append(getBasicOperators().getOperator((byte) b));
 			} else {
 				// keyword
 				LocomotiveBasicKeyword keyword = b < 0xff ? getBasicKeywords().getKeyword((byte) b)
@@ -250,6 +219,10 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 
 	private LocomotiveBasicKeywords getBasicKeywords() {
 		return LocomotiveBasicKeywords.getInstance();
+	}
+
+	private LocomotiveBasicOperators getBasicOperators() {
+		return LocomotiveBasicOperators.getInstance();
 	}
 
 	public boolean isRSXenabled() {

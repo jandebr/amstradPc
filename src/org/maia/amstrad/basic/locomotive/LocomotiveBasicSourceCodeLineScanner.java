@@ -7,24 +7,17 @@ import org.maia.amstrad.basic.BasicSourceCodeLineScanner;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
-import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.basic.locomotive.token.Integer16BitBinaryToken;
 import org.maia.amstrad.basic.locomotive.token.Integer16BitHexadecimalToken;
-import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralDataToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralQuotedToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralRemarkToken;
-import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.NumericToken;
 import org.maia.amstrad.basic.locomotive.token.OperatorToken;
-import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 
 public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineScanner {
-
-	private LocomotiveBasicKeywords basicKeywords;
 
 	private List<LocomotiveBasicKeyword> keywordsAtHand;
 
@@ -34,9 +27,8 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 
 	private boolean insideData;
 
-	public LocomotiveBasicSourceCodeLineScanner(String text, LocomotiveBasicKeywords basicKeywords) {
+	public LocomotiveBasicSourceCodeLineScanner(String text) {
 		super(text);
-		this.basicKeywords = basicKeywords;
 		this.keywordsAtHand = new Vector<LocomotiveBasicKeyword>();
 	}
 
@@ -53,14 +45,12 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 				insideData = false;
 			} else {
 				if (c == InstructionSeparatorToken.SEPARATOR) {
-					token = new InstructionSeparatorToken();
+					token = getSourceTokenFactory().createInstructionSeparator();
 					advancePosition();
 					lineNumberCanFollow = false;
 					insideData = false;
 				} else if (c == BasicKeywordToken.REMARK_SHORTHAND) {
-					String symbol = String.valueOf(c);
-					LocomotiveBasicKeyword keyword = getBasicKeywords().getKeyword(symbol);
-					token = new BasicKeywordToken(keyword);
+					token = getSourceTokenFactory().createBasicKeyword(String.valueOf(c));
 					advancePosition();
 					insideRemark = true;
 				} else if (c == NumericToken.AMPERSAND) {
@@ -71,31 +61,21 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 					token = scanNumericOperator();
 				} else if (isLetter(c)) {
 					String symbol = scanSymbol();
-					String usymbol = symbol.toUpperCase();
-					if (usymbol.equals("AND") || usymbol.equals("MOD") || usymbol.equals("OR") || usymbol.equals("XOR")
-							|| usymbol.equals("NOT")) {
-						token = new OperatorToken(symbol);
+					if (getSourceTokenFactory().isOperator(symbol)) {
+						token = getSourceTokenFactory().createOperator(symbol);
 						lineNumberCanFollow = false;
 					} else {
-						getBasicKeywords().collectKeywordsStartingWithSymbol(usymbol, keywordsAtHand);
+						getSourceTokenFactory().collectKeywordsStartingWithSymbol(symbol, keywordsAtHand);
 						if (!keywordsAtHand.isEmpty()) {
-							LocomotiveBasicKeyword keyword = scanFullKeyword(usymbol, keywordsAtHand);
+							// Keyword
+							LocomotiveBasicKeyword keyword = scanFullKeyword(symbol, keywordsAtHand);
 							token = new BasicKeywordToken(keyword);
 							lineNumberCanFollow = keyword.canBeFollowedByLineNumber();
 							insideRemark = keyword.isRemark();
 							insideData = keyword.isData();
 						} else {
 							// Variable
-							char type = symbol.charAt(symbol.length() - 1);
-							if (type == IntegerTypedVariableToken.TYPE_INDICATOR) {
-								token = new IntegerTypedVariableToken(symbol);
-							} else if (type == StringTypedVariableToken.TYPE_INDICATOR) {
-								token = new StringTypedVariableToken(symbol);
-							} else if (type == FloatingPointTypedVariableToken.TYPE_INDICATOR) {
-								token = new FloatingPointTypedVariableToken(symbol);
-							} else {
-								token = new UntypedVariableToken(symbol);
-							}
+							token = getSourceTokenFactory().createVariable(symbol);
 							lineNumberCanFollow = false;
 						}
 					}
@@ -106,7 +86,7 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 					advancePosition();
 					while (!atEndOfText() && isWhitespace(getCurrentChar()))
 						advancePosition();
-					token = new LiteralToken(subText(p0, getPosition()));
+					token = getSourceTokenFactory().createLiteral(subText(p0, getPosition()));
 				}
 			}
 		}
@@ -190,21 +170,21 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 				advancePosition();
 			}
 		}
-		return new OperatorToken(subText(p0, getPosition()));
+		return getSourceTokenFactory().createOperator(subText(p0, getPosition()));
 	}
 
 	private LiteralRemarkToken scanLiteralRemarkToken() {
 		int p0 = getPosition();
 		while (!atEndOfText())
 			advancePosition();
-		return new LiteralRemarkToken(subText(p0, getPosition()));
+		return getSourceTokenFactory().createLiteralRemark(subText(p0, getPosition()));
 	}
 
 	private LiteralDataToken scanLiteralDataToken() throws BasicSyntaxException {
 		int p0 = getPosition();
 		while (!atEndOfText() && getCurrentChar() != InstructionSeparatorToken.SEPARATOR)
 			advancePosition();
-		return new LiteralDataToken(subText(p0, getPosition()));
+		return getSourceTokenFactory().createLiteralData(subText(p0, getPosition()));
 	}
 
 	private LiteralQuotedToken scanLiteralQuotedToken() throws BasicSyntaxException {
@@ -214,7 +194,7 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 			advancePosition();
 		if (!atEndOfText())
 			advancePosition();
-		return new LiteralQuotedToken(subText(p0, getPosition()));
+		return getSourceTokenFactory().createLiteralQuoted(subText(p0, getPosition()));
 	}
 
 	private String scanSymbol() throws BasicSyntaxException {
@@ -248,8 +228,8 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 		return winner;
 	}
 
-	private LocomotiveBasicKeywords getBasicKeywords() {
-		return basicKeywords;
+	private LocomotiveBasicSourceTokenFactory getSourceTokenFactory() {
+		return LocomotiveBasicSourceTokenFactory.getInstance();
 	}
 
 }

@@ -224,11 +224,11 @@ public class LocomotiveBasicKeywords {
 	}
 
 	public boolean hasKeyword(String sourceForm) {
-		return getSourceFormMap().containsKey(sourceForm);
+		return getSourceFormMap().containsKey(sourceForm.toUpperCase());
 	}
 
 	public LocomotiveBasicKeyword getKeyword(String sourceForm) {
-		return getSourceFormMap().get(sourceForm);
+		return getSourceFormMap().get(sourceForm.toUpperCase());
 	}
 
 	public LocomotiveBasicKeyword getKeyword(byte codeByte) {
@@ -241,11 +241,12 @@ public class LocomotiveBasicKeywords {
 
 	public void collectKeywordsStartingWithSymbol(String symbol, Collection<LocomotiveBasicKeyword> result) {
 		result.clear();
-		if (hasKeyword(symbol)) {
-			result.add(getKeyword(symbol));
+		String usymbol = symbol.toUpperCase();
+		if (hasKeyword(usymbol)) {
+			result.add(getKeyword(usymbol));
 		}
-		if (getMultiSymbolMap().containsKey(symbol)) {
-			result.addAll(getMultiSymbolMap().get(symbol));
+		if (getMultiSymbolMap().containsKey(usymbol)) {
+			result.addAll(getMultiSymbolMap().get(usymbol));
 		}
 	}
 
