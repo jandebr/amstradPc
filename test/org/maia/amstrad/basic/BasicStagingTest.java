@@ -29,10 +29,10 @@ public class BasicStagingTest {
 
 	private AmstradProgram getTestProgram() throws AmstradProgramException {
 		File dir = new File("resources/test/staging");
-		AmstradProgram program = new AmstradBasicProgramFile(new File(dir, "chainrun-1.bas"));
+		AmstradProgram program = new AmstradBasicProgramFile(new File(dir, "textsave.bas"));
 		AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(program);
 		try {
-			builder.loadAmstradMetaData(new File(dir, "chainrun-1.amd"));
+			builder.loadAmstradMetaData(new File(dir, "textsave.amd"));
 		} catch (IOException e) {
 			throw new AmstradProgramException(program, e);
 		}
@@ -46,7 +46,7 @@ public class BasicStagingTest {
 				amstradPc, new EndingBasicActionImpl(), EndingBasicCodeDisclosure.STAGED_CODE, true);
 		amstradPc.start();
 		AmstradProgramRuntime rt = loader.load(program);
-		// rt.getAmstradPc().getBasicRuntime().sendKeyboardInputIfReady("LIST");
+		// amstradPc.getBasicRuntime().sendKeyboardInputIfReady("LIST");
 		rt.run();
 	}
 

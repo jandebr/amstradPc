@@ -31,6 +31,10 @@ public abstract class BasicPreprocessor {
 		sourceCode.addLine(BasicLanguageKit.forLanguage(sourceCode.getLanguage()).createSourceCodeLine(sequence));
 	}
 
+	protected BasicSourceToken createInstructionSeparatorToken(BasicLanguage language) {
+		return BasicLanguageKit.forLanguage(language).createInstructionSeparatorToken();
+	}
+
 	protected BasicSourceToken createKeywordToken(BasicLanguage language, String keyword) throws BasicSyntaxException {
 		return BasicLanguageKit.forLanguage(language).createKeywordToken(keyword);
 	}

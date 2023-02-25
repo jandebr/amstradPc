@@ -15,4 +15,8 @@ public class LiteralQuotedToken extends AbstractLiteralToken {
 		visitor.visitLiteralQuoted(this);
 	}
 
+	public String getLiteralBetweenQuotes() {
+		return getSourceFragment().substring(1, getSourceFragment().length() - 1);
+	}
+
 }

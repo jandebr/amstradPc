@@ -14,4 +14,8 @@ public interface ErrorOutCodes {
 
 	int ERR_BINARY_SAVE_FAILURE = 36;
 
+	int ERR_TEXT_LOAD_FAILURE = 37;
+
+	int ERR_TEXT_SAVE_FAILURE = 38;
+
 }

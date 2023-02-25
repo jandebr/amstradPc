@@ -1,5 +1,8 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +39,8 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private List<AmstradProgram> chainedPrograms;
 
+	private PrintWriter textWriter;
+
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
 		setHimemAddress(INITIAL_HIMEM);
@@ -53,6 +58,19 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		for (AmstradProgram program : getChainedPrograms())
 			session.addProgramToChain(program);
 		return session;
+	}
+
+	public synchronized void openTextWriter(File fileOut) throws IOException {
+		closeTextWriter();
+		setTextWriter(new PrintWriter(fileOut));
+	}
+
+	public synchronized void closeTextWriter() {
+		if (getTextWriter() != null) {
+			getTextWriter().flush();
+			getTextWriter().close();
+			setTextWriter(null);
+		}
 	}
 
 	public synchronized int reserveMemory(int numberOfBytes) {
@@ -242,6 +260,14 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public void setOriginalToStagedLineNumberMapping(StagedLineNumberMapping mapping) {
 		this.originalToStagedLineNumberMapping = mapping;
+	}
+
+	public PrintWriter getTextWriter() {
+		return textWriter;
+	}
+
+	private void setTextWriter(PrintWriter textWriter) {
+		this.textWriter = textWriter;
 	}
 
 	private static class MacrosSnapshotScope extends BasicLineNumberScope {

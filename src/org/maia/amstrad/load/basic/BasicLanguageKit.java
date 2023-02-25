@@ -48,6 +48,8 @@ public abstract class BasicLanguageKit {
 	public abstract BasicSourceCodeLine createSourceCodeLine(BasicSourceTokenSequence sequence)
 			throws BasicSyntaxException;
 
+	public abstract BasicSourceToken createInstructionSeparatorToken();
+
 	public abstract BasicSourceToken createKeywordToken(String keyword) throws BasicSyntaxException;
 
 	private static class LocomotiveBasicLanguageKit extends BasicLanguageKit {
@@ -73,6 +75,11 @@ public abstract class BasicLanguageKit {
 		@Override
 		public BasicSourceCodeLine createSourceCodeLine(BasicSourceTokenSequence sequence) throws BasicSyntaxException {
 			return new LocomotiveBasicSourceCodeLine(sequence.getSourceCode());
+		}
+
+		@Override
+		public BasicSourceToken createInstructionSeparatorToken() {
+			return LocomotiveBasicSourceTokenFactory.getInstance().createInstructionSeparator();
 		}
 
 		@Override

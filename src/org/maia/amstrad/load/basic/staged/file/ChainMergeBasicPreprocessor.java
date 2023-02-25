@@ -14,7 +14,6 @@ import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
-import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
 import org.maia.amstrad.load.basic.BasicPreprocessorBatch;
 import org.maia.amstrad.load.basic.staged.CompactBasicPreprocessor;
@@ -69,13 +68,12 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 			throws BasicException {
 		ChainMergeMacro macro = session.getMacroAdded(ChainMergeMacro.class);
 		int lnGoto = macro.getLineNumberFrom();
-		int addrResume = macro.getResumeMemoryAddress();
 		int addrTrap = session.reserveMemory(1);
 		ChainMergeRuntimeListener listener = new ChainMergeRuntimeListener(sourceCode, session, addrTrap);
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken CHAIN = createKeywordToken(language, "CHAIN");
 		BasicSourceToken MERGE = createKeywordToken(language, "MERGE");
-		BasicSourceToken SEP = new InstructionSeparatorToken();
+		BasicSourceToken SEP = createInstructionSeparatorToken(language);
 		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		for (BasicSourceCodeLine line : sourceCode) {
@@ -93,13 +91,10 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 							ChainMergeCommand command = ChainMergeCommand.parseFrom(sequence.subSequence(i, j));
 							if (command != null) {
 								int ref = listener.registerCommand(command).getReferenceNumber();
-								sequence.replaceRange(i, j, stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
-										stf.createPositiveInteger16BitHexadecimal(addrResume), stf.createLiteral(","),
-										stf.createPositiveIntegerSingleDigitDecimal(0), SEP,
-										stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
-										stf.createPositiveInteger16BitHexadecimal(addrTrap), stf.createLiteral(","),
-										stf.createPositiveInteger8BitDecimal(ref), SEP, stf.createBasicKeyword("GOTO"),
-										stf.createLiteral(" "), stf.createLineNumberReference(lnGoto));
+								sequence.replaceRange(i, j,
+										createMacroInvocationSequence(macro, addrTrap, ref).append(SEP,
+												stf.createBasicKeyword("GOTO"), stf.createLiteral(" "),
+												stf.createLineNumberReference(lnGoto)));
 							}
 						}
 					}
@@ -127,7 +122,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 					performChainMerge(command, chainedProgram, sourceCode, session);
 				}
 				resumeWithNewSourceCode(getResumeLineNumber(command, sourceCode), sourceCode, session);
-				System.out.println("ChainMerge completed successfully");
+				System.out.println("Completed " + command);
 			} catch (BasicMemoryFullException e) {
 				endWithError(ERR_MEMORY_FULL, sourceCodeBeforeMerge, macro, session);
 			} catch (Exception e) {

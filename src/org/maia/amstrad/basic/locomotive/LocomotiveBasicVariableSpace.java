@@ -237,7 +237,7 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 
 	public static IntegerTypedVariableToken generateNewIntegerVariable(
 			Collection<? extends VariableToken> existingVariables) {
-		return generateNewTypedVariable(IntegerTypedVariableToken.class, existingVariables);
+		return generateNewVariable(IntegerTypedVariableToken.class, existingVariables);
 	}
 
 	public FloatingPointTypedVariableToken generateNewFloatingPointVariable() {
@@ -246,7 +246,16 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 
 	public static FloatingPointTypedVariableToken generateNewFloatingPointVariable(
 			Collection<? extends VariableToken> existingVariables) {
-		return generateNewTypedVariable(FloatingPointTypedVariableToken.class, existingVariables);
+		return generateNewVariable(FloatingPointTypedVariableToken.class, existingVariables);
+	}
+
+	public UntypedVariableToken generateNewUntypedVariable() {
+		return generateNewUntypedVariable(getAllVariables());
+	}
+
+	public static UntypedVariableToken generateNewUntypedVariable(
+			Collection<? extends VariableToken> existingVariables) {
+		return generateNewVariable(UntypedVariableToken.class, existingVariables);
 	}
 
 	public StringTypedVariableToken generateNewStringVariable() {
@@ -255,7 +264,7 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 
 	public static StringTypedVariableToken generateNewStringVariable(
 			Collection<? extends VariableToken> existingVariables) {
-		return generateNewTypedVariable(StringTypedVariableToken.class, existingVariables);
+		return generateNewVariable(StringTypedVariableToken.class, existingVariables);
 	}
 
 	private int findPayloadValueMemoryOffset(VariableToken variable) throws VariableNotFoundException {
@@ -336,7 +345,7 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 		return memory;
 	}
 
-	private static <T extends TypedVariableToken> T generateNewTypedVariable(Class<T> variableType,
+	private static <T extends VariableToken> T generateNewVariable(Class<T> variableType,
 			Collection<? extends VariableToken> existingVariables) {
 		T variable = null;
 		int n = 0;
@@ -348,12 +357,12 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 				length++;
 				nt *= 10;
 			}
-			variable = createTypedVariable(variableType, generateRandomVariableName(length));
+			variable = createVariable(variableType, generateRandomVariableName(length));
 		} while (existingVariables.contains(variable));
 		return variable;
 	}
 
-	private static <T extends TypedVariableToken> T createTypedVariable(Class<T> variableType,
+	private static <T extends VariableToken> T createVariable(Class<T> variableType,
 			String variableNameWithoutTypeIndicator) {
 		T variable = null;
 		try {

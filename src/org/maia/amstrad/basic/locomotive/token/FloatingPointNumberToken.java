@@ -7,15 +7,14 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenVisitor;
 
 public class FloatingPointNumberToken extends NumericToken {
 
-	private static NumberFormat formatter;
-
-	static {
-		formatter = NumberFormat.getNumberInstance(Locale.US);
-		formatter.setMaximumFractionDigits(8);
-		formatter.setGroupingUsed(false);
-	}
-
 	public static String format(double value) {
+		double pvalue = Math.abs(value); // positive number
+		double fractionalPart = pvalue % 1;
+		long integralPart = (long) (pvalue - fractionalPart);
+		int integralDigits = String.valueOf(integralPart).length();
+		NumberFormat formatter = NumberFormat.getNumberInstance(Locale.US);
+		formatter.setMaximumFractionDigits(Math.max(0, 9 - integralDigits));
+		formatter.setGroupingUsed(false);
 		return formatter.format(value);
 	}
 

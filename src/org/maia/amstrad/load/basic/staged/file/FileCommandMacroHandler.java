@@ -53,7 +53,11 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 	}
 
 	private FileReference lookupFileReference(FileCommand command) {
-		return getProgram().lookupFileReference(command.getSourceFilenameWithoutFlags());
+		FileReference reference = null;
+		if (command.getSourceFilenameWithoutFlags() != null) {
+			return getProgram().lookupFileReference(command.getSourceFilenameWithoutFlags());
+		}
+		return reference;
 	}
 
 	protected BasicSourceCode getSourceCode() {

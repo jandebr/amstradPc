@@ -14,4 +14,10 @@ public interface FileCommandDelays {
 
 	long DELAYMILLIS_BINARY_SAVE = 2000L;
 
+	long DELAYMILLIS_OPENOUT = 2000L;
+
+	long DELAYMILLIS_PRINTSTREAM = 0L;
+
+	long DELAYMILLIS_CLOSEOUT = 0L;
+
 }

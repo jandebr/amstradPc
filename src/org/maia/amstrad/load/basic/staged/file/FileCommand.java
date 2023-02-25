@@ -20,6 +20,9 @@ public abstract class FileCommand {
 		}
 	}
 
+	protected FileCommand() {
+	}
+
 	protected FileCommand(LiteralQuotedToken sourceFilenameToken) {
 		this(parseFilenameFrom(sourceFilenameToken));
 	}

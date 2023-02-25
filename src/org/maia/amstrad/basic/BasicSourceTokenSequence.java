@@ -150,98 +150,108 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 		return getFirstIndexOf(tokenType) >= 0;
 	}
 
-	public void prepend(BasicSourceToken... tokens) {
-		insert(0, tokens);
+	public BasicSourceTokenSequence prepend(BasicSourceToken... tokens) {
+		return insert(0, tokens);
 	}
 
-	public void prepend(BasicSourceTokenSequence sequence) {
-		prepend(sequence.getTokensArray());
+	public BasicSourceTokenSequence prepend(BasicSourceTokenSequence sequence) {
+		return prepend(sequence.getTokensArray());
 	}
 
-	public void append(BasicSourceToken... tokens) {
-		insert(size(), tokens);
+	public BasicSourceTokenSequence append(BasicSourceToken... tokens) {
+		return insert(size(), tokens);
 	}
 
-	public void append(BasicSourceTokenSequence sequence) {
-		append(sequence.getTokensArray());
+	public BasicSourceTokenSequence append(BasicSourceTokenSequence sequence) {
+		return append(sequence.getTokensArray());
 	}
 
-	public void insert(int index, BasicSourceToken... tokens) {
+	public BasicSourceTokenSequence insert(int index, BasicSourceToken... tokens) {
 		if (tokens.length > 0) {
 			for (int i = tokens.length - 1; i >= 0; i--) {
 				getTokens().add(index, tokens[i]);
 			}
 			setModified(true);
 		}
+		return this;
 	}
 
-	public void insert(int index, BasicSourceTokenSequence sequence) {
-		insert(index, sequence.getTokensArray());
+	public BasicSourceTokenSequence insert(int index, BasicSourceTokenSequence sequence) {
+		return insert(index, sequence.getTokensArray());
 	}
 
-	public void clear() {
+	public BasicSourceTokenSequence clear() {
 		if (!isEmpty()) {
 			getTokens().clear();
 			setModified(true);
 		}
+		return this;
 	}
 
-	public void removeFirst(BasicSourceToken token) {
+	public BasicSourceTokenSequence removeFirst(BasicSourceToken token) {
 		int index = getFirstIndexOf(token);
 		if (index >= 0) {
 			remove(index);
 		}
+		return this;
 	}
 
-	public void removeLast(BasicSourceToken token) {
+	public BasicSourceTokenSequence removeLast(BasicSourceToken token) {
 		int index = getLastIndexOf(token);
 		if (index >= 0) {
 			remove(index);
 		}
+		return this;
 	}
 
-	public void removeNext(BasicSourceToken token, int fromIndex) {
+	public BasicSourceTokenSequence removeNext(BasicSourceToken token, int fromIndex) {
 		int index = getNextIndexOf(token, fromIndex);
 		if (index >= 0) {
 			remove(index);
 		}
+		return this;
 	}
 
-	public void removeAll(BasicSourceToken token) {
+	public BasicSourceTokenSequence removeAll(BasicSourceToken token) {
 		int index = getFirstIndexOf(token);
 		while (index >= 0) {
 			remove(index);
 			index = getNextIndexOf(token, index);
 		}
+		return this;
 	}
 
-	public void removeFirst(Class<? extends BasicSourceToken> tokenType) {
+	public BasicSourceTokenSequence removeFirst(Class<? extends BasicSourceToken> tokenType) {
 		int index = getFirstIndexOf(tokenType);
 		if (index >= 0) {
 			remove(index);
 		}
+		return this;
 	}
 
-	public void removeLast(Class<? extends BasicSourceToken> tokenType) {
+	public BasicSourceTokenSequence removeLast(Class<? extends BasicSourceToken> tokenType) {
 		int index = getLastIndexOf(tokenType);
 		if (index >= 0) {
 			remove(index);
 		}
+		return this;
 	}
 
-	public void removeNext(Class<? extends BasicSourceToken> tokenType, int fromIndex) {
+	public BasicSourceTokenSequence removeNext(Class<? extends BasicSourceToken> tokenType, int fromIndex) {
 		int index = getNextIndexOf(tokenType, fromIndex);
 		if (index >= 0) {
 			remove(index);
 		}
+		return this;
 	}
 
-	public void removeAll(Class<? extends BasicSourceToken> tokenType) {
+	public BasicSourceTokenSequence removeAll(Class<? extends BasicSourceToken> tokenType) {
 		int index = getFirstIndexOf(tokenType);
 		while (index >= 0) {
 			remove(index);
 			index = getNextIndexOf(tokenType, index);
 		}
+		return this;
 	}
 
 	public BasicSourceToken remove(int index) {
@@ -249,43 +259,46 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 		return getTokens().remove(index);
 	}
 
-	public void removeRange(int fromIndex, int toIndex) {
+	public BasicSourceTokenSequence removeRange(int fromIndex, int toIndex) {
 		for (int i = fromIndex; i < toIndex; i++) {
 			remove(fromIndex);
 		}
+		return this;
 	}
 
-	public void replaceFirst(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken) {
+	public BasicSourceTokenSequence replaceFirst(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken) {
 		int index = getFirstIndexOf(tokenToReplace);
 		if (index >= 0) {
 			replace(index, replacementToken);
 		}
+		return this;
 	}
 
-	public void replaceAll(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken) {
+	public BasicSourceTokenSequence replaceAll(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken) {
 		int index = getFirstIndexOf(tokenToReplace);
 		while (index >= 0) {
 			replace(index, replacementToken);
 			index = getNextIndexOf(tokenToReplace, index);
 		}
+		return this;
 	}
 
-	public void replace(int index, BasicSourceToken... tokens) {
+	public BasicSourceTokenSequence replace(int index, BasicSourceToken... tokens) {
 		remove(index);
-		insert(index, tokens);
+		return insert(index, tokens);
 	}
 
-	public void replace(int index, BasicSourceTokenSequence sequence) {
-		replace(index, sequence.getTokensArray());
+	public BasicSourceTokenSequence replace(int index, BasicSourceTokenSequence sequence) {
+		return replace(index, sequence.getTokensArray());
 	}
 
-	public void replaceRange(int fromIndex, int toIndex, BasicSourceToken... tokens) {
+	public BasicSourceTokenSequence replaceRange(int fromIndex, int toIndex, BasicSourceToken... tokens) {
 		removeRange(fromIndex, toIndex);
-		insert(fromIndex, tokens);
+		return insert(fromIndex, tokens);
 	}
 
-	public void replaceRange(int fromIndex, int toIndex, BasicSourceTokenSequence sequence) {
-		replaceRange(fromIndex, toIndex, sequence.getTokensArray());
+	public BasicSourceTokenSequence replaceRange(int fromIndex, int toIndex, BasicSourceTokenSequence sequence) {
+		return replaceRange(fromIndex, toIndex, sequence.getTokensArray());
 	}
 
 	/**

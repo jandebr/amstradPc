@@ -7,8 +7,6 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
-import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
@@ -37,35 +35,25 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	private void invokeBinarySave(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
-		int lnGoto = macro.getLineNumberFrom();
-		int addrResume = macro.getResumeMemoryAddress();
 		int addrTrap = session.reserveMemory(1);
 		BinarySaveRuntimeListener listener = new BinarySaveRuntimeListener(sourceCode, session, addrTrap);
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken SAVE = createKeywordToken(language, "SAVE");
-		BasicSourceToken SEP = new InstructionSeparatorToken();
-		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		BasicSourceToken SEP = createInstructionSeparatorToken(language);
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(SAVE);
 				while (i >= 0) {
-					// SAVE => binaryio macro
+					// SAVE => waitresume macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					BinarySaveCommand command = BinarySaveCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
 						int ref = listener.registerCommand(command).getReferenceNumber();
-						sequence.replaceRange(i, j, stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
-								stf.createPositiveInteger16BitHexadecimal(addrResume), stf.createLiteral(","),
-								stf.createPositiveIntegerSingleDigitDecimal(0), SEP, stf.createBasicKeyword("POKE"),
-								stf.createLiteral(" "), stf.createPositiveInteger16BitHexadecimal(addrTrap),
-								stf.createLiteral(","), stf.createPositiveInteger8BitDecimal(ref), SEP,
-								stf.createBasicKeyword("GOSUB"), stf.createLiteral(" "),
-								stf.createLineNumberReference(lnGoto));
+						sequence.replaceRange(i, j, createWaitResumeMacroInvocationSequence(session, addrTrap, ref));
 					}
 					i = sequence.getNextIndexOf(SAVE, i + 1);
 				}
@@ -89,7 +77,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 						command.getMemoryLength());
 				delay(DELAYMILLIS_BINARY_SAVE);
 				resumeRun(macro, session);
-				System.out.println("BinarySave completed successfully");
+				System.out.println("Completed " + command);
 			} catch (Exception e) {
 				endWithError(ERR_BINARY_SAVE_FAILURE, sourceCode, macro, session);
 			}

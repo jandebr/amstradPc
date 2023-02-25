@@ -1,6 +1,7 @@
 package org.maia.amstrad.basic;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.maia.amstrad.AmstradFactory;
@@ -9,7 +10,8 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
 import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.token.TypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
@@ -46,7 +48,7 @@ public class BasicVariablesTest {
 		variableSpace.setValue(new FloatingPointTypedVariableToken("fp!"), -0.86);
 		variableSpace.setCharAt(new StringTypedVariableToken("text$"), 1, 'o');
 		System.out.println(variableSpace);
-		Set<TypedVariableToken> vars = variableSpace.getAllVariables();
+		Set<VariableToken> vars = new HashSet<VariableToken>(variableSpace.getAllVariables());
 		for (int i = 0; i < 10; i++) {
 			IntegerTypedVariableToken newVar = LocomotiveBasicVariableSpace.generateNewIntegerVariable(vars);
 			System.out.println(newVar);
@@ -54,6 +56,17 @@ public class BasicVariablesTest {
 		}
 		for (int i = 0; i < 10; i++) {
 			StringTypedVariableToken newVar = LocomotiveBasicVariableSpace.generateNewStringVariable(vars);
+			System.out.println(newVar);
+			vars.add(newVar);
+		}
+		for (int i = 0; i < 10; i++) {
+			FloatingPointTypedVariableToken newVar = LocomotiveBasicVariableSpace
+					.generateNewFloatingPointVariable(vars);
+			System.out.println(newVar);
+			vars.add(newVar);
+		}
+		for (int i = 0; i < 20; i++) {
+			UntypedVariableToken newVar = LocomotiveBasicVariableSpace.generateNewUntypedVariable(vars);
 			System.out.println(newVar);
 			vars.add(newVar);
 		}

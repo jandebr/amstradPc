@@ -11,8 +11,6 @@ import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
-import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
@@ -44,35 +42,25 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 
 	private void invokeBinaryLoad(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
-		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
-		int lnGoto = macro.getLineNumberFrom();
-		int addrResume = macro.getResumeMemoryAddress();
 		int addrTrap = session.reserveMemory(1);
 		BinaryLoadRuntimeListener listener = new BinaryLoadRuntimeListener(sourceCode, session, addrTrap);
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken LOAD = createKeywordToken(language, "LOAD");
-		BasicSourceToken SEP = new InstructionSeparatorToken();
-		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		BasicSourceToken SEP = createInstructionSeparatorToken(language);
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(LOAD);
 				while (i >= 0) {
-					// LOAD => binaryio macro
+					// LOAD => waitresume macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					BinaryLoadCommand command = BinaryLoadCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
 						int ref = listener.registerCommand(command).getReferenceNumber();
-						sequence.replaceRange(i, j, stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
-								stf.createPositiveInteger16BitHexadecimal(addrResume), stf.createLiteral(","),
-								stf.createPositiveIntegerSingleDigitDecimal(0), SEP, stf.createBasicKeyword("POKE"),
-								stf.createLiteral(" "), stf.createPositiveInteger16BitHexadecimal(addrTrap),
-								stf.createLiteral(","), stf.createPositiveInteger8BitDecimal(ref), SEP,
-								stf.createBasicKeyword("GOSUB"), stf.createLiteral(" "),
-								stf.createLineNumberReference(lnGoto));
+						sequence.replaceRange(i, j, createWaitResumeMacroInvocationSequence(session, addrTrap, ref));
 					}
 					i = sequence.getNextIndexOf(LOAD, i + 1);
 				}
@@ -101,7 +89,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 					session.getBasicRuntime().loadBinaryFile(fileReference.getTargetFile(), command.getMemoryOffset());
 				}
 				resumeRun(macro, session);
-				System.out.println("BinaryLoad completed successfully");
+				System.out.println("Completed " + command);
 			} catch (Exception e) {
 				endWithError(ERR_BINARY_LOAD_FAILURE, sourceCode, macro, session);
 			}
