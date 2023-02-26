@@ -35,7 +35,8 @@ public class WaitResumeBasicPreprocessor extends StagedBasicPreprocessor {
 		int ln1 = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln1, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln1
 				+ (session.produceRemarks() ? ":REM @waitresume" : ""));
-		addCodeLine(sourceCode, ln2, "RETURN" + (session.produceRemarks() ? ":REM @waitresume" : ""));
+		addCodeLine(sourceCode, ln2, "POKE &" + Integer.toHexString(addrResume) + ",0:RETURN"
+				+ (session.produceRemarks() ? ":REM @waitresume" : ""));
 		session.addMacro(new WaitResumeMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 

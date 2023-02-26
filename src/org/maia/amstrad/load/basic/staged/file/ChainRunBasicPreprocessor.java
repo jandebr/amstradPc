@@ -51,7 +51,8 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		int ln1 = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln1, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln1
 				+ (session.produceRemarks() ? ":REM @chainrun" : ""));
-		addCodeLine(sourceCode, ln2, "RUN 0" + (session.produceRemarks() ? ":REM @chainrun" : ""));
+		addCodeLine(sourceCode, ln2, "POKE &" + Integer.toHexString(addrResume) + ",0:RUN 0"
+				+ (session.produceRemarks() ? ":REM @chainrun" : ""));
 		session.addMacro(new ChainRunMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 
@@ -68,7 +69,6 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private void invokeChainRunMacroOnInstruction(BasicSourceCode sourceCode, BasicSourceToken instruction,
 			ChainRunRuntimeListener listener, StagedBasicProgramLoaderSession session) throws BasicException {
 		ChainRunMacro macro = session.getMacroAdded(ChainRunMacro.class);
-		int lnGoto = macro.getLineNumberFrom();
 		int addrTrap = listener.getMemoryTrapAddress();
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken SEP = createInstructionSeparatorToken(language);
@@ -86,10 +86,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 					ChainRunCommand command = ChainRunCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
 						int ref = listener.registerCommand(command).getReferenceNumber();
-						sequence.replaceRange(i, j,
-								createMacroInvocationSequence(macro, addrTrap, ref).append(SEP,
-										stf.createBasicKeyword("GOTO"), stf.createLiteral(" "),
-										stf.createLineNumberReference(lnGoto)));
+						sequence.replaceRange(i, j, createGotoMacroInvocationSequence(macro, addrTrap, ref));
 					}
 					i = sequence.getNextIndexOf(instruction, i + 1);
 				}

@@ -18,24 +18,33 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 	}
 
 	protected BasicSourceTokenSequence createWaitResumeMacroInvocationSequence(StagedBasicProgramLoaderSession session,
-			int memoryTrapAddress, int memoryTrapValue) throws BasicSyntaxException {
-		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
-		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
-		int lnGoto = macro.getLineNumberFrom();
-		return createMacroInvocationSequence(macro, memoryTrapAddress, memoryTrapValue).append(
-				stf.createInstructionSeparator(), stf.createBasicKeyword("GOSUB"), stf.createLiteral(" "),
-				stf.createLineNumberReference(lnGoto));
+			int macroHandlerMemoryAddress, int macroHandlerMemoryValue) throws BasicSyntaxException {
+		return createGosubMacroInvocationSequence(session.getMacroAdded(WaitResumeMacro.class),
+				macroHandlerMemoryAddress, macroHandlerMemoryValue);
 	}
 
-	protected BasicSourceTokenSequence createMacroInvocationSequence(FileCommandMacro macro, int memoryTrapAddress,
-			int memoryTrapValue) throws BasicSyntaxException {
+	protected BasicSourceTokenSequence createGosubMacroInvocationSequence(FileCommandMacro macro,
+			int macroHandlerMemoryAddress, int macroHandlerMemoryValue) throws BasicSyntaxException {
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		return createMacroHandlerInvocationSequence(macroHandlerMemoryAddress, macroHandlerMemoryValue).append(
+				stf.createInstructionSeparator(), stf.createBasicKeyword("GOSUB"), stf.createLiteral(" "),
+				stf.createLineNumberReference(macro.getLineNumberFrom()));
+	}
+
+	protected BasicSourceTokenSequence createGotoMacroInvocationSequence(FileCommandMacro macro,
+			int macroHandlerMemoryAddress, int macroHandlerMemoryValue) throws BasicSyntaxException {
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		return createMacroHandlerInvocationSequence(macroHandlerMemoryAddress, macroHandlerMemoryValue).append(
+				stf.createInstructionSeparator(), stf.createBasicKeyword("GOTO"), stf.createLiteral(" "),
+				stf.createLineNumberReference(macro.getLineNumberFrom()));
+	}
+
+	private BasicSourceTokenSequence createMacroHandlerInvocationSequence(int macroHandlerMemoryAddress,
+			int macroHandlerMemoryValue) throws BasicSyntaxException {
 		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
 		return new BasicSourceTokenSequence().append(stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
-				stf.createPositiveInteger16BitHexadecimal(macro.getResumeMemoryAddress()), stf.createLiteral(","),
-				stf.createPositiveIntegerSingleDigitDecimal(0), stf.createInstructionSeparator(),
-				stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
-				stf.createPositiveInteger16BitHexadecimal(memoryTrapAddress), stf.createLiteral(","),
-				stf.createPositiveInteger8BitDecimal(memoryTrapValue));
+				stf.createPositiveInteger16BitHexadecimal(macroHandlerMemoryAddress), stf.createLiteral(","),
+				stf.createPositiveInteger8BitDecimal(macroHandlerMemoryValue));
 	}
 
 	protected void delay(long delayMillis) {

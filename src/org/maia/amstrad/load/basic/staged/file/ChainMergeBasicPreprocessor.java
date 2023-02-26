@@ -60,14 +60,14 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		int ln1 = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln1, "IF PEEK(&" + Integer.toHexString(addrResume) + ")=0 GOTO " + ln1
 				+ (session.produceRemarks() ? ":REM @chainmerge" : ""));
-		addCodeLine(sourceCode, ln2, "RESTORE:GOTO 0" + (session.produceRemarks() ? ":REM @chainmerge" : ""));
+		addCodeLine(sourceCode, ln2, "POKE &" + Integer.toHexString(addrResume) + ",0:RESTORE:GOTO 0"
+				+ (session.produceRemarks() ? ":REM @chainmerge" : ""));
 		session.addMacro(new ChainMergeMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 
 	private void invokeChainMergeMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		ChainMergeMacro macro = session.getMacroAdded(ChainMergeMacro.class);
-		int lnGoto = macro.getLineNumberFrom();
 		int addrTrap = session.reserveMemory(1);
 		ChainMergeRuntimeListener listener = new ChainMergeRuntimeListener(sourceCode, session, addrTrap);
 		BasicLanguage language = sourceCode.getLanguage();
@@ -91,10 +91,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 							ChainMergeCommand command = ChainMergeCommand.parseFrom(sequence.subSequence(i, j));
 							if (command != null) {
 								int ref = listener.registerCommand(command).getReferenceNumber();
-								sequence.replaceRange(i, j,
-										createMacroInvocationSequence(macro, addrTrap, ref).append(SEP,
-												stf.createBasicKeyword("GOTO"), stf.createLiteral(" "),
-												stf.createLineNumberReference(lnGoto)));
+								sequence.replaceRange(i, j, createGotoMacroInvocationSequence(macro, addrTrap, ref));
 							}
 						}
 					}

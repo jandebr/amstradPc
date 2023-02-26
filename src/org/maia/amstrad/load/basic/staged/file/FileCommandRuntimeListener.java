@@ -31,7 +31,7 @@ public abstract class FileCommandRuntimeListener extends StagedBasicProgramRunti
 			return reference;
 		} else {
 			throw new BasicException(
-					"Reached the maximum file command reference number (" + MAX_REFERENCE_NUMBER + ")");
+					"Reached the maximum file command references (" + MAX_REFERENCE_NUMBER + ")");
 		}
 	}
 
