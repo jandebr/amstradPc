@@ -2,7 +2,6 @@ package org.maia.amstrad.load.basic.staged;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,6 +20,7 @@ import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.EndingBasicPreprocessor.EndingMacro;
 import org.maia.amstrad.load.basic.staged.ErrorOutBasicPreprocessor.ErrorOutMacro;
 import org.maia.amstrad.load.basic.staged.PreambleBasicPreprocessor.PreambleLineMacro;
+import org.maia.amstrad.load.basic.staged.file.TextFileWriter;
 import org.maia.amstrad.program.AmstradProgram;
 
 public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession implements LocomotiveBasicMemoryMap {
@@ -39,7 +39,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private List<AmstradProgram> chainedPrograms;
 
-	private PrintWriter textWriter;
+	private TextFileWriter textFileWriter;
 
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
@@ -60,16 +60,16 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		return session;
 	}
 
-	public synchronized void openTextWriter(File fileOut) throws IOException {
-		closeTextWriter();
-		setTextWriter(new PrintWriter(fileOut));
+	public synchronized TextFileWriter openTextFileWriter(File fileOut) throws IOException {
+		closeTextFileWriter();
+		setTextFileWriter(new TextFileWriter(fileOut));
+		return getTextFileWriter();
 	}
 
-	public synchronized void closeTextWriter() {
-		if (getTextWriter() != null) {
-			getTextWriter().flush();
-			getTextWriter().close();
-			setTextWriter(null);
+	public synchronized void closeTextFileWriter() {
+		if (getTextFileWriter() != null) {
+			getTextFileWriter().close();
+			setTextFileWriter(null);
 		}
 	}
 
@@ -262,12 +262,12 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		this.originalToStagedLineNumberMapping = mapping;
 	}
 
-	public PrintWriter getTextWriter() {
-		return textWriter;
+	public TextFileWriter getTextFileWriter() {
+		return textFileWriter;
 	}
 
-	private void setTextWriter(PrintWriter textWriter) {
-		this.textWriter = textWriter;
+	private void setTextFileWriter(TextFileWriter textFileWriter) {
+		this.textFileWriter = textFileWriter;
 	}
 
 	private static class MacrosSnapshotScope extends BasicLineNumberScope {

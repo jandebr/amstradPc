@@ -139,7 +139,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		System.out.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
-			session.openTextWriter(fileReference.getTargetFile());
+			session.openTextFileWriter(fileReference.getTargetFile());
 			delay(DELAYMILLIS_OPENOUT);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
@@ -154,7 +154,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			String value = command.getValueToPrint(session);
-			session.getTextWriter().println(value);
+			session.getTextFileWriter().writeLine(value);
 			delay(DELAYMILLIS_PRINTSTREAM);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
@@ -168,7 +168,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		System.out.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
-			session.closeTextWriter();
+			session.closeTextFileWriter();
 			delay(DELAYMILLIS_CLOSEOUT);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
@@ -193,7 +193,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		@Override
 		public void amstradProgramIsDisposed(AmstradProgramRuntime programRuntime, boolean programRemainsLoaded) {
 			super.amstradProgramIsDisposed(programRuntime, programRemainsLoaded);
-			getSession().closeTextWriter();
+			getSession().closeTextFileWriter();
 		}
 
 	}
