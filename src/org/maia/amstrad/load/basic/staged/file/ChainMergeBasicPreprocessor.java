@@ -123,6 +123,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 			} catch (BasicMemoryFullException e) {
 				endWithError(ERR_MEMORY_FULL, sourceCodeBeforeMerge, macro, session);
 			} catch (Exception e) {
+				System.err.println(e);
 				endWithError(ERR_CHAIN_MERGE_FAILURE, sourceCodeBeforeMerge, macro, session);
 			}
 		}

@@ -91,6 +91,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 				resumeRun(macro, session);
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
+				System.err.println(e);
 				endWithError(ERR_BINARY_LOAD_FAILURE, sourceCode, macro, session);
 			}
 		}

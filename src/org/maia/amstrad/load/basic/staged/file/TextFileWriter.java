@@ -12,12 +12,12 @@ public class TextFileWriter {
 		this.delegate = new PrintWriter(file);
 	}
 
-	public void writeLine(String line) {
+	public void writeLine(String line) throws IOException {
 		getDelegate().println(line);
 		getDelegate().flush();
 	}
 
-	public void close() {
+	public void close() throws IOException {
 		getDelegate().flush();
 		getDelegate().close();
 	}

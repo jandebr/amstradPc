@@ -20,6 +20,7 @@ import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.EndingBasicPreprocessor.EndingMacro;
 import org.maia.amstrad.load.basic.staged.ErrorOutBasicPreprocessor.ErrorOutMacro;
 import org.maia.amstrad.load.basic.staged.PreambleBasicPreprocessor.PreambleLineMacro;
+import org.maia.amstrad.load.basic.staged.file.TextFileReader;
 import org.maia.amstrad.load.basic.staged.file.TextFileWriter;
 import org.maia.amstrad.program.AmstradProgram;
 
@@ -40,6 +41,8 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	private List<AmstradProgram> chainedPrograms;
 
 	private TextFileWriter textFileWriter;
+
+	private TextFileReader textFileReader;
 
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
@@ -68,8 +71,31 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public synchronized void closeTextFileWriter() {
 		if (getTextFileWriter() != null) {
-			getTextFileWriter().close();
-			setTextFileWriter(null);
+			try {
+				getTextFileWriter().close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				setTextFileWriter(null);
+			}
+		}
+	}
+
+	public synchronized TextFileReader openTextFileReader(File fileIn) throws IOException {
+		closeTextFileReader();
+		setTextFileReader(new TextFileReader(fileIn));
+		return getTextFileReader();
+	}
+
+	public synchronized void closeTextFileReader() {
+		if (getTextFileReader() != null) {
+			try {
+				getTextFileReader().close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				setTextFileReader(null);
+			}
 		}
 	}
 
@@ -268,6 +294,14 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private void setTextFileWriter(TextFileWriter textFileWriter) {
 		this.textFileWriter = textFileWriter;
+	}
+
+	public TextFileReader getTextFileReader() {
+		return textFileReader;
+	}
+
+	private void setTextFileReader(TextFileReader textFileReader) {
+		this.textFileReader = textFileReader;
 	}
 
 	private static class MacrosSnapshotScope extends BasicLineNumberScope {

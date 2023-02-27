@@ -58,13 +58,19 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 		return getTokens().lastIndexOf(token);
 	}
 
-	public int getNextIndexOf(BasicSourceToken token, int fromIndex) {
-		if (fromIndex >= size())
+	public int getNextIndexOf(BasicSourceToken token, int startIndex) {
+		if (startIndex < 0 || startIndex >= size())
 			return -1;
-		int index = subSequence(fromIndex, size()).getFirstIndexOf(token);
+		int index = subSequence(startIndex, size()).getFirstIndexOf(token);
 		if (index >= 0)
-			index += fromIndex;
+			index += startIndex;
 		return index;
+	}
+
+	public int getPreviousIndexOf(BasicSourceToken token, int startIndex) {
+		if (startIndex < 0 || startIndex >= size())
+			return -1;
+		return subSequence(0, startIndex + 1).getLastIndexOf(token);
 	}
 
 	public int getFirstIndexOf(Class<? extends BasicSourceToken> tokenType) {
@@ -83,17 +89,23 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 		return -1;
 	}
 
-	public int getNextIndexOf(Class<? extends BasicSourceToken> tokenType, int fromIndex) {
-		if (fromIndex >= size())
+	public int getNextIndexOf(Class<? extends BasicSourceToken> tokenType, int startIndex) {
+		if (startIndex < 0 || startIndex >= size())
 			return -1;
-		int index = subSequence(fromIndex, size()).getFirstIndexOf(tokenType);
+		int index = subSequence(startIndex, size()).getFirstIndexOf(tokenType);
 		if (index >= 0)
-			index += fromIndex;
+			index += startIndex;
 		return index;
 	}
 
-	public int getIndexFollowing(BasicSourceToken token, int fromIndex) {
-		int i = fromIndex;
+	public int getPreviousIndexOf(Class<? extends BasicSourceToken> tokenType, int startIndex) {
+		if (startIndex < 0 || startIndex >= size())
+			return -1;
+		return subSequence(0, startIndex + 1).getLastIndexOf(tokenType);
+	}
+
+	public int getIndexFollowing(BasicSourceToken token, int startIndex) {
+		int i = startIndex;
 		while (i < size() && get(i).equals(token))
 			i++;
 		if (i < size())
@@ -102,8 +114,8 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 			return -1;
 	}
 
-	public int getIndexFollowing(Class<? extends BasicSourceToken> tokenType, int fromIndex) {
-		int i = fromIndex;
+	public int getIndexFollowing(Class<? extends BasicSourceToken> tokenType, int startIndex) {
+		int i = startIndex;
 		while (i < size() && tokenType.isAssignableFrom(get(i).getClass()))
 			i++;
 		if (i < size())
@@ -112,14 +124,35 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 			return -1;
 	}
 
-	public int getIndexFollowingWhitespace(int fromIndex) {
-		int i = fromIndex;
+	public int getIndexFollowingWhitespace(int startIndex) {
+		int i = startIndex;
 		while (i < size() && get(i).isBlank())
 			i++;
 		if (i < size())
 			return i;
 		else
 			return -1;
+	}
+
+	public int getIndexPreceding(BasicSourceToken token, int startIndex) {
+		int i = startIndex;
+		while (i >= 0 && get(i).equals(token))
+			i--;
+		return i;
+	}
+
+	public int getIndexPreceding(Class<? extends BasicSourceToken> tokenType, int startIndex) {
+		int i = startIndex;
+		while (i >= 0 && tokenType.isAssignableFrom(get(i).getClass()))
+			i--;
+		return i;
+	}
+
+	public int getIndexPrecedingWhitespace(int startIndex) {
+		int i = startIndex;
+		while (i >= 0 && get(i).isBlank())
+			i--;
+		return i;
 	}
 
 	public boolean startsWith(BasicSourceToken token) {
@@ -204,8 +237,16 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 		return this;
 	}
 
-	public BasicSourceTokenSequence removeNext(BasicSourceToken token, int fromIndex) {
-		int index = getNextIndexOf(token, fromIndex);
+	public BasicSourceTokenSequence removeNext(BasicSourceToken token, int startIndex) {
+		int index = getNextIndexOf(token, startIndex);
+		if (index >= 0) {
+			remove(index);
+		}
+		return this;
+	}
+
+	public BasicSourceTokenSequence removePrevious(BasicSourceToken token, int startIndex) {
+		int index = getPreviousIndexOf(token, startIndex);
 		if (index >= 0) {
 			remove(index);
 		}
@@ -237,8 +278,16 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 		return this;
 	}
 
-	public BasicSourceTokenSequence removeNext(Class<? extends BasicSourceToken> tokenType, int fromIndex) {
-		int index = getNextIndexOf(tokenType, fromIndex);
+	public BasicSourceTokenSequence removeNext(Class<? extends BasicSourceToken> tokenType, int startIndex) {
+		int index = getNextIndexOf(tokenType, startIndex);
+		if (index >= 0) {
+			remove(index);
+		}
+		return this;
+	}
+
+	public BasicSourceTokenSequence removePrevious(Class<? extends BasicSourceToken> tokenType, int startIndex) {
+		int index = getPreviousIndexOf(tokenType, startIndex);
 		if (index >= 0) {
 			remove(index);
 		}
@@ -268,6 +317,32 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 
 	public BasicSourceTokenSequence replaceFirst(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken) {
 		int index = getFirstIndexOf(tokenToReplace);
+		if (index >= 0) {
+			replace(index, replacementToken);
+		}
+		return this;
+	}
+
+	public BasicSourceTokenSequence replaceLast(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken) {
+		int index = getLastIndexOf(tokenToReplace);
+		if (index >= 0) {
+			replace(index, replacementToken);
+		}
+		return this;
+	}
+
+	public BasicSourceTokenSequence replaceNext(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken,
+			int startIndex) {
+		int index = getNextIndexOf(tokenToReplace, startIndex);
+		if (index >= 0) {
+			replace(index, replacementToken);
+		}
+		return this;
+	}
+
+	public BasicSourceTokenSequence replacePrevious(BasicSourceToken tokenToReplace, BasicSourceToken replacementToken,
+			int startIndex) {
+		int index = getPreviousIndexOf(tokenToReplace, startIndex);
 		if (index >= 0) {
 			replace(index, replacementToken);
 		}

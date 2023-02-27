@@ -78,8 +78,8 @@ public class LocomotiveBasicSourceTokenFactory {
 		return new LiteralToken(sourceFragment);
 	}
 
-	public LiteralQuotedToken createLiteralQuoted(String sourceFragment) {
-		return new LiteralQuotedToken(sourceFragment);
+	public LiteralQuotedToken createLiteralQuoted(String literalBetweenQuotes) {
+		return new LiteralQuotedToken(LiteralQuotedToken.QUOTE + literalBetweenQuotes + LiteralQuotedToken.QUOTE);
 	}
 
 	public LiteralRemarkToken createLiteralRemark(String sourceFragment) {

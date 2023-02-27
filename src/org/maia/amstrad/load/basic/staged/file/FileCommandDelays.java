@@ -20,4 +20,10 @@ public interface FileCommandDelays {
 
 	long DELAYMILLIS_CLOSEOUT = 0L;
 
+	long DELAYMILLIS_OPENIN = 2000L;
+
+	long DELAYMILLIS_INPUTSTREAM = 0L;
+
+	long DELAYMILLIS_CLOSEIN = 0L;
+
 }

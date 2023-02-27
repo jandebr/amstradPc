@@ -109,6 +109,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 				performChainRun(command, chainedProgram, session.getLoader());
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
+				System.err.println(e);
 				endWithError(ERR_CHAIN_RUN_FAILURE, sourceCode, macro, session);
 			}
 		}

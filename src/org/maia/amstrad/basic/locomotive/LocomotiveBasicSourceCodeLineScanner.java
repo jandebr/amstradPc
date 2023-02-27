@@ -188,13 +188,14 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 	}
 
 	private LiteralQuotedToken scanLiteralQuotedToken() throws BasicSyntaxException {
-		int p0 = getPosition();
 		advancePosition();
+		int p0 = getPosition();
 		while (!atEndOfText() && getCurrentChar() != LiteralQuotedToken.QUOTE)
 			advancePosition();
+		int p1 = getPosition();
 		if (!atEndOfText())
 			advancePosition();
-		return getSourceTokenFactory().createLiteralQuoted(subText(p0, getPosition()));
+		return getSourceTokenFactory().createLiteralQuoted(subText(p0, p1));
 	}
 
 	private String scanSymbol() throws BasicSyntaxException {

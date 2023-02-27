@@ -79,6 +79,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 				resumeRun(macro, session);
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
+				System.err.println(e);
 				endWithError(ERR_BINARY_SAVE_FAILURE, sourceCode, macro, session);
 			}
 		}

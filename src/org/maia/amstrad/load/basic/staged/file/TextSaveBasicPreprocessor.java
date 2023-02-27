@@ -107,6 +107,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private void invokeOnCloseout(BasicSourceCode sourceCode, TextSaveRuntimeListener listener,
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		int addrTrap = listener.getMemoryTrapAddress();
+		int commandRef = listener.registerCommand(new CloseoutCommand()).getReferenceNumber();
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken CLOSEOUT = createKeywordToken(language, "CLOSEOUT");
 		BasicSourceToken SEP = createInstructionSeparatorToken(language);
@@ -120,11 +121,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
-					CloseoutCommand command = CloseoutCommand.parseFrom(sequence.subSequence(i, j));
-					if (command != null) {
-						int ref = listener.registerCommand(command).getReferenceNumber();
-						sequence.replaceRange(i, j, createWaitResumeMacroInvocationSequence(session, addrTrap, ref));
-					}
+					sequence.replaceRange(i, j, createWaitResumeMacroInvocationSequence(session, addrTrap, commandRef));
 					i = sequence.getNextIndexOf(CLOSEOUT, i + 1);
 				}
 				if (sequence.isModified()) {
@@ -138,13 +135,18 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			StagedBasicProgramLoaderSession session) {
 		System.out.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
-		try {
-			session.openTextFileWriter(fileReference.getTargetFile());
-			delay(DELAYMILLIS_OPENOUT);
-			resumeRun(macro, session);
-			System.out.println("Completed " + command);
-		} catch (Exception e) {
-			endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
+		if (fileReference == null) {
+			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
+		} else {
+			try {
+				session.openTextFileWriter(fileReference.getTargetFile());
+				delay(DELAYMILLIS_OPENOUT);
+				resumeRun(macro, session);
+				System.out.println("Completed " + command);
+			} catch (Exception e) {
+				System.err.println(e);
+				endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
+			}
 		}
 	}
 
@@ -159,6 +161,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
 		} catch (Exception e) {
+			System.err.println(e);
 			endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
 		}
 	}
@@ -173,6 +176,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
 		} catch (Exception e) {
+			System.err.println(e);
 			endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
 		}
 	}

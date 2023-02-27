@@ -36,7 +36,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 	}
 
 	protected void setupPreprocessors() {
-		// The order is crucial
+		// The order is crucial for a correct functioning
 		PreambleBasicPreprocessor preamble = new PreambleBasicPreprocessor();
 		addPreprocessor(new CompactBasicPreprocessor());
 		addPreprocessor(new ProgramBridgeBasicPreprocessor());
@@ -55,8 +55,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(new PreambleJumpingBasicPreprocessor());
 		addPreprocessor(new InterruptBasicPreprocessor());
 		addPreprocessor(new HimemBasicPreprocessor(16));
-		// Number of preamble lines needed
-		preamble.setPreambleLineCount(getDesiredPreambleLineCount());
+		preamble.setPreambleLineCount(getDesiredPreambleLineCount()); // Set number of preamble lines needed
 	}
 
 	protected int getDesiredPreambleLineCount() {

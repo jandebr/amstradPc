@@ -21,6 +21,8 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 
 	private AmstradMemory memory;
 
+	public static final int MAXIMUM_STRING_LENGTH = 0xff;
+
 	private static final byte PAYLOAD_TYPE_INTEGER = 0x1;
 
 	private static final byte PAYLOAD_TYPE_STRING = 0x2;
