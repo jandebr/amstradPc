@@ -1,7 +1,6 @@
 package org.maia.amstrad.basic;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.load.AmstradProgramLoader;
@@ -11,9 +10,7 @@ import org.maia.amstrad.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.load.basic.staged.EndingBasicCodeDisclosure;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
-import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
 
 public class BasicStagingTest {
@@ -29,14 +26,8 @@ public class BasicStagingTest {
 
 	private AmstradProgram getTestProgram() throws AmstradProgramException {
 		File dir = new File("resources/test/staging");
-		AmstradProgram program = new AmstradBasicProgramFile(new File(dir, "chainmerge-1.bas"));
-		AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(program);
-		try {
-			builder.loadAmstradMetaData(new File(dir, "chainmerge-1.amd"));
-		} catch (IOException e) {
-			throw new AmstradProgramException(program, e);
-		}
-		return builder.build();
+		return AmstradFactory.getInstance().createBasicDescribedProgram(new File(dir, "binaryload.bas"),
+				new File(dir, "binaryload.amd"));
 	}
 
 	public void run(AmstradProgram program) throws AmstradProgramException {

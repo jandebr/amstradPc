@@ -14,7 +14,7 @@ import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoader;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramRuntime;
-import org.maia.amstrad.program.AmstradBasicProgramFile;
+import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgramException;
 
@@ -97,8 +97,8 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 	}
 
-	protected void handleChainRun(ChainRunCommand command, AmstradBasicProgramFile chainedProgram,
-			BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) {
+	protected void handleChainRun(ChainRunCommand command, AmstradProgram chainedProgram, BasicSourceCode sourceCode,
+			StagedBasicProgramLoaderSession session) {
 		System.out.println("Handling " + command);
 		ChainRunMacro macro = session.getMacroAdded(ChainRunMacro.class);
 		if (chainedProgram == null) {
@@ -115,7 +115,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 	}
 
-	private void performChainRun(ChainRunCommand command, AmstradBasicProgramFile chainedProgram,
+	private void performChainRun(ChainRunCommand command, AmstradProgram chainedProgram,
 			StagedBasicProgramLoader loader) throws AmstradProgramException, BasicException {
 		AmstradProgramRuntime chainedRuntime = loader.load(chainedProgram); // disposes the current program runtime,
 																			// removes its associated memory traps (and
@@ -167,7 +167,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 		@Override
 		protected void execute(FileCommand command, FileReference fileReference) {
-			AmstradBasicProgramFile chainedProgram = getReferencedProgram(fileReference);
+			AmstradProgram chainedProgram = getReferencedProgram(fileReference);
 			handleChainRun((ChainRunCommand) command, chainedProgram, getSourceCode(), getSession());
 		}
 

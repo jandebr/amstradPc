@@ -14,7 +14,6 @@ import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
-import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 
@@ -31,8 +30,7 @@ public class BasicVariablesTest {
 
 	private AmstradProgram getTestProgram() {
 		File dir = new File("resources/test/variables");
-		AmstradProgram program = new AmstradBasicProgramFile(new File(dir, "test.bas"));
-		return program;
+		return AmstradFactory.getInstance().createBasicProgram(new File(dir, "test.bas"));
 	}
 
 	public void run(AmstradProgram program) throws AmstradProgramException, BasicException {

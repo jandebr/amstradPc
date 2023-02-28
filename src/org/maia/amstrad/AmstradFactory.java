@@ -2,6 +2,8 @@ package org.maia.amstrad;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -53,7 +55,11 @@ import org.maia.amstrad.pc.impl.jemu.JemuAmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.program.AmstradBasicProgramFile;
+import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramBuilder;
+import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetedAmstradProgramRepository;
@@ -227,6 +233,39 @@ public class AmstradFactory {
 
 	public ProgramBrowserDisplaySource createProgramInfo(AmstradPc amstradPc, AmstradProgram program) {
 		return ProgramBrowserDisplaySource.createProgramInfo(amstradPc, program);
+	}
+
+	public AmstradPcSnapshotFile createCpcSnapshotProgram(File snapshotFile) {
+		return createCpcSnapshotProgram(snapshotFile.getName(), snapshotFile);
+	}
+
+	public AmstradPcSnapshotFile createCpcSnapshotProgram(String programName, File snapshotFile) {
+		return new AmstradPcSnapshotFile(programName, snapshotFile);
+	}
+
+	public AmstradProgram createBasicProgram(File basicFile) {
+		return createBasicProgram(basicFile.getName(), basicFile);
+	}
+
+	public AmstradProgram createBasicProgram(String programName, File basicFile) {
+		return new AmstradBasicProgramFile(programName, basicFile);
+	}
+
+	public AmstradProgram createBasicDescribedProgram(File basicFile, File metadataFile)
+			throws AmstradProgramException {
+		return createBasicDescribedProgram(basicFile.getName(), basicFile, metadataFile);
+	}
+
+	public AmstradProgram createBasicDescribedProgram(String programName, File basicFile, File metadataFile)
+			throws AmstradProgramException {
+		AmstradProgram program = createBasicProgram(programName, basicFile);
+		AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(program);
+		try {
+			builder.loadAmstradMetaData(metadataFile);
+		} catch (IOException e) {
+			throw new AmstradProgramException(program, e);
+		}
+		return builder.build();
 	}
 
 	private ProgramBrowserAction getProgramBrowserAction(AmstradPc amstradPc) {

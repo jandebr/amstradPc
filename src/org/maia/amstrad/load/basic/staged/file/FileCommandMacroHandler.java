@@ -1,16 +1,15 @@
 package org.maia.amstrad.load.basic.staged.file;
 
 import java.io.File;
-import java.io.IOException;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.load.basic.staged.StagedBasicMacroHandler;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
-import org.maia.amstrad.program.AmstradProgramBuilder;
+import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
 public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
@@ -39,17 +38,15 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	protected abstract void execute(FileCommand command, FileReference fileReference);
 
-	protected AmstradBasicProgramFile getReferencedProgram(FileReference fileReference) {
-		AmstradBasicProgramFile refProgram = null;
+	protected AmstradProgram getReferencedProgram(FileReference fileReference) {
+		AmstradProgram refProgram = null;
 		if (fileReference != null && fileReference.getTargetFile().exists()) {
-			refProgram = new AmstradBasicProgramFile(fileReference.getTargetFile());
-			AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(refProgram);
 			try {
-				builder.loadAmstradMetaData(fileReference.getMetadataFile());
-			} catch (IOException e) {
-				System.err.println("Failed to load the metadata of the referenced program: " + fileReference);
+				refProgram = AmstradFactory.getInstance().createBasicDescribedProgram(fileReference.getTargetFile(),
+						fileReference.getMetadataFile());
+			} catch (AmstradProgramException e) {
+				System.err.println("Failed to instantiate the referenced program: " + fileReference);
 			}
-			refProgram = (AmstradBasicProgramFile) builder.build();
 		}
 		return refProgram;
 	}

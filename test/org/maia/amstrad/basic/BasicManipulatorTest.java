@@ -2,12 +2,13 @@ package org.maia.amstrad.basic;
 
 import java.io.File;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCodeLine;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
-import org.maia.amstrad.program.AmstradBasicProgramFile;
+import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 
 public class BasicManipulatorTest {
@@ -35,7 +36,8 @@ public class BasicManipulatorTest {
 	}
 
 	private static void manipulate() throws BasicException, AmstradProgramException {
-		AmstradBasicProgramFile program = new AmstradBasicProgramFile(new File("resources/test/manipulator/test.bas"));
+		AmstradProgram program = AmstradFactory.getInstance()
+				.createBasicProgram(new File("resources/test/manipulator/test.bas"));
 		CharSequence text = program.getPayload().asTextPayload().getText();
 		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(text);
 		manipulate(sourceCode);
@@ -66,8 +68,8 @@ public class BasicManipulatorTest {
 
 	private static void scanFile(File basicFile) throws BasicException, AmstradProgramException {
 		System.out.println("Scanning " + basicFile.getPath() + "...");
-		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(
-				new AmstradBasicProgramFile(basicFile).getPayload().asTextPayload().getText());
+		AmstradProgram program = AmstradFactory.getInstance().createBasicProgram(basicFile);
+		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(program.getPayload().asTextPayload().getText());
 		scanSourceCode(sourceCode);
 		System.out.println();
 	}

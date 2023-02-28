@@ -105,7 +105,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		listener.install();
 	}
 
-	protected void handleChainMerge(ChainMergeCommand command, AmstradBasicProgramFile chainedProgram,
+	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
 			BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) {
 		System.out.println("Handling " + command);
 		ChainMergeMacro macro = session.getMacroAdded(ChainMergeMacro.class);
@@ -129,9 +129,8 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 	}
 
-	private void performChainMerge(ChainMergeCommand command, AmstradBasicProgramFile chainedProgram,
-			BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException, AmstradProgramException {
+	private void performChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram, BasicSourceCode sourceCode,
+			StagedBasicProgramLoaderSession session) throws BasicException, AmstradProgramException {
 		int lnChainedOffset = getNextAvailableLineNumber(sourceCode);
 		StagedLineNumberMapping stagedMapping = session.getOriginalToStagedLineNumberMapping();
 		// Preprocess chained code
@@ -208,14 +207,15 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 	}
 
-	private boolean isProgramAlreadyChained(AmstradBasicProgramFile chainedProgram,
-			StagedBasicProgramLoaderSession session) {
-		File chainedFile = chainedProgram.getFile();
-		for (AmstradProgram program : session.getChainedPrograms()) {
-			if (program instanceof AmstradBasicProgramFile) {
-				File file = ((AmstradBasicProgramFile) program).getFile();
-				if (file.equals(chainedFile))
-					return true;
+	private boolean isProgramAlreadyChained(AmstradProgram chainedProgram, StagedBasicProgramLoaderSession session) {
+		if (chainedProgram instanceof AmstradBasicProgramFile) {
+			File chainedFile = ((AmstradBasicProgramFile) chainedProgram).getFile();
+			for (AmstradProgram program : session.getChainedPrograms()) {
+				if (program instanceof AmstradBasicProgramFile) {
+					File file = ((AmstradBasicProgramFile) program).getFile();
+					if (file.equals(chainedFile))
+						return true;
+				}
 			}
 		}
 		return false;
@@ -253,7 +253,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 		@Override
 		protected void execute(FileCommand command, FileReference fileReference) {
-			AmstradBasicProgramFile chainedProgram = getReferencedProgram(fileReference);
+			AmstradProgram chainedProgram = getReferencedProgram(fileReference);
 			handleChainMerge((ChainMergeCommand) command, chainedProgram, getSourceCode(), getSession());
 		}
 
