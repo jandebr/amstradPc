@@ -203,7 +203,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 			StagedBasicProgramLoaderSession session) {
 		System.out.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
-		if (fileReference == null) {
+		if (fileReference == null || !fileReference.getTargetFile().exists()) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {

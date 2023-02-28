@@ -1,5 +1,6 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.maia.amstrad.basic.BasicSourceCode;
@@ -10,6 +11,7 @@ import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgramBuilder;
+import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
 public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
@@ -39,7 +41,7 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	protected AmstradBasicProgramFile getReferencedProgram(FileReference fileReference) {
 		AmstradBasicProgramFile refProgram = null;
-		if (fileReference != null) {
+		if (fileReference != null && fileReference.getTargetFile().exists()) {
 			refProgram = new AmstradBasicProgramFile(fileReference.getTargetFile());
 			AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(refProgram);
 			try {
@@ -54,8 +56,14 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	private FileReference lookupFileReference(FileCommand command) {
 		FileReference reference = null;
-		if (command.getSourceFilenameWithoutFlags() != null) {
-			return getProgram().lookupFileReference(command.getSourceFilenameWithoutFlags());
+		String sourceFilename = command.getSourceFilenameWithoutFlags();
+		if (sourceFilename != null) {
+			reference = getProgram().lookupFileReference(sourceFilename);
+			if (reference == null && getProgram() instanceof AmstradProgramStoredInFile) {
+				// Fallback : resolve file against the directory of the program
+				File directory = ((AmstradProgramStoredInFile) getProgram()).getFile().getParentFile();
+				reference = new FallbackFileReference(sourceFilename, directory);
+			}
 		}
 		return reference;
 	}
@@ -70,6 +78,26 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	private AmstradProgram getProgram() {
 		return program;
+	}
+
+	private static class FallbackFileReference extends FileReference {
+
+		private File directory;
+
+		public FallbackFileReference(String filename, File directory) {
+			super(filename, filename);
+			this.directory = directory;
+		}
+
+		@Override
+		protected File getFile(String filename) {
+			return new File(getDirectory(), filename);
+		}
+
+		private File getDirectory() {
+			return directory;
+		}
+
 	}
 
 }
