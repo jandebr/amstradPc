@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
 public class AmstradMain {
 
@@ -14,7 +15,7 @@ public class AmstradMain {
 		if (args.length == 0) {
 			amstradPc.start();
 		} else if (args.length == 1) {
-			amstradPc.launch(new File(args[0]));
+			amstradPc.launch(new AmstradProgramStoredInFile(new File(args[0])));
 		} else {
 			System.err.println("Invalid startup arguments");
 		}

@@ -1,6 +1,5 @@
 package org.maia.amstrad.pc;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
@@ -15,7 +14,6 @@ import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.swing.dialog.ActionableDialog;
 
 public abstract class AmstradPc {
@@ -40,10 +38,6 @@ public abstract class AmstradPc {
 
 	public void showActionableDialog(ActionableDialog dialog) {
 		dialog.setVisible(true);
-	}
-
-	public void launch(File file) throws AmstradProgramException {
-		launch(new AmstradProgramStoredInFile(file));
 	}
 
 	public void launch(AmstradProgram program) throws AmstradProgramException {
