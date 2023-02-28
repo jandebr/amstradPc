@@ -1,5 +1,7 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
@@ -13,6 +15,8 @@ import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocessor
 		implements ErrorOutCodes, FileCommandDelays {
+
+	private static final String SETTING_DELAYS = "basic_staging.delayFileOperations";
 
 	protected FileCommandBasicPreprocessor() {
 	}
@@ -48,7 +52,10 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 	}
 
 	protected void delay(long delayMillis) {
-		AmstradUtils.sleep(delayMillis);
+		AmstradSettings settings = AmstradFactory.getInstance().getAmstradContext().getUserSettings();
+		if (settings.getBool(SETTING_DELAYS, true)) {
+			AmstradUtils.sleep(delayMillis);
+		}
 	}
 
 	protected void endWithError(int errorCode, BasicSourceCode sourceCode, FileCommandMacro macro,

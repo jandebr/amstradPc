@@ -25,9 +25,9 @@ public class BasicStagingTest {
 	}
 
 	private AmstradProgram getTestProgram() throws AmstradProgramException {
+		AmstradFactory fac = AmstradFactory.getInstance();
 		File dir = new File("resources/test/staging");
-		return AmstradFactory.getInstance().createBasicDescribedProgram(new File(dir, "binaryload.bas"),
-				new File(dir, "binaryload.amd"));
+		return fac.createBasicDescribedProgram(new File(dir, "chainmerge-1.bas"), new File(dir, "chainmerge-1.amd"));
 	}
 
 	public void run(AmstradProgram program) throws AmstradProgramException {
