@@ -47,7 +47,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		int ln = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln,
 				"POKE &" + Integer.toHexString(addrTrap) + ",1:END" + (session.produceRemarks() ? ":REM @end" : ""));
-		session.addMacro(new EndingMacro(new BasicLineNumberRange(ln)));
+		session.addMacro(new EndingMacro(new BasicLineNumberRange(ln), addrTrap));
 		// Install global macro handler via listener
 		EndingRuntimeListener listener = new EndingRuntimeListener(session, addrTrap);
 		listener.install();
@@ -186,8 +186,15 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static class EndingMacro extends StagedBasicMacro {
 
-		public EndingMacro(BasicLineNumberRange range) {
+		private int memoryTrapAddress;
+
+		public EndingMacro(BasicLineNumberRange range, int memoryTrapAddress) {
 			super(range);
+			this.memoryTrapAddress = memoryTrapAddress;
+		}
+
+		public int getMemoryTrapAddress() {
+			return memoryTrapAddress;
 		}
 
 	}

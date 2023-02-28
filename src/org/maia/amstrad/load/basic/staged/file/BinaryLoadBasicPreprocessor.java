@@ -108,10 +108,13 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 	private void loadInBytes(BinaryLoadCommand command, FileReference fileReference,
 			StagedBasicProgramLoaderSession session) throws IOException {
 		delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
+		int programEndedAddr = session.getEndingMacro().getMemoryTrapAddress();
 		BasicRuntime rt = session.getBasicRuntime();
 		int addr = command.getMemoryOffset();
 		byte[] data = AmstradIO.readBinaryFileContents(fileReference.getTargetFile());
 		for (int i = 0; i < data.length; i++) {
+			if (rt.peek(programEndedAddr) > 0)
+				break;
 			rt.poke(addr++, data[i]);
 			boolean newBlockAhead = addr % BLOCK_BYTESIZE == 0 && i < data.length - 1;
 			if (newBlockAhead) {
@@ -124,6 +127,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 
 	private void loadInBlocks(BinaryLoadCommand command, FileReference fileReference,
 			StagedBasicProgramLoaderSession session) throws IOException {
+		int programEndedAddr = session.getEndingMacro().getMemoryTrapAddress();
 		BasicRuntime rt = session.getBasicRuntime();
 		byte[] data = AmstradIO.readBinaryFileContents(fileReference.getTargetFile());
 		if (data.length > 0) {
@@ -132,6 +136,8 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 				int offset = bi * BLOCK_BYTESIZE;
 				int end = Math.min(offset + BLOCK_BYTESIZE, data.length);
 				delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
+				if (rt.peek(programEndedAddr) > 0)
+					break;
 				rt.loadBinaryData(data, offset, end - offset, command.getMemoryOffset() + offset);
 			}
 		}
