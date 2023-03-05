@@ -1,27 +1,20 @@
 package org.maia.amstrad.gui.browser.components;
 
 import java.util.List;
-import java.util.Vector;
 
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.util.StringUtils;
 
-public class ProgramInfoSheet extends ItemList {
-
-	private AmstradProgram program;
-
-	private List<ProgramInfoLine> lineItems;
+public class ProgramInfoSheet extends ProgramSheet {
 
 	public ProgramInfoSheet(AmstradProgram program, int maxItemsShowing, int maxWidth, int backgroundColorIndex) {
-		super(maxItemsShowing);
-		this.program = program;
-		this.lineItems = new Vector<ProgramInfoLine>();
-		populateSheet(maxWidth, backgroundColorIndex);
+		super(program, maxItemsShowing, maxWidth, backgroundColorIndex);
 	}
 
-	private void populateSheet(int maxWidth, int bg) {
+	@Override
+	protected void populateSheet(int maxWidth, int bg) {
 		AmstradProgram program = getProgram();
 		AmstradMonitorMode mode = program.getPreferredMonitorMode();
 		if (mode != null) {
@@ -111,27 +104,6 @@ public class ProgramInfoSheet extends ItemList {
 			}
 		}
 		add(new ProgramInfoLine());
-	}
-
-	private void add(ProgramInfoLine lineItem) {
-		getLineItems().add(lineItem);
-	}
-
-	@Override
-	public int size() {
-		return getLineItems().size();
-	}
-
-	public ProgramInfoLine getLineItem(int index) {
-		return getLineItems().get(index);
-	}
-
-	public AmstradProgram getProgram() {
-		return program;
-	}
-
-	public List<ProgramInfoLine> getLineItems() {
-		return lineItems;
 	}
 
 }

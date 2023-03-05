@@ -427,6 +427,14 @@ public class BasicSourceTokenSequence implements Cloneable, Iterable<BasicSource
 		return sb.toString();
 	}
 
+	public int getLineNumber() {
+		if (startsWithLineNumber()) {
+			return ((BasicLineNumberToken) getFirstToken()).getLineNumber();
+		} else {
+			return -1;
+		}
+	}
+
 	private BasicSourceToken[] getTokensArray() {
 		BasicSourceToken[] array = new BasicSourceToken[size()];
 		for (int i = 0; i < array.length; i++) {

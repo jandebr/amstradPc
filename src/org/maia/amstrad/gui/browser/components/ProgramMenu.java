@@ -29,6 +29,7 @@ public class ProgramMenu extends ItemList {
 		addMenuItem(new ProgramLoadMenuItem(browser, program));
 		addMenuItem(new ProgramInfoMenuItem(browser, program));
 		addMenuItem(new ProgramImagesMenuItem(browser, program));
+		addMenuItem(new ProgramFileReferencesMenuItem(browser, program));
 		addMenuItem(new ProgramCloseMenuItem(browser, program));
 	}
 

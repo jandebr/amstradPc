@@ -9,12 +9,14 @@ import java.util.Vector;
 
 import org.maia.amstrad.gui.browser.components.FolderItemList;
 import org.maia.amstrad.gui.browser.components.ItemList;
+import org.maia.amstrad.gui.browser.components.ProgramFileReferencesSheet;
 import org.maia.amstrad.gui.browser.components.ProgramImageGallery;
 import org.maia.amstrad.gui.browser.components.ProgramInfoLine;
 import org.maia.amstrad.gui.browser.components.ProgramInfoSheet;
 import org.maia.amstrad.gui.browser.components.ProgramInfoTextSpan;
 import org.maia.amstrad.gui.browser.components.ProgramMenu;
 import org.maia.amstrad.gui.browser.components.ProgramMenuItem;
+import org.maia.amstrad.gui.browser.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.components.StackedFolderItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
@@ -39,6 +41,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private ProgramInfoSheet programInfoSheet;
 
 	private ProgramImageGallery programImageGallery;
+
+	private ProgramFileReferencesSheet programFileReferencesSheet;
 
 	private List<ProgramBrowserListener> browserListeners;
 
@@ -118,15 +122,17 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	@Override
 	protected void renderWindowContent(AmstradDisplayCanvas canvas) {
 		if (isStandaloneInfo()) {
-			renderProgramInfoSheet(getProgramInfoSheet(), canvas);
+			renderProgramSheet(getProgramInfoSheet(), canvas);
 		} else {
 			renderStack(getStackedFolderItemList(), canvas);
 			if (Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
 				renderProgramMenu(getProgramMenu(), canvas);
 			} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())) {
-				renderProgramInfoSheet(getProgramInfoSheet(), canvas);
+				renderProgramSheet(getProgramInfoSheet(), canvas);
 			} else if (Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())) {
 				renderProgramImageGallery(getProgramImageGallery(), canvas);
+			} else if (Window.PROGRAM_FILE_REFERENCES_MODAL.equals(getCurrentWindow())) {
+				renderProgramSheet(getProgramFileReferencesSheet(), canvas);
 			}
 		}
 	}
@@ -249,8 +255,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private void renderProgramMenu(ProgramMenu menu, AmstradDisplayCanvas canvas) {
-		renderModalWindow(8, 8, 33, 19, menu.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
-		int tx0 = 10, ty0 = 12, ty = ty0;
+		renderModalWindow(8, 7, 33, 19, menu.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
+		int tx0 = 10, ty0 = 11, ty = ty0;
 		int i = menu.getIndexOfFirstItemShowing();
 		while (i < menu.size() && ty < ty0 + menu.getMaxItemsShowing()) {
 			ProgramMenuItem item = menu.getItem(i);
@@ -259,10 +265,10 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				if (isItemListCursorBlinkOn()) {
 					canvas.pen(item.isEnabled() ? 24 : 13).locate(tx0 - 1, ty).printChr(133);
 				}
-				canvas.paper(9);
+				canvas.paper(item.getFocusBackgroundColor());
 			}
 			if (item.isEnabled()) {
-				canvas.pen(22);
+				canvas.pen(item.getLabelColor());
 			} else {
 				canvas.pen(13).paper(COLOR_MODAL_BACKGROUND);
 			}
@@ -274,30 +280,30 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		canvas.paper(COLOR_PAPER);
 	}
 
-	private void renderProgramInfoSheet(ProgramInfoSheet infoSheet, AmstradDisplayCanvas canvas) {
-		renderModalWindow(4, 3, 37, 24, infoSheet.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
+	private void renderProgramSheet(ProgramSheet sheet, AmstradDisplayCanvas canvas) {
+		renderModalWindow(4, 3, 37, 24, sheet.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
 		int tx0 = 6, ty0 = 6, ty = ty0;
-		int i = infoSheet.getIndexOfFirstItemShowing();
-		while (i < infoSheet.size() && ty < ty0 + infoSheet.getMaxItemsShowing()) {
+		int i = sheet.getIndexOfFirstItemShowing();
+		while (i < sheet.size() && ty < ty0 + sheet.getMaxItemsShowing()) {
 			canvas.locate(tx0, ty);
-			ProgramInfoLine line = infoSheet.getLineItem(i);
+			ProgramInfoLine line = sheet.getLineItem(i);
 			for (ProgramInfoTextSpan span : line.getTextSpans()) {
 				canvas.paper(span.getPaperColorIndex()).pen(span.getPenColorIndex());
 				canvas.print(span.getText());
 			}
 			canvas.paper(COLOR_MODAL_BACKGROUND);
-			if (infoSheet.getIndexOfSelectedItem() == i) {
+			if (sheet.getIndexOfSelectedItem() == i) {
 				canvas.pen(13).locate(tx0 - 1, ty).printChr(133);
 			}
 			ty++;
 			i++;
 		}
 		// top extent hint
-		if (infoSheet.getIndexOfFirstItemShowing() > 0) {
+		if (sheet.getIndexOfFirstItemShowing() > 0) {
 			canvas.pen(13).move(560, 319).drawChrMonospaced(196);
 		}
 		// bottom extent hint
-		if (infoSheet.getIndexOfLastItemShowing() < infoSheet.size() - 1) {
+		if (sheet.getIndexOfLastItemShowing() < sheet.size() - 1) {
 			canvas.pen(13).move(560, 47).drawChrMonospaced(198);
 		}
 		canvas.paper(COLOR_PAPER);
@@ -385,6 +391,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			handleKeyboardKeyInProgramInfoSheet(e);
 		} else if (Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())) {
 			handleKeyboardKeyInProgramImageGallery(e);
+		} else if (Window.PROGRAM_FILE_REFERENCES_MODAL.equals(getCurrentWindow())) {
+			handleKeyboardKeyInProgramFileReferencesSheet(e);
 		}
 	}
 
@@ -451,6 +459,15 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
+	private void handleKeyboardKeyInProgramFileReferencesSheet(KeyEvent e) {
+		ProgramFileReferencesSheet sheet = getProgramFileReferencesSheet();
+		handleKeyboardKeyInItemList(e, sheet);
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_ESCAPE) {
+			closeModalWindow();
+		}
+	}
+
 	private void handleKeyboardKeyInItemList(KeyEvent e, ItemList itemList) {
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_DOWN) {
@@ -474,7 +491,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		if (isStandaloneInfo()) {
 			close();
 		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())
-				|| Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())) {
+				|| Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())
+				|| Window.PROGRAM_FILE_REFERENCES_MODAL.equals(getCurrentWindow())) {
 			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
 		} else {
 			setCurrentWindow(Window.MAIN);
@@ -493,6 +511,12 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	public void openProgramImageGalleryModalWindow(AmstradProgram program) {
 		setProgramImageGallery(new ProgramImageGallery(program));
 		setCurrentWindow(Window.PROGRAM_IMAGE_GALLERY_MODAL);
+	}
+
+	public void openProgramFileReferencesModalWindow(AmstradProgram program) {
+		setProgramFileReferencesSheet(
+				new ProgramFileReferencesSheet(program, getAmstradPc(), 18, 30, COLOR_MODAL_BACKGROUND));
+		setCurrentWindow(Window.PROGRAM_FILE_REFERENCES_MODAL);
 	}
 
 	public void addReturnToProgramMenu() {
@@ -593,6 +617,14 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		this.programImageGallery = programImageGallery;
 	}
 
+	private ProgramFileReferencesSheet getProgramFileReferencesSheet() {
+		return programFileReferencesSheet;
+	}
+
+	private void setProgramFileReferencesSheet(ProgramFileReferencesSheet programFileReferencesSheet) {
+		this.programFileReferencesSheet = programFileReferencesSheet;
+	}
+
 	public boolean isStandaloneInfo() {
 		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
 	}
@@ -620,7 +652,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 		PROGRAM_INFO_STANDALONE,
 
-		PROGRAM_IMAGE_GALLERY_MODAL;
+		PROGRAM_IMAGE_GALLERY_MODAL,
+
+		PROGRAM_FILE_REFERENCES_MODAL;
 
 	}
 

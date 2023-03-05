@@ -23,6 +23,14 @@ public abstract class ProgramMenuItem {
 	public boolean isEnabled() {
 		return true;
 	}
+	
+	public int getLabelColor() {
+		return 22;
+	}
+	
+	public int getFocusBackgroundColor() {
+		return 9;
+	}
 
 	protected ProgramBrowserDisplaySource getBrowser() {
 		return browser;

@@ -8,7 +8,7 @@ public abstract class FileCommand {
 
 	private boolean suppressMessages;
 
-	private static final String FILENAME_FLAG_SUPPRESS_MESSAGES = "!";
+	public static final String FILENAME_FLAG_SUPPRESS_MESSAGES = "!";
 
 	private static String parseFilenameFrom(LiteralQuotedToken token) {
 		String str = token.getSourceFragment();
