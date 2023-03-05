@@ -55,7 +55,7 @@ public abstract class PrintStreamCommand extends FileCommand {
 
 		@Override
 		public String toString() {
-			return super.toString() + " " + getVariable();
+			return super.toString() + " writing " + getVariable().getSourceFragment();
 		}
 
 		@Override
@@ -98,7 +98,7 @@ public abstract class PrintStreamCommand extends FileCommand {
 
 		@Override
 		public String toString() {
-			return super.toString() + " " + getLiteral();
+			return super.toString() + " writing " + getLiteral().getSourceFragment();
 		}
 
 		@Override

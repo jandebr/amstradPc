@@ -11,6 +11,7 @@ import org.maia.amstrad.load.basic.staged.file.ChainMergeBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.ChainRunBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.TextLoadBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.TextSaveBasicPreprocessor;
+import org.maia.amstrad.load.basic.staged.file.UnsupportedFileCommandPreprocessor;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
@@ -50,12 +51,13 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(new BinarySaveBasicPreprocessor());
 		addPreprocessor(new TextLoadBasicPreprocessor());
 		addPreprocessor(new TextSaveBasicPreprocessor());
+		addPreprocessor(new UnsupportedFileCommandPreprocessor()); // after all file preprocesors
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new ErrorOutBasicPreprocessor());
 		addPreprocessor(new PreambleJumpingBasicPreprocessor());
 		addPreprocessor(new InterruptBasicPreprocessor());
 		addPreprocessor(new HimemBasicPreprocessor(16));
-		preamble.setPreambleLineCount(getDesiredPreambleLineCount()); // Set number of preamble lines needed
+		preamble.setPreambleLineCount(getDesiredPreambleLineCount()); // set number of preamble lines needed
 	}
 
 	protected int getDesiredPreambleLineCount() {

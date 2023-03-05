@@ -56,7 +56,7 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 		String sourceFilename = command.getSourceFilenameWithoutFlags();
 		if (sourceFilename != null) {
 			reference = getProgram().lookupFileReference(sourceFilename);
-			if (reference == null && getProgram() instanceof AmstradProgramStoredInFile) {
+			if (reference == null && !sourceFilename.isEmpty() && getProgram() instanceof AmstradProgramStoredInFile) {
 				// Fallback : resolve file against the directory of the program
 				File directory = ((AmstradProgramStoredInFile) getProgram()).getFile().getParentFile();
 				reference = new FallbackFileReference(sourceFilename, directory);

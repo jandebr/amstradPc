@@ -9,6 +9,8 @@ public class InputStreamCommand extends FileCommand {
 
 	private StringTypedVariableToken variable;
 
+	private String variableArrayIndexString;
+
 	public InputStreamCommand() {
 		this(null);
 	}
@@ -27,6 +29,13 @@ public class InputStreamCommand extends FileCommand {
 				int j = sequence.getNextIndexOf(StringTypedVariableToken.class, i);
 				if (j >= 0) {
 					command = new InputStreamCommand((StringTypedVariableToken) sequence.get(j));
+					// array index?
+					if (j < sequence.size() - 1 && sequence.get(j + 1).equals(stf.createLiteral("("))) {
+						int k = sequence.getNextIndexOf(stf.createLiteral(")"), j + 2);
+						if (k >= 0) {
+							command.setVariableArrayIndexString(sequence.subSequence(j + 1, k + 1).getSourceCode());
+						}
+					}
 				}
 			}
 		}
@@ -39,7 +48,10 @@ public class InputStreamCommand extends FileCommand {
 		sb.append("InputStreamCommand");
 		if (hasVariable()) {
 			sb.append(" reading into ");
-			sb.append(getVariable());
+			sb.append(getVariable().getSourceFragment());
+			if (isVariableIndexed()) {
+				sb.append(getVariableArrayIndexString());
+			}
 		}
 		return sb.toString();
 	}
@@ -48,12 +60,24 @@ public class InputStreamCommand extends FileCommand {
 		return getVariable() != null;
 	}
 
+	public boolean isVariableIndexed() {
+		return getVariableArrayIndexString() != null;
+	}
+
 	public StringTypedVariableToken getVariable() {
 		return variable;
 	}
 
 	private void setVariable(StringTypedVariableToken variable) {
 		this.variable = variable;
+	}
+
+	public String getVariableArrayIndexString() {
+		return variableArrayIndexString;
+	}
+
+	private void setVariableArrayIndexString(String indexString) {
+		this.variableArrayIndexString = indexString;
 	}
 
 }

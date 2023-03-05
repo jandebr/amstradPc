@@ -71,7 +71,9 @@ public class DiscoveredFileReference {
 
 		CHAIN("CHAIN"),
 
-		CHAIN_MERGE("CHAIN MERGE");
+		CHAIN_MERGE("CHAIN MERGE"),
+
+		MERGE("MERGE");
 
 		private String sourceForm;
 

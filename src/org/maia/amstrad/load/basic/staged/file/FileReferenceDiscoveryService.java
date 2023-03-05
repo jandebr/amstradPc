@@ -46,7 +46,7 @@ public class FileReferenceDiscoveryService {
 		BasicSourceToken CHAIN = stf.createBasicKeyword("CHAIN");
 		BasicSourceToken MERGE = stf.createBasicKeyword("MERGE");
 		BasicSourceToken SEP = stf.createInstructionSeparator();
-		List<BasicSourceToken> cues = Arrays.asList(LOAD, SAVE, OPENIN, OPENOUT, RUN, CHAIN);
+		List<BasicSourceToken> cues = Arrays.asList(LOAD, SAVE, OPENIN, OPENOUT, RUN, CHAIN, MERGE);
 		for (BasicSourceCodeLine line : sourceCode) {
 			BasicSourceTokenSequence sequence = line.parse();
 			int i = 0;
@@ -77,6 +77,8 @@ public class FileReferenceDiscoveryService {
 						} else {
 							reference = parseFileReference(sourceCode, lineNumber, subSequence, Instruction.CHAIN);
 						}
+					} else if (token.equals(MERGE)) {
+						reference = parseFileReference(sourceCode, lineNumber, subSequence, Instruction.MERGE);
 					}
 					if (reference != null) {
 						references.add(reference);

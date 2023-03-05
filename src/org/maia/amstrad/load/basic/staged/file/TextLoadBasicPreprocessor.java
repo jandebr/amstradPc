@@ -130,9 +130,12 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 					if (command != null) {
 						BasicSourceTokenSequence commandSeq = createWaitResumeMacroInvocationSequence(session, addrTrap,
 								commandRef);
-						commandSeq.append(stf.createInstructionSeparator(), command.getVariable(),
-								stf.createOperator("="), stf.createBasicKeyword("LEFT$"), stf.createLiteral("("),
-								listener.getTextBufferVariable(), stf.createLiteral(","),
+						commandSeq.append(stf.createInstructionSeparator(), command.getVariable());
+						if (command.isVariableIndexed()) {
+							commandSeq.append(stf.createLiteral(command.getVariableArrayIndexString()));
+						}
+						commandSeq.append(stf.createOperator("="), stf.createBasicKeyword("LEFT$"),
+								stf.createLiteral("("), listener.getTextBufferVariable(), stf.createLiteral(","),
 								listener.getTextLengthVariable(), stf.createLiteral(")"));
 						sequence.replaceRange(i, j, commandSeq);
 					}

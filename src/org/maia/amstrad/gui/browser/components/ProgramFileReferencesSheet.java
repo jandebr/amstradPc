@@ -42,9 +42,8 @@ public class ProgramFileReferencesSheet extends ProgramSheet {
 					if (i > 0)
 						add(new ProgramInfoLine()); // spacer
 					String symbol = String.valueOf(linked ? (char) 186 : (char) 187);
-					String filenameLabel = filename.isEmpty() ? "<empty>" : filename;
 					add(new ProgramInfoLine(new ProgramInfoTextSpan(StringUtils.fitWidth(symbol, 2), bg, c1),
-							new ProgramInfoTextSpan(filenameLabel, bg, c1)));
+							new ProgramInfoTextSpan("\"" + filename + "\"", bg, c1)));
 				}
 				add(new ProgramInfoLine(new ProgramInfoTextSpan("  Line ", bg, c2),
 						new ProgramInfoTextSpan(String.valueOf(ref.getLineNumber()), bg, c3),
