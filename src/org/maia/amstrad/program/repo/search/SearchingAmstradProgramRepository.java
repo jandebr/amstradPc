@@ -85,7 +85,8 @@ public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramR
 			boolean match = false;
 			String str = getSearchString();
 			if (!match && isSearchByProgramName() && str != null) {
-				match = StringUtils.containsIgnoringCase(node.getProgram().getProgramName(), str);
+				match = StringUtils.containsIgnoringCase(node.getName(), str)
+						|| StringUtils.containsIgnoringCase(node.getProgram().getProgramName(), str);
 			}
 			return match;
 		}

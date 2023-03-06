@@ -48,7 +48,7 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 
 	private void addToIndex(ProgramNode node) {
 		AmstradProgram program = node.getProgram();
-		FacetedProgramNode indexNode = new FacetedProgramNode(program.getProgramName(), node);
+		FacetedProgramNode indexNode = new FacetedProgramNode(node.getName(), node);
 		FacetList facets = getFacets();
 		for (int i = 0; i < facets.size(); i++) {
 			Facet facet = facets.getFacet(i);

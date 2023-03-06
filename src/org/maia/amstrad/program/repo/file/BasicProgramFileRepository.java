@@ -5,6 +5,7 @@ import java.io.File;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.AmstradProgramException;
 
 public class BasicProgramFileRepository extends FileBasedAmstradProgramRepository {
 
@@ -28,8 +29,13 @@ public class BasicProgramFileRepository extends FileBasedAmstradProgramRepositor
 	}
 
 	@Override
-	protected AmstradProgram createProgram(String programName, File file) {
-		return AmstradFactory.getInstance().createBasicProgram(programName, file);
+	protected AmstradProgram createProgram(String programName, File basicFile, File metadataFile) {
+		try {
+			return AmstradFactory.getInstance().createBasicDescribedProgram(programName, basicFile, metadataFile);
+		} catch (AmstradProgramException e) {
+			System.err.println(e);
+			return AmstradFactory.getInstance().createBasicProgram(programName, basicFile);
+		}
 	}
 
 }

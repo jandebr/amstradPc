@@ -1,7 +1,6 @@
 package org.maia.amstrad.program.repo.file;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Vector;
 
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.util.AmstradIO;
 
@@ -114,7 +112,7 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		return AmstradFileType.AMSTRAD_METADATA_FILE.matches(file);
 	}
 
-	protected abstract AmstradProgram createProgram(String programName, File file);
+	protected abstract AmstradProgram createProgram(String programName, File basicFile, File metadataFile);
 
 	@Override
 	public FolderNode getRootNode() {
@@ -207,13 +205,7 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 
 		@Override
 		protected AmstradProgram readProgram() {
-			AmstradProgramBuilder builder = AmstradProgramBuilder.createFor(createProgram(getName(), getFile()));
-			try {
-				builder.loadAmstradMetaData(getCompanionMetaDataFile());
-			} catch (IOException e) {
-				System.err.println(e);
-			}
-			return builder.build();
+			return createProgram(getName(), getFile(), getCompanionMetaDataFile());
 		}
 
 		public File getCompanionMetaDataFile() {
