@@ -33,6 +33,15 @@ public class LocomotiveBasicOperator {
 		return getSourceForm().equals(other.getSourceForm());
 	}
 
+	public boolean isAlphabetic() {
+		String sf = getSourceForm();
+		for (int i = 0; i < sf.length(); i++) {
+			if (!Character.isLetter(sf.charAt(i)))
+				return false;
+		}
+		return true;
+	}
+
 	public byte getCodeByte() {
 		return codeByte;
 	}

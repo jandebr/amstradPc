@@ -7,6 +7,8 @@ public class LocomotiveBasicMinifierFactory {
 
 	public static final int LEVEL_NONE = 0;
 
+	public static final int LEVEL_SUPERFICIAL = 2;
+
 	public static final int LEVEL_ULTRA = 10;
 
 	private static LocomotiveBasicMinifierFactory instance;
@@ -32,6 +34,8 @@ public class LocomotiveBasicMinifierFactory {
 		int boundedLevel = Math.max(Math.min(level, LEVEL_ULTRA), LEVEL_NONE);
 		if (boundedLevel > LEVEL_NONE)
 			batch.add(new LocomotiveBasicRemarksMinifier());
+		if (boundedLevel > LEVEL_NONE + 1)
+			batch.add(new LocomotiveBasicWhitespaceMinifier());
 		return batch;
 	}
 

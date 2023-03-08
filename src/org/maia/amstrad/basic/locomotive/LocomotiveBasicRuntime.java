@@ -57,11 +57,13 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	@Override
 	public void renew() {
 		clearProgramAndVariables();
+		printMemoryUsage();
 	}
 
 	@Override
 	public void clear() throws BasicException {
 		clearVariables();
+		printMemoryUsage();
 	}
 
 	@Override
@@ -81,6 +83,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			// Marking end of variable space
 			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER_BIS, addrEnd);
+			// Info
+			System.out.println("Loaded Basic byte code");
+			printMemoryUsage();
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
@@ -123,6 +128,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			// Marking end of byte code
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
+			// Info
+			System.out.println("Swapped Basic byte code");
+			printMemoryUsage();
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
@@ -243,6 +251,12 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		}
 	}
 
+	private void printMemoryUsage() {
+		System.out.println("Basic memory: code " + getUsedMemoryForByteCode() + "B | vars "
+				+ getUsedMemoryForVariables() + "B | heap " + getUsedMemoryForHeap() + "B | free " + getFreeMemory()
+				+ "B (total " + getTotalMemory() + "B)");
+	}
+
 	public LocomotiveBasicVariableSpace getVariableSpace() {
 		if (variableSpace == null) {
 			variableSpace = new LocomotiveBasicVariableSpace(getMemory());
@@ -263,9 +277,20 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	@Override
 	public int getUsedMemory() {
-		int used = getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER) - ADDRESS_BYTECODE_START;
-		used += getHimem() - getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
-		return used;
+		return getUsedMemoryForByteCode() + getUsedMemoryForVariables() + getUsedMemoryForHeap();
+	}
+
+	private int getUsedMemoryForByteCode() {
+		return getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
+	}
+
+	private int getUsedMemoryForVariables() {
+		return getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER)
+				- getMemory().readWord(ADDRESS_BYTECODE_END_POINTER);
+	}
+
+	private int getUsedMemoryForHeap() {
+		return getHimem() - getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
 	}
 
 	@Override

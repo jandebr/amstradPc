@@ -20,7 +20,8 @@ public class BasicMinifierTest {
 
 	public void run(File input, File output) throws BasicException, IOException {
 		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(input));
-		BasicMinifier minifier = LocomotiveBasicMinifierFactory.getInstance().createMinifier(1);
+		BasicMinifier minifier = LocomotiveBasicMinifierFactory.getInstance()
+				.createMinifier(LocomotiveBasicMinifierFactory.LEVEL_ULTRA);
 		minifier.minify(sourceCode);
 		AmstradIO.writeTextFileContents(output, sourceCode.getText());
 	}

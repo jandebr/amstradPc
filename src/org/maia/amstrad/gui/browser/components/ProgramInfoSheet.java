@@ -9,6 +9,8 @@ import org.maia.amstrad.util.StringUtils;
 
 public class ProgramInfoSheet extends ProgramSheet {
 
+	private static final int[] RAINBOW_COLORS = new int[] { 17, 23, 22, 25, 16 };
+
 	public ProgramInfoSheet(AmstradProgram program, int maxItemsShowing, int maxWidth, int backgroundColorIndex) {
 		super(program, maxItemsShowing, maxWidth, backgroundColorIndex);
 	}
@@ -29,7 +31,7 @@ public class ProgramInfoSheet extends ProgramSheet {
 						new ProgramInfoTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
 						new ProgramInfoTextSpan("\u00FE ", 0, 25));
 				for (int i = 0; i < 5; i++)
-					line.add(new ProgramInfoTextSpan(String.valueOf("COLOR".charAt(i)), 0, 14 + i));
+					line.add(new ProgramInfoTextSpan(String.valueOf("COLOR".charAt(i)), 0, RAINBOW_COLORS[i]));
 				add(line);
 			}
 		}
