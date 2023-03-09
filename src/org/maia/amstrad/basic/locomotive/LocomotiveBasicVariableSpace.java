@@ -269,6 +269,23 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 		return generateNewVariable(StringTypedVariableToken.class, existingVariables);
 	}
 
+	public static <T extends VariableToken> T generateNewVariable(Class<T> variableType,
+			Collection<? extends VariableToken> existingVariables) {
+		T variable = null;
+		int n = 0;
+		int nt = 10;
+		int length = 1;
+		int lengthMax = 4;
+		do {
+			if (++n > nt && length < lengthMax) {
+				length++;
+				nt *= 10;
+			}
+			variable = createVariable(variableType, generateRandomVariableName(length));
+		} while (existingVariables.contains(variable));
+		return variable;
+	}
+
 	private int findPayloadValueMemoryOffset(VariableToken variable) throws VariableNotFoundException {
 		int mo = findMemoryOffset(variable);
 		return mo + 3 + getVariableNameLengthStartingAt(mo + 2);
@@ -345,23 +362,6 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 
 	private AmstradMemory getMemory() {
 		return memory;
-	}
-
-	private static <T extends VariableToken> T generateNewVariable(Class<T> variableType,
-			Collection<? extends VariableToken> existingVariables) {
-		T variable = null;
-		int n = 0;
-		int nt = 10;
-		int length = 1;
-		int lengthMax = 4;
-		do {
-			if (++n > nt && length < lengthMax) {
-				length++;
-				nt *= 10;
-			}
-			variable = createVariable(variableType, generateRandomVariableName(length));
-		} while (existingVariables.contains(variable));
-		return variable;
 	}
 
 	private static <T extends VariableToken> T createVariable(Class<T> variableType,

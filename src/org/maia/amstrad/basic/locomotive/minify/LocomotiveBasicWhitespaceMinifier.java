@@ -29,14 +29,6 @@ public class LocomotiveBasicWhitespaceMinifier extends LocomotiveBasicMinifier {
 							k = sequence.size();
 						sequence.replaceRange(j + 1, k, token);
 						i = j + 1;
-					} else if (token instanceof LiteralToken) { // not quoted literal
-						String str = token.getSourceFragment().trim();
-						if (str.length() == 1) {
-							char c = str.charAt(0);
-							if (c == ',' || c == ';') {
-								sequence.replace(i, new LiteralToken(str));
-							}
-						}
 					}
 					j = i;
 				}
@@ -51,9 +43,14 @@ public class LocomotiveBasicWhitespaceMinifier extends LocomotiveBasicMinifier {
 			return true;
 		} else if (token instanceof OperatorToken) {
 			return !((OperatorToken) token).getOperator().isAlphabetic();
-		} else {
-			return false;
+		} else if (token instanceof LiteralToken) { // not quoted literal
+			String str = token.getSourceFragment();
+			if (str.length() == 1) {
+				char c = str.charAt(0);
+				return c == ',' || c == ';';
+			}
 		}
+		return false;
 	}
 
 }

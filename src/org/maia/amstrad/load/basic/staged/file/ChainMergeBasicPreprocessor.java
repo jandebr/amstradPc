@@ -136,6 +136,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		// Preprocess chained code
 		BasicSourceCode chainedSourceCode = session.getLoader().retrieveSourceCode(chainedProgram);
 		StagedBasicProgramLoaderSession chainedSession = session.createNewSession();
+		chainedSession.setOriginalToStagedVariableMapping(session.getOriginalToStagedVariableMapping());
 		BasicSourceTokenSequence interruptSequence = InterruptBasicPreprocessor.extractInterruptSequence(sourceCode,
 				session);
 		preprocessChainedSourceCode(chainedSourceCode, lnChainedOffset, chainedSession, interruptSequence,

@@ -3,9 +3,11 @@ package org.maia.amstrad.load.basic.staged;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -15,6 +17,7 @@ import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
+import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.load.AmstradProgramLoaderSession;
 import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.EndingBasicPreprocessor.EndingMacro;
@@ -38,6 +41,8 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	private StagedLineNumberMapping originalToStagedLineNumberMapping;
 
+	private Map<VariableToken, VariableToken> originalToStagedVariableMapping;
+
 	private List<AmstradProgram> chainedPrograms;
 
 	private TextFileWriter textFileWriter;
@@ -50,6 +55,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		this.macrosAdded = new HashSet<StagedBasicMacro>();
 		this.chainedPrograms = new Vector<AmstradProgram>();
 		addProgramToChain(getProgram());
+		setOriginalToStagedVariableMapping(new HashMap<VariableToken, VariableToken>());
 	}
 
 	public StagedBasicProgramLoaderSession createNewSession() {
@@ -286,6 +292,14 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public void setOriginalToStagedLineNumberMapping(StagedLineNumberMapping mapping) {
 		this.originalToStagedLineNumberMapping = mapping;
+	}
+
+	public Map<VariableToken, VariableToken> getOriginalToStagedVariableMapping() {
+		return originalToStagedVariableMapping;
+	}
+
+	public void setOriginalToStagedVariableMapping(Map<VariableToken, VariableToken> mapping) {
+		this.originalToStagedVariableMapping = mapping;
 	}
 
 	public TextFileWriter getTextFileWriter() {

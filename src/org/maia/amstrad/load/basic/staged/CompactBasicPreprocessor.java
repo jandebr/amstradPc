@@ -1,11 +1,14 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Map;
+
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicMinifier;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.minify.LocomotiveBasicMinifierFactory;
+import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
 public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 
@@ -29,7 +32,8 @@ public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 		boolean printStats = shouldPrintStatistics();
 		int bytesBefore = printStats ? session.getBasicRuntime().getCompiler().compile(sourceCode).getByteCount() : 0;
 		int level = getMinificationLevel();
-		BasicMinifier minifier = LocomotiveBasicMinifierFactory.getInstance().createMinifier(level);
+		Map<VariableToken, VariableToken> variableRenameMap = session.getOriginalToStagedVariableMapping();
+		BasicMinifier minifier = LocomotiveBasicMinifierFactory.getInstance().createMinifier(level, variableRenameMap);
 		minifier.minify(sourceCode);
 		if (printStats) {
 			int bytesAfter = session.getBasicRuntime().getCompiler().compile(sourceCode).getByteCount();

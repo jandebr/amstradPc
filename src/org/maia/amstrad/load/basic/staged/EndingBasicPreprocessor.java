@@ -9,8 +9,8 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
-import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.BasicProgramLoader;
@@ -68,6 +68,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		BasicLanguage language = sourceCode.getLanguage();
 		BasicSourceToken ON_BREAK = createKeywordToken(language, "ON BREAK");
 		BasicSourceToken STOP = createKeywordToken(language, "STOP");
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
 				BasicSourceTokenSequence sequence = line.parse();
@@ -77,8 +78,8 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 					if (i >= 0) {
 						if (sequence.get(i).equals(STOP)) {
 							// ON BREAK STOP => ON BREAK GOSUB ending macro
-							sequence.replace(i, createKeywordToken(language, "GOSUB"), new LiteralToken(" "),
-									new LineNumberReferenceToken(lnGoto));
+							sequence.replace(i, stf.createBasicKeyword("GOSUB"), stf.createLiteral(" "),
+									stf.createLineNumberReference(lnGoto));
 						}
 						i = sequence.getNextIndexOf(ON_BREAK, i);
 					}
@@ -100,15 +101,15 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	private void invokeEndingMacroOnEndInstruction(BasicSourceCode sourceCode, BasicLineNumberScope scope,
 			BasicSourceToken instruction, StagedBasicProgramLoaderSession session) throws BasicException {
 		int lnGoto = session.getEndingMacroLineNumber();
-		BasicLanguage language = sourceCode.getLanguage();
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
 		for (BasicSourceCodeLine line : sourceCode) {
 			if (scope.isInScope(line)) {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(instruction);
 				while (i >= 0) {
 					// End command => Goto ending macro
-					sequence.replace(i, createKeywordToken(language, "GOTO"), new LiteralToken(" "),
-							new LineNumberReferenceToken(lnGoto));
+					sequence.replace(i, stf.createBasicKeyword("GOTO"), stf.createLiteral(" "),
+							stf.createLineNumberReference(lnGoto));
 					i = sequence.getNextIndexOf(instruction, i + 3);
 				}
 				if (sequence.isModified()) {

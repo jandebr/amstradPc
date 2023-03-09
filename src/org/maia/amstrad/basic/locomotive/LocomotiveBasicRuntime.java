@@ -252,9 +252,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	private void printMemoryUsage() {
-		System.out.println("Basic memory: code " + getUsedMemoryForByteCode() + "B | vars "
-				+ getUsedMemoryForVariables() + "B | heap " + getUsedMemoryForHeap() + "B | free " + getFreeMemory()
-				+ "B (total " + getTotalMemory() + "B)");
+		System.out.println("Basic user memory: code " + getUsedMemoryForByteCode() + "B | vars "
+				+ getUsedMemoryForVariables() + "B | heap " + getUsedMemoryForHeap() + "B | reserved "
+				+ getReservedMemory() + "B | free " + getFreeMemory() + "B (total " + getTotalMemory() + "B)");
 	}
 
 	public LocomotiveBasicVariableSpace getVariableSpace() {
@@ -277,7 +277,7 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	@Override
 	public int getUsedMemory() {
-		return getUsedMemoryForByteCode() + getUsedMemoryForVariables() + getUsedMemoryForHeap();
+		return getUsedMemoryForByteCode() + getUsedMemoryForVariables() + getUsedMemoryForHeap() + getReservedMemory();
 	}
 
 	private int getUsedMemoryForByteCode() {
@@ -293,9 +293,13 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		return getHimem() - getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
 	}
 
+	private int getReservedMemory() {
+		return INITIAL_HIMEM - getHimem();
+	}
+
 	@Override
 	public int getTotalMemory() {
-		return getHimem() - ADDRESS_BYTECODE_START;
+		return INITIAL_HIMEM - ADDRESS_BYTECODE_START;
 	}
 
 	@Override
