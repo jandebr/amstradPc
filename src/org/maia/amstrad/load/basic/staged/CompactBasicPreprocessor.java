@@ -12,7 +12,7 @@ import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
 public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 
-	private static final int DEFAULT_MINIFICATION_LEVEL = LocomotiveBasicMinifierFactory.LEVEL_SUPERFICIAL;
+	private static final int DEFAULT_MINIFICATION_LEVEL = LocomotiveBasicMinifierFactory.LEVEL_NON_INVASIVE;
 
 	public CompactBasicPreprocessor() {
 	}

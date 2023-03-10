@@ -10,7 +10,7 @@ public class LocomotiveBasicMinifierFactory {
 
 	public static final int LEVEL_NONE = 0;
 
-	public static final int LEVEL_SUPERFICIAL = 2;
+	public static final int LEVEL_NON_INVASIVE = 2;
 
 	public static final int LEVEL_ULTRA = 10;
 

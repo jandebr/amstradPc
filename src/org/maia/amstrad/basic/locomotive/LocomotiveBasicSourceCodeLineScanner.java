@@ -85,7 +85,7 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 					int p0 = getPosition();
 					advancePosition();
 					while (!atEndOfText() && isWhitespace(c) && isWhitespace(getCurrentChar()))
-						advancePosition(); // stroke of whitespace
+						advancePosition(); // stretch of whitespace
 					token = getSourceTokenFactory().createLiteral(subText(p0, getPosition()));
 				}
 			}

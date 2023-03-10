@@ -34,6 +34,14 @@ public class LocomotiveBasicWhitespaceMinifier extends LocomotiveBasicMinifier {
 				}
 				i++;
 			}
+			// trim at start of line
+			if (sequence.startsWithLineNumber()) {
+				i = sequence.getIndexFollowingWhitespace(1);
+				sequence.removeRange(1, i);
+			}
+			// trim at end of line
+			i = sequence.getIndexPrecedingWhitespace(sequence.size() - 1);
+			sequence.removeRange(i + 1, sequence.size());
 			updateLine(sourceCode, sequence);
 		}
 	}
