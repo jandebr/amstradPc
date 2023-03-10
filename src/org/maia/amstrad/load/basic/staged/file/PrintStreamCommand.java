@@ -2,20 +2,28 @@ package org.maia.amstrad.load.basic.staged.file;
 
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace.VariableNotFoundException;
-import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
-import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralQuotedToken;
-import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
-import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
-import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 
-public abstract class PrintStreamCommand extends FileCommand {
+public class PrintStreamCommand extends FileCommand {
+
+	private LiteralQuotedToken literal;
+
+	private VariableToken variable;
+
+	private String variableArrayIndexString;
+
+	public PrintStreamCommand() {
+	}
+
+	private PrintStreamCommand(LiteralQuotedToken literal) {
+		setLiteral(literal);
+	}
+
+	private PrintStreamCommand(VariableToken variable) {
+		setVariable(variable);
+	}
 
 	public static PrintStreamCommand parseFrom(BasicSourceTokenSequence sequence) throws BasicException {
 		PrintStreamCommand command = null;
@@ -25,13 +33,18 @@ public abstract class PrintStreamCommand extends FileCommand {
 			if (sequence.get(i + 1).equals(stf.createPositiveIntegerSingleDigitDecimal(9))) {
 				i += 2;
 				int j = sequence.getNextIndexOf(VariableToken.class, i);
-				if (j >= 0) {
-					command = new VariablePrintStreamCommand((VariableToken) sequence.get(j));
-				} else {
-					j = sequence.getNextIndexOf(LiteralQuotedToken.class, i);
-					if (j >= 0) {
-						command = new LiteralPrintStreamCommand((LiteralQuotedToken) sequence.get(j));
+				int k = sequence.getNextIndexOf(LiteralQuotedToken.class, i);
+				if (j >= 0 && (j < k || k < 0)) {
+					command = new PrintStreamCommand((VariableToken) sequence.get(j));
+					// array index?
+					if (j < sequence.size() - 1 && sequence.get(j + 1).equals(stf.createLiteral("("))) {
+						int l = sequence.getNextIndexOf(stf.createLiteral(")"), j + 2);
+						if (l >= 0) {
+							command.setVariableArrayIndexString(sequence.subSequence(j + 1, l + 1).getSourceCode());
+						}
 					}
+				} else if (k >= 0) {
+					command = new PrintStreamCommand((LiteralQuotedToken) sequence.get(k));
 				}
 			}
 		}
@@ -40,76 +53,55 @@ public abstract class PrintStreamCommand extends FileCommand {
 
 	@Override
 	public String toString() {
-		return "PrintStreamCommand";
-	}
-
-	public abstract String getValueToPrint(StagedBasicProgramLoaderSession session);
-
-	private static class VariablePrintStreamCommand extends PrintStreamCommand {
-
-		private VariableToken variable;
-
-		public VariablePrintStreamCommand(VariableToken variable) {
-			this.variable = variable;
-		}
-
-		@Override
-		public String toString() {
-			return super.toString() + " writing " + getVariable().getSourceFragment();
-		}
-
-		@Override
-		public String getValueToPrint(StagedBasicProgramLoaderSession session) {
-			String value = "";
-			if (session.getBasicRuntime() instanceof LocomotiveBasicRuntime) {
-				LocomotiveBasicVariableSpace vars = ((LocomotiveBasicRuntime) session.getBasicRuntime())
-						.getVariableSpace();
-				VariableToken var = getVariable();
-				try {
-					if (var instanceof IntegerTypedVariableToken) {
-						value = String.valueOf(vars.getValue((IntegerTypedVariableToken) var));
-					} else if (var instanceof FloatingPointTypedVariableToken) {
-						value = FloatingPointNumberToken.format(vars.getValue((FloatingPointTypedVariableToken) var));
-					} else if (var instanceof UntypedVariableToken) {
-						value = FloatingPointNumberToken.format(vars.getValue((UntypedVariableToken) var));
-					} else if (var instanceof StringTypedVariableToken) {
-						value = vars.getValue((StringTypedVariableToken) var);
-					}
-				} catch (VariableNotFoundException e) {
-					System.err.println(e);
-				}
+		StringBuilder sb = new StringBuilder();
+		sb.append("PrintStreamCommand");
+		if (hasVariable()) {
+			sb.append(" writing ");
+			sb.append(getVariable().getSourceFragment());
+			if (isVariableIndexed()) {
+				sb.append(getVariableArrayIndexString());
 			}
-			return value;
+		} else if (hasLiteral()) {
+			sb.append(" writing ");
+			sb.append(getLiteral().getSourceFragment());
 		}
-
-		public VariableToken getVariable() {
-			return variable;
-		}
-
+		return sb.toString();
 	}
 
-	private static class LiteralPrintStreamCommand extends PrintStreamCommand {
+	public boolean hasLiteral() {
+		return getLiteral() != null;
+	}
 
-		private LiteralQuotedToken literal;
+	public boolean hasVariable() {
+		return getVariable() != null;
+	}
 
-		public LiteralPrintStreamCommand(LiteralQuotedToken literal) {
-			this.literal = literal;
-		}
+	public boolean isVariableIndexed() {
+		return getVariableArrayIndexString() != null;
+	}
 
-		@Override
-		public String toString() {
-			return super.toString() + " writing " + getLiteral().getSourceFragment();
-		}
+	public LiteralQuotedToken getLiteral() {
+		return literal;
+	}
 
-		@Override
-		public String getValueToPrint(StagedBasicProgramLoaderSession session) {
-			return getLiteral().getLiteralBetweenQuotes();
-		}
+	private void setLiteral(LiteralQuotedToken literal) {
+		this.literal = literal;
+	}
 
-		public LiteralQuotedToken getLiteral() {
-			return literal;
-		}
+	public VariableToken getVariable() {
+		return variable;
+	}
 
+	private void setVariable(VariableToken variable) {
+		this.variable = variable;
+	}
+
+	public String getVariableArrayIndexString() {
+		return variableArrayIndexString;
+	}
+
+	private void setVariableArrayIndexString(String indexString) {
+		this.variableArrayIndexString = indexString;
 	}
 
 }

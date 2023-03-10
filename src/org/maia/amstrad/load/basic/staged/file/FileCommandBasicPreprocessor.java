@@ -6,7 +6,9 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
 import org.maia.amstrad.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
@@ -49,6 +51,15 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 		return new BasicSourceTokenSequence().append(stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
 				stf.createPositiveInteger16BitHexadecimal(macroHandlerMemoryAddress), stf.createLiteral(","),
 				stf.createPositiveInteger8BitDecimal(macroHandlerMemoryValue));
+	}
+
+	protected LocomotiveBasicVariableSpace getRuntimeVariables(StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		if (session.getBasicRuntime() instanceof LocomotiveBasicRuntime) {
+			return ((LocomotiveBasicRuntime) session.getBasicRuntime()).getVariableSpace();
+		} else {
+			throw new BasicException("Cannot retrieve Basic runtime variables");
+		}
 	}
 
 	protected void delay(long delayMillis) {

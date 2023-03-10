@@ -12,7 +12,6 @@ public class InputStreamCommand extends FileCommand {
 	private String variableArrayIndexString;
 
 	public InputStreamCommand() {
-		this(null);
 	}
 
 	private InputStreamCommand(StringTypedVariableToken variable) {

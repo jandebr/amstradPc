@@ -119,7 +119,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(INPUT);
 				while (i >= 0) {
-					// [LINE] INPUT => waitresume macro
+					// [LINE] INPUT #9 => waitresume macro
 					int k = sequence.getIndexPrecedingWhitespace(i - 1);
 					if (sequence.get(k).equals(LINE))
 						i = k;
@@ -259,15 +259,6 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 		} catch (Exception e) {
 			System.err.println(e);
 			endWithError(ERR_TEXT_LOAD_FAILURE, sourceCode, macro, session);
-		}
-	}
-
-	private LocomotiveBasicVariableSpace getRuntimeVariables(StagedBasicProgramLoaderSession session)
-			throws BasicException {
-		if (session.getBasicRuntime() instanceof LocomotiveBasicRuntime) {
-			return ((LocomotiveBasicRuntime) session.getBasicRuntime()).getVariableSpace();
-		} else {
-			throw new BasicException("Cannot retrieve Basic runtime variables");
 		}
 	}
 
