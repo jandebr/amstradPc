@@ -40,6 +40,11 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	public abstract void setMonitorBilinearEffect(boolean bilinearEffect);
 
+	public void makeWindowFullscreen() {
+		if (!isWindowFullscreen())
+			toggleWindowFullscreen();
+	}
+
 	public abstract boolean isWindowFullscreen();
 
 	public abstract void toggleWindowFullscreen();

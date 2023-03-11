@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.components.FolderItemList;
 import org.maia.amstrad.gui.browser.components.ItemList;
 import org.maia.amstrad.gui.browser.components.ProgramFileReferencesSheet;
@@ -627,6 +628,10 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	public boolean isStandaloneInfo() {
 		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
+	}
+
+	public boolean isKioskMode() {
+		return AmstradFactory.getInstance().getAmstradContext().isKioskMode();
 	}
 
 	private List<ProgramBrowserListener> getBrowserListeners() {

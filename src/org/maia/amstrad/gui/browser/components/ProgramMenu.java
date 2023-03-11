@@ -25,11 +25,14 @@ public class ProgramMenu extends ItemList {
 	private void populateMenu() {
 		ProgramBrowserDisplaySource browser = getBrowser();
 		AmstradProgram program = getProgram();
+		boolean kiosk = browser.isKioskMode();
 		addMenuItem(new ProgramRunMenuItem(browser, program));
-		addMenuItem(new ProgramLoadMenuItem(browser, program));
+		if (!kiosk)
+			addMenuItem(new ProgramLoadMenuItem(browser, program));
 		addMenuItem(new ProgramInfoMenuItem(browser, program));
 		addMenuItem(new ProgramImagesMenuItem(browser, program));
-		addMenuItem(new ProgramFileReferencesMenuItem(browser, program));
+		if (!kiosk)
+			addMenuItem(new ProgramFileReferencesMenuItem(browser, program));
 		addMenuItem(new ProgramCloseMenuItem(browser, program));
 	}
 

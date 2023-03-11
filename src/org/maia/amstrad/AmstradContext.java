@@ -9,6 +9,8 @@ import org.maia.amstrad.program.repo.facet.FacetFactory;
 
 public abstract class AmstradContext {
 
+	private static final String SETTING_KIOSK = "kiosk";
+
 	private static final String SETTING_CURRENT_DIR = "current_dir";
 
 	private static final String SETTING_PROGRAM_REPO_DIR = "program_repo.file.dir";
@@ -37,6 +39,10 @@ public abstract class AmstradContext {
 	public abstract boolean isBasicProtectiveMode(AmstradPc amstradPc);
 
 	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
+
+	public boolean isKioskMode() {
+		return getUserSettings().getBool(SETTING_KIOSK, false);
+	}
 
 	public File getCurrentDirectory() {
 		String dir = getUserSettings().get(SETTING_CURRENT_DIR, null);

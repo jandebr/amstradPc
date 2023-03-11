@@ -30,7 +30,9 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 
 						@Override
 						public void perform(AmstradProgramRuntime programRuntime) {
-							getBrowser().addReturnToProgramMenu();
+							if (!getBrowser().isKioskMode()) {
+								getBrowser().addReturnToProgramMenu();
+							}
 							AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(getAmstradPc());
 						}
 					});

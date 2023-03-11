@@ -721,6 +721,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		@Override
 		public void toggleWindowFullscreen() {
+			checkStarted();
 			checkNotTerminated();
 			getJemuInstance().FullSize();
 			fireWindowFullscreenChangedEvent();
