@@ -1,6 +1,9 @@
 package org.maia.amstrad.load.basic.staged.file;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.maia.amstrad.basic.BasicException;
@@ -13,7 +16,9 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.load.basic.BasicPreprocessor;
 import org.maia.amstrad.load.basic.BasicPreprocessorBatch;
 import org.maia.amstrad.load.basic.staged.CompactBasicPreprocessor;
@@ -41,6 +46,17 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	@Override
 	public boolean isApplicableToMergedCode() {
 		return true;
+	}
+
+	@Override
+	public Collection<BasicKeywordToken> getKeywordsActedOn() {
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		try {
+			return Arrays.asList(stf.createBasicKeyword("CHAIN"));
+		} catch (BasicSyntaxException e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
 	}
 
 	@Override

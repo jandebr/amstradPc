@@ -1,5 +1,9 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberRange;
@@ -8,6 +12,9 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.load.basic.BasicLanguageKit;
 
@@ -24,6 +31,17 @@ public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 	@Override
 	public boolean isApplicableToMergedCode() {
 		return false;
+	}
+
+	@Override
+	public Collection<BasicKeywordToken> getKeywordsActedOn() {
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		try {
+			return Arrays.asList(stf.createBasicKeyword("CLEAR"));
+		} catch (BasicSyntaxException e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
 	}
 
 	@Override

@@ -22,6 +22,8 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	public static final int MAXIMUM_LINE_NUMBER = 65535;
 
+	public static final int MAXIMUM_LINE_LENGTH_CHARACTERS = 255;
+
 	public LocomotiveBasicRuntime(AmstradPc amstradPc) {
 		super(amstradPc);
 	}

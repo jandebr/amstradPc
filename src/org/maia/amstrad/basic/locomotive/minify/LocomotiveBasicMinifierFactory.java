@@ -1,10 +1,7 @@
 package org.maia.amstrad.basic.locomotive.minify;
 
-import java.util.Map;
-
 import org.maia.amstrad.basic.BasicMinifier;
 import org.maia.amstrad.basic.BasicMinifierBatch;
-import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
 public class LocomotiveBasicMinifierFactory {
 
@@ -33,10 +30,6 @@ public class LocomotiveBasicMinifierFactory {
 	}
 
 	public BasicMinifier createMinifier(int level) {
-		return createMinifier(level, null);
-	}
-
-	public BasicMinifier createMinifier(int level, Map<VariableToken, VariableToken> variableRenameMap) {
 		BasicMinifierBatch batch = new BasicMinifierBatch();
 		int boundedLevel = Math.max(Math.min(level, LEVEL_ULTRA), LEVEL_NONE);
 		if (boundedLevel > LEVEL_NONE) {
@@ -46,11 +39,11 @@ public class LocomotiveBasicMinifierFactory {
 			batch.add(new LocomotiveBasicWhitespaceMinifier());
 		}
 		if (boundedLevel > LEVEL_NONE + 2) {
-			if (variableRenameMap != null) {
-				batch.add(new LocomotiveBasicVariableNameMinifier(variableRenameMap));
-			} else {
-				batch.add(new LocomotiveBasicVariableNameMinifier());
-			}
+			batch.add(new LocomotiveBasicVariableNameMinifier());
+		}
+		if (boundedLevel > LEVEL_NONE + 3) {
+			double intensity = (boundedLevel - LEVEL_NONE - 4) / (double) (LEVEL_ULTRA - LEVEL_NONE - 4);
+			batch.add(new LocomotiveBasicLinesMinifier(intensity));
 		}
 		return batch;
 	}

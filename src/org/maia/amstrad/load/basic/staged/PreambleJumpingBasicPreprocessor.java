@@ -1,8 +1,12 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicSourceCode;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.load.basic.staged.PreambleLandingBasicPreprocessor.PreambleLandingMacro;
 
 public class PreambleJumpingBasicPreprocessor extends StagedBasicPreprocessor {
@@ -18,6 +22,11 @@ public class PreambleJumpingBasicPreprocessor extends StagedBasicPreprocessor {
 	@Override
 	public boolean isApplicableToMergedCode() {
 		return false;
+	}
+
+	@Override
+	public Collection<BasicKeywordToken> getKeywordsActedOn() {
+		return Collections.emptyList();
 	}
 
 	@Override

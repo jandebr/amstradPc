@@ -1,5 +1,9 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
@@ -9,7 +13,9 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoader;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
@@ -31,6 +37,17 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 	@Override
 	public boolean isApplicableToMergedCode() {
 		return true;
+	}
+
+	@Override
+	public Collection<BasicKeywordToken> getKeywordsActedOn() {
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		try {
+			return Arrays.asList(stf.createBasicKeyword("CHAIN"), stf.createBasicKeyword("RUN"));
+		} catch (BasicSyntaxException e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
 	}
 
 	@Override

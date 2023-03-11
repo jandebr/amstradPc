@@ -1,10 +1,13 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Collection;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.Integer8BitDecimalToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.load.AmstradProgramLoaderSession;
@@ -18,6 +21,8 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 	public abstract int getDesiredPreambleLineCount();
 
 	public abstract boolean isApplicableToMergedCode();
+
+	public abstract Collection<BasicKeywordToken> getKeywordsActedOn();
 
 	@Override
 	public final void preprocess(BasicSourceCode sourceCode, AmstradProgramLoaderSession session)

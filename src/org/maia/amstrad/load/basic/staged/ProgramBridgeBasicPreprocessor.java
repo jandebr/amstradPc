@@ -1,5 +1,7 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +11,7 @@ import org.maia.amstrad.basic.BasicLineNumberScope;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 
 public class ProgramBridgeBasicPreprocessor extends StagedBasicPreprocessor {
@@ -24,6 +27,11 @@ public class ProgramBridgeBasicPreprocessor extends StagedBasicPreprocessor {
 	@Override
 	public boolean isApplicableToMergedCode() {
 		return false;
+	}
+
+	@Override
+	public Collection<BasicKeywordToken> getKeywordsActedOn() {
+		return Collections.emptyList();
 	}
 
 	@Override

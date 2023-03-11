@@ -82,6 +82,19 @@ public class LocomotiveBasicSourceCode extends BasicSourceCode {
 		return variables;
 	}
 
+	public Set<Integer> getReferencedLineNumbers() throws BasicSyntaxException {
+		Set<Integer> lineNumbers = new HashSet<Integer>();
+		for (BasicSourceCodeLine line : this) {
+			BasicSourceTokenSequence sequence = line.parse();
+			int i = sequence.getFirstIndexOf(LineNumberReferenceToken.class);
+			while (i >= 0) {
+				lineNumbers.add(((LineNumberReferenceToken) sequence.get(i)).getLineNumber());
+				i = sequence.getNextIndexOf(LineNumberReferenceToken.class, i + 1);
+			}
+		}
+		return lineNumbers;
+	}
+
 	@Override
 	protected List<BasicSourceCodeLine> parse(CharSequence sourceCode) throws BasicSyntaxException {
 		List<BasicSourceCodeLine> lines = new Vector<BasicSourceCodeLine>(100);

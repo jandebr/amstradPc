@@ -1,9 +1,13 @@
 package org.maia.amstrad.load.basic.staged;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicMemoryMap;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 
 public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements LocomotiveBasicMemoryMap {
 
@@ -21,6 +25,11 @@ public class HimemBasicPreprocessor extends StagedBasicPreprocessor implements L
 	@Override
 	public boolean isApplicableToMergedCode() {
 		return false;
+	}
+
+	@Override
+	public Collection<BasicKeywordToken> getKeywordsActedOn() {
+		return Collections.emptyList();
 	}
 
 	@Override

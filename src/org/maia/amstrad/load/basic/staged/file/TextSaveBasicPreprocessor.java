@@ -1,5 +1,8 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import org.maia.amstrad.basic.BasicException;
@@ -9,9 +12,11 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
+import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
+import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.load.AmstradProgramRuntime;
@@ -33,6 +38,18 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 	@Override
 	public boolean isApplicableToMergedCode() {
 		return true;
+	}
+
+	@Override
+	public Collection<BasicKeywordToken> getKeywordsActedOn() {
+		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
+		try {
+			return Arrays.asList(stf.createBasicKeyword("OPENOUT"), stf.createBasicKeyword("PRINT"),
+					stf.createBasicKeyword("CLOSEOUT"));
+		} catch (BasicSyntaxException e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
 	}
 
 	@Override
