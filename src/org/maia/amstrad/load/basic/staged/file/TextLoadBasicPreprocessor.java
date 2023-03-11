@@ -17,6 +17,7 @@ import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.load.basic.staged.file.InputStreamCommand.Argument;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 
@@ -127,22 +128,27 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 						j = sequence.size();
 					InputStreamCommand command = InputStreamCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
-						boolean stringVariable = command.getVariable() instanceof StringTypedVariableToken;
-						BasicSourceTokenSequence commandSeq = createWaitResumeMacroInvocationSequence(session, addrTrap,
-								commandRef);
-						commandSeq.append(stf.createInstructionSeparator(), command.getVariable());
-						if (command.isVariableIndexed()) {
-							commandSeq.append(stf.createLiteral(command.getVariableArrayIndexString()));
-						}
-						commandSeq.append(stf.createOperator("="));
-						if (!stringVariable) {
-							commandSeq.append(stf.createBasicKeyword("VAL"), stf.createLiteral("("));
-						}
-						commandSeq.append(stf.createBasicKeyword("LEFT$"), stf.createLiteral("("),
-								listener.getTextBufferVariable(), stf.createLiteral(","),
-								listener.getTextLengthVariable(), stf.createLiteral(")"));
-						if (!stringVariable) {
-							commandSeq.append(stf.createLiteral(")"));
+						BasicSourceTokenSequence commandSeq = new BasicSourceTokenSequence();
+						for (int argi = 0; argi < command.getArguments().size(); argi++) {
+							if (argi > 0)
+								commandSeq.append(stf.createInstructionSeparator());
+							commandSeq.append(createWaitResumeMacroInvocationSequence(session, addrTrap, commandRef));
+							Argument commandArg = command.getArguments().get(argi);
+							boolean stringVariable = commandArg.getVariable() instanceof StringTypedVariableToken;
+							commandSeq.append(stf.createInstructionSeparator(), commandArg.getVariable());
+							if (commandArg.isVariableIndexed()) {
+								commandSeq.append(stf.createLiteral(commandArg.getVariableArrayIndexString()));
+							}
+							commandSeq.append(stf.createOperator("="));
+							if (!stringVariable) {
+								commandSeq.append(stf.createBasicKeyword("VAL"), stf.createLiteral("("));
+							}
+							commandSeq.append(stf.createBasicKeyword("LEFT$"), stf.createLiteral("("),
+									listener.getTextBufferVariable(), stf.createLiteral(","),
+									listener.getTextLengthVariable(), stf.createLiteral(")"));
+							if (!stringVariable) {
+								commandSeq.append(stf.createLiteral(")"));
+							}
 						}
 						sequence.replaceRange(i, j, commandSeq);
 					}

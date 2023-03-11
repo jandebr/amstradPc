@@ -1,5 +1,8 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
@@ -9,27 +12,10 @@ import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
 public class PrintStreamCommand extends FileCommand {
 
-	private LiteralQuotedToken literalString;
-
-	private NumericToken literalNumber;
-
-	private VariableToken variable;
-
-	private String variableArrayIndexString;
+	private List<Argument> arguments;
 
 	public PrintStreamCommand() {
-	}
-
-	private PrintStreamCommand(LiteralQuotedToken literalString) {
-		setLiteralString(literalString);
-	}
-
-	private PrintStreamCommand(NumericToken literalNumber) {
-		setLiteralNumber(literalNumber);
-	}
-
-	private PrintStreamCommand(VariableToken variable) {
-		setVariable(variable);
+		this.arguments = new Vector<Argument>();
 	}
 
 	public static PrintStreamCommand parseFrom(BasicSourceTokenSequence sequence) throws BasicException {
@@ -39,26 +25,37 @@ public class PrintStreamCommand extends FileCommand {
 		if (i >= 0 && i < sequence.size() - 1) {
 			if (sequence.get(i + 1).equals(stf.createPositiveIntegerSingleDigitDecimal(9))) {
 				i += 2;
-				int jVar = sequence.getNextIndexOf(VariableToken.class, i);
-				int jStr = sequence.getNextIndexOf(LiteralQuotedToken.class, i);
-				int jNum = sequence.getNextIndexOf(NumericToken.class, i);
-				if (jVar >= 0 && (jVar < jStr || jStr < 0) && (jVar < jNum || jNum < 0)) {
-					// variable
-					command = new PrintStreamCommand((VariableToken) sequence.get(jVar));
-					// variable is indexed?
-					if (jVar < sequence.size() - 1 && sequence.get(jVar + 1).equals(stf.createLiteral("("))) {
-						int k = sequence.getNextIndexOf(stf.createLiteral(")"), jVar + 2);
-						if (k >= 0) {
-							command.setVariableArrayIndexString(sequence.subSequence(jVar + 1, k + 1).getSourceCode());
+				command = new PrintStreamCommand();
+				Argument arg;
+				do {
+					arg = null;
+					int jVar = sequence.getNextIndexOf(VariableToken.class, i);
+					int jStr = sequence.getNextIndexOf(LiteralQuotedToken.class, i);
+					int jNum = sequence.getNextIndexOf(NumericToken.class, i);
+					if (jVar >= 0 && (jVar < jStr || jStr < 0) && (jVar < jNum || jNum < 0)) {
+						// variable
+						arg = new Argument((VariableToken) sequence.get(jVar));
+						i = jVar + 1;
+						// variable is indexed?
+						if (jVar < sequence.size() - 1 && sequence.get(jVar + 1).equals(stf.createLiteral("("))) {
+							int k = sequence.getNextIndexOf(stf.createLiteral(")"), jVar + 2);
+							if (k >= 0) {
+								arg.setVariableArrayIndexString(sequence.subSequence(jVar + 1, k + 1).getSourceCode());
+								i = k + 1;
+							}
 						}
+					} else if (jStr >= 0 && (jStr < jNum || jNum < 0)) {
+						// literal string
+						arg = new Argument((LiteralQuotedToken) sequence.get(jStr));
+						i = jStr + 1;
+					} else if (jNum >= 0) {
+						// literal number
+						arg = new Argument((NumericToken) sequence.get(jNum));
+						i = jNum + 1;
 					}
-				} else if (jStr >= 0 && (jStr < jNum || jNum < 0)) {
-					// literal string
-					command = new PrintStreamCommand((LiteralQuotedToken) sequence.get(jStr));
-				} else if (jNum >= 0) {
-					// literal number
-					command = new PrintStreamCommand((NumericToken) sequence.get(jNum));
-				}
+					if (arg != null)
+						command.addArgument(arg);
+				} while (arg != null);
 			}
 		}
 		return command;
@@ -68,68 +65,110 @@ public class PrintStreamCommand extends FileCommand {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("PrintStreamCommand");
-		if (hasVariable()) {
-			sb.append(" writing ");
-			sb.append(getVariable().getSourceFragment());
-			if (isVariableIndexed()) {
-				sb.append(getVariableArrayIndexString());
+		for (int i = 0; i < getArguments().size(); i++) {
+			if (i > 0) {
+				sb.append(',');
 			}
-		} else if (hasLiteralString()) {
-			sb.append(" writing ");
-			sb.append(getLiteralString().getSourceFragment());
-		} else if (hasLiteralNumber()) {
-			sb.append(" writing ");
-			sb.append(getLiteralNumber().getSourceFragment());
+			sb.append(' ');
+			sb.append(getArguments().get(i).toString());
 		}
 		return sb.toString();
 	}
 
-	public boolean hasLiteralString() {
-		return getLiteralString() != null;
+	private void addArgument(Argument arg) {
+		getArguments().add(arg);
 	}
 
-	public boolean hasLiteralNumber() {
-		return getLiteralNumber() != null;
+	public List<Argument> getArguments() {
+		return arguments;
 	}
 
-	public boolean hasVariable() {
-		return getVariable() != null;
-	}
+	public static class Argument {
 
-	public boolean isVariableIndexed() {
-		return getVariableArrayIndexString() != null;
-	}
+		private LiteralQuotedToken literalString;
 
-	public LiteralQuotedToken getLiteralString() {
-		return literalString;
-	}
+		private NumericToken literalNumber;
 
-	private void setLiteralString(LiteralQuotedToken literalString) {
-		this.literalString = literalString;
-	}
+		private VariableToken variable;
 
-	public NumericToken getLiteralNumber() {
-		return literalNumber;
-	}
+		private String variableArrayIndexString;
 
-	private void setLiteralNumber(NumericToken literalNumber) {
-		this.literalNumber = literalNumber;
-	}
+		public Argument(LiteralQuotedToken literalString) {
+			setLiteralString(literalString);
+		}
 
-	public VariableToken getVariable() {
-		return variable;
-	}
+		public Argument(NumericToken literalNumber) {
+			setLiteralNumber(literalNumber);
+		}
 
-	private void setVariable(VariableToken variable) {
-		this.variable = variable;
-	}
+		public Argument(VariableToken variable) {
+			setVariable(variable);
+		}
 
-	public String getVariableArrayIndexString() {
-		return variableArrayIndexString;
-	}
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			if (hasVariable()) {
+				sb.append(getVariable().getSourceFragment());
+				if (isVariableIndexed()) {
+					sb.append(getVariableArrayIndexString());
+				}
+			} else if (hasLiteralString()) {
+				sb.append(getLiteralString().getSourceFragment());
+			} else if (hasLiteralNumber()) {
+				sb.append(getLiteralNumber().getSourceFragment());
+			}
+			return sb.toString();
+		}
 
-	private void setVariableArrayIndexString(String indexString) {
-		this.variableArrayIndexString = indexString;
+		public boolean hasLiteralString() {
+			return getLiteralString() != null;
+		}
+
+		public boolean hasLiteralNumber() {
+			return getLiteralNumber() != null;
+		}
+
+		public boolean hasVariable() {
+			return getVariable() != null;
+		}
+
+		public boolean isVariableIndexed() {
+			return getVariableArrayIndexString() != null;
+		}
+
+		public LiteralQuotedToken getLiteralString() {
+			return literalString;
+		}
+
+		private void setLiteralString(LiteralQuotedToken literalString) {
+			this.literalString = literalString;
+		}
+
+		public NumericToken getLiteralNumber() {
+			return literalNumber;
+		}
+
+		private void setLiteralNumber(NumericToken literalNumber) {
+			this.literalNumber = literalNumber;
+		}
+
+		public VariableToken getVariable() {
+			return variable;
+		}
+
+		private void setVariable(VariableToken variable) {
+			this.variable = variable;
+		}
+
+		public String getVariableArrayIndexString() {
+			return variableArrayIndexString;
+		}
+
+		public void setVariableArrayIndexString(String indexString) {
+			this.variableArrayIndexString = indexString;
+		}
+
 	}
 
 }

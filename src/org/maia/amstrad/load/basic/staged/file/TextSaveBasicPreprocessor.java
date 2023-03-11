@@ -16,6 +16,7 @@ import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.load.basic.staged.file.PrintStreamCommand.Argument;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 
@@ -107,28 +108,33 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 					PrintStreamCommand command = PrintStreamCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
 						BasicSourceTokenSequence commandSeq = new BasicSourceTokenSequence();
-						commandSeq.append(listener.getTextBufferVariable(), stf.createOperator("="));
-						if (command.hasVariable()) {
-							BasicSourceTokenSequence varSeq = new BasicSourceTokenSequence();
-							varSeq.append(command.getVariable());
-							if (command.isVariableIndexed()) {
-								varSeq.append(stf.createLiteral(command.getVariableArrayIndexString()));
+						for (int argi = 0; argi < command.getArguments().size(); argi++) {
+							if (argi > 0)
+								commandSeq.append(stf.createInstructionSeparator());
+							Argument commandArg = command.getArguments().get(argi);
+							commandSeq.append(listener.getTextBufferVariable(), stf.createOperator("="));
+							if (commandArg.hasVariable()) {
+								BasicSourceTokenSequence varSeq = new BasicSourceTokenSequence();
+								varSeq.append(commandArg.getVariable());
+								if (commandArg.isVariableIndexed()) {
+									varSeq.append(stf.createLiteral(commandArg.getVariableArrayIndexString()));
+								}
+								if (commandArg.getVariable() instanceof StringTypedVariableToken) {
+									commandSeq.append(varSeq);
+								} else {
+									commandSeq.append(stf.createBasicKeyword("STR$"), stf.createLiteral("("));
+									commandSeq.append(varSeq);
+									commandSeq.append(stf.createLiteral(")"));
+								}
+							} else if (commandArg.hasLiteralString()) {
+								commandSeq.append(commandArg.getLiteralString());
+							} else if (commandArg.hasLiteralNumber()) {
+								commandSeq.append(stf.createBasicKeyword("STR$"), stf.createLiteral("("),
+										commandArg.getLiteralNumber(), stf.createLiteral(")"));
 							}
-							if (command.getVariable() instanceof StringTypedVariableToken) {
-								commandSeq.append(varSeq);
-							} else {
-								commandSeq.append(stf.createBasicKeyword("STR$"), stf.createLiteral("("));
-								commandSeq.append(varSeq);
-								commandSeq.append(stf.createLiteral(")"));
-							}
-						} else if (command.hasLiteralString()) {
-							commandSeq.append(command.getLiteralString());
-						} else if (command.hasLiteralNumber()) {
-							commandSeq.append(stf.createBasicKeyword("STR$"), stf.createLiteral("("),
-									command.getLiteralNumber(), stf.createLiteral(")"));
+							commandSeq.append(stf.createInstructionSeparator());
+							commandSeq.append(createWaitResumeMacroInvocationSequence(session, addrTrap, commandRef));
 						}
-						commandSeq.append(stf.createInstructionSeparator());
-						commandSeq.append(createWaitResumeMacroInvocationSequence(session, addrTrap, commandRef));
 						sequence.replaceRange(i, j, commandSeq);
 					}
 					i = sequence.getNextIndexOf(PRINT, i + 1);

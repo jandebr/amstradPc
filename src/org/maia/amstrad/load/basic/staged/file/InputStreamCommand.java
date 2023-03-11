@@ -1,22 +1,19 @@
 package org.maia.amstrad.load.basic.staged.file;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
-import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
 public class InputStreamCommand extends FileCommand {
 
-	private VariableToken variable;
-
-	private String variableArrayIndexString;
+	private List<Argument> arguments;
 
 	public InputStreamCommand() {
-	}
-
-	private InputStreamCommand(VariableToken variable) {
-		setVariable(variable);
+		this.arguments = new Vector<Argument>();
 	}
 
 	public static InputStreamCommand parseFrom(BasicSourceTokenSequence sequence) throws BasicException {
@@ -26,17 +23,26 @@ public class InputStreamCommand extends FileCommand {
 		if (i >= 0 && i < sequence.size() - 1) {
 			if (sequence.get(i + 1).equals(stf.createPositiveIntegerSingleDigitDecimal(9))) {
 				i += 2;
-				int j = sequence.getNextIndexOf(VariableToken.class, i);
-				if (j >= 0) {
-					command = new InputStreamCommand((VariableToken) sequence.get(j));
-					// array index?
-					if (j < sequence.size() - 1 && sequence.get(j + 1).equals(stf.createLiteral("("))) {
-						int k = sequence.getNextIndexOf(stf.createLiteral(")"), j + 2);
-						if (k >= 0) {
-							command.setVariableArrayIndexString(sequence.subSequence(j + 1, k + 1).getSourceCode());
+				command = new InputStreamCommand();
+				Argument arg;
+				do {
+					arg = null;
+					int j = sequence.getNextIndexOf(VariableToken.class, i);
+					if (j >= 0) {
+						arg = new Argument((VariableToken) sequence.get(j));
+						i = j + 1;
+						// array index?
+						if (j < sequence.size() - 1 && sequence.get(j + 1).equals(stf.createLiteral("("))) {
+							int k = sequence.getNextIndexOf(stf.createLiteral(")"), j + 2);
+							if (k >= 0) {
+								arg.setVariableArrayIndexString(sequence.subSequence(j + 1, k + 1).getSourceCode());
+								i = k + 1;
+							}
 						}
 					}
-				}
+					if (arg != null)
+						command.addArgument(arg);
+				} while (arg != null);
 			}
 		}
 		return command;
@@ -46,38 +52,64 @@ public class InputStreamCommand extends FileCommand {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("InputStreamCommand");
-		if (hasVariable()) {
-			sb.append(" reading into ");
-			sb.append(getVariable().getSourceFragment());
-			if (isVariableIndexed()) {
-				sb.append(getVariableArrayIndexString());
+		for (int i = 0; i < getArguments().size(); i++) {
+			if (i > 0) {
+				sb.append(',');
 			}
+			sb.append(' ');
+			sb.append(getArguments().get(i).toString());
 		}
 		return sb.toString();
 	}
 
-	public boolean hasVariable() {
-		return getVariable() != null;
+	private void addArgument(Argument arg) {
+		getArguments().add(arg);
 	}
 
-	public boolean isVariableIndexed() {
-		return getVariableArrayIndexString() != null;
+	public List<Argument> getArguments() {
+		return arguments;
 	}
 
-	public VariableToken getVariable() {
-		return variable;
-	}
+	public static class Argument {
 
-	private void setVariable(VariableToken variable) {
-		this.variable = variable;
-	}
+		private VariableToken variable;
 
-	public String getVariableArrayIndexString() {
-		return variableArrayIndexString;
-	}
+		private String variableArrayIndexString;
 
-	private void setVariableArrayIndexString(String indexString) {
-		this.variableArrayIndexString = indexString;
+		public Argument(VariableToken variable) {
+			setVariable(variable);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(getVariable().getSourceFragment());
+			if (isVariableIndexed()) {
+				sb.append(getVariableArrayIndexString());
+			}
+			return sb.toString();
+		}
+
+		public boolean isVariableIndexed() {
+			return getVariableArrayIndexString() != null;
+		}
+
+		public VariableToken getVariable() {
+			return variable;
+		}
+
+		private void setVariable(VariableToken variable) {
+			this.variable = variable;
+		}
+
+		public String getVariableArrayIndexString() {
+			return variableArrayIndexString;
+		}
+
+		public void setVariableArrayIndexString(String indexString) {
+			this.variableArrayIndexString = indexString;
+		}
+
 	}
 
 }
