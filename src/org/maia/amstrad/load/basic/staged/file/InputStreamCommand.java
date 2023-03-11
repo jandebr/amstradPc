@@ -4,17 +4,18 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
 public class InputStreamCommand extends FileCommand {
 
-	private StringTypedVariableToken variable;
+	private VariableToken variable;
 
 	private String variableArrayIndexString;
 
 	public InputStreamCommand() {
 	}
 
-	private InputStreamCommand(StringTypedVariableToken variable) {
+	private InputStreamCommand(VariableToken variable) {
 		setVariable(variable);
 	}
 
@@ -25,9 +26,9 @@ public class InputStreamCommand extends FileCommand {
 		if (i >= 0 && i < sequence.size() - 1) {
 			if (sequence.get(i + 1).equals(stf.createPositiveIntegerSingleDigitDecimal(9))) {
 				i += 2;
-				int j = sequence.getNextIndexOf(StringTypedVariableToken.class, i);
+				int j = sequence.getNextIndexOf(VariableToken.class, i);
 				if (j >= 0) {
-					command = new InputStreamCommand((StringTypedVariableToken) sequence.get(j));
+					command = new InputStreamCommand((VariableToken) sequence.get(j));
 					// array index?
 					if (j < sequence.size() - 1 && sequence.get(j + 1).equals(stf.createLiteral("("))) {
 						int k = sequence.getNextIndexOf(stf.createLiteral(")"), j + 2);
@@ -63,11 +64,11 @@ public class InputStreamCommand extends FileCommand {
 		return getVariableArrayIndexString() != null;
 	}
 
-	public StringTypedVariableToken getVariable() {
+	public VariableToken getVariable() {
 		return variable;
 	}
 
-	private void setVariable(StringTypedVariableToken variable) {
+	private void setVariable(VariableToken variable) {
 		this.variable = variable;
 	}
 

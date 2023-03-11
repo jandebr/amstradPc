@@ -121,8 +121,11 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 								commandSeq.append(varSeq);
 								commandSeq.append(stf.createLiteral(")"));
 							}
-						} else if (command.hasLiteral()) {
-							commandSeq.append(command.getLiteral());
+						} else if (command.hasLiteralString()) {
+							commandSeq.append(command.getLiteralString());
+						} else if (command.hasLiteralNumber()) {
+							commandSeq.append(stf.createBasicKeyword("STR$"), stf.createLiteral("("),
+									command.getLiteralNumber(), stf.createLiteral(")"));
 						}
 						commandSeq.append(stf.createInstructionSeparator());
 						commandSeq.append(createWaitResumeMacroInvocationSequence(session, addrTrap, commandRef));

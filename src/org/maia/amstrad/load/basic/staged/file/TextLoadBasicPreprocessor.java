@@ -9,7 +9,6 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
@@ -128,15 +127,23 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 						j = sequence.size();
 					InputStreamCommand command = InputStreamCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						boolean stringVariable = command.getVariable() instanceof StringTypedVariableToken;
 						BasicSourceTokenSequence commandSeq = createWaitResumeMacroInvocationSequence(session, addrTrap,
 								commandRef);
 						commandSeq.append(stf.createInstructionSeparator(), command.getVariable());
 						if (command.isVariableIndexed()) {
 							commandSeq.append(stf.createLiteral(command.getVariableArrayIndexString()));
 						}
-						commandSeq.append(stf.createOperator("="), stf.createBasicKeyword("LEFT$"),
-								stf.createLiteral("("), listener.getTextBufferVariable(), stf.createLiteral(","),
+						commandSeq.append(stf.createOperator("="));
+						if (!stringVariable) {
+							commandSeq.append(stf.createBasicKeyword("VAL"), stf.createLiteral("("));
+						}
+						commandSeq.append(stf.createBasicKeyword("LEFT$"), stf.createLiteral("("),
+								listener.getTextBufferVariable(), stf.createLiteral(","),
 								listener.getTextLengthVariable(), stf.createLiteral(")"));
+						if (!stringVariable) {
+							commandSeq.append(stf.createLiteral(")"));
+						}
 						sequence.replaceRange(i, j, commandSeq);
 					}
 					i = sequence.getNextIndexOf(INPUT, i + 1);
