@@ -12,7 +12,11 @@ public class AmstradMain {
 		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		frame.installMenuBar();
+		if (context.isKioskMode()) {
+			frame.installPopupMenu();
+		} else {
+			frame.installMenuBar();
+		}
 		if (args.length == 0) {
 			amstradPc.start();
 			amstradPc.getMonitor().setWindowAlwaysOnTop(context.isKioskMode());

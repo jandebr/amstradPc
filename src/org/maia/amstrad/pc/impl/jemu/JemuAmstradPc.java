@@ -655,6 +655,11 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
+		public JComponent getDisplayComponent() {
+			return getJemuInstance().getDisplay();
+		}
+
+		@Override
 		public void setMonitorMode(AmstradMonitorMode mode) {
 			checkNotTerminated();
 			if (mode != null && !mode.equals(getMonitorMode())) {

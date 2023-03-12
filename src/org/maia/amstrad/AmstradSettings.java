@@ -34,6 +34,8 @@ public abstract class AmstradSettings {
 		set(key, String.valueOf(value));
 	}
 
+	public abstract void flush();
+
 	public abstract void reset();
 
 }

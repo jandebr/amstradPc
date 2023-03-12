@@ -1,9 +1,13 @@
 package org.maia.amstrad.pc.monitor;
 
 import java.awt.Component;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.JComponent;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradDevice;
@@ -21,6 +25,8 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	}
 
 	public abstract Component getDisplayPane();
+
+	public abstract JComponent getDisplayComponent();
 
 	public AmstradMonitorMode getMonitorMode() {
 		return AmstradFactory.getInstance().getAmstradContext().getUserSettings().getMonitorMode();

@@ -1,10 +1,14 @@
 package org.maia.amstrad.pc;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 
 import org.maia.amstrad.AmstradFactory;
 
@@ -34,6 +38,12 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	public void installMenuBar() {
 		setJMenuBar(AmstradFactory.getInstance().createMenuBar(getAmstradPc()));
+	}
+
+	public void installPopupMenu() {
+		JPopupMenu popupMenu = AmstradFactory.getInstance().createPopupMenu(getAmstradPc());
+		PopupMenuController controller = new PopupMenuController(popupMenu);
+		getAmstradPc().getMonitor().getDisplayComponent().addMouseListener(controller);
 	}
 
 	public void makeFullscreen() {
@@ -96,6 +106,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		if (!getAmstradPc().isTerminated()) {
 			getAmstradPc().terminate();
 		}
+		AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
 	}
 
 	@Override
@@ -128,6 +139,40 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	private void setClosing(boolean closing) {
 		this.closing = closing;
+	}
+
+	private class PopupMenuController extends MouseAdapter {
+
+		private JPopupMenu popupMenu;
+
+		public PopupMenuController(JPopupMenu popupMenu) {
+			this.popupMenu = popupMenu;
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			handleMouseEvent(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			handleMouseEvent(e);
+		}
+
+		private void handleMouseEvent(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				Component parent = getAmstradPc().getMonitor().getDisplayComponent();
+				getPopupMenu().show(parent, e.getX() + 2, e.getY() + 2);
+			} else {
+				getPopupMenu().setVisible(false);
+				getAmstradPc().getMonitor().getDisplayPane().revalidate();
+			}
+		}
+
+		public JPopupMenu getPopupMenu() {
+			return popupMenu;
+		}
+
 	}
 
 }

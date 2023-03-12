@@ -30,10 +30,15 @@ public class AmstradSettingsImpl extends AmstradSettings {
 
 	@Override
 	public synchronized void reset() {
+		flush();
+		this.properties = loadProperties();
+	}
+
+	@Override
+	public synchronized void flush() {
 		if (isDirty()) {
 			saveProperties();
 		}
-		this.properties = loadProperties();
 	}
 
 	@Override
