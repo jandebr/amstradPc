@@ -8,6 +8,7 @@ import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.load.AmstradProgramLoader;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.load.AmstradProgramRuntime;
+import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
@@ -20,9 +21,12 @@ public abstract class AmstradPc {
 
 	private AmstradPcFrame frame;
 
+	private AmstradPcActions actions;
+
 	private List<AmstradPcStateListener> stateListeners;
 
 	protected AmstradPc() {
+		this.actions = new AmstradPcActions(this);
 		this.stateListeners = new Vector<AmstradPcStateListener>();
 	}
 
@@ -153,6 +157,10 @@ public abstract class AmstradPc {
 
 	private void setFrame(AmstradPcFrame frame) {
 		this.frame = frame;
+	}
+
+	public AmstradPcActions getActions() {
+		return actions;
 	}
 
 	private List<AmstradPcStateListener> getStateListenersFixedList() {

@@ -1,4 +1,4 @@
-package org.maia.amstrad.basic.locomotive.action;
+package org.maia.amstrad.pc.action.basic;
 
 import java.awt.event.ActionEvent;
 

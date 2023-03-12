@@ -31,7 +31,9 @@ public class MonitorFullscreenAction extends AmstradPcAction {
 	}
 
 	private void toggleFullscreen() {
-		getAmstradPc().getMonitor().toggleWindowFullscreen();
+		if (isEnabled()) {
+			getAmstradPc().getMonitor().toggleWindowFullscreen();
+		}
 	}
 
 }

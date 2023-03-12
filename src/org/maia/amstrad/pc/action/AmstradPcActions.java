@@ -1,38 +1,18 @@
-package org.maia.amstrad;
+package org.maia.amstrad.pc.action;
 
-import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicBreakEscapeAction;
-import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicClearAction;
-import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicClsAction;
-import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicListAction;
-import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicNewAction;
-import org.maia.amstrad.basic.locomotive.action.LocomotiveBasicRunAction;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserSetupAction;
 import org.maia.amstrad.gui.browser.action.ProgramInfoAction;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.action.AutoTypeFileAction;
-import org.maia.amstrad.pc.action.DisplaySystemColorsAction;
-import org.maia.amstrad.pc.action.LoadBasicBinaryFileAction;
-import org.maia.amstrad.pc.action.LoadBasicSourceFileAction;
-import org.maia.amstrad.pc.action.LoadSnapshotFileAction;
-import org.maia.amstrad.pc.action.MonitorBilinearEffectAction;
-import org.maia.amstrad.pc.action.MonitorEffectAction;
-import org.maia.amstrad.pc.action.MonitorFullscreenAction;
-import org.maia.amstrad.pc.action.MonitorModeAction;
-import org.maia.amstrad.pc.action.MonitorScanLinesEffectAction;
-import org.maia.amstrad.pc.action.PauseResumeAction;
-import org.maia.amstrad.pc.action.QuitAction;
-import org.maia.amstrad.pc.action.RebootAction;
-import org.maia.amstrad.pc.action.SaveBasicBinaryFileAction;
-import org.maia.amstrad.pc.action.SaveBasicSourceFileAction;
-import org.maia.amstrad.pc.action.SaveSnapshotFileAction;
-import org.maia.amstrad.pc.action.ScreenshotAction;
-import org.maia.amstrad.pc.action.ScreenshotWithMonitorEffectAction;
-import org.maia.amstrad.pc.action.WindowAlwaysOnTopAction;
-import org.maia.amstrad.pc.action.WindowDynamicTitleAction;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicBreakEscapeAction;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicClearAction;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicClsAction;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicListAction;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicNewAction;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicRunAction;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 
-public class AmstradActions {
+public class AmstradPcActions {
 
 	/* File actions */
 
@@ -106,7 +86,7 @@ public class AmstradActions {
 
 	private MonitorFullscreenAction monitorFullscreenAction;
 
-	public AmstradActions(AmstradPc amstradPc) {
+	public AmstradPcActions(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 	}
 

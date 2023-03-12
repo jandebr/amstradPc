@@ -9,21 +9,11 @@ import org.maia.amstrad.program.AmstradProgramStoredInFile;
 public class AmstradMain {
 
 	public static void main(String[] args) throws Exception {
-		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		if (context.isKioskMode()) {
-			frame.installPopupMenu();
-		} else {
-			frame.installMenuBar();
-		}
+		frame.installMenu();
 		if (args.length == 0) {
 			amstradPc.start();
-			amstradPc.getMonitor().setWindowAlwaysOnTop(context.isKioskMode());
-			if (context.isKioskMode()) {
-				frame.makeFullscreen();
-				context.showProgramBrowser(amstradPc);
-			}
 		} else if (args.length == 1) {
 			amstradPc.launch(new AmstradProgramStoredInFile(new File(args[0])));
 		} else {

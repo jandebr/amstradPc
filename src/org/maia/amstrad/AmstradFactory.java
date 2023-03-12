@@ -24,6 +24,7 @@ import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
+import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.MonitorModeAction;
 import org.maia.amstrad.pc.impl.jemu.JemuAmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
@@ -47,10 +48,7 @@ public class AmstradFactory {
 
 	private AmstradContext context;
 
-	private Map<AmstradPc, AmstradActions> actionMap;
-
 	private AmstradFactory() {
-		this.actionMap = new HashMap<AmstradPc, AmstradActions>();
 	}
 
 	public AmstradContext getAmstradContext() {
@@ -70,7 +68,7 @@ public class AmstradFactory {
 	}
 
 	public JMenuBar createMenuBar(AmstradPc amstradPc) {
-		AmstradActions actions = getActionsFor(amstradPc);
+		AmstradPcActions actions = amstradPc.getActions();
 		JMenuBar menubar = new JMenuBar();
 		menubar.add(createFileMenu(actions));
 		menubar.add(createEmulatorMenu(actions));
@@ -80,7 +78,7 @@ public class AmstradFactory {
 	}
 
 	public JPopupMenu createPopupMenu(AmstradPc amstradPc) {
-		AmstradActions actions = getActionsFor(amstradPc);
+		AmstradPcActions actions = amstradPc.getActions();
 		JPopupMenu popup = new JPopupMenu("Amstrad Menu");
 		popup.add(createFileMenu(actions));
 		popup.add(createEmulatorMenu(actions));
@@ -89,7 +87,7 @@ public class AmstradFactory {
 		return popup;
 	}
 
-	private JMenu createFileMenu(AmstradActions actions) {
+	private JMenu createFileMenu(AmstradPcActions actions) {
 		JMenu menu = new JMenu("File");
 		JMenuItem item = new JMenuItem(actions.getProgramBrowserAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
@@ -117,7 +115,7 @@ public class AmstradFactory {
 		return menu;
 	}
 
-	private JMenu createEmulatorMenu(AmstradActions actions) {
+	private JMenu createEmulatorMenu(AmstradPcActions actions) {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(new JMenuItem(actions.getAutoTypeFileAction()));
 		menu.add(createBasicMenu(actions));
@@ -132,7 +130,7 @@ public class AmstradFactory {
 		return menu;
 	}
 
-	private JMenu createBasicMenu(AmstradActions actions) {
+	private JMenu createBasicMenu(AmstradPcActions actions) {
 		JMenu menu = new JMenu("Basic");
 		menu.add(new JMenuItem(actions.getLocomotiveBasicBreakEscapeAction()));
 		menu.add(new JSeparator());
@@ -144,7 +142,7 @@ public class AmstradFactory {
 		return menu;
 	}
 
-	private JMenu createMonitorMenu(AmstradActions actions) {
+	private JMenu createMonitorMenu(AmstradPcActions actions) {
 		JMenu menu = new JMenu("Monitor");
 		menu.add(new JMenuItem(actions.getDisplaySystemColorsAction()));
 		menu.add(createMonitorModeMenu(actions));
@@ -160,13 +158,13 @@ public class AmstradFactory {
 		return menu;
 	}
 
-	private JMenu createMonitorModeMenu(AmstradActions actions) {
+	private JMenu createMonitorModeMenu(AmstradPcActions actions) {
 		JMenu menu = new JMenu("Monitor type");
 		MonitorModeMenuHelper.addModesToMenu(menu, actions);
 		return menu;
 	}
 
-	private JMenu createMonitorEffectsMenu(AmstradActions actions) {
+	private JMenu createMonitorEffectsMenu(AmstradPcActions actions) {
 		JMenu menu = new JMenu("Effects");
 		MonitorEffectMenuHelper.addToMenu(menu, actions);
 		MonitorScanLinesEffectMenuHelper.addToMenu(menu, actions);
@@ -174,7 +172,7 @@ public class AmstradFactory {
 		return menu;
 	}
 
-	private JMenu createWindowMenu(AmstradActions actions) {
+	private JMenu createWindowMenu(AmstradPcActions actions) {
 		JMenu menu = new JMenu("Window");
 		WindowTitleAutoUpdateMenuHelper.addToMenu(menu, actions);
 		WindowAlwaysOnTopMenuHelper.addToMenu(menu, actions);
@@ -184,7 +182,9 @@ public class AmstradFactory {
 		menu.add(item);
 		// Prevent user to change window options when in kiosk mode
 		if (getAmstradContext().isKioskMode()) {
-			menu.setEnabled(false);
+			actions.getWindowDynamicTitleAction().setEnabled(false);
+			actions.getWindowAlwaysOnTopAction().setEnabled(false);
+			actions.getMonitorFullscreenAction().setEnabled(false);
 		}
 		return menu;
 	}
@@ -247,19 +247,6 @@ public class AmstradFactory {
 		return builder.build();
 	}
 
-	private AmstradActions getActionsFor(AmstradPc amstradPc) {
-		AmstradActions actions = getActionMap().get(amstradPc);
-		if (actions == null) {
-			actions = new AmstradActions(amstradPc);
-			getActionMap().put(amstradPc, actions);
-		}
-		return actions;
-	}
-
-	private Map<AmstradPc, AmstradActions> getActionMap() {
-		return actionMap;
-	}
-
 	public static AmstradFactory getInstance() {
 		if (instance == null) {
 			setInstance(new AmstradFactory());
@@ -308,7 +295,7 @@ public class AmstradFactory {
 
 		@Override
 		public void showProgramBrowser(AmstradPc amstradPc) {
-			ProgramBrowserAction browserAction = getActionsFor(amstradPc).getProgramBrowserAction();
+			ProgramBrowserAction browserAction = amstradPc.getActions().getProgramBrowserAction();
 			if (browserAction != null && !browserAction.isProgramBrowserShowing()) {
 				browserAction.showProgramBrowser();
 			}
@@ -323,7 +310,7 @@ public class AmstradFactory {
 		@Override
 		public void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective) {
 			basicProtectiveModes.put(amstradPc, Boolean.valueOf(protective));
-			AmstradActions actions = getActionsFor(amstradPc);
+			AmstradPcActions actions = amstradPc.getActions();
 			actions.getSaveBasicSourceFileAction().setEnabled(!protective);
 			actions.getSaveBasicBinaryFileAction().setEnabled(!protective);
 			actions.getSaveSnapshotFileAction().setEnabled(!protective);
@@ -348,7 +335,7 @@ public class AmstradFactory {
 			this.buttonGroup = buttonGroup;
 		}
 
-		public static void addModesToMenu(JMenu menu, AmstradActions actions) {
+		public static void addModesToMenu(JMenu menu, AmstradPcActions actions) {
 			JRadioButtonMenuItem colorMode = new JRadioButtonMenuItem(actions.getMonitorModeColorAction());
 			JRadioButtonMenuItem greenMode = new JRadioButtonMenuItem(actions.getMonitorModeGreenAction());
 			JRadioButtonMenuItem grayMode = new JRadioButtonMenuItem(actions.getMonitorModeGrayAction());
@@ -415,7 +402,7 @@ public class AmstradFactory {
 			super(action);
 		}
 
-		public static void addToMenu(JMenu menu, AmstradActions actions) {
+		public static void addToMenu(JMenu menu, AmstradPcActions actions) {
 			MonitorEffectMenuHelper helper = new MonitorEffectMenuHelper(actions.getMonitorEffectAction());
 			menu.add(helper.getCheckbox());
 		}
@@ -438,7 +425,7 @@ public class AmstradFactory {
 			super(action);
 		}
 
-		public static void addToMenu(JMenu menu, AmstradActions actions) {
+		public static void addToMenu(JMenu menu, AmstradPcActions actions) {
 			MonitorScanLinesEffectMenuHelper helper = new MonitorScanLinesEffectMenuHelper(
 					actions.getMonitorScanLinesEffectAction());
 			menu.add(helper.getCheckbox());
@@ -462,7 +449,7 @@ public class AmstradFactory {
 			super(action);
 		}
 
-		public static void addToMenu(JMenu menu, AmstradActions actions) {
+		public static void addToMenu(JMenu menu, AmstradPcActions actions) {
 			MonitorBilinearEffectMenuHelper helper = new MonitorBilinearEffectMenuHelper(
 					actions.getMonitorBilinearEffectAction());
 			menu.add(helper.getCheckbox());
@@ -486,7 +473,7 @@ public class AmstradFactory {
 			super(action);
 		}
 
-		public static void addToMenu(JMenu menu, AmstradActions actions) {
+		public static void addToMenu(JMenu menu, AmstradPcActions actions) {
 			WindowTitleAutoUpdateMenuHelper helper = new WindowTitleAutoUpdateMenuHelper(
 					actions.getWindowDynamicTitleAction());
 			menu.add(helper.getCheckbox());
@@ -510,7 +497,7 @@ public class AmstradFactory {
 			super(action);
 		}
 
-		public static void addToMenu(JMenu menu, AmstradActions actions) {
+		public static void addToMenu(JMenu menu, AmstradPcActions actions) {
 			WindowAlwaysOnTopMenuHelper helper = new WindowAlwaysOnTopMenuHelper(actions.getWindowAlwaysOnTopAction());
 			menu.add(helper.getCheckbox());
 		}

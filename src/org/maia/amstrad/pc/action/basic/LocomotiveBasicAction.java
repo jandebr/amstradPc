@@ -1,4 +1,4 @@
-package org.maia.amstrad.basic.locomotive.action;
+package org.maia.amstrad.pc.action.basic;
 
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;

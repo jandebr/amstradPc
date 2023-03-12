@@ -1,16 +1,16 @@
 package org.maia.amstrad.pc;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
 public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
 
@@ -36,18 +36,22 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		getContentPane().add(getAmstradPc().getMonitor().getDisplayPane(), BorderLayout.CENTER);
 	}
 
+	public void installMenu() {
+		if (isKioskMode()) {
+			installPopupMenu();
+		} else {
+			installMenuBar();
+		}
+	}
+
 	public void installMenuBar() {
 		setJMenuBar(AmstradFactory.getInstance().createMenuBar(getAmstradPc()));
 	}
 
 	public void installPopupMenu() {
 		JPopupMenu popupMenu = AmstradFactory.getInstance().createPopupMenu(getAmstradPc());
-		PopupMenuController controller = new PopupMenuController(popupMenu);
-		getAmstradPc().getMonitor().getDisplayComponent().addMouseListener(controller);
-	}
-
-	public void makeFullscreen() {
-		getAmstradPc().getMonitor().makeWindowFullscreen();
+		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(popupMenu);
+		popupMenu.addPopupMenuListener(new PopupMenuController());
 	}
 
 	public boolean isFullscreen() {
@@ -60,6 +64,17 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
+		AmstradMonitor monitor = amstradPc.getMonitor();
+		if (isKioskMode()) {
+			AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(amstradPc);
+			monitor.setWindowAlwaysOnTop(true);
+			monitor.makeWindowFullscreen();
+		}
+		if (monitor.isWindowFullscreen()) {
+			// forcing the display to nicely align in the middle
+			monitor.toggleWindowFullscreen();
+			monitor.toggleWindowFullscreen();
+		}
 		setVisible(true);
 	}
 
@@ -133,6 +148,10 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		return amstradPc;
 	}
 
+	private boolean isKioskMode() {
+		return AmstradFactory.getInstance().getAmstradContext().isKioskMode();
+	}
+
 	private boolean isClosing() {
 		return closing;
 	}
@@ -141,36 +160,23 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		this.closing = closing;
 	}
 
-	private class PopupMenuController extends MouseAdapter {
+	private class PopupMenuController implements PopupMenuListener {
 
-		private JPopupMenu popupMenu;
-
-		public PopupMenuController(JPopupMenu popupMenu) {
-			this.popupMenu = popupMenu;
+		public PopupMenuController() {
 		}
 
 		@Override
-		public void mousePressed(MouseEvent e) {
-			handleMouseEvent(e);
+		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 		}
 
 		@Override
-		public void mouseReleased(MouseEvent e) {
-			handleMouseEvent(e);
+		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+			getAmstradPc().getMonitor().getDisplayPane().revalidate(); // ensures the display is restored properly where
+																		// the popup menu was drawn in overlay
 		}
 
-		private void handleMouseEvent(MouseEvent e) {
-			if (e.isPopupTrigger()) {
-				Component parent = getAmstradPc().getMonitor().getDisplayComponent();
-				getPopupMenu().show(parent, e.getX() + 2, e.getY() + 2);
-			} else {
-				getPopupMenu().setVisible(false);
-				getAmstradPc().getMonitor().getDisplayPane().revalidate();
-			}
-		}
-
-		public JPopupMenu getPopupMenu() {
-			return popupMenu;
+		@Override
+		public void popupMenuCanceled(PopupMenuEvent e) {
 		}
 
 	}

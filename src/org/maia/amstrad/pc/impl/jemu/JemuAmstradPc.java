@@ -162,11 +162,6 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			waitUntilReady();
 		if (silent)
 			Switches.FloppySound = floppySound;
-		if (getMonitor().isWindowFullscreen()) {
-			// forcing the display to nicely align in the middle
-			getMonitor().toggleWindowFullscreen();
-			getMonitor().toggleWindowFullscreen();
-		}
 	}
 
 	@Override
