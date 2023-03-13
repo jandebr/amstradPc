@@ -416,7 +416,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			if (stack.size() > 1) {
 				stack.browseBack();
-			} else {
+			} else if (!isKioskMode()) {
 				close();
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
@@ -497,6 +497,15 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
 		} else {
 			setCurrentWindow(Window.MAIN);
+		}
+	}
+
+	@Override
+	public void closeMainWindow() {
+		if (isKioskMode()) {
+			getAmstradPc().terminate();
+		} else {
+			super.closeMainWindow();
 		}
 	}
 

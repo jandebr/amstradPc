@@ -77,7 +77,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		invokeEndingMacroOnBreak(sourceCode, scope, session);
 		invokeEndingMacroOnEndInstructions(sourceCode, scope, session);
 		// invokeEndingMacroOnGotoLoops(sourceCode, scope, session);
-		invokeEndingMacroAtCodeHorizon(sourceCode, session);
+		// invokeEndingMacroAtCodeHorizon(sourceCode, session);
 	}
 
 	private void invokeEndingMacroOnBreak(BasicSourceCode sourceCode, BasicLineNumberScope scope,

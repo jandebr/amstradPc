@@ -36,7 +36,6 @@ public class BasicVariablesTest {
 	public void run(AmstradProgram program) throws AmstradProgramException, BasicException {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		frame.installMenuBar();
 		amstradPc.launch(program);
 		LocomotiveBasicRuntime runtime = (LocomotiveBasicRuntime) amstradPc.getBasicRuntime();
 		runtime.waitUntilReady();

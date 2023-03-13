@@ -5,11 +5,16 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+import javax.swing.MenuElement;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.pc.action.AmstradPcMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
 public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
@@ -38,20 +43,23 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	public void installMenu() {
 		if (isKioskMode()) {
-			installPopupMenu();
+			JPopupMenu popupMenu = new AmstradPcMenuMaker(getAmstradPc().getActions(),
+					AmstradPcMenuMaker.MenuFlavor.KIOSK_MENU).createPopupMenu();
+			getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(popupMenu);
+			popupMenu.addPopupMenuListener(new PopupMenuController());
+			installControllerOnMenus(popupMenu, new MenuController());
 		} else {
-			installMenuBar();
+			setJMenuBar(new AmstradPcMenuMaker(getAmstradPc().getActions()).createMenuBar());
 		}
 	}
 
-	public void installMenuBar() {
-		setJMenuBar(AmstradFactory.getInstance().createMenuBar(getAmstradPc()));
-	}
-
-	public void installPopupMenu() {
-		JPopupMenu popupMenu = AmstradFactory.getInstance().createPopupMenu(getAmstradPc());
-		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(popupMenu);
-		popupMenu.addPopupMenuListener(new PopupMenuController());
+	private void installControllerOnMenus(MenuElement element, MenuController controller) {
+		if (element instanceof JMenu) {
+			((JMenu) element).addMenuListener(controller);
+		}
+		for (MenuElement child : element.getSubElements()) {
+			installControllerOnMenus(child, controller);
+		}
 	}
 
 	public boolean isFullscreen() {
@@ -171,12 +179,31 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 		@Override
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-			getAmstradPc().getMonitor().getDisplayPane().revalidate(); // ensures the display is restored properly where
-																		// the popup menu was drawn in overlay
+			getAmstradPc().getMonitor().getDisplayPane().revalidate(); // ensures the display is restored properly
 		}
 
 		@Override
 		public void popupMenuCanceled(PopupMenuEvent e) {
+		}
+
+	}
+
+	private class MenuController implements MenuListener {
+
+		public MenuController() {
+		}
+
+		@Override
+		public void menuSelected(MenuEvent e) {
+		}
+
+		@Override
+		public void menuDeselected(MenuEvent e) {
+			getAmstradPc().getMonitor().getDisplayPane().revalidate(); // ensures the display is restored properly
+		}
+
+		@Override
+		public void menuCanceled(MenuEvent e) {
 		}
 
 	}

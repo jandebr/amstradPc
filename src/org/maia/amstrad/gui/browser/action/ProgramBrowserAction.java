@@ -48,10 +48,12 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	}
 
 	public void toggleProgramBrowser() {
-		if (NAME_OPEN.equals(getName())) {
-			showProgramBrowser();
-		} else {
-			hideProgramBrowser();
+		if (isEnabled()) {
+			if (NAME_OPEN.equals(getName())) {
+				showProgramBrowser();
+			} else {
+				hideProgramBrowser();
+			}
 		}
 	}
 
@@ -83,8 +85,10 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	private void updateName() {
 		if (isProgramBrowserShowing()) {
 			changeName(NAME_CLOSE);
+			setEnabled(!AmstradFactory.getInstance().getAmstradContext().isKioskMode());
 		} else {
 			changeName(NAME_OPEN);
+			setEnabled(true);
 		}
 	}
 

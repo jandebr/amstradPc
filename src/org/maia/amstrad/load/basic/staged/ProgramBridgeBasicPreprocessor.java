@@ -43,8 +43,7 @@ public class ProgramBridgeBasicPreprocessor extends StagedBasicPreprocessor {
 	private void addProgramBridgeMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int ln = getNextAvailableLineNumber(sourceCode);
-		// Goto line number will be replaced by EndingBasicPreprocessor
-		addCodeLine(sourceCode, ln, "GOTO 0" + (session.produceRemarks() ? ":REM @bridge" : ""));
+		addCodeLine(sourceCode, ln, "GOTO " + ln + (session.produceRemarks() ? ":REM @bridge" : ""));
 		session.addMacro(new ProgramBridgeMacro(new BasicLineNumberRange(ln)));
 	}
 

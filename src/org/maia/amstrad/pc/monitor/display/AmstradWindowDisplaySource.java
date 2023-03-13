@@ -134,7 +134,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		if (isFocusOnModalWindowCloseButton()) {
 			closeModalWindow();
 		} else if (isFocusOnWindowCloseButton(canvas)) {
-			close();
+			closeMainWindow();
 		}
 	}
 
@@ -146,7 +146,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			if (isModalWindowOpen()) {
 				closeModalWindow();
 			} else {
-				close();
+				closeMainWindow();
 			}
 		}
 	}
@@ -154,6 +154,10 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 	public void closeModalWindow() {
 		setModalWindowOpen(false);
 		setModalWindowCloseButtonBounds(null);
+	}
+
+	public void closeMainWindow() {
+		close();
 	}
 
 	private void updateCursor() {
