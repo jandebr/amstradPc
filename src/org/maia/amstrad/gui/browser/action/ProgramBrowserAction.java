@@ -21,10 +21,6 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 
 	private List<ProgramBrowserListener> browserListeners;
 
-	private static String NAME_OPEN = "Open program browser";
-
-	private static String NAME_CLOSE = "Close program browser";
-
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		this.browserListeners = new Vector<ProgramBrowserListener>();
@@ -48,12 +44,10 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	}
 
 	public void toggleProgramBrowser() {
-		if (isEnabled()) {
-			if (NAME_OPEN.equals(getName())) {
-				showProgramBrowser();
-			} else {
-				hideProgramBrowser();
-			}
+		if (getNameToOpen().equals(getName())) {
+			showProgramBrowser();
+		} else {
+			closeProgramBrowser();
 		}
 	}
 
@@ -63,9 +57,12 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		}
 	}
 
-	public void hideProgramBrowser() {
+	public void closeProgramBrowser() {
 		if (isEnabled()) {
 			getAmstradPc().getMonitor().resetDisplaySource();
+			if (isKioskMode()) {
+				getAmstradPc().reboot(false, false);
+			}
 		}
 	}
 
@@ -84,12 +81,22 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 
 	private void updateName() {
 		if (isProgramBrowserShowing()) {
-			changeName(NAME_CLOSE);
-			setEnabled(!AmstradFactory.getInstance().getAmstradContext().isKioskMode());
+			changeName(getNameToClose());
 		} else {
-			changeName(NAME_OPEN);
-			setEnabled(true);
+			changeName(getNameToOpen());
 		}
+	}
+
+	private String getNameToOpen() {
+		return isKioskMode() ? "Program browser" : "Open program browser";
+	}
+
+	private String getNameToClose() {
+		return isKioskMode() ? "Basic new prompt" : "Close program browser";
+	}
+
+	private boolean isKioskMode() {
+		return AmstradFactory.getInstance().getAmstradContext().isKioskMode();
 	}
 
 	public boolean isProgramBrowserShowing() {

@@ -1,6 +1,8 @@
 package org.maia.amstrad.pc;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -16,6 +18,7 @@ import javax.swing.event.PopupMenuListener;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.action.AmstradPcMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.util.AmstradUtils;
 
 public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
 
@@ -39,6 +42,10 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	protected void buildUI() {
 		getContentPane().add(getAmstradPc().getMonitor().getDisplayPane(), BorderLayout.CENTER);
+	}
+
+	public static Dimension getScreenSize() {
+		return Toolkit.getDefaultToolkit().getScreenSize();
 	}
 
 	public void installMenu() {
@@ -78,12 +85,14 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 			monitor.setWindowAlwaysOnTop(true);
 			monitor.makeWindowFullscreen();
 		}
-		if (monitor.isWindowFullscreen()) {
+		setVisible(true);
+		int count = 0;
+		if (monitor.isWindowFullscreen() && monitor.getDisplayPane().getLocationOnScreen().getX() < 0 && count++ < 3) {
 			// forcing the display to nicely align in the middle
+			AmstradUtils.sleep(100L);
 			monitor.toggleWindowFullscreen();
 			monitor.toggleWindowFullscreen();
 		}
-		setVisible(true);
 	}
 
 	@Override
@@ -152,6 +161,10 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		// no action
 	}
 
+	private void refreshUI() {
+		getAmstradPc().getMonitor().getDisplayPane().revalidate();
+	}
+
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}
@@ -179,7 +192,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 		@Override
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-			getAmstradPc().getMonitor().getDisplayPane().revalidate(); // ensures the display is restored properly
+			refreshUI(); // ensures the display is restored properly
 		}
 
 		@Override
@@ -199,7 +212,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 		@Override
 		public void menuDeselected(MenuEvent e) {
-			getAmstradPc().getMonitor().getDisplayPane().revalidate(); // ensures the display is restored properly
+			refreshUI(); // ensures the display is restored properly
 		}
 
 		@Override

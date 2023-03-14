@@ -645,6 +645,11 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
+		public AmstradGraphicsContext getGraphicsContext() {
+			return JemuAmstradPc.this.getGraphicsContext();
+		}
+
+		@Override
 		public Component getDisplayPane() {
 			return getJemuInstance();
 		}

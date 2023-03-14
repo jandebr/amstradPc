@@ -1,10 +1,13 @@
 package org.maia.amstrad.pc.action;
 
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
@@ -20,12 +23,21 @@ import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 
 public class AmstradPcMenuMaker {
 
 	private AmstradPcActions actions;
 
 	private MenuFlavor menuFlavor;
+
+	private Font kioskMenuItemFont;
+
+	private static final int KIOSK_COLOR_BACKGROUND = 0;
+
+	private static final int KIOSK_COLOR_FOREGROUND = 26;
+
+	private static final int KIOSK_COLOR_BORDER = 3;
 
 	public AmstradPcMenuMaker(AmstradPcActions actions) {
 		this(actions, MenuFlavor.FULL_MENU);
@@ -42,7 +54,7 @@ public class AmstradPcMenuMaker {
 		menubar.add(createEmulatorMenu());
 		menubar.add(createMonitorMenu());
 		menubar.add(createWindowMenu());
-		return menubar;
+		return updateMenuBarLookAndFeel(menubar);
 	}
 
 	public JPopupMenu createPopupMenu() {
@@ -59,7 +71,7 @@ public class AmstradPcMenuMaker {
 		popup.add(createEmulatorMenu());
 		popup.add(createMonitorMenu());
 		popup.add(createWindowMenu());
-		return popup;
+		return updatePopupMenuLookAndFeel(popup);
 	}
 
 	private JPopupMenu createKioskPopupMenu() {
@@ -75,7 +87,7 @@ public class AmstradPcMenuMaker {
 		popup.add(createMonitorEffectsMenu());
 		popup.add(new JSeparator());
 		popup.add(createQuitMenuItem());
-		return popup;
+		return updatePopupMenuLookAndFeel(popup);
 	}
 
 	private JMenu createFileMenu() {
@@ -93,57 +105,57 @@ public class AmstradPcMenuMaker {
 		menu.add(createSaveSnapshotFileMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createQuitMenuItem());
-		return (JMenu) updateLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu);
 	}
 
 	private JMenuItem createProgramBrowserMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getProgramBrowserAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenuItem createProgramBrowserSetupMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getProgramBrowserSetupAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenuItem createProgramInfoMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getProgramInfoAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenuItem createLoadBasicSourceFileMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLoadBasicSourceFileAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLoadBasicSourceFileAction()));
 	}
 
 	private JMenuItem createLoadBasicBinaryFileMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLoadBasicBinaryFileAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLoadBasicBinaryFileAction()));
 	}
 
 	private JMenuItem createLoadSnapshotFileMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLoadSnapshotFileAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLoadSnapshotFileAction()));
 	}
 
 	private JMenuItem createSaveBasicSourceFileMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getSaveBasicSourceFileAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getSaveBasicSourceFileAction()));
 	}
 
 	private JMenuItem createSaveBasicBinaryFileMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getSaveBasicBinaryFileAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getSaveBasicBinaryFileAction()));
 	}
 
 	private JMenuItem createSaveSnapshotFileMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getSaveSnapshotFileAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getSaveSnapshotFileAction()));
 	}
 
 	private JMenuItem createQuitMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getQuitAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenu createEmulatorMenu() {
@@ -153,24 +165,24 @@ public class AmstradPcMenuMaker {
 		menu.add(new JSeparator());
 		menu.add(createPauseResumeMenuItem());
 		menu.add(createRebootMenuItem());
-		return (JMenu) updateLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu);
 	}
 
 	private JMenuItem createAutoTypeFileMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getAutoTypeFileAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getAutoTypeFileAction()));
 	}
 
 	private JMenuItem createPauseResumeMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getPauseResumeAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0));
-		return updateLookAndFeel(item, UIResources.pauseIcon);
+		return updateMenuItemLookAndFeel(item, UIResources.pauseIcon);
 	}
 
 	private JMenuItem createRebootMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getRebootAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenu createBasicMenu() {
@@ -182,31 +194,31 @@ public class AmstradPcMenuMaker {
 		menu.add(createLocomotiveBasicListMenuItem());
 		menu.add(createLocomotiveBasicClsMenuItem());
 		menu.add(createLocomotiveBasicClearMenuItem());
-		return (JMenu) updateLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu);
 	}
 
 	private JMenuItem createLocomotiveBasicBreakEscapeMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicBreakEscapeAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicBreakEscapeAction()));
 	}
 
 	private JMenuItem createLocomotiveBasicNewMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicNewAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicNewAction()));
 	}
 
 	private JMenuItem createLocomotiveBasicRunMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicRunAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicRunAction()));
 	}
 
 	private JMenuItem createLocomotiveBasicListMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicListAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicListAction()));
 	}
 
 	private JMenuItem createLocomotiveBasicClsMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicClsAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicClsAction()));
 	}
 
 	private JMenuItem createLocomotiveBasicClearMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicClearAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicClearAction()));
 	}
 
 	private JMenu createMonitorMenu() {
@@ -217,24 +229,24 @@ public class AmstradPcMenuMaker {
 		menu.add(new JSeparator());
 		menu.add(createScreenshotMenuItem());
 		menu.add(createScreenshotWithMonitorEffectMenuItem());
-		return (JMenu) updateLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu);
 	}
 
 	private JMenuItem createDisplaySystemColorsMenuItem() {
-		return updateLookAndFeel(new JMenuItem(getActions().getDisplaySystemColorsAction()));
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getDisplaySystemColorsAction()));
 	}
 
 	private JMenuItem createScreenshotMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getScreenshotAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenuItem createScreenshotWithMonitorEffectMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getScreenshotWithMonitorEffectAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenu createMonitorModeMenu() {
@@ -250,22 +262,22 @@ public class AmstradPcMenuMaker {
 		buttonGroup.add(greenMode);
 		buttonGroup.add(grayMode);
 		MonitorModeMenuHelper helper = new MonitorModeMenuHelper(buttonGroup, getMonitor());
-		return (JMenu) updateLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu);
 	}
 
 	private JRadioButtonMenuItem createMonitorModeColorMenuItem() {
-		return (JRadioButtonMenuItem) updateLookAndFeel(
-				new JRadioButtonMenuItem(getActions().getMonitorModeColorAction()));
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(getActions().getMonitorModeColorAction());
+		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
 	private JRadioButtonMenuItem createMonitorModeGreenMenuItem() {
-		return (JRadioButtonMenuItem) updateLookAndFeel(
-				new JRadioButtonMenuItem(getActions().getMonitorModeGreenAction()));
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(getActions().getMonitorModeGreenAction());
+		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
 	private JRadioButtonMenuItem createMonitorModeGrayMenuItem() {
-		return (JRadioButtonMenuItem) updateLookAndFeel(
-				new JRadioButtonMenuItem(getActions().getMonitorModeGrayAction()));
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(getActions().getMonitorModeGrayAction());
+		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenu createMonitorEffectsMenu() {
@@ -275,21 +287,22 @@ public class AmstradPcMenuMaker {
 				.getCheckbox());
 		menu.add(
 				new MonitorBilinearEffectMenuHelper(createMonitorBilinearEffectMenuItem(), getMonitor()).getCheckbox());
-		return (JMenu) updateLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu);
 	}
 
 	private JCheckBoxMenuItem createMonitorEffectMenuItem() {
-		return (JCheckBoxMenuItem) updateLookAndFeel(new JCheckBoxMenuItem(getActions().getMonitorEffectAction()));
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorEffectAction());
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
 	private JCheckBoxMenuItem createMonitorScanLinesEffectMenuItem() {
-		return (JCheckBoxMenuItem) updateLookAndFeel(
-				new JCheckBoxMenuItem(getActions().getMonitorScanLinesEffectAction()));
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorScanLinesEffectAction());
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
 	private JCheckBoxMenuItem createMonitorBilinearEffectMenuItem() {
-		return (JCheckBoxMenuItem) updateLookAndFeel(
-				new JCheckBoxMenuItem(getActions().getMonitorBilinearEffectAction()));
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorBilinearEffectAction());
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
 	private JMenu createWindowMenu() {
@@ -298,39 +311,79 @@ public class AmstradPcMenuMaker {
 		menu.add(new WindowAlwaysOnTopMenuHelper(createWindowAlwaysOnTopMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new JSeparator());
 		menu.add(createMonitorFullscreenMenuItem());
-		return (JMenu) updateLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu);
 	}
 
 	private JCheckBoxMenuItem createWindowDynamicTitleMenuItem() {
-		return (JCheckBoxMenuItem) updateLookAndFeel(new JCheckBoxMenuItem(getActions().getWindowDynamicTitleAction()));
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(
+				new JCheckBoxMenuItem(getActions().getWindowDynamicTitleAction()));
 	}
 
 	private JCheckBoxMenuItem createWindowAlwaysOnTopMenuItem() {
-		return (JCheckBoxMenuItem) updateLookAndFeel(new JCheckBoxMenuItem(getActions().getWindowAlwaysOnTopAction()));
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(
+				new JCheckBoxMenuItem(getActions().getWindowAlwaysOnTopAction()));
 	}
 
 	private JMenuItem createMonitorFullscreenMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getMonitorFullscreenAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
-		return updateLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item);
 	}
 
-	private JMenuItem updateLookAndFeel(JMenuItem item) {
-		return updateLookAndFeel(item, null);
+	private JMenuBar updateMenuBarLookAndFeel(JMenuBar menubar) {
+		return menubar; // nothing special
 	}
 
-	private JMenuItem updateLookAndFeel(JMenuItem item, Icon icon) {
+	private JPopupMenu updatePopupMenuLookAndFeel(JPopupMenu menu) {
 		if (isKioskFlavor()) {
-			item.setFont(item.getFont().deriveFont(MenuFlavor.KIOSK_MENU.getFontSize()));
+			menu.setBackground(getSystemColors().getColor(KIOSK_COLOR_BACKGROUND));
+			menu.setForeground(getSystemColors().getColor(KIOSK_COLOR_FOREGROUND));
+			menu.setBorder(BorderFactory.createLineBorder(getSystemColors().getColor(KIOSK_COLOR_BORDER), 4));
+			menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
-		if (icon != null) {
-			item.setIcon(icon);
+		return menu;
+	}
+
+	private JMenu updateMenuLookAndFeel(JMenu menu) {
+		updateMenuItemLookAndFeel(menu);
+		return menu;
+	}
+
+	private JMenuItem updateMenuItemLookAndFeel(JMenuItem item) {
+		return updateMenuItemLookAndFeel(item, null);
+	}
+
+	private JMenuItem updateMenuItemLookAndFeel(JMenuItem item, Icon icon) {
+		if (isKioskFlavor()) {
+			item.setBackground(getSystemColors().getColor(KIOSK_COLOR_BACKGROUND));
+			item.setForeground(getSystemColors().getColor(KIOSK_COLOR_FOREGROUND));
+			item.setFont(getFontForMenuItem(item));
+			item.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
+			item.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			if (icon != null) {
+				item.setIcon(icon);
+			}
 		}
 		return item;
 	}
 
+	private Font getFontForMenuItem(JMenuItem item) {
+		if (isKioskFlavor()) {
+			if (kioskMenuItemFont == null) {
+				kioskMenuItemFont = getMonitor().getGraphicsContext().getSystemFont().deriveFont(24f);
+			}
+			return kioskMenuItemFont;
+		} else {
+			return item.getFont();
+		}
+	}
+
 	private boolean isKioskFlavor() {
 		return MenuFlavor.KIOSK_MENU.equals(getMenuFlavor());
+	}
+
+	private AmstradSystemColors getSystemColors() {
+		return getMonitor().getGraphicsContext().getSystemColors();
 	}
 
 	private AmstradMonitor getMonitor() {
@@ -347,19 +400,9 @@ public class AmstradPcMenuMaker {
 
 	public static enum MenuFlavor {
 
-		FULL_MENU(12f),
+		FULL_MENU,
 
-		KIOSK_MENU(24f);
-
-		private float fontSize;
-
-		private MenuFlavor(float fontSize) {
-			this.fontSize = fontSize;
-		}
-
-		private float getFontSize() {
-			return fontSize;
-		}
+		KIOSK_MENU;
 
 	}
 

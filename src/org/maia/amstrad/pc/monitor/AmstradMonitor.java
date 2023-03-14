@@ -1,8 +1,6 @@
 package org.maia.amstrad.pc.monitor;
 
 import java.awt.Component;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
@@ -14,6 +12,7 @@ import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.AmstradCoverImageDisplaySource;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public abstract class AmstradMonitor extends AmstradDevice {
 
@@ -23,6 +22,8 @@ public abstract class AmstradMonitor extends AmstradDevice {
 		super(amstradPc);
 		this.monitorListeners = new Vector<AmstradMonitorListener>();
 	}
+
+	public abstract AmstradGraphicsContext getGraphicsContext();
 
 	public abstract Component getDisplayPane();
 
