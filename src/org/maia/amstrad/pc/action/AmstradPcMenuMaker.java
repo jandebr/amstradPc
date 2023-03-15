@@ -18,6 +18,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
@@ -39,6 +40,10 @@ public class AmstradPcMenuMaker {
 
 	private static final int KIOSK_COLOR_BORDER = 3;
 
+	private static final int KIOSK_COLOR_SELECTION_BG = 3;
+
+	private static final int KIOSK_COLOR_SELECTION_FG = 25;
+
 	public AmstradPcMenuMaker(AmstradPcActions actions) {
 		this(actions, MenuFlavor.FULL_MENU);
 	}
@@ -46,6 +51,21 @@ public class AmstradPcMenuMaker {
 	public AmstradPcMenuMaker(AmstradPcActions actions, MenuFlavor menuFlavor) {
 		this.actions = actions;
 		this.menuFlavor = menuFlavor;
+		initLookAndFeel();
+	}
+
+	private void initLookAndFeel() {
+		UIManager.put("Menu.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+		UIManager.put("Menu.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+		UIManager.put("Menu.arrowIcon", UIResources.menuArrowIcon);
+		UIManager.put("MenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+		UIManager.put("MenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+		UIManager.put("CheckBoxMenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+		UIManager.put("CheckBoxMenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+		UIManager.put("CheckBoxMenuItem.checkIcon", UIResources.checkBoxMenuItemIcon);
+		UIManager.put("RadioButtonMenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+		UIManager.put("RadioButtonMenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+		UIManager.put("RadioButtonMenuItem.checkIcon", UIResources.radioButtonMenuItemIcon);
 	}
 
 	public JMenuBar createMenuBar() {
@@ -155,7 +175,7 @@ public class AmstradPcMenuMaker {
 		JMenuItem item = new JMenuItem(getActions().getQuitAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item, UIResources.quitIcon);
 	}
 
 	private JMenu createEmulatorMenu() {
