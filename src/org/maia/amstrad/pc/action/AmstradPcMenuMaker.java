@@ -55,17 +55,21 @@ public class AmstradPcMenuMaker {
 	}
 
 	private void initLookAndFeel() {
-		UIManager.put("Menu.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
-		UIManager.put("Menu.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
-		UIManager.put("Menu.arrowIcon", UIResources.menuArrowIcon);
-		UIManager.put("MenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
-		UIManager.put("MenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
-		UIManager.put("CheckBoxMenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
-		UIManager.put("CheckBoxMenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
-		UIManager.put("CheckBoxMenuItem.checkIcon", UIResources.checkBoxMenuItemIcon);
-		UIManager.put("RadioButtonMenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
-		UIManager.put("RadioButtonMenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
-		UIManager.put("RadioButtonMenuItem.checkIcon", UIResources.radioButtonMenuItemIcon);
+		if (isKioskFlavor()) {
+			UIManager.put("Menu.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+			UIManager.put("Menu.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+			UIManager.put("Menu.arrowIcon", UIResources.menuArrowIcon);
+			UIManager.put("MenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+			UIManager.put("MenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+			UIManager.put("CheckBoxMenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+			UIManager.put("CheckBoxMenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+			UIManager.put("CheckBoxMenuItem.checkIcon", UIResources.checkBoxMenuItemIcon);
+			UIManager.put("RadioButtonMenuItem.selectionBackground",
+					getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+			UIManager.put("RadioButtonMenuItem.selectionForeground",
+					getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+			UIManager.put("RadioButtonMenuItem.checkIcon", UIResources.radioButtonMenuItemIcon);
+		}
 	}
 
 	public JMenuBar createMenuBar() {
@@ -131,20 +135,20 @@ public class AmstradPcMenuMaker {
 	private JMenuItem createProgramBrowserMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getProgramBrowserAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item, UIResources.basicOrBrowserIcon);
 	}
 
 	private JMenuItem createProgramBrowserSetupMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getProgramBrowserSetupAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item, UIResources.browserSetupIcon);
 	}
 
 	private JMenuItem createProgramInfoMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getProgramInfoAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-		return updateMenuItemLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item, UIResources.infoIcon);
 	}
 
 	private JMenuItem createLoadBasicSourceFileMenuItem() {
@@ -195,7 +199,7 @@ public class AmstradPcMenuMaker {
 	private JMenuItem createPauseResumeMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getPauseResumeAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0));
-		return updateMenuItemLookAndFeel(item, UIResources.pauseIcon);
+		return updateMenuItemLookAndFeel(item, UIResources.pauseResumeIcon);
 	}
 
 	private JMenuItem createRebootMenuItem() {
@@ -259,14 +263,14 @@ public class AmstradPcMenuMaker {
 	private JMenuItem createScreenshotMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getScreenshotAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item, UIResources.screenshotIcon);
 	}
 
 	private JMenuItem createScreenshotWithMonitorEffectMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getScreenshotWithMonitorEffectAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item, UIResources.screenshotWithMonitorIcon);
 	}
 
 	private JMenu createMonitorModeMenu() {
@@ -282,7 +286,7 @@ public class AmstradPcMenuMaker {
 		buttonGroup.add(greenMode);
 		buttonGroup.add(grayMode);
 		MonitorModeMenuHelper helper = new MonitorModeMenuHelper(buttonGroup, getMonitor());
-		return updateMenuLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu, UIResources.monitorModeIcon);
 	}
 
 	private JRadioButtonMenuItem createMonitorModeColorMenuItem() {
@@ -307,7 +311,7 @@ public class AmstradPcMenuMaker {
 				.getCheckbox());
 		menu.add(
 				new MonitorBilinearEffectMenuHelper(createMonitorBilinearEffectMenuItem(), getMonitor()).getCheckbox());
-		return updateMenuLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu, UIResources.monitorEffectIcon);
 	}
 
 	private JCheckBoxMenuItem createMonitorEffectMenuItem() {
@@ -358,14 +362,20 @@ public class AmstradPcMenuMaker {
 		if (isKioskFlavor()) {
 			menu.setBackground(getSystemColors().getColor(KIOSK_COLOR_BACKGROUND));
 			menu.setForeground(getSystemColors().getColor(KIOSK_COLOR_FOREGROUND));
-			menu.setBorder(BorderFactory.createLineBorder(getSystemColors().getColor(KIOSK_COLOR_BORDER), 4));
+			menu.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(getSystemColors().getColor(KIOSK_COLOR_BACKGROUND), 1),
+					BorderFactory.createLineBorder(getSystemColors().getColor(KIOSK_COLOR_BORDER), 4)));
 			menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 		return menu;
 	}
 
 	private JMenu updateMenuLookAndFeel(JMenu menu) {
-		updateMenuItemLookAndFeel(menu);
+		return updateMenuLookAndFeel(menu, null);
+	}
+
+	private JMenu updateMenuLookAndFeel(JMenu menu, Icon icon) {
+		updateMenuItemLookAndFeel(menu, icon);
 		return menu;
 	}
 

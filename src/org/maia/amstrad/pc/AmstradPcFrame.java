@@ -18,7 +18,6 @@ import javax.swing.event.PopupMenuListener;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.action.AmstradPcMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.util.AmstradUtils;
 
 public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
 
@@ -79,19 +78,19 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
-		AmstradMonitor monitor = amstradPc.getMonitor();
+		final AmstradMonitor monitor = amstradPc.getMonitor();
 		if (isKioskMode()) {
 			AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(amstradPc);
 			monitor.setWindowAlwaysOnTop(true);
 			monitor.makeWindowFullscreen();
 		}
 		setVisible(true);
-		int count = 0;
-		if (monitor.isWindowFullscreen() && monitor.getDisplayPane().getLocationOnScreen().getX() < 0 && count++ < 3) {
-			// forcing the display to nicely align in the middle
-			AmstradUtils.sleep(100L);
-			monitor.toggleWindowFullscreen();
-			monitor.toggleWindowFullscreen();
+		if (monitor.isWindowFullscreen()) {
+			while (monitor.getDisplayPane().getLocationOnScreen().getX() != 0) {
+				System.out.println("Center display in full screen");
+				monitor.toggleWindowFullscreen();
+				monitor.toggleWindowFullscreen();
+			}
 		}
 	}
 

@@ -45,7 +45,7 @@ public class PauseResumeAction extends AmstradPcAction {
 	}
 
 	private void updateName() {
-		if (getAmstradPc().isPaused()) {
+		if (isPaused()) {
 			changeName(NAME_RESUME);
 		} else {
 			changeName(NAME_PAUSE);
@@ -53,11 +53,15 @@ public class PauseResumeAction extends AmstradPcAction {
 	}
 
 	private void togglePauseResume() {
-		if (getAmstradPc().isPaused()) {
+		if (isPaused()) {
 			getAmstradPc().resume();
 		} else {
 			getAmstradPc().pause();
 		}
+	}
+
+	public boolean isPaused() {
+		return getAmstradPc().isPaused();
 	}
 
 }
