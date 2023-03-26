@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.monitor.display;
+package org.maia.amstrad.pc.monitor.display.source;
 
 import java.awt.Cursor;
 import java.awt.Point;
@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.util.StringUtils;
 
 public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplaySource {

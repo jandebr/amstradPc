@@ -12,7 +12,7 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 
 public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrowserListener {

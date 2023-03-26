@@ -22,7 +22,7 @@ import org.maia.amstrad.gui.browser.components.StackedFolderItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
-import org.maia.amstrad.pc.monitor.display.AmstradWindowDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;

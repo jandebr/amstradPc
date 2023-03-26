@@ -18,6 +18,7 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.WritableRaster;
 import java.io.InputStream;
@@ -213,10 +214,14 @@ public class Display extends JComponent {
 	protected boolean sameSize;
 	protected boolean painted = false;
 
+	private DisplayOverlay customDisplayOverlay;
+	private DisplayOverlay systemDisplayOverlay; // draws above custom
+
 	private List<PrimaryDisplaySourceListener> primaryDisplaySourceListeners;
 	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
 
 	public Display() {
+		setupDisplayOverlays();
 		primaryDisplaySourceListeners = new Vector<PrimaryDisplaySourceListener>();
 		InputStream in = getClass().getResourceAsStream("amstrad.ttf");
 		try {
@@ -233,6 +238,31 @@ public class Display extends JComponent {
 		setFocusTraversalKeysEnabled(true);
 		setRequestFocusEnabled(true);
 		setDoubleBuffered(true);
+	}
+
+	private void setupDisplayOverlays() {
+		setSystemDisplayOverlay(new MonitorMaskDisplayOverlay());
+		uninstallCustomDisplayOverlay();
+	}
+
+	public void uninstallCustomDisplayOverlay() {
+		installCustomDisplayOverlay(getDefaultCustomDisplayOverlay());
+	}
+
+	public void installCustomDisplayOverlay(DisplayOverlay overlay) {
+		if (getCustomDisplayOverlay() != null) {
+			getCustomDisplayOverlay().dispose(this);
+		}
+		if (overlay != null) {
+			overlay.init(this);
+			setCustomDisplayOverlay(overlay);
+		} else {
+			uninstallCustomDisplayOverlay();
+		}
+	}
+
+	private DisplayOverlay getDefaultCustomDisplayOverlay() {
+		return new JemuDisplayOverlay();
 	}
 
 	public void installSecondaryDisplaySource(SecondaryDisplaySource displaySource) {
@@ -409,7 +439,6 @@ public class Display extends JComponent {
 			if (!lowperformance)
 				paintBalls(g);
 		}
-
 		if (fader >= 24 || fader <= -24) {
 			g.setColor(FADE);
 			g.fillRect(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
@@ -418,9 +447,9 @@ public class Display extends JComponent {
 			zoom = 3;
 		} else if (imageRect.height >= 540) {
 			zoom = 2;
-		} else
+		} else {
 			zoom = 1;
-
+		}
 		scanlines = Switches.ScanLines;
 		if (scanlines && !lowperformance) {
 			if (imageRect.height >= 544) {
@@ -430,8 +459,6 @@ public class Display extends JComponent {
 			}
 		}
 		if (scaneffect && !lowperformance) {
-			// drawlines = false;
-			// scanlines = true;
 			if (imageRect.height >= 544) {
 				showeffect = true;
 				masked = false;
@@ -443,8 +470,66 @@ public class Display extends JComponent {
 			showeffect = false;
 			masked = false;
 		}
+		g.setFont(displayFont);
 		g.setColor(Color.BLACK);
+		paintScanLines(g);
+		paintYM(g);
+		paintKeys(g);
+		paintDisplayOverlays(g);
+	}
 
+	private void doTouchFPS() {
+		long time = System.currentTimeMillis();
+		mNextFPS++;
+		if (time - mLastFPSTime >= 1000) {
+			mCurrFPS = mNextFPS;
+			mNextFPS = 0;
+			mLastFPSTime = time;
+		}
+	}
+
+	private void paintDisplayImage(Graphics g) {
+		if (getSecondaryDisplaySource() != null) {
+			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
+		} else {
+			if (sourceRect != null) {
+				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width,
+						imageRect.y + imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width,
+						sourceRect.y + sourceRect.height, null);
+			} else if (sameSize) {
+				g.drawImage(image, imageRect.x, imageRect.y, null);
+			} else {
+				g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+			}
+		}
+	}
+
+	private void paintBalls(Graphics g) {
+		for (ck = 0; ck < ch; ck++) {
+			cj = ((((int) ((Math.cos((double) co + (double) ((float) ck / 50F) * 12.566370964050293D) * Math.sin(cl)
+					* 20D + Math.cos((double) (2.0F * cn) / 2D - (double) (((float) ck / 50F) * 6.28F)) * 40D)
+					- Math.sin((double) (cn / 2.0F + cm) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 60D)
+					+ 160) - 7) + 40) * zoom;
+			ci = (((int) ((Math.cos((double) (cn * 1.5F) + (double) ((float) ck / 50F) * 6.2831850051879883D)
+					* Math.sin(cm) * 20D
+					- Math.sin((double) (4F * co) / 3D + (double) (((float) ck / 50F) * 6.28F * 2.0F)) * 40D)
+					+ Math.sin((double) (co / 2.0F + cl) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 30D)
+					+ 100) - 7) * zoom;
+			if (zoom >= 3)
+				g.drawImage(ballbb, cj, ci, null);
+			else if (zoom >= 2)
+				g.drawImage(ballb, cj, ci, null);
+			else
+				g.drawImage(ball, cj, ci, null);
+		}
+
+		co += 0.029999999329447746D;
+		cn += 0.021900000050663948D;
+		cm += 0.027300000190734863D;
+		cl += 0.030899999663233757D;
+	}
+
+	private void paintScanLines(Graphics g) {
 		if (scanlines && !lowperformance) {
 			if (Switches.bilinear)
 				drawlines = true;
@@ -460,180 +545,9 @@ public class Display extends JComponent {
 						g.drawLine(imageRect.x, imageRect.y + i, imageRect.width, imageRect.y + i);
 			}
 		}
+	}
 
-		// draw floppy-LED
-		if (ledOn)
-			led = 200;
-		if (led > 0 && !lowperformance) {
-			int trackpos = Integer.parseInt(track);
-			trackpos = 0;
-			if (imageRect.height >= 540) {
-				g.setFont(displayFont);
-				g.setColor(Color.BLACK);
-				if (Switches.write)
-					g.drawImage(floppyw, imageRect.width - 80, 12 + trackpos, this);
-				else
-					g.drawImage(floppy2, imageRect.width - 80, 12 + trackpos, this);
-
-				g.drawString(track, imageRect.width - 58, 30 + trackpos);
-				g.drawString(sector, imageRect.width - 58, 46 + trackpos);
-				g.drawString(drive, imageRect.width - 48, 68 + trackpos);
-			} else {
-				g.setFont(displayFont);
-				g.setColor(Color.BLACK);
-				if (Switches.write)
-					g.drawImage(floppyws, imageRect.width - 40, 6 + trackpos, this);
-				else
-					g.drawImage(floppy, imageRect.width - 40, 6 + trackpos, this);
-				g.drawString(track, imageRect.width - 29, 15 + trackpos);
-				g.drawString(sector, imageRect.width - 29, 23 + trackpos);
-				g.drawString(drive, imageRect.width - 24, 34 + trackpos);
-			}
-			led--;
-		}
-
-		if (turbotimer == 10) {
-			if (!floppyturbo) {
-				Switches.turbo = 3;
-				floppyturbo = true;
-			}
-		}
-		if (turbotimer >= 2) {
-			turbotimer--;
-		}
-		if (turbotimer == 1) {
-			Switches.turbo = 1;
-			floppyturbo = false;
-			turbotimer--;
-		}
-
-		if (txtpos > 0 && !lowperformance) {
-			g.drawImage(about, imageRect.width / 2 - 110, ytext - 20, this);
-			txtpos = txtpos - 1;
-			if (txtpos > 255)
-				ytext = ytext + 1;
-			if (txtpos < 50)
-				ytext = ytext - 1;
-		}
-
-		if (showfps >= 1 || (showfps <= -1 && debug)) {
-			g.setFont(displayFont);
-			String cpu = "CPU:" + Switches.turbo * 100 + "%";
-			String fps = "FPS: " + mCurrFPS;
-			g.setColor(ALERT);
-			g.drawString(fps, imageRect.width - 96, imageRect.height - 16);
-			g.drawString(cpu, imageRect.width - 96, imageRect.height - 6);
-		}
-
-		if (atmessage > 0 && !lowperformance) {
-			g.setFont(displayFont);
-			g.setColor(BLACKA);
-			g.drawString("Existing content in autotype console", imageRect.width / 2 - 90, imageRect.height - 10);
-			g.setColor(BLUEA);
-			g.drawString("Existing content in autotype console", imageRect.width / 2 - 91, imageRect.height - 11);
-			atmessage--;
-		}
-
-		/*
-		 * if (shouldRegister > 0){ g.setFont(new Font("",1,11)); g.setColor(BLACKA);
-		 * g.drawString("Unregistered version. Please register" , 4,12); g.setColor(BLUEA);
-		 * g.drawString("Unregistered version. Please register" , 3,11); shouldRegister--; }
-		 */
-		if (Switches.osddisplay && !lowperformance) {
-
-			// show selected monitor
-
-			if (showmon >= 0) {
-				g.setFont(displayFont);
-				g.setColor(BLACKA);
-				g.drawString(monmessage, imageRect.width - 100, imageRect.height - 20);
-				g.setColor(YELLOWA);
-				g.drawString(monmessage, imageRect.width - 101, imageRect.height - 22);
-				showmon = showmon - 2;
-			}
-
-			if (showmodel >= 0) {
-				g.setFont(displayFont);
-				g.setColor(BLACKA);
-				g.drawString(model, imageRect.width - (model.length() - 1) * 8, imageRect.height - 34);
-				g.setColor(REDA);
-				g.drawString(model, imageRect.width - ((model.length() - 1) * 8) + 1, imageRect.height - 36);
-				showmodel = showmodel - 2;
-			}
-
-			// show autosave-state
-			if (showauto >= 0) {
-				g.setFont(displayFont);
-				g.setColor(BLACKA);
-				g.drawString(automessage, 6, imageRect.height - 54);
-				g.setColor(GREEN);
-				g.drawString(automessage, 6, imageRect.height - 52);
-				showauto = showauto - 2;
-			}
-
-			// show drive content
-
-			if (showdisk >= 0) {
-				g.setFont(displayFont);
-				g.setColor(BLACKA);
-				g.drawString("DF0: " + Switches.loaddrivea, 6, imageRect.height - 37);
-				g.drawString("DF1: " + Switches.loaddriveb, 6, imageRect.height - 26);
-				g.drawString("DF2: " + Switches.loaddrivec, 6, imageRect.height - 15);
-				g.drawString("DF3: " + Switches.loaddrived, 6, imageRect.height - 4);
-				g.setColor(WHITEA);
-				g.drawString("DF0: " + Switches.loaddrivea, 5, imageRect.height - 39);
-				g.drawString("DF1: " + Switches.loaddriveb, 5, imageRect.height - 28);
-				g.drawString("DF2: " + Switches.loaddrivec, 5, imageRect.height - 17);
-				g.drawString("DF3: " + Switches.loaddrived, 5, imageRect.height - 6);
-				showdisk = showdisk - 2;
-			}
-		}
-
-		SecondaryDisplaySource sds = getSecondaryDisplaySource();
-		if (showpause > 0 && (sds == null || sds.canShow(OnDisplayIndicator.PAUSE))) {
-			if (imageRect.height >= 540)
-				g.drawImage(paused, imageRect.width - 80, 12, this);
-			else
-				g.drawImage(pauseds, imageRect.width - 40, 6, this);
-		}
-		if (printer >= 0 && !lowperformance) {
-			if (!printjob) {
-				printjob = true;
-				Samples.PRINTER.loop();
-			}
-			if (imageRect.height >= 540)
-				g.drawImage(printed, imageRect.width - 80, 12, this);
-			else
-				g.drawImage(printeds, imageRect.width - 40, 6, this);
-			printer--;
-		} else {
-			if (printjob) {
-				Samples.PRINTER.stop();
-				printjob = false;
-			}
-		}
-		if (blaster >= 0 && !lowperformance) {
-			if (imageRect.height >= 540)
-				g.drawImage(digi, imageRect.width - 80, 12, this);
-			else
-				g.drawImage(digis, imageRect.width - 40, 6, this);
-			blaster--;
-		}
-		if (tape >= 0 && !lowperformance) {// && !showeffect && !masked){
-			if (imageRect.height >= 540)
-				g.drawImage(tapeb, imageRect.width - 80, 12, this);
-			else
-				g.drawImage(tapes, imageRect.width - 40, 6, this);
-			tape--;
-		}
-		if (Switches.audioenabler != 1 && !lowperformance) {
-			if (imageRect.height >= 540)
-				g.drawImage(muted, 10, 12, this);
-			else
-				g.drawImage(muteds, 5, 6, this);
-		}
-
-		g.setFont(displayFont);
+	private void paintYM(Graphics g) {
 		if (jemu.system.cpc.CPC.YM_Play) {
 			g.drawImage(ymplay, 10, 12, this);
 			if (title.length() != 1) {
@@ -696,11 +610,12 @@ public class Display extends JComponent {
 					g.fillRect(4 + (i * 13), 140, 12, 12);
 				}
 		}
-
 		if (jemu.system.cpc.CPC.YM_Rec && !lowperformance) {
 			g.drawImage(ymrec, 10, 12, this);
-
 		}
+	}
+
+	private void paintKeys(Graphics g) {
 		if (jemu.system.cpc.CPC.recordKeys && !lowperformance) {
 			flashkey++;
 			if (flashkey > 25)
@@ -721,102 +636,14 @@ public class Display extends JComponent {
 			if (flashkey == 50)
 				flashkey = 0;
 		}
-
-		if (bootgames >= 1) {
-			g.setColor(ALERT);
-			g.drawString("AUTOBOOT IN PROGRESS ", imageRect.width / 2 - 70, imageRect.height / 2);
-			g.drawString("AUTOBOOT IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
-			bootgames--;
-		}
-		if (autotype >= 1 && (sds == null || sds.canShow(OnDisplayIndicator.AUTO_TYPE))) {
-			if (imageRect.height >= 540)
-				g.drawImage(autotyped, imageRect.width - 80, 12, this);
-			else
-				g.drawImage(autotyped_small, imageRect.width - 40, 6, this);
-		}
-		if (showboot >= 1) {
-			g.setColor(ALERT);
-			g.setFont(displayFont);
-			g.drawString("AUTOBOOT IN PROGRESS " + showboot, imageRect.width / 2 - 80, imageRect.height / 2);
-			g.drawString("AUTOBOOT IN PROGRESS " + showboot, imageRect.width / 2 - 81, imageRect.height / 2);
-			showboot--;
-		}
-
-		// autoload DSK and SNA
-		if (loadgames >= 1) {
-			g.setColor(ALERT);
-			g.drawString("AUTOSTART IN PROGRESS ", imageRect.width / 2 - 70, imageRect.height / 2);
-			g.drawString("AUTOSTART IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
-			loadgames--;
-			if (loadgames == 20) {
-				JEMU.autoloader = 1;
-			}
-			if (loadgames == 4) {
-				JEMU.autoloader = 2;
-			}
-		}
-
-		if (loadtimer > 0) {
-			g.setColor(ALERT);
-			g.drawString(" AUTOLOAD IN PROGRESS ", imageRect.width / 2 - 70, imageRect.height / 2);
-			g.drawString(" AUTOLOAD IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
-
-		}
-		if (showeffect)
-			g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
-		if (masked)
-			g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
 	}
 
-	private void doTouchFPS() {
-		long time = System.currentTimeMillis();
-		mNextFPS++;
-		if (time - mLastFPSTime >= 1000) {
-			mCurrFPS = mNextFPS;
-			mNextFPS = 0;
-			mLastFPSTime = time;
+	private void paintDisplayOverlays(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		if (getCustomDisplayOverlay() != null) {
+			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect);
 		}
-	}
-
-	private void paintDisplayImage(Graphics g) {
-		if (getSecondaryDisplaySource() != null) {
-			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
-		} else {
-			if (sourceRect != null) {
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width,
-						imageRect.y + imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width,
-						sourceRect.y + sourceRect.height, null);
-			} else if (sameSize) {
-				g.drawImage(image, imageRect.x, imageRect.y, null);
-			} else {
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
-			}
-		}
-	}
-
-	private void paintBalls(Graphics g) {
-		for (ck = 0; ck < ch; ck++) {
-			cj = ((((int) ((Math.cos((double) co + (double) ((float) ck / 50F) * 12.566370964050293D) * Math.sin(cl)
-					* 20D + Math.cos((double) (2.0F * cn) / 2D - (double) (((float) ck / 50F) * 6.28F)) * 40D)
-					- Math.sin((double) (cn / 2.0F + cm) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 60D)
-					+ 160) - 7) + 40) * zoom;
-			ci = (((int) ((Math.cos((double) (cn * 1.5F) + (double) ((float) ck / 50F) * 6.2831850051879883D)
-					* Math.sin(cm) * 20D
-					- Math.sin((double) (4F * co) / 3D + (double) (((float) ck / 50F) * 6.28F * 2.0F)) * 40D)
-					+ Math.sin((double) (co / 2.0F + cl) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 30D)
-					+ 100) - 7) * zoom;
-			if (zoom >= 3)
-				g.drawImage(ballbb, cj, ci, null);
-			else if (zoom >= 2)
-				g.drawImage(ballb, cj, ci, null);
-			else
-				g.drawImage(ball, cj, ci, null);
-		}
-
-		co += 0.029999999329447746D;
-		cn += 0.021900000050663948D;
-		cm += 0.027300000190734863D;
-		cl += 0.030899999663233757D;
+		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect);
 	}
 
 	@Override
@@ -832,108 +659,10 @@ public class Display extends JComponent {
 		JEMU.doupdate.setSelected(true);
 	}
 
-	public BufferedImage getRawPrimaryImage() {
-		return image;
-	}
-
 	public BufferedImage getImage() {
 		BufferedImage off_Image = new BufferedImage(imageRect.width, imageRect.height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = off_Image.createGraphics();
-		if (Switches.bilinear) {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		}
-		if (!jemu.system.cpc.CPC.YM_Play) {
-			paintDisplayImage(g);
-		} else {
-			if (skin == 1)
-				g.drawImage(YMmode, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
-			else {
-				g.drawImage(YMmode2, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
-			}
-			if (!lowperformance)
-				paintBalls(g);
-		}
-		g.setFont(displayFont);
-		if (scanlines) {
-			if (Switches.bilinear)
-				drawlines = true;
-			if (drawlines) {
-				if (scanlines) {
-					if (Switches.bilinear)
-						drawlines = true;
-					if (drawlines) {
-						if (Switches.bilinear && (Switches.monitormode == 0 || Switches.monitormode == 1)) {
-							g.setColor(SCAN);
-							for (int i = 0; i < imageRect.width; i = i + 2)
-								g.drawLine(imageRect.x + i, imageRect.y, imageRect.x + i, imageRect.height);
-						} else {
-
-							g.setColor(Color.BLACK);
-							for (int i = 0; i < imageRect.height; i = i + 2)
-								g.drawLine(imageRect.x, imageRect.y + i, imageRect.width, imageRect.y + i);
-						}
-					}
-				}
-			}
-		}
-
-		if (jemu.system.cpc.CPC.YM_Play) {
-			g.drawImage(ymplay, 10, 12, this);
-			if (title.length() != 1) {
-				g.setColor(TRANSBLACK);
-				g.drawString("Title: " + title, 36, 20);
-				g.drawString("Autor: " + author, 36, 34);
-				g.drawString("Creator: " + creator, 36, 48);
-				g.setColor(TRANS);
-				g.drawString("Title: " + title, 34, 18);
-				g.drawString("Autor: " + author, 34, 32);
-				g.drawString("Creator: " + creator, 34, 46);
-			}
-			g.setColor(TRANSBLACK);
-			if (jemu.system.cpc.CPC.atari_st_mode && !jemu.system.cpc.CPC.oldYM) {
-				g.drawString("playing 2 MHz Atari ST file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing 2 MHz Atari ST file...", 34, 60);
-			} else if (jemu.system.cpc.CPC.spectrum_mode && !jemu.system.cpc.CPC.oldYM) {
-				g.drawString("playing 1,77 MHz ZX Spectrum file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing 1,77 MHz ZX Spectrum file...", 34, 60);
-			} else if (jemu.system.cpc.CPC.atari_st_mode && jemu.system.cpc.CPC.oldYM) {
-				g.drawString("playing old YM3 file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing old YM3 file...", 34, 60);
-			} else {
-				g.drawString("playing 1 MHz Amstrad CPC file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing 1 MHz Amstrad CPC file...", 34, 60);
-			}
-			g.setColor(TRANSBLACK);
-			g.drawString(jemu.core.device.sound.YMControl.Monitor, 18, 114);
-
-			g.setColor(TRANS);
-			g.drawString(jemu.core.device.sound.YMControl.Monitor, 14, 110);
-			if (left != 0)
-				for (int i = 0; i < left / 2; i++) {
-					g.setColor(LED_BORDER);
-					g.fillRect(2 + (i * 13), 121, 16, 16);
-					g.setColor(LED);
-					g.fillRect(4 + (i * 13), 123, 12, 12);
-				}
-			if (right != 0)
-				for (int i = 0; i < right / 2; i++) {
-					g.setColor(GREEN_BORDER);
-					g.fillRect(2 + (i * 13), 138, 16, 16);
-					g.setColor(GREEN);
-					g.fillRect(4 + (i * 13), 140, 12, 12);
-				}
-		}
-		if (jemu.system.cpc.CPC.YM_Rec) {
-			g.drawImage(ymrec, 10, 12, this);
-		}
-		if (showeffect || masked) {
-			g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
-		}
+		paintImage(g);
 		g.dispose();
 		return off_Image;
 	}
@@ -992,6 +721,22 @@ public class Display extends JComponent {
 		}
 	}
 
+	public DisplayOverlay getCustomDisplayOverlay() {
+		return customDisplayOverlay;
+	}
+
+	private void setCustomDisplayOverlay(DisplayOverlay customDisplayOverlay) {
+		this.customDisplayOverlay = customDisplayOverlay;
+	}
+
+	private DisplayOverlay getSystemDisplayOverlay() {
+		return systemDisplayOverlay;
+	}
+
+	private void setSystemDisplayOverlay(DisplayOverlay systemDisplayOverlay) {
+		this.systemDisplayOverlay = systemDisplayOverlay;
+	}
+
 	public SecondaryDisplaySource getSecondaryDisplaySource() {
 		return secondaryDisplaySource;
 	}
@@ -1021,6 +766,257 @@ public class Display extends JComponent {
 	public static interface PrimaryDisplaySourceListener {
 
 		void primaryDisplaySourceResolutionChanged(Display display, Dimension resolution);
+
+	}
+
+	private class JemuDisplayOverlay implements DisplayOverlay {
+
+		public JemuDisplayOverlay() {
+		}
+
+		@Override
+		public void init(JComponent displayComponent) {
+			// no action
+		}
+
+		@Override
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds) {
+			ImageObserver imageObserver = Display.this;
+			boolean largeDisplay = imageRect.height >= 540;
+			// Floppy
+			if (ledOn)
+				led = 200;
+			if (led > 0 && !lowperformance) {
+				int trackpos = Integer.parseInt(track);
+				trackpos = 0;
+				if (largeDisplay) {
+					g.setFont(displayFont);
+					g.setColor(Color.BLACK);
+					if (Switches.write)
+						g.drawImage(floppyw, imageRect.width - 80, 12 + trackpos, imageObserver);
+					else
+						g.drawImage(floppy2, imageRect.width - 80, 12 + trackpos, imageObserver);
+
+					g.drawString(track, imageRect.width - 58, 30 + trackpos);
+					g.drawString(sector, imageRect.width - 58, 46 + trackpos);
+					g.drawString(drive, imageRect.width - 48, 68 + trackpos);
+				} else {
+					g.setFont(displayFont);
+					g.setColor(Color.BLACK);
+					if (Switches.write)
+						g.drawImage(floppyws, imageRect.width - 40, 6 + trackpos, imageObserver);
+					else
+						g.drawImage(floppy, imageRect.width - 40, 6 + trackpos, imageObserver);
+					g.drawString(track, imageRect.width - 29, 15 + trackpos);
+					g.drawString(sector, imageRect.width - 29, 23 + trackpos);
+					g.drawString(drive, imageRect.width - 24, 34 + trackpos);
+				}
+				led--;
+			}
+			// Turbo
+			if (turbotimer == 10) {
+				if (!floppyturbo) {
+					Switches.turbo = 3;
+					floppyturbo = true;
+				}
+			}
+			if (turbotimer >= 2) {
+				turbotimer--;
+			}
+			if (turbotimer == 1) {
+				Switches.turbo = 1;
+				floppyturbo = false;
+				turbotimer--;
+			}
+			// About
+			if (txtpos > 0 && !lowperformance) {
+				g.drawImage(about, imageRect.width / 2 - 110, ytext - 20, imageObserver);
+				txtpos = txtpos - 1;
+				if (txtpos > 255)
+					ytext = ytext + 1;
+				if (txtpos < 50)
+					ytext = ytext - 1;
+			}
+			// FPS
+			if (showfps >= 1 || (showfps <= -1 && debug)) {
+				g.setFont(displayFont);
+				String cpu = "CPU:" + Switches.turbo * 100 + "%";
+				String fps = "FPS: " + mCurrFPS;
+				g.setColor(ALERT);
+				g.drawString(fps, imageRect.width - 96, imageRect.height - 16);
+				g.drawString(cpu, imageRect.width - 96, imageRect.height - 6);
+			}
+			// Autotype
+			if (atmessage > 0 && !lowperformance) {
+				g.setFont(displayFont);
+				g.setColor(BLACKA);
+				g.drawString("Existing content in autotype console", imageRect.width / 2 - 90, imageRect.height - 10);
+				g.setColor(BLUEA);
+				g.drawString("Existing content in autotype console", imageRect.width / 2 - 91, imageRect.height - 11);
+				atmessage--;
+			}
+			if (Switches.osddisplay && !lowperformance) {
+				// Selected monitor
+				if (showmon >= 0) {
+					g.setFont(displayFont);
+					g.setColor(BLACKA);
+					g.drawString(monmessage, imageRect.width - 100, imageRect.height - 20);
+					g.setColor(YELLOWA);
+					g.drawString(monmessage, imageRect.width - 101, imageRect.height - 22);
+					showmon = showmon - 2;
+				}
+				// Selected model
+				if (showmodel >= 0) {
+					g.setFont(displayFont);
+					g.setColor(BLACKA);
+					g.drawString(model, imageRect.width - (model.length() - 1) * 8, imageRect.height - 34);
+					g.setColor(REDA);
+					g.drawString(model, imageRect.width - ((model.length() - 1) * 8) + 1, imageRect.height - 36);
+					showmodel = showmodel - 2;
+				}
+				// Autosave state
+				if (showauto >= 0) {
+					g.setFont(displayFont);
+					g.setColor(BLACKA);
+					g.drawString(automessage, 6, imageRect.height - 54);
+					g.setColor(GREEN);
+					g.drawString(automessage, 6, imageRect.height - 52);
+					showauto = showauto - 2;
+				}
+				// Drive content
+				if (showdisk >= 0) {
+					g.setFont(displayFont);
+					g.setColor(BLACKA);
+					g.drawString("DF0: " + Switches.loaddrivea, 6, imageRect.height - 37);
+					g.drawString("DF1: " + Switches.loaddriveb, 6, imageRect.height - 26);
+					g.drawString("DF2: " + Switches.loaddrivec, 6, imageRect.height - 15);
+					g.drawString("DF3: " + Switches.loaddrived, 6, imageRect.height - 4);
+					g.setColor(WHITEA);
+					g.drawString("DF0: " + Switches.loaddrivea, 5, imageRect.height - 39);
+					g.drawString("DF1: " + Switches.loaddriveb, 5, imageRect.height - 28);
+					g.drawString("DF2: " + Switches.loaddrivec, 5, imageRect.height - 17);
+					g.drawString("DF3: " + Switches.loaddrived, 5, imageRect.height - 6);
+					showdisk = showdisk - 2;
+				}
+			}
+			// Pause
+			SecondaryDisplaySource sds = getSecondaryDisplaySource();
+			if (showpause > 0 && (sds == null || sds.canShow(OnDisplayIndicator.PAUSE))) {
+				if (largeDisplay)
+					g.drawImage(paused, imageRect.width - 80, 12, imageObserver);
+				else
+					g.drawImage(pauseds, imageRect.width - 40, 6, imageObserver);
+			}
+			// Printer
+			if (printer >= 0 && !lowperformance) {
+				if (!printjob) {
+					printjob = true;
+					Samples.PRINTER.loop();
+				}
+				if (largeDisplay)
+					g.drawImage(printed, imageRect.width - 80, 12, imageObserver);
+				else
+					g.drawImage(printeds, imageRect.width - 40, 6, imageObserver);
+				printer--;
+			} else {
+				if (printjob) {
+					Samples.PRINTER.stop();
+					printjob = false;
+				}
+			}
+			// Blaster
+			if (blaster >= 0 && !lowperformance) {
+				if (largeDisplay)
+					g.drawImage(digi, imageRect.width - 80, 12, imageObserver);
+				else
+					g.drawImage(digis, imageRect.width - 40, 6, imageObserver);
+				blaster--;
+			}
+			// Tape
+			if (tape >= 0 && !lowperformance) {
+				if (largeDisplay)
+					g.drawImage(tapeb, imageRect.width - 80, 12, imageObserver);
+				else
+					g.drawImage(tapes, imageRect.width - 40, 6, imageObserver);
+				tape--;
+			}
+			// Muted
+			if (Switches.audioenabler != 1 && !lowperformance) {
+				if (largeDisplay)
+					g.drawImage(muted, 10, 12, imageObserver);
+				else
+					g.drawImage(muteds, 5, 6, imageObserver);
+			}
+			// Autotype
+			if (autotype >= 1 && (sds == null || sds.canShow(OnDisplayIndicator.AUTO_TYPE))) {
+				if (imageRect.height >= 540)
+					g.drawImage(autotyped, imageRect.width - 80, 12, imageObserver);
+				else
+					g.drawImage(autotyped_small, imageRect.width - 40, 6, imageObserver);
+			}
+			// Autoboot games
+			if (bootgames >= 1) {
+				g.setColor(ALERT);
+				g.drawString("AUTOBOOT IN PROGRESS ", imageRect.width / 2 - 70, imageRect.height / 2);
+				g.drawString("AUTOBOOT IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
+				bootgames--;
+			}
+			// Autoboot
+			if (showboot >= 1) {
+				g.setColor(ALERT);
+				g.setFont(displayFont);
+				g.drawString("AUTOBOOT IN PROGRESS " + showboot, imageRect.width / 2 - 80, imageRect.height / 2);
+				g.drawString("AUTOBOOT IN PROGRESS " + showboot, imageRect.width / 2 - 81, imageRect.height / 2);
+				showboot--;
+			}
+			// Autoload DSK and SNA
+			if (loadgames >= 1) {
+				g.setColor(ALERT);
+				g.drawString("AUTOSTART IN PROGRESS ", imageRect.width / 2 - 70, imageRect.height / 2);
+				g.drawString("AUTOSTART IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
+				loadgames--;
+				if (loadgames == 20) {
+					JEMU.autoloader = 1;
+				}
+				if (loadgames == 4) {
+					JEMU.autoloader = 2;
+				}
+			}
+			if (loadtimer > 0) {
+				g.setColor(ALERT);
+				g.drawString(" AUTOLOAD IN PROGRESS ", imageRect.width / 2 - 70, imageRect.height / 2);
+				g.drawString(" AUTOLOAD IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
+			}
+		}
+
+		@Override
+		public void dispose(JComponent displayComponent) {
+			// no action
+		}
+
+	}
+
+	private class MonitorMaskDisplayOverlay implements DisplayOverlay {
+
+		public MonitorMaskDisplayOverlay() {
+		}
+
+		@Override
+		public void init(JComponent displayComponent) {
+			// no action
+		}
+
+		@Override
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds) {
+			if (showeffect || masked) {
+				g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, Display.this);
+			}
+		}
+
+		@Override
+		public void dispose(JComponent displayComponent) {
+			// no action
+		}
 
 	}
 

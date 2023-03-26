@@ -9,16 +9,20 @@ import org.maia.amstrad.program.AmstradProgramStoredInFile;
 public class AmstradMain {
 
 	public static void main(String[] args) throws Exception {
-		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
-		AmstradPcFrame frame = amstradPc.displayInFrame(true);
-		frame.installMenu();
-		if (args.length == 0) {
-			amstradPc.start();
-		} else if (args.length == 1) {
-			amstradPc.launch(new AmstradProgramStoredInFile(new File(args[0])));
+		if (AmstradFactory.getInstance().getAmstradContext().isKioskMode()) {
+			AmstradKiosk.main(args);
 		} else {
-			System.err.println("Invalid startup arguments");
-			System.exit(1);
+			AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
+			AmstradPcFrame frame = amstradPc.displayInFrame(true);
+			frame.installMenu();
+			if (args.length == 0) {
+				amstradPc.start();
+			} else if (args.length == 1) {
+				amstradPc.launch(new AmstradProgramStoredInFile(new File(args[0])));
+			} else {
+				System.err.println("Invalid startup arguments");
+				System.exit(1);
+			}
 		}
 	}
 

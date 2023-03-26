@@ -7,7 +7,7 @@ import java.awt.Rectangle;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
-import org.maia.amstrad.pc.monitor.display.AmstradWindowDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 
 public class AmstradSystemColorsDisplaySource extends AmstradWindowDisplaySource {
 

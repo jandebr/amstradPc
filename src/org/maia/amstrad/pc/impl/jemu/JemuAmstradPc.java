@@ -39,9 +39,10 @@ import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
-import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
+import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.util.AmstradUtils;
 import org.maia.swing.dialog.ActionableDialog;
@@ -56,6 +57,7 @@ import jemu.settings.Settings;
 import jemu.ui.Autotype;
 import jemu.ui.Display;
 import jemu.ui.Display.PrimaryDisplaySourceListener;
+import jemu.ui.DisplayOverlay;
 import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
 import jemu.ui.SecondaryDisplaySource;
@@ -75,7 +77,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	private AmstradGraphicsContextImpl graphicsContext;
 
-	private AlternativeDisplaySourceRenderer alternativeDisplaySourceRenderer;
+	private AutonomousDisplayRenderer autonomousDisplayRenderer;
 
 	private MemoryTrapProcessor memoryTrapProcessor;
 
@@ -199,7 +201,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	@Override
 	public void pauseStateChanged(JEMU jemuInstance, boolean paused) {
-		handleAlternativeDisplaySourceRendering();
+		handleAutonomousDisplayRendering();
 		if (paused) {
 			firePausingEvent();
 		} else {
@@ -262,19 +264,19 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 	}
 
-	private synchronized void handleAlternativeDisplaySourceRendering() {
+	private synchronized void handleAutonomousDisplayRendering() {
 		if (getMonitor().isAlternativeDisplaySourceShowing() && isPaused()) {
 			// When computer is paused, there is no vSync and we need to render ourselves
-			if (getAlternativeDisplaySourceRenderer() == null || getAlternativeDisplaySourceRenderer().isStopped()) {
-				AlternativeDisplaySourceRenderer renderer = new AlternativeDisplaySourceRenderer();
-				setAlternativeDisplaySourceRenderer(renderer);
+			if (getAutonomousDisplayRenderer() == null || getAutonomousDisplayRenderer().isStopped()) {
+				AutonomousDisplayRenderer renderer = new AutonomousDisplayRenderer();
+				setAutonomousDisplayRenderer(renderer);
 				renderer.start();
 			}
 		} else {
 			// Stop our own rendering
-			if (getAlternativeDisplaySourceRenderer() != null) {
-				getAlternativeDisplaySourceRenderer().stopRendering();
-				setAlternativeDisplaySourceRenderer(null);
+			if (getAutonomousDisplayRenderer() != null) {
+				getAutonomousDisplayRenderer().stopRendering();
+				setAutonomousDisplayRenderer(null);
 			}
 		}
 	}
@@ -301,12 +303,12 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		return graphicsContext;
 	}
 
-	private AlternativeDisplaySourceRenderer getAlternativeDisplaySourceRenderer() {
-		return alternativeDisplaySourceRenderer;
+	private AutonomousDisplayRenderer getAutonomousDisplayRenderer() {
+		return autonomousDisplayRenderer;
 	}
 
-	private void setAlternativeDisplaySourceRenderer(AlternativeDisplaySourceRenderer renderer) {
-		this.alternativeDisplaySourceRenderer = renderer;
+	private void setAutonomousDisplayRenderer(AutonomousDisplayRenderer renderer) {
+		this.autonomousDisplayRenderer = renderer;
 	}
 
 	private MemoryTrapProcessor getMemoryTrapProcessor() {
@@ -790,7 +792,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 					getJemuInstance().getDisplay()
 							.installSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
 					fireDisplaySourceChangedEvent();
-					handleAlternativeDisplaySourceRendering();
+					handleAutonomousDisplayRendering();
 				} else {
 					resetDisplaySource();
 				}
@@ -804,7 +806,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 				checkNotTerminated();
 				getJemuInstance().getDisplay().uninstallSecondaryDisplaySource();
 				fireDisplaySourceChangedEvent();
-				handleAlternativeDisplaySourceRendering();
+				handleAutonomousDisplayRendering();
 			}
 		}
 
@@ -820,6 +822,24 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 				}
 			}
 			return altDisplaySource;
+		}
+
+		@Override
+		public void setCustomDisplayOverlay(AmstradDisplayOverlay overlay) {
+			synchronized (JemuAmstradPc.this) {
+				if (overlay != null) {
+					getJemuInstance().getDisplay().installCustomDisplayOverlay(new JemuDisplayOverlayBridge(overlay));
+				} else {
+					resetCustomDisplayOverlay();
+				}
+			}
+		}
+
+		@Override
+		public void resetCustomDisplayOverlay() {
+			synchronized (JemuAmstradPc.this) {
+				getJemuInstance().getDisplay().uninstallCustomDisplayOverlay();
+			}
 		}
 
 	}
@@ -1157,6 +1177,35 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	}
 
+	private class JemuDisplayOverlayBridge implements DisplayOverlay {
+
+		private AmstradDisplayOverlay source;
+
+		public JemuDisplayOverlayBridge(AmstradDisplayOverlay source) {
+			this.source = source;
+		}
+
+		@Override
+		public void init(JComponent displayComponent) {
+			getSource().init(displayComponent, getGraphicsContext());
+		}
+
+		@Override
+		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds) {
+			getSource().renderOntoDisplay(display, displayBounds, getGraphicsContext());
+		}
+
+		@Override
+		public void dispose(JComponent displayComponent) {
+			getSource().dispose(displayComponent);
+		}
+
+		private AmstradDisplayOverlay getSource() {
+			return source;
+		}
+
+	}
+
 	private class AmstradKeyboardControllerImpl extends AmstradKeyboardAdapter implements AmstradKeyboardController {
 
 		private int lastKeyModifiers;
@@ -1233,23 +1282,23 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	}
 
-	private class AlternativeDisplaySourceRenderer extends Thread {
+	private class AutonomousDisplayRenderer extends Thread {
 
 		private boolean stop;
 
-		public AlternativeDisplaySourceRenderer() {
-			super("AlternativeDisplaySourceRenderer");
+		public AutonomousDisplayRenderer() {
+			super("AutonomousDisplayRenderer");
 			setDaemon(true);
 		}
 
 		@Override
 		public void run() {
-			System.out.println("Alternative render thread started");
+			System.out.println("Autonomous render thread started");
 			final Display display = getJemuInstance().getDisplay();
 			while (!isStopped()) {
 				display.updateImage(true);
 			}
-			System.out.println("Alternative render thread stopped");
+			System.out.println("Autonomous render thread stopped");
 		}
 
 		public void stopRendering() {

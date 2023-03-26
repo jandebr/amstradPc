@@ -11,6 +11,7 @@ import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.impl.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
@@ -45,7 +46,14 @@ public class AmstradFactory {
 	}
 
 	public AmstradPc createAmstradPc() {
-		return new JemuAmstradPc();
+		JemuAmstradPc amstradPc = new JemuAmstradPc();
+		amstradPc.getMonitor().setCustomDisplayOverlay(createDisplayOverlay());
+		return amstradPc;
+	}
+
+	private AmstradDisplayOverlay createDisplayOverlay() {
+		// TODO
+		return null;
 	}
 
 	public AmstradProgramRepository createProgramRepository() {

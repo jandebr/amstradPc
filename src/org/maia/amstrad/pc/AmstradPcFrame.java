@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
@@ -18,6 +19,7 @@ import javax.swing.event.PopupMenuListener;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.action.AmstradPcMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.util.AmstradUtils;
 
 public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
 
@@ -78,19 +80,16 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
-		final AmstradMonitor monitor = amstradPc.getMonitor();
-		if (isKioskMode()) {
-			AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(amstradPc);
-			monitor.setWindowAlwaysOnTop(true);
-			monitor.makeWindowFullscreen();
-		}
 		setVisible(true);
+		AmstradMonitor monitor = amstradPc.getMonitor();
 		if (monitor.isWindowFullscreen()) {
-			while (monitor.getDisplayPane().getLocationOnScreen().getX() != 0) {
-				System.out.println("Center display in full screen");
+			// Force full screen as it is not consistently working
+			if (monitor.getDisplayPane().getLocationOnScreen().getX() != 0) {
+				System.out.println("Force center display on screen");
 				monitor.toggleWindowFullscreen();
 				monitor.toggleWindowFullscreen();
 			}
+			new MonitorDisplayUltimateCenterer().start(); // final check and attempts
 		}
 	}
 
@@ -178,6 +177,31 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	private void setClosing(boolean closing) {
 		this.closing = closing;
+	}
+
+	private class MonitorDisplayUltimateCenterer extends Thread {
+
+		public MonitorDisplayUltimateCenterer() {
+			super("MonitorDisplayUltimateCenterer");
+			setDaemon(true);
+		}
+
+		@Override
+		public void run() {
+			AmstradUtils.sleep(1000L);
+			AmstradMonitor monitor = getAmstradPc().getMonitor();
+			JComponent displayComp = monitor.getDisplayComponent();
+			int expectedX = (getScreenSize().width - displayComp.getWidth()) / 2;
+			int attempts = 0;
+			while (Math.abs(displayComp.getLocationOnScreen().x - expectedX) > 2 && ++attempts <= 3) {
+				System.out.println("Ultimate center display on screen");
+				monitor.toggleWindowFullscreen();
+				monitor.toggleWindowFullscreen();
+				AmstradUtils.sleep(500L);
+			}
+			System.out.println("Display is centered on screen");
+		}
+
 	}
 
 	private class PopupMenuController implements PopupMenuListener {

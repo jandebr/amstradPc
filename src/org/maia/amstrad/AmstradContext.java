@@ -44,6 +44,10 @@ public abstract class AmstradContext {
 		return getUserSettings().getBool(SETTING_KIOSK, false);
 	}
 
+	public void setKioskMode(boolean kioskMode) {
+		getUserSettings().setBool(SETTING_KIOSK, kioskMode);
+	}
+
 	public File getCurrentDirectory() {
 		String dir = getUserSettings().get(SETTING_CURRENT_DIR, null);
 		if (dir != null) {

@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import org.maia.amstrad.gui.colors.AmstradSystemColorsDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 
 public class DisplaySystemColorsAction extends AmstradPcAction {
 

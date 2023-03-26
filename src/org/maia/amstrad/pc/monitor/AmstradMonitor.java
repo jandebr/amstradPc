@@ -10,9 +10,10 @@ import javax.swing.JComponent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.monitor.display.AmstradAlternativeDisplaySource;
-import org.maia.amstrad.pc.monitor.display.AmstradCoverImageDisplaySource;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradCoverImageDisplaySource;
 
 public abstract class AmstradMonitor extends AmstradDevice {
 
@@ -92,6 +93,10 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	public boolean isPrimaryDisplaySourceShowing() {
 		return !isAlternativeDisplaySourceShowing();
 	}
+
+	public abstract void setCustomDisplayOverlay(AmstradDisplayOverlay overlay);
+
+	public abstract void resetCustomDisplayOverlay();
 
 	public void addMonitorListener(AmstradMonitorListener listener) {
 		getMonitorListeners().add(listener);

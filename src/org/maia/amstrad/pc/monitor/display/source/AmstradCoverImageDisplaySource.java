@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.monitor.display;
+package org.maia.amstrad.pc.monitor.display.source;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class AmstradCoverImageDisplaySource implements AmstradAlternativeDisplaySource {
 
