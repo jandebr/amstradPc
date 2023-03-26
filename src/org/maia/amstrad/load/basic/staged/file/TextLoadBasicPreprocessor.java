@@ -240,14 +240,16 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
+				startFileOperation(session, fileReference, false);
 				LocomotiveBasicVariableSpace vars = getRuntimeVariables(session);
 				TextFileReader reader = session.openTextFileReader(fileReference.getTargetFile());
 				vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0);
-				delay(DELAYMILLIS_OPENIN);
+				delayFileOperation(DELAYMILLIS_OPENIN);
 				resumeRun(macro, session);
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
 				System.err.println(e);
+				stopFileOperation(session);
 				endWithError(ERR_TEXT_LOAD_FAILURE, sourceCode, macro, session);
 			}
 		}
@@ -268,11 +270,12 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 			}
 			vars.setValue(textLengthVariable, n);
 			vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0);
-			delay(DELAYMILLIS_INPUTSTREAM);
+			delayFileOperation(DELAYMILLIS_INPUTSTREAM);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
 		} catch (Exception e) {
 			System.err.println(e);
+			stopFileOperation(session);
 			endWithError(ERR_TEXT_LOAD_FAILURE, sourceCode, macro, session);
 		}
 	}
@@ -283,12 +286,14 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			session.closeTextFileReader();
-			delay(DELAYMILLIS_CLOSEIN);
+			delayFileOperation(DELAYMILLIS_CLOSEIN);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
 		} catch (Exception e) {
 			System.err.println(e);
 			endWithError(ERR_TEXT_LOAD_FAILURE, sourceCode, macro, session);
+		} finally {
+			stopFileOperation(session);
 		}
 	}
 

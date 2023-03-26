@@ -12,6 +12,7 @@ import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
@@ -62,10 +63,6 @@ public abstract class AmstradPc {
 		}
 	}
 
-	public abstract void load(AmstradPcSnapshotFile snapshotFile) throws IOException;
-
-	public abstract void save(AmstradPcSnapshotFile snapshotFile) throws IOException;
-
 	public abstract boolean isStarted();
 
 	public abstract boolean isPaused();
@@ -95,6 +92,8 @@ public abstract class AmstradPc {
 	public abstract AmstradMemory getMemory();
 
 	public abstract AmstradMonitor getMonitor();
+
+	public abstract AmstradTape getTape();
 
 	public abstract BasicRuntime getBasicRuntime();
 

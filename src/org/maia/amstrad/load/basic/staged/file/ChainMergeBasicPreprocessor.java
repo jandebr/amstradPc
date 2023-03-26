@@ -122,7 +122,8 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	}
 
 	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
-			BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) {
+			FileReference chainedProgramReference, BasicSourceCode sourceCode,
+			StagedBasicProgramLoaderSession session) {
 		System.out.println("Handling " + command);
 		ChainMergeMacro macro = session.getMacroAdded(ChainMergeMacro.class);
 		if (chainedProgram == null) {
@@ -131,7 +132,8 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 			BasicSourceCode sourceCodeBeforeMerge = sourceCode.clone();
 			try {
 				if (!isProgramAlreadyChained(chainedProgram, session)) {
-					delay(DELAYMILLIS_CHAIN_MERGE);
+					startFileOperation(session, chainedProgramReference, false);
+					delayFileOperation(DELAYMILLIS_CHAIN_MERGE);
 					performChainMerge(command, chainedProgram, sourceCode, session);
 				}
 				resumeWithNewSourceCode(getResumeLineNumber(command, sourceCode), sourceCode, session);
@@ -141,6 +143,8 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 			} catch (Exception e) {
 				System.err.println(e);
 				endWithError(ERR_CHAIN_MERGE_FAILURE, sourceCodeBeforeMerge, macro, session);
+			} finally {
+				stopFileOperation(session);
 			}
 		}
 	}
@@ -271,7 +275,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		@Override
 		protected void execute(FileCommand command, FileReference fileReference) {
 			AmstradProgram chainedProgram = getReferencedProgram(fileReference);
-			handleChainMerge((ChainMergeCommand) command, chainedProgram, getSourceCode(), getSession());
+			handleChainMerge((ChainMergeCommand) command, chainedProgram, fileReference, getSourceCode(), getSession());
 		}
 
 	}

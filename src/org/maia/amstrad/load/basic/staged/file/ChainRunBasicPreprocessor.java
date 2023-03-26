@@ -114,20 +114,24 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 	}
 
-	protected void handleChainRun(ChainRunCommand command, AmstradProgram chainedProgram, BasicSourceCode sourceCode,
+	protected void handleChainRun(ChainRunCommand command, AmstradProgram chainedProgram,
+			FileReference chainedProgramReference, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
 		System.out.println("Handling " + command);
 		ChainRunMacro macro = session.getMacroAdded(ChainRunMacro.class);
 		if (chainedProgram == null) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
-			delay(DELAYMILLIS_CHAIN_RUN);
 			try {
+				startFileOperation(session, chainedProgramReference, false);
+				delayFileOperation(DELAYMILLIS_CHAIN_RUN);
 				performChainRun(command, chainedProgram, session.getLoader());
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
 				System.err.println(e);
 				endWithError(ERR_CHAIN_RUN_FAILURE, sourceCode, macro, session);
+			} finally {
+				stopFileOperation(session);
 			}
 		}
 	}
@@ -185,7 +189,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		@Override
 		protected void execute(FileCommand command, FileReference fileReference) {
 			AmstradProgram chainedProgram = getReferencedProgram(fileReference);
-			handleChainRun((ChainRunCommand) command, chainedProgram, getSourceCode(), getSession());
+			handleChainRun((ChainRunCommand) command, chainedProgram, fileReference, getSourceCode(), getSession());
 		}
 
 	}

@@ -43,6 +43,7 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.util.AmstradUtils;
 import org.maia.swing.dialog.ActionableDialog;
@@ -73,6 +74,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	private AmstradMonitor monitor;
 
+	private AmstradTape tape;
+
 	private BasicRuntime basicRuntime;
 
 	private AmstradGraphicsContextImpl graphicsContext;
@@ -97,6 +100,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		this.keyboard = new JemuKeyboardImpl();
 		this.memory = new JemuMemoryImpl();
 		this.monitor = new JemuMonitorImpl();
+		this.tape = new JemuTapeImpl();
 		this.basicRuntime = new JemuBasicRuntimeImpl();
 		this.graphicsContext = new AmstradGraphicsContextImpl();
 	}
@@ -113,30 +117,6 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 	public void showActionableDialog(ActionableDialog dialog) {
 		dialog.addListener(new ActionableDialogHandler());
 		super.showActionableDialog(dialog);
-	}
-
-	@Override
-	public void load(AmstradPcSnapshotFile snapshotFile) {
-		checkStarted();
-		checkNotTerminated();
-		File file = snapshotFile.getFile();
-		getJemuInstance().doAutoOpen(file);
-		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-		System.out.println("Loaded snapshot from " + file.getPath());
-		fireProgramLoaded();
-	}
-
-	@Override
-	public void save(AmstradPcSnapshotFile snapshotFile) {
-		checkStarted();
-		checkNotTerminated();
-		File file = snapshotFile.getFile();
-		Settings.set(Settings.SNAPSHOT_FILE, file.getAbsolutePath());
-		Switches.uncompressed = AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.matches(file);
-		Switches.save64 = true; // 64k RAM memory dump
-		waitUntilSnapshotReady(file);
-		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-		System.out.println("Saved snapshot to " + file.getPath());
 	}
 
 	@Override
@@ -242,6 +222,11 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 	}
 
 	@Override
+	public AmstradTape getTape() {
+		return tape;
+	}
+
+	@Override
 	public BasicRuntime getBasicRuntime() {
 		return basicRuntime;
 	}
@@ -251,17 +236,6 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		AmstradUtils.sleep(1000L); // making sure "ready" turns false first
 		getBasicRuntime().waitUntilReady(8000L);
 		System.out.println("Basic runtime is Ready");
-	}
-
-	private void waitUntilSnapshotReady(File snapshotFile) {
-		waitUntilSnapshotReady(snapshotFile, 1000L);
-	}
-
-	private void waitUntilSnapshotReady(File snapshotFile, long maxWaitTimeMs) {
-		long timeout = System.currentTimeMillis() + maxWaitTimeMs;
-		while (snapshotFile.length() < 65536L + SNAPSHOT_HEADER_SIZE && System.currentTimeMillis() < timeout) {
-			AmstradUtils.sleep(100L);
-		}
 	}
 
 	private synchronized void handleAutonomousDisplayRendering() {
@@ -501,7 +475,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			escapeKeyCounter = 0;
 		}
 
-		private boolean isAutotyping() {
+		@Override
+		public boolean isAutotyping() {
 			return autotyping;
 		}
 
@@ -825,6 +800,11 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
+		public boolean isAlternativeDisplaySourceShowing() {
+			return getJemuInstance().getDisplay().getSecondaryDisplaySource() != null;
+		}
+
+		@Override
 		public void setCustomDisplayOverlay(AmstradDisplayOverlay overlay) {
 			synchronized (JemuAmstradPc.this) {
 				if (overlay != null) {
@@ -839,6 +819,59 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		public void resetCustomDisplayOverlay() {
 			synchronized (JemuAmstradPc.this) {
 				getJemuInstance().getDisplay().uninstallCustomDisplayOverlay();
+			}
+		}
+
+	}
+
+	private class JemuTapeImpl extends AmstradTape {
+
+		public JemuTapeImpl() {
+			super(JemuAmstradPc.this);
+		}
+
+		@Override
+		public void load(AmstradPcSnapshotFile snapshotFile) {
+			checkStarted();
+			checkNotTerminated();
+			File file = snapshotFile.getFile();
+			try {
+				notifyTapeReading(file.getName());
+				getJemuInstance().doAutoOpen(file);
+				AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
+				System.out.println("Loaded snapshot from " + file.getPath());
+				fireProgramLoaded();
+			} finally {
+				notifyTapeStoppedReading();
+			}
+		}
+
+		@Override
+		public void save(AmstradPcSnapshotFile snapshotFile) {
+			checkStarted();
+			checkNotTerminated();
+			File file = snapshotFile.getFile();
+			try {
+				notifyTapeWriting(file.getName());
+				Settings.set(Settings.SNAPSHOT_FILE, file.getAbsolutePath());
+				Switches.uncompressed = AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.matches(file);
+				Switches.save64 = true; // 64k RAM memory dump
+				waitUntilSnapshotReady(file);
+				AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
+				System.out.println("Saved snapshot to " + file.getPath());
+			} finally {
+				notifyTapeStoppedWriting();
+			}
+		}
+
+		private void waitUntilSnapshotReady(File snapshotFile) {
+			waitUntilSnapshotReady(snapshotFile, 1000L);
+		}
+
+		private void waitUntilSnapshotReady(File snapshotFile, long maxWaitTimeMs) {
+			long timeout = System.currentTimeMillis() + maxWaitTimeMs;
+			while (snapshotFile.length() < 65536L + SNAPSHOT_HEADER_SIZE && System.currentTimeMillis() < timeout) {
+				AmstradUtils.sleep(100L);
 			}
 		}
 
@@ -1156,11 +1189,6 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			if (getSource().isRestoreMonitorSettingsOnDispose()) {
 				restoreMonitorSettings();
 			}
-		}
-
-		@Override
-		public boolean canShow(OnDisplayIndicator indicator) {
-			return !indicator.equals(OnDisplayIndicator.AUTO_TYPE);
 		}
 
 		private void restoreMonitorSettings() {

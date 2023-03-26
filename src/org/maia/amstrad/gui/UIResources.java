@@ -17,31 +17,31 @@ import org.maia.amstrad.pc.action.PauseResumeAction;
 
 public class UIResources {
 
-	public static Icon basicIcon = loadIcon("basic32.png");
+	public static ImageIcon basicIcon = loadIcon("basic32.png");
 
-	public static Icon browserIcon = loadIcon("browser32.png");
+	public static ImageIcon browserIcon = loadIcon("browser32.png");
 
 	public static Icon basicOrBrowserIcon = new BasicOrBrowserIcon(basicIcon, browserIcon);
 
-	public static Icon browserSetupIcon = loadIcon("browser-setup32.png");
+	public static ImageIcon browserSetupIcon = loadIcon("browser-setup32.png");
 
-	public static Icon pauseIcon = loadIcon("pause32.png");
+	public static ImageIcon pauseIcon = loadIcon("pause32.png");
 
-	public static Icon resumeIcon = loadIcon("resume32.png");
+	public static ImageIcon resumeIcon = loadIcon("resume32.png");
 
 	public static Icon pauseResumeIcon = new PauseResumeIcon(pauseIcon, resumeIcon);
 
-	public static Icon infoIcon = loadIcon("info32.png");
+	public static ImageIcon infoIcon = loadIcon("info32.png");
 
-	public static Icon screenshotIcon = loadIcon("photo32.png");
+	public static ImageIcon screenshotIcon = loadIcon("photo32.png");
 
-	public static Icon screenshotWithMonitorIcon = loadIcon("photo-monitor32.png");
+	public static ImageIcon screenshotWithMonitorIcon = loadIcon("photo-monitor32.png");
 
-	public static Icon monitorModeIcon = loadIcon("monitor-mode32.png");
+	public static ImageIcon monitorModeIcon = loadIcon("monitor-mode32.png");
 
-	public static Icon monitorEffectIcon = loadIcon("monitor-effect32.png");
+	public static ImageIcon monitorEffectIcon = loadIcon("monitor-effect32.png");
 
-	public static Icon menuArrowIcon = loadIcon("menu-arrowh-right12x22.png");
+	public static ImageIcon menuArrowIcon = loadIcon("menu-arrowh-right12x22.png");
 
 	public static Icon checkBoxMenuItemIcon = new ButtonStateIcon(loadIcon("unchecked32.png"),
 			loadIcon("checked32.png"));
@@ -49,10 +49,26 @@ public class UIResources {
 	public static Icon radioButtonMenuItemIcon = new ButtonStateIcon(loadIcon("unselected32.png"),
 			loadIcon("selected32.png"));
 
-	public static Icon quitIcon = loadIcon("poweroff32.png");
+	public static ImageIcon quitIcon = loadIcon("poweroff32.png");
 
-	private static Icon loadIcon(String resourceName) {
-		Icon icon = null;
+	public static ImageIcon pauseOverlayIcon = loadIcon("overlay/pause64.png");
+
+	public static ImageIcon pauseSmallOverlayIcon = loadIcon("overlay/pause32.png");
+
+	public static ImageIcon autotypeOverlayIcon = loadIcon("overlay/autotype64.png");
+
+	public static ImageIcon autotypeSmallOverlayIcon = loadIcon("overlay/autotype32.png");
+
+	public static ImageIcon tapeOverlayIcon = loadIcon("overlay/tape64.png");
+
+	public static ImageIcon tapeSmallOverlayIcon = loadIcon("overlay/tape32.png");
+
+	public static ImageIcon tapeReadOverlayIcon = loadIcon("overlay/play22.png");
+
+	public static ImageIcon tapeWriteOverlayIcon = loadIcon("overlay/record22.png");
+
+	private static ImageIcon loadIcon(String resourceName) {
+		ImageIcon icon = null;
 		try {
 			InputStream in = UIResources.class.getResourceAsStream("icons/" + resourceName);
 			icon = new ImageIcon(ImageIO.read(in));

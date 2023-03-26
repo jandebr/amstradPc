@@ -13,6 +13,8 @@ import org.maia.amstrad.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
+import org.maia.amstrad.pc.tape.AmstradTape;
+import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocessor
@@ -62,7 +64,27 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 		}
 	}
 
-	protected void delay(long delayMillis) {
+	protected void startFileOperation(StagedBasicProgramLoaderSession session, FileReference fileReference,
+			boolean write) {
+		AmstradTape tape = session.getAmstradPc().getTape();
+		String filename = fileReference.getSourceFilename();
+		if (write) {
+			tape.notifyTapeWriting(filename);
+		} else {
+			tape.notifyTapeReading(filename);
+		}
+	}
+
+	protected void stopFileOperation(StagedBasicProgramLoaderSession session) {
+		AmstradTape tape = session.getAmstradPc().getTape();
+		if (tape.isWriting()) {
+			tape.notifyTapeStoppedWriting();
+		} else if (tape.isReading()) {
+			tape.notifyTapeStoppedReading();
+		}
+	}
+
+	protected void delayFileOperation(long delayMillis) {
 		AmstradSettings settings = AmstradFactory.getInstance().getAmstradContext().getUserSettings();
 		if (settings.getBool(SETTING_DELAYS, true)) {
 			AmstradUtils.sleep(delayMillis);

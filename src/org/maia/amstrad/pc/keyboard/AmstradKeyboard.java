@@ -19,6 +19,8 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 	}
 	
 	public abstract boolean isTyping();
+	
+	public abstract boolean isAutotyping();
 
 	public abstract void type(CharSequence text, boolean waitUntilTyped);
 

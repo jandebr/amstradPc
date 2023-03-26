@@ -91,14 +91,17 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
+				startFileOperation(session, fileReference, true);
 				session.getBasicRuntime().saveBinaryFile(fileReference.getTargetFile(), command.getMemoryOffset(),
 						command.getMemoryLength());
-				delay(DELAYMILLIS_BINARY_SAVE);
+				delayFileOperation(DELAYMILLIS_BINARY_SAVE);
 				resumeRun(macro, session);
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
 				System.err.println(e);
 				endWithError(ERR_BINARY_SAVE_FAILURE, sourceCode, macro, session);
+			} finally {
+				stopFileOperation(session);
 			}
 		}
 	}

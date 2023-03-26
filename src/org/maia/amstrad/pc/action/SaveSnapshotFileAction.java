@@ -31,7 +31,7 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 							AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.getFileExtension(),
 							AmstradFileType.JAVACPC_SNAPSHOT_FILE_COMPRESSED.getFileExtension());
 					try {
-						getAmstradPc().save(AmstradFactory.getInstance().createCpcSnapshotProgram(file));
+						getAmstradPc().getTape().save(AmstradFactory.getInstance().createCpcSnapshotProgram(file));
 					} catch (Exception e) {
 						System.err.println("Failed to save snapshot file: " + e.getMessage());
 						showErrorMessageDialog("Error saving snapshot file", "Failed to save " + file.getName(), e);

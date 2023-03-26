@@ -31,7 +31,7 @@ public class AmstradPcSnapshotLoader extends AmstradProgramLoader {
 			throws AmstradProgramException {
 		AmstradPcSnapshotFile snapshotFile = (AmstradPcSnapshotFile) program;
 		try {
-			getAmstradPc().load(snapshotFile);
+			getAmstradPc().getTape().load(snapshotFile);
 		} catch (IOException e) {
 			throw new AmstradProgramException(program,
 					"Failed to load snapshot file " + snapshotFile.getFile().getPath(), e);

@@ -28,7 +28,7 @@ public class LoadSnapshotFileAction extends SnapshotFileAction {
 				public void run() {
 					File file = getSelectedFile();
 					try {
-						getAmstradPc().load(AmstradFactory.getInstance().createCpcSnapshotProgram(file));
+						getAmstradPc().getTape().load(AmstradFactory.getInstance().createCpcSnapshotProgram(file));
 					} catch (Exception e) {
 						System.err.println("Failed to load snapshot file: " + e.getMessage());
 						showErrorMessageDialog("Error loading snapshot file", "Failed to load " + file.getName(), e);

@@ -12,6 +12,10 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.impl.jemu.JemuAmstradPc;
 import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.overlay.AutotypeDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.overlay.PauseDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.overlay.StackedDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.overlay.TapeDisplayOverlay;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
@@ -47,13 +51,16 @@ public class AmstradFactory {
 
 	public AmstradPc createAmstradPc() {
 		JemuAmstradPc amstradPc = new JemuAmstradPc();
-		amstradPc.getMonitor().setCustomDisplayOverlay(createDisplayOverlay());
+		amstradPc.getMonitor().setCustomDisplayOverlay(createDisplayOverlay(amstradPc));
 		return amstradPc;
 	}
 
-	private AmstradDisplayOverlay createDisplayOverlay() {
-		// TODO
-		return null;
+	private AmstradDisplayOverlay createDisplayOverlay(AmstradPc amstradPc) {
+		StackedDisplayOverlay overlay = new StackedDisplayOverlay();
+		overlay.addOverlay(new PauseDisplayOverlay(amstradPc), 0);
+		overlay.addOverlay(new AutotypeDisplayOverlay(amstradPc), 0);
+		overlay.addOverlay(new TapeDisplayOverlay(amstradPc), 0);
+		return overlay;
 	}
 
 	public AmstradProgramRepository createProgramRepository() {

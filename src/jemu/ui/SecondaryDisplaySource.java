@@ -13,14 +13,4 @@ public interface SecondaryDisplaySource {
 
 	void dispose(JComponent displayComponent);
 
-	boolean canShow(OnDisplayIndicator indicator);
-
-	public static enum OnDisplayIndicator {
-
-		AUTO_TYPE,
-
-		PAUSE;
-
-	}
-
 }

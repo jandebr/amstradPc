@@ -97,12 +97,13 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
+				startFileOperation(session, fileReference, false);
 				if (shouldLoadInBytes(command)) {
 					loadInBytes(command, fileReference, session);
 				} else if (shouldLoadInBlocks(command)) {
 					loadInBlocks(command, fileReference, session);
 				} else {
-					delay(DELAYMILLIS_BINARY_LOAD);
+					delayFileOperation(DELAYMILLIS_BINARY_LOAD);
 					session.getBasicRuntime().loadBinaryFile(fileReference.getTargetFile(), command.getMemoryOffset());
 				}
 				resumeRun(macro, session);
@@ -110,6 +111,8 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 			} catch (Exception e) {
 				System.err.println(e);
 				endWithError(ERR_BINARY_LOAD_FAILURE, sourceCode, macro, session);
+			} finally {
+				stopFileOperation(session);
 			}
 		}
 	}
@@ -124,7 +127,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 
 	private void loadInBytes(BinaryLoadCommand command, FileReference fileReference,
 			StagedBasicProgramLoaderSession session) throws IOException {
-		delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
+		delayFileOperation(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
 		int programEndedAddr = session.getEndingMacro().getMemoryTrapAddress();
 		BasicRuntime rt = session.getBasicRuntime();
 		int addr = command.getMemoryOffset();
@@ -135,9 +138,9 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 			rt.poke(addr++, data[i]);
 			boolean newBlockAhead = addr % BLOCK_BYTESIZE == 0 && i < data.length - 1;
 			if (newBlockAhead) {
-				delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
+				delayFileOperation(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
 			} else if (i % 8 == 7) {
-				delay(DELAYMILLIS_BINARY_LOAD_DWORD);
+				delayFileOperation(DELAYMILLIS_BINARY_LOAD_DWORD);
 			}
 		}
 	}
@@ -152,7 +155,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 			for (int bi = 0; bi < blocks; bi++) {
 				int offset = bi * BLOCK_BYTESIZE;
 				int end = Math.min(offset + BLOCK_BYTESIZE, data.length);
-				delay(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
+				delayFileOperation(DELAYMILLIS_BINARY_LOAD_NEW_BLOCK);
 				if (rt.peek(programEndedAddr) > 0)
 					break;
 				rt.loadBinaryData(data, offset, end - offset, command.getMemoryOffset() + offset);

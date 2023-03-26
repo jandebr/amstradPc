@@ -31,7 +31,6 @@ import javax.swing.JComponent;
 
 import jemu.core.Util;
 import jemu.core.samples.Samples;
-import jemu.ui.SecondaryDisplaySource.OnDisplayIndicator;
 
 /**
  * Title: JEMU Description: The Java Emulation Platform Copyright: Copyright (c) 2002 Company:
@@ -445,7 +444,7 @@ public class Display extends JComponent {
 		}
 		if (imageRect.height >= 640) {
 			zoom = 3;
-		} else if (imageRect.height >= 540) {
+		} else if (isLargeDisplay()) {
 			zoom = 2;
 		} else {
 			zoom = 1;
@@ -469,6 +468,20 @@ public class Display extends JComponent {
 		} else {
 			showeffect = false;
 			masked = false;
+		}
+		if (turbotimer == 10) {
+			if (!floppyturbo) {
+				Switches.turbo = 3;
+				floppyturbo = true;
+			}
+		}
+		if (turbotimer >= 2) {
+			turbotimer--;
+		}
+		if (turbotimer == 1) {
+			Switches.turbo = 1;
+			floppyturbo = false;
+			turbotimer--;
 		}
 		g.setFont(displayFont);
 		g.setColor(Color.BLACK);
@@ -619,7 +632,7 @@ public class Display extends JComponent {
 		if (jemu.system.cpc.CPC.recordKeys && !lowperformance) {
 			flashkey++;
 			if (flashkey > 25)
-				if (imageRect.height >= 540)
+				if (isLargeDisplay())
 					g.drawImage(recb, 10, 12, this);
 				else
 					g.drawImage(recs, 10, 12, this);
@@ -629,7 +642,7 @@ public class Display extends JComponent {
 		if (jemu.system.cpc.CPC.playKeys && !lowperformance) {
 			flashkey++;
 			if (flashkey > 25)
-				if (imageRect.height >= 540)
+				if (isLargeDisplay())
 					g.drawImage(playb, 10, 12, this);
 				else
 					g.drawImage(plays, 10, 12, this);
@@ -696,6 +709,10 @@ public class Display extends JComponent {
 
 	public int getImageHeight() {
 		return imageHeight;
+	}
+	
+	private boolean isLargeDisplay() {
+		return imageRect.height >= 540;
 	}
 
 	public boolean isPainted() {
@@ -782,7 +799,7 @@ public class Display extends JComponent {
 		@Override
 		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds) {
 			ImageObserver imageObserver = Display.this;
-			boolean largeDisplay = imageRect.height >= 540;
+			boolean largeDisplay = isLargeDisplay();
 			// Floppy
 			if (ledOn)
 				led = 200;
@@ -812,21 +829,6 @@ public class Display extends JComponent {
 					g.drawString(drive, imageRect.width - 24, 34 + trackpos);
 				}
 				led--;
-			}
-			// Turbo
-			if (turbotimer == 10) {
-				if (!floppyturbo) {
-					Switches.turbo = 3;
-					floppyturbo = true;
-				}
-			}
-			if (turbotimer >= 2) {
-				turbotimer--;
-			}
-			if (turbotimer == 1) {
-				Switches.turbo = 1;
-				floppyturbo = false;
-				turbotimer--;
 			}
 			// About
 			if (txtpos > 0 && !lowperformance) {
@@ -900,8 +902,7 @@ public class Display extends JComponent {
 				}
 			}
 			// Pause
-			SecondaryDisplaySource sds = getSecondaryDisplaySource();
-			if (showpause > 0 && (sds == null || sds.canShow(OnDisplayIndicator.PAUSE))) {
+			if (showpause > 0) {
 				if (largeDisplay)
 					g.drawImage(paused, imageRect.width - 80, 12, imageObserver);
 				else
@@ -948,8 +949,8 @@ public class Display extends JComponent {
 					g.drawImage(muteds, 5, 6, imageObserver);
 			}
 			// Autotype
-			if (autotype >= 1 && (sds == null || sds.canShow(OnDisplayIndicator.AUTO_TYPE))) {
-				if (imageRect.height >= 540)
+			if (autotype >= 1) {
+				if (isLargeDisplay())
 					g.drawImage(autotyped, imageRect.width - 80, 12, imageObserver);
 				else
 					g.drawImage(autotyped_small, imageRect.width - 40, 6, imageObserver);

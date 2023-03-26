@@ -203,12 +203,14 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
+				startFileOperation(session, fileReference, true);
 				session.openTextFileWriter(fileReference.getTargetFile());
-				delay(DELAYMILLIS_OPENOUT);
+				delayFileOperation(DELAYMILLIS_OPENOUT);
 				resumeRun(macro, session);
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
 				System.err.println(e);
+				stopFileOperation(session);
 				endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
 			}
 		}
@@ -222,11 +224,12 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			LocomotiveBasicVariableSpace vars = getRuntimeVariables(session);
 			String value = vars.getValue(textBufferVariable);
 			session.getTextFileWriter().writeLine(value);
-			delay(DELAYMILLIS_PRINTSTREAM);
+			delayFileOperation(DELAYMILLIS_PRINTSTREAM);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
 		} catch (Exception e) {
 			System.err.println(e);
+			stopFileOperation(session);
 			endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
 		}
 	}
@@ -237,12 +240,14 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			session.closeTextFileWriter();
-			delay(DELAYMILLIS_CLOSEOUT);
+			delayFileOperation(DELAYMILLIS_CLOSEOUT);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);
 		} catch (Exception e) {
 			System.err.println(e);
 			endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
+		} finally {
+			stopFileOperation(session);
 		}
 	}
 

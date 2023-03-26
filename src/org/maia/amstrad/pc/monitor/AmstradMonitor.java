@@ -86,9 +86,7 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	public abstract AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource();
 
-	public boolean isAlternativeDisplaySourceShowing() {
-		return getCurrentAlternativeDisplaySource() != null;
-	}
+	public abstract boolean isAlternativeDisplaySourceShowing();
 
 	public boolean isPrimaryDisplaySourceShowing() {
 		return !isAlternativeDisplaySourceShowing();
