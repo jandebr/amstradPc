@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.monitor.display.overlay;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
@@ -18,6 +19,8 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 	private static Color colorRead = AmstradSystemColors.getSystemColors(AmstradMonitorMode.COLOR).getColor(22);
 
 	private static Color colorWrite = AmstradSystemColors.getSystemColors(AmstradMonitorMode.COLOR).getColor(16);
+
+	private Font labelFont;
 
 	public TapeDisplayOverlay(AmstradPc amstracPc) {
 		super(amstracPc);
@@ -39,9 +42,16 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 				drawIcon(UIResources.tapeReadOverlayIcon, x1 + 4, yc - 10, display);
 				display.setColor(colorRead);
 			}
-			display.setFont(graphicsContext.getSystemFont().deriveFont(8f));
+			display.setFont(getLabelFont(graphicsContext));
 			display.drawString(tape.getFilenameAtTapeHead(), x1 + 28, yc + 5);
 		}
+	}
+
+	private Font getLabelFont(AmstradGraphicsContext graphicsContext) {
+		if (labelFont == null) {
+			labelFont = graphicsContext.getSystemFont().deriveFont(8f);
+		}
+		return labelFont;
 	}
 
 }
