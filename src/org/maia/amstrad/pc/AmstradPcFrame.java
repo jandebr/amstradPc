@@ -2,6 +2,7 @@ package org.maia.amstrad.pc;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -45,10 +46,6 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		getContentPane().add(getAmstradPc().getMonitor().getDisplayPane(), BorderLayout.CENTER);
 	}
 
-	public static Dimension getScreenSize() {
-		return Toolkit.getDefaultToolkit().getScreenSize();
-	}
-
 	public void installMenu() {
 		if (isKioskMode()) {
 			JPopupMenu popupMenu = new AmstradPcMenuMaker(getAmstradPc().getActions(),
@@ -70,6 +67,23 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		}
 	}
 
+	public static Dimension getScreenSize() {
+		return Toolkit.getDefaultToolkit().getScreenSize();
+	}
+
+	public void centerOnScreen() {
+		Dimension screen = getScreenSize();
+		Dimension size = getSize();
+		setLocation((screen.width - size.width) / 2, (screen.height - size.height) / 2);
+	}
+
+	private boolean extendsOutsideScreen() {
+		Dimension screen = getScreenSize();
+		Dimension size = getSize();
+		Point loc = getLocationOnScreen();
+		return loc.x < 0 || loc.y < 0 || loc.x + size.width > screen.width || loc.y + size.height > screen.height;
+	}
+
 	public boolean isFullscreen() {
 		return getAmstradPc().getMonitor().isWindowFullscreen();
 	}
@@ -89,8 +103,8 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 				monitor.toggleWindowFullscreen();
 				monitor.toggleWindowFullscreen();
 			}
-			new MonitorDisplayUltimateCenterer().start(); // final check and attempts
 		}
+		new MonitorDisplayUltimateCenterer().start(); // final check and attempts
 	}
 
 	@Override
@@ -190,16 +204,21 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		public void run() {
 			AmstradUtils.sleep(1000L);
 			AmstradMonitor monitor = getAmstradPc().getMonitor();
-			JComponent displayComp = monitor.getDisplayComponent();
-			int expectedX = (getScreenSize().width - displayComp.getWidth()) / 2;
-			int attempts = 0;
-			while (Math.abs(displayComp.getLocationOnScreen().x - expectedX) > 2 && ++attempts <= 3) {
-				System.out.println("Ultimate center display on screen");
-				monitor.toggleWindowFullscreen();
-				monitor.toggleWindowFullscreen();
-				AmstradUtils.sleep(500L);
+			if (monitor.isWindowFullscreen()) {
+				JComponent displayComp = monitor.getDisplayComponent();
+				int expectedX = (getScreenSize().width - displayComp.getWidth()) / 2;
+				int attempts = 0;
+				while (Math.abs(displayComp.getLocationOnScreen().x - expectedX) > 2 && ++attempts <= 3) {
+					System.out.println("Ultimate center display on screen");
+					monitor.toggleWindowFullscreen();
+					monitor.toggleWindowFullscreen();
+					AmstradUtils.sleep(500L);
+				}
+				System.out.println("Display is centered fullscreen");
+			} else if (extendsOutsideScreen()) {
+				centerOnScreen();
+				System.out.println("Display is centered on screen");
 			}
-			System.out.println("Display is centered on screen");
 		}
 
 	}
