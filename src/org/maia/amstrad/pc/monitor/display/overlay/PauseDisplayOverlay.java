@@ -16,8 +16,9 @@ public class PauseDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
-		if (getAmstracPc().isPaused()) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
+			AmstradGraphicsContext graphicsContext) {
+		if (getAmstracPc().isPaused() && !offscreenImage) {
 			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.pauseOverlayIcon
 					: UIResources.pauseSmallOverlayIcon;
 			drawIconTopRight(icon, display, displayBounds);

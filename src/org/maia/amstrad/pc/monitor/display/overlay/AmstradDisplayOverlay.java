@@ -11,7 +11,8 @@ public interface AmstradDisplayOverlay {
 
 	void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext);
 
-	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext);
+	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
+			AmstradGraphicsContext graphicsContext);
 
 	void dispose(JComponent displayComponent);
 

@@ -1219,8 +1219,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds) {
-			getSource().renderOntoDisplay(display, displayBounds, getGraphicsContext());
+		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage) {
+			getSource().renderOntoDisplay(display, displayBounds, offscreenImage, getGraphicsContext());
 		}
 
 		@Override

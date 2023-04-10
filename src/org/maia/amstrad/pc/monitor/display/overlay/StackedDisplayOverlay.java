@@ -47,9 +47,10 @@ public class StackedDisplayOverlay implements AmstradDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
+			AmstradGraphicsContext graphicsContext) {
 		for (AmstradDisplayOverlay overlay : getOverlays()) {
-			overlay.renderOntoDisplay(display, displayBounds, graphicsContext);
+			overlay.renderOntoDisplay(display, displayBounds, offscreenImage, graphicsContext);
 		}
 	}
 

@@ -416,7 +416,7 @@ public class Display extends JComponent {
 	}
 
 	@SuppressWarnings("unused")
-	protected void paintImage(Graphics g) {
+	protected void paintImage(Graphics g, boolean offscreenImage) {
 		if (showfps >= 1)
 			doTouchFPS();
 		if (showfps <= -1 && debug) {
@@ -488,7 +488,7 @@ public class Display extends JComponent {
 		paintScanLines(g);
 		paintYM(g);
 		paintKeys(g);
-		paintDisplayOverlays(g);
+		paintDisplayOverlays(g, offscreenImage);
 	}
 
 	private void doTouchFPS() {
@@ -651,12 +651,12 @@ public class Display extends JComponent {
 		}
 	}
 
-	private void paintDisplayOverlays(Graphics g) {
+	private void paintDisplayOverlays(Graphics g, boolean offscreenImage) {
 		Graphics2D g2 = (Graphics2D) g;
 		if (getCustomDisplayOverlay() != null) {
-			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect);
+			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage);
 		}
-		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect);
+		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage);
 	}
 
 	@Override
@@ -666,7 +666,7 @@ public class Display extends JComponent {
 	@Override
 	public void paintComponent(Graphics g) {
 		if (image != null) {
-			paintImage(g);
+			paintImage(g, false);
 		}
 		painted = true;
 		JEMU.doupdate.setSelected(true);
@@ -675,7 +675,7 @@ public class Display extends JComponent {
 	public BufferedImage getImage() {
 		BufferedImage off_Image = new BufferedImage(imageRect.width, imageRect.height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = off_Image.createGraphics();
-		paintImage(g);
+		paintImage(g, true);
 		g.dispose();
 		return off_Image;
 	}
@@ -710,7 +710,7 @@ public class Display extends JComponent {
 	public int getImageHeight() {
 		return imageHeight;
 	}
-	
+
 	private boolean isLargeDisplay() {
 		return imageRect.height >= 540;
 	}
@@ -797,7 +797,9 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds) {
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage) {
+			if (offscreenImage)
+				return;
 			ImageObserver imageObserver = Display.this;
 			boolean largeDisplay = isLargeDisplay();
 			// Floppy
@@ -1008,7 +1010,7 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds) {
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage) {
 			if (showeffect || masked) {
 				g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, Display.this);
 			}

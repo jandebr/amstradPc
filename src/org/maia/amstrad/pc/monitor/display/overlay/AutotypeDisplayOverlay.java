@@ -16,8 +16,9 @@ public class AutotypeDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
-		if (getAmstracPc().getMonitor().isAlternativeDisplaySourceShowing())
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
+			AmstradGraphicsContext graphicsContext) {
+		if (getAmstracPc().getMonitor().isAlternativeDisplaySourceShowing() || offscreenImage)
 			return;
 		if (getAmstracPc().getKeyboard().isAutotyping()) {
 			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.autotypeOverlayIcon

@@ -27,9 +27,10 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
+			AmstradGraphicsContext graphicsContext) {
 		AmstradTape tape = getAmstracPc().getTape();
-		if (tape.isActive()) {
+		if (tape.isActive() && !offscreenImage) {
 			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.tapeOverlayIcon
 					: UIResources.tapeSmallOverlayIcon;
 			Rectangle iconBounds = drawIconTopLeft(icon, display, displayBounds);

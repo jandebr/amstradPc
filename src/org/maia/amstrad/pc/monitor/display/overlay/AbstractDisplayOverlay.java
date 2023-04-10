@@ -26,7 +26,8 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
+			AmstradGraphicsContext graphicsContext) {
 		// Subclasses to override
 	}
 

@@ -9,7 +9,7 @@ public interface DisplayOverlay {
 
 	void init(JComponent displayComponent);
 
-	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds);
+	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage);
 
 	void dispose(JComponent displayComponent);
 
