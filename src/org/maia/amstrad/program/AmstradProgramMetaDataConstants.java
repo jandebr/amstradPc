@@ -40,4 +40,8 @@ public interface AmstradProgramMetaDataConstants {
 
 	String AMD_FILEREFS_DESCRIBED_BY = "DESCRIBED BY";
 
+	String AMD_FLAGS = "FLAGS";
+	
+	String AMD_FLAG_NOSTAGE = "NO-STAGE";
+
 }

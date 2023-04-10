@@ -8,6 +8,7 @@ import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
 import org.maia.amstrad.program.AmstradProgramType;
 
 public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
@@ -24,7 +25,8 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 
 	@Override
 	protected AmstradProgramLoader getProgramLoader(AmstradProgram program) {
-		if (AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType())) {
+		if (AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType())
+				&& !program.getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOSTAGE)) {
 			return AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(getAmstradPc(),
 					new EndingBasicAction() {
 

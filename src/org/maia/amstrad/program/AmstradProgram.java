@@ -35,6 +35,8 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private List<FileReference> fileReferences;
 
+	private List<String> flags;
+
 	private AmstradMonitorMode preferredMonitorMode;
 
 	private AmstradProgramPayload payload;
@@ -49,6 +51,7 @@ public abstract class AmstradProgram implements Cloneable {
 		this.userControls = new Vector<UserControl>();
 		this.images = new Vector<ProgramImage>();
 		this.fileReferences = new Vector<FileReference>();
+		this.flags = new Vector<String>();
 	}
 
 	@Override
@@ -78,6 +81,8 @@ public abstract class AmstradProgram implements Cloneable {
 		builder.append(images);
 		builder.append(", fileReferences=");
 		builder.append(fileReferences);
+		builder.append(", flags=");
+		builder.append(flags);
 		builder.append(", preferredMonitorMode=");
 		builder.append(preferredMonitorMode);
 		builder.append("]");
@@ -92,6 +97,7 @@ public abstract class AmstradProgram implements Cloneable {
 			clone.setUserControls(new Vector<UserControl>(getUserControls()));
 			clone.setImages(new Vector<ProgramImage>(getImages()));
 			clone.setFileReferences(new Vector<FileReference>(getFileReferences()));
+			clone.setFlags(new Vector<String>(getFlags()));
 		} catch (CloneNotSupportedException e) {
 			// not the case
 		}
@@ -141,6 +147,14 @@ public abstract class AmstradProgram implements Cloneable {
 				return reference;
 		}
 		return null;
+	}
+
+	public void clearFlags() {
+		getFlags().clear();
+	}
+
+	public void addFlag(String flag) {
+		getFlags().add(flag);
 	}
 
 	public AmstradProgramType getProgramType() {
@@ -245,6 +259,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private void setFileReferences(List<FileReference> fileReferences) {
 		this.fileReferences = fileReferences;
+	}
+
+	public List<String> getFlags() {
+		return flags;
+	}
+
+	private void setFlags(List<String> flags) {
+		this.flags = flags;
 	}
 
 	public AmstradProgramPayload getPayload() throws AmstradProgramException {

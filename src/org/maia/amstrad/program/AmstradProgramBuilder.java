@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -104,6 +105,14 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return this;
 	}
 
+	public AmstradProgramBuilder withFlags(List<String> flags) {
+		getProgram().clearFlags();
+		for (String flag : flags) {
+			getProgram().addFlag(flag);
+		}
+		return this;
+	}
+
 	public AmstradProgramBuilder loadAmstradMetaData(File file) throws IOException {
 		if (file != null) {
 			Reader reader = new FileReader(file);
@@ -134,6 +143,7 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			withUserControls(extractUserControlsFromMetaData(props));
 			withImages(extractProgramImagesFromMetaData(props, relativePath));
 			withFileReferences(extractFileReferencesFromMetaData(props, relativePath));
+			withFlags(extractFlagsFromMetaData(props));
 		}
 		return this;
 	}
@@ -210,6 +220,18 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			}
 		}
 		return fileReferences;
+	}
+
+	private List<String> extractFlagsFromMetaData(Properties props) {
+		List<String> flags = new Vector<String>();
+		String value = props.getProperty(AMD_FLAGS);
+		if (value != null) {
+			StringTokenizer st = new StringTokenizer(value, ",");
+			while (st.hasMoreTokens()) {
+				flags.add(st.nextToken());
+			}
+		}
+		return flags;
 	}
 
 	public AmstradProgram build() {
