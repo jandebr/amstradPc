@@ -103,6 +103,7 @@ public class AmstradPcMenuMaker {
 		popup.add(createProgramBrowserMenuItem());
 		popup.add(createProgramBrowserSetupMenuItem());
 		popup.add(createProgramInfoMenuItem());
+		popup.add(createAudioMenuItem());
 		popup.add(createPauseResumeMenuItem());
 		popup.add(new JSeparator());
 		popup.add(createScreenshotMenuItem());
@@ -187,6 +188,7 @@ public class AmstradPcMenuMaker {
 		menu.add(createAutoTypeFileMenuItem());
 		menu.add(createBasicMenu());
 		menu.add(new JSeparator());
+		menu.add(createAudioMenuItem());
 		menu.add(createPauseResumeMenuItem());
 		menu.add(createRebootMenuItem());
 		return updateMenuLookAndFeel(menu);
@@ -194,6 +196,12 @@ public class AmstradPcMenuMaker {
 
 	private JMenuItem createAutoTypeFileMenuItem() {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getAutoTypeFileAction()));
+	}
+
+	private JMenuItem createAudioMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getAudioAction());
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
+		return updateMenuItemLookAndFeel(item, UIResources.audioIcon);
 	}
 
 	private JMenuItem createPauseResumeMenuItem() {

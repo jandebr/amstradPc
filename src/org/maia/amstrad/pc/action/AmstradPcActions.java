@@ -42,6 +42,8 @@ public class AmstradPcActions {
 
 	private AutoTypeFileAction autoTypeFileAction;
 
+	private AudioAction audioAction;
+
 	private PauseResumeAction pauseResumeAction;
 
 	private RebootAction rebootAction;
@@ -165,6 +167,13 @@ public class AmstradPcActions {
 			autoTypeFileAction = new AutoTypeFileAction(getAmstradPc());
 		}
 		return autoTypeFileAction;
+	}
+
+	public AudioAction getAudioAction() {
+		if (audioAction == null) {
+			audioAction = new AudioAction(getAmstradPc());
+		}
+		return audioAction;
 	}
 
 	public PauseResumeAction getPauseResumeAction() {

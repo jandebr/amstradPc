@@ -1,6 +1,5 @@
 package org.maia.amstrad.pc;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,11 +8,11 @@ import org.maia.amstrad.load.AmstradProgramLoader;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.pc.action.AmstradPcActions;
+import org.maia.amstrad.pc.audio.AmstradAudio;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.tape.AmstradTape;
-import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.swing.dialog.ActionableDialog;
@@ -94,6 +93,8 @@ public abstract class AmstradPc {
 	public abstract AmstradMonitor getMonitor();
 
 	public abstract AmstradTape getTape();
+
+	public abstract AmstradAudio getAudio();
 
 	public abstract BasicRuntime getBasicRuntime();
 

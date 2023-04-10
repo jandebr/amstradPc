@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
+import org.maia.amstrad.pc.action.AudioAction;
 import org.maia.amstrad.pc.action.PauseResumeAction;
 
 public class UIResources {
@@ -24,6 +25,12 @@ public class UIResources {
 	public static Icon basicOrBrowserIcon = new BasicOrBrowserIcon(basicIcon, browserIcon);
 
 	public static ImageIcon browserSetupIcon = loadIcon("browser-setup32.png");
+
+	public static ImageIcon muteIcon = loadIcon("mute32.png");
+
+	public static ImageIcon unmuteIcon = loadIcon("unmute32.png");
+
+	public static Icon audioIcon = new AudioIcon(muteIcon, unmuteIcon);
 
 	public static ImageIcon pauseIcon = loadIcon("pause32.png");
 
@@ -119,6 +126,20 @@ public class UIResources {
 
 		private Icon getSelectedIcon() {
 			return selectedIcon;
+		}
+
+	}
+
+	private static class AudioIcon extends ButtonStateIcon {
+
+		public AudioIcon(Icon mutedIcon, Icon unmutedIcon) {
+			super(mutedIcon, unmutedIcon);
+		}
+
+		@Override
+		protected boolean isSelected(Component c) {
+			Action a = ((JMenuItem) c).getAction();
+			return ((AudioAction) a).isMuted();
 		}
 
 	}

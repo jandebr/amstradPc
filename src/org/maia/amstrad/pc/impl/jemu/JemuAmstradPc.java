@@ -30,6 +30,7 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcStateListener;
+import org.maia.amstrad.pc.audio.AmstradAudio;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
@@ -76,6 +77,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	private AmstradTape tape;
 
+	private AmstradAudio audio;
+
 	private BasicRuntime basicRuntime;
 
 	private AmstradGraphicsContextImpl graphicsContext;
@@ -101,6 +104,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		this.memory = new JemuMemoryImpl();
 		this.monitor = new JemuMonitorImpl();
 		this.tape = new JemuTapeImpl();
+		this.audio = new JemuAudioImpl();
 		this.basicRuntime = new JemuBasicRuntimeImpl();
 		this.graphicsContext = new AmstradGraphicsContextImpl();
 	}
@@ -224,6 +228,11 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 	@Override
 	public AmstradTape getTape() {
 		return tape;
+	}
+
+	@Override
+	public AmstradAudio getAudio() {
+		return audio;
 	}
 
 	@Override
@@ -873,6 +882,33 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			while (snapshotFile.length() < 65536L + SNAPSHOT_HEADER_SIZE && System.currentTimeMillis() < timeout) {
 				AmstradUtils.sleep(100L);
 			}
+		}
+
+	}
+
+	private class JemuAudioImpl extends AmstradAudio {
+
+		public JemuAudioImpl() {
+			super(JemuAmstradPc.this);
+		}
+
+		@Override
+		public void mute() {
+			Switches.audioenabler = 0;
+			Settings.setBoolean(Settings.AUDIO, false);
+			fireAudioMutedEvent();
+		}
+
+		@Override
+		public void unmute() {
+			Switches.audioenabler = 1;
+			Settings.setBoolean(Settings.AUDIO, true);
+			fireAudioUnmutedEvent();
+		}
+
+		@Override
+		public boolean isMuted() {
+			return !Settings.getBoolean(Settings.AUDIO, true);
 		}
 
 	}
