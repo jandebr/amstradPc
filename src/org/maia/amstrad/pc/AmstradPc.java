@@ -1,5 +1,6 @@
 package org.maia.amstrad.pc;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
@@ -13,6 +14,7 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.tape.AmstradTape;
+import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.swing.dialog.ActionableDialog;
@@ -61,6 +63,10 @@ public abstract class AmstradPc {
 			System.err.println("No loader found for program " + program.getProgramName());
 		}
 	}
+
+	public abstract void load(AmstradPcSnapshotFile snapshotFile) throws IOException;
+
+	public abstract void save(AmstradPcSnapshotFile snapshotFile) throws IOException;
 
 	public abstract boolean isStarted();
 

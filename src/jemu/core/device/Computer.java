@@ -662,6 +662,8 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public void dispose() {
+		if (thread == null)
+			return; // already disposed
 		if (verboseStopStart)
 			System.out.println(this + " Dispose");
 		stopped = true;

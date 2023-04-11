@@ -46,16 +46,16 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		getContentPane().add(getAmstradPc().getMonitor().getDisplayPane(), BorderLayout.CENTER);
 	}
 
-	public void installMenu() {
-		if (isKioskMode()) {
-			JPopupMenu popupMenu = new AmstradPcMenuMaker(getAmstradPc().getActions(),
-					AmstradPcMenuMaker.MenuFlavor.KIOSK_MENU).createPopupMenu();
-			getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(popupMenu);
-			popupMenu.addPopupMenuListener(new PopupMenuController());
-			installControllerOnMenus(popupMenu, new MenuController());
-		} else {
-			setJMenuBar(new AmstradPcMenuMaker(getAmstradPc().getActions()).createMenuBar());
-		}
+	public void installMenuBar() {
+		setJMenuBar(new AmstradPcMenuMaker(getAmstradPc().getActions()).createMenuBar());
+	}
+
+	public void installPopupMenu() {
+		JPopupMenu popupMenu = new AmstradPcMenuMaker(getAmstradPc().getActions(),
+				AmstradPcMenuMaker.MenuFlavor.KIOSK_MENU).createPopupMenu();
+		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(popupMenu);
+		popupMenu.addPopupMenuListener(new PopupMenuController());
+		installControllerOnMenus(popupMenu, new MenuController());
 	}
 
 	private void installControllerOnMenus(MenuElement element, MenuController controller) {
@@ -146,11 +146,13 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	@Override
 	public synchronized void windowClosing(WindowEvent event) {
-		setClosing(true);
-		if (!getAmstradPc().isTerminated()) {
-			getAmstradPc().terminate();
+		if (!isClosing()) {
+			setClosing(true);
+			if (!getAmstradPc().isTerminated()) {
+				getAmstradPc().terminate();
+			}
+			AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
 		}
-		AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
 	}
 
 	@Override
@@ -179,10 +181,6 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
-	}
-
-	private boolean isKioskMode() {
-		return AmstradFactory.getInstance().getAmstradContext().isKioskMode();
 	}
 
 	private boolean isClosing() {

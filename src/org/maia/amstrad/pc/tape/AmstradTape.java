@@ -1,14 +1,12 @@
 package org.maia.amstrad.pc.tape;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.program.AmstradPcSnapshotFile;
 
-public abstract class AmstradTape extends AmstradDevice {
+public class AmstradTape extends AmstradDevice {
 
 	private List<AmstradTapeListener> tapeListeners;
 
@@ -18,14 +16,10 @@ public abstract class AmstradTape extends AmstradDevice {
 
 	private String filenameAtTapeHead;
 
-	protected AmstradTape(AmstradPc amstradPc) {
+	public AmstradTape(AmstradPc amstradPc) {
 		super(amstradPc);
 		this.tapeListeners = new Vector<AmstradTapeListener>();
 	}
-
-	public abstract void load(AmstradPcSnapshotFile snapshotFile) throws IOException;
-
-	public abstract void save(AmstradPcSnapshotFile snapshotFile) throws IOException;
 
 	public void addTapeListener(AmstradTapeListener listener) {
 		getTapeListeners().add(listener);
@@ -84,7 +78,7 @@ public abstract class AmstradTape extends AmstradDevice {
 	protected List<AmstradTapeListener> getTapeListeners() {
 		return tapeListeners;
 	}
-	
+
 	public boolean isActive() {
 		return isReading() || isWriting();
 	}

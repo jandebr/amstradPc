@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.gui.browser.components.FolderItemList;
 import org.maia.amstrad.gui.browser.components.ItemList;
 import org.maia.amstrad.gui.browser.components.ProgramFileReferencesSheet;
@@ -416,7 +417,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			if (stack.size() > 1) {
 				stack.browseBack();
-			} else if (!isKioskMode()) {
+			} else if (getMode().isPrimaryDisplayCentric()) {
 				close();
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
@@ -502,7 +503,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	@Override
 	public void closeMainWindow() {
-		if (isKioskMode()) {
+		if (getMode().isProgramBrowserCentric()) {
 			getAmstradPc().terminate();
 		} else {
 			super.closeMainWindow();
@@ -639,8 +640,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
 	}
 
-	public boolean isKioskMode() {
-		return AmstradFactory.getInstance().getAmstradContext().isKioskMode();
+	public AmstradMode getMode() {
+		return AmstradFactory.getInstance().getAmstradContext().getMode();
 	}
 
 	private List<ProgramBrowserListener> getBrowserListeners() {

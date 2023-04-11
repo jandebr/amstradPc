@@ -1,12 +1,12 @@
-package org.maia.amstrad.pc.impl.jemu;
+package jemu.ui;
 
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.MenuBar;
 
-public abstract class JemuFrameAdapter {
+public abstract class FrameAdapter {
 
-	protected JemuFrameAdapter() {
+	protected FrameAdapter() {
 	}
 
 	public abstract void setTitle(String title);

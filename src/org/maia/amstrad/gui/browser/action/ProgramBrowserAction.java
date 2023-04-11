@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.ProgramBrowserListener;
 import org.maia.amstrad.pc.AmstradPc;
@@ -60,7 +61,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	public void closeProgramBrowser() {
 		if (isEnabled()) {
 			getAmstradPc().getMonitor().resetDisplaySource();
-			if (isKioskMode()) {
+			if (getMode().isProgramBrowserCentric()) {
 				getAmstradPc().reboot(false, false);
 			}
 		}
@@ -88,15 +89,15 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	}
 
 	private String getNameToOpen() {
-		return isKioskMode() ? "Program browser" : "Open program browser";
+		return getMode().isProgramBrowserCentric() ? "Program browser" : "Open program browser";
 	}
 
 	private String getNameToClose() {
-		return isKioskMode() ? "Basic new prompt" : "Close program browser";
+		return getMode().isProgramBrowserCentric() ? "Basic new prompt" : "Close program browser";
 	}
 
-	private boolean isKioskMode() {
-		return AmstradFactory.getInstance().getAmstradContext().isKioskMode();
+	private AmstradMode getMode() {
+		return AmstradFactory.getInstance().getAmstradContext().getMode();
 	}
 
 	public boolean isProgramBrowserShowing() {

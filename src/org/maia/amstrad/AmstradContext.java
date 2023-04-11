@@ -9,7 +9,7 @@ import org.maia.amstrad.program.repo.facet.FacetFactory;
 
 public abstract class AmstradContext {
 
-	private static final String SETTING_KIOSK = "kiosk";
+	private static final String SETTING_MODE = "mode";
 
 	private static final String SETTING_CURRENT_DIR = "current_dir";
 
@@ -40,12 +40,13 @@ public abstract class AmstradContext {
 
 	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
 
-	public boolean isKioskMode() {
-		return getUserSettings().getBool(SETTING_KIOSK, false);
-	}
-
-	public void setKioskMode(boolean kioskMode) {
-		getUserSettings().setBool(SETTING_KIOSK, kioskMode);
+	public AmstradMode getMode() {
+		AmstradMode mode = AmstradMode.forName(getUserSettings().get(SETTING_MODE, AmstradMode.DEFAULT.getName()));
+		if (mode != null) {
+			return mode;
+		} else {
+			return AmstradMode.DEFAULT;
+		}
 	}
 
 	public File getCurrentDirectory() {

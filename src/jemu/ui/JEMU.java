@@ -84,8 +84,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
-import org.maia.amstrad.pc.impl.jemu.JemuFrameAdapter;
-
 import jemu.core.Util;
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerKeyboardListener;
@@ -114,7 +112,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public int rendertimer = 0;
 
-	private JemuFrameAdapter frameAdapter;
+	private FrameAdapter frameAdapter;
 	private List<PauseListener> pauseListeners;
 
 	private boolean virtualShiftKey = false;
@@ -328,13 +326,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		return panel;
 	}
 
-	public JEMU(JemuFrameAdapter frameAdapter) {
+	public JEMU(FrameAdapter frameAdapter) {
 		this.frameAdapter = frameAdapter;
 		this.pauseListeners = new Vector<PauseListener>();
 		enableEvents(AWTEvent.KEY_EVENT_MASK);
 	}
 
-	public JemuFrameAdapter getFrameAdapter() {
+	public FrameAdapter getFrameAdapter() {
 		return frameAdapter;
 	}
 
