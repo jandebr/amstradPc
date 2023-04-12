@@ -1,9 +1,10 @@
-package org.maia.amstrad.pc.action.basic;
+package org.maia.amstrad.gui.memory.action;
 
 import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.gui.memory.LocomotiveBasicMemoryDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicAction;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 

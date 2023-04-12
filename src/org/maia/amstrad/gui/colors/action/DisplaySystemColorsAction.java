@@ -1,9 +1,10 @@
-package org.maia.amstrad.pc.action;
+package org.maia.amstrad.gui.colors.action;
 
 import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.gui.colors.AmstradSystemColorsDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 
