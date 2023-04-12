@@ -18,7 +18,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	public static final AmstradMode KIOSK = new KioskAmstradMode();
 
-	public static final AmstradMode ORIGINAL = new JemuOriginalAmstradMode();
+	public static final AmstradMode ORIGINAL = new OriginalAmstradMode();
 
 	public static AmstradMode forName(String name) {
 		if (DEFAULT.getName().equals(name)) {
@@ -142,9 +142,9 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	}
 
-	private static class JemuOriginalAmstradMode extends AmstradMode {
+	private static class OriginalAmstradMode extends AmstradMode {
 
-		public JemuOriginalAmstradMode() {
+		public OriginalAmstradMode() {
 			super("ORIGINAL");
 		}
 
