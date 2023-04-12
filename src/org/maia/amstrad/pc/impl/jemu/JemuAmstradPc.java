@@ -788,17 +788,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			synchronized (JemuAmstradPc.this) {
 				checkStarted();
 				checkNotTerminated();
-				Display display = getJemuInstance().getDisplay();
-				boolean scaneffect = Display.scaneffect;
-				boolean masked = display.masked;
-				boolean showeffect = display.showeffect;
-				Display.scaneffect = monitorEffect;
-				display.masked = monitorEffect;
-				display.showeffect = monitorEffect;
-				image = display.getImage();
-				Display.scaneffect = scaneffect;
-				display.masked = masked;
-				display.showeffect = showeffect;
+				image = getJemuInstance().getDisplay().getImage(monitorEffect);
 			}
 			return image;
 		}
@@ -1238,7 +1228,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage) {
+		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
+				boolean monitorEffect) {
 			getSource().renderOntoDisplay(display, displayBounds, offscreenImage, getGraphicsContext());
 		}
 

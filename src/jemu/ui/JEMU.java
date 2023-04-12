@@ -4702,10 +4702,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void screenshot() {
 		applyAlwaysOnTop(false);
-		images = new BufferedImage(display.getImage().getWidth(sprev), display.getImage().getHeight(sprev),
+		images = new BufferedImage(display.getImage(false).getWidth(sprev), display.getImage(false).getHeight(sprev),
 				BufferedImage.SCALE_SMOOTH);
-		images.getGraphics().drawImage(display.getImage(), 0, 0, display.getImage().getWidth(sprev),
-				display.getImage().getHeight(sprev), null);
+		images.getGraphics().drawImage(display.getImage(false), 0, 0, display.getImage(false).getWidth(sprev),
+				display.getImage(false).getHeight(sprev), null);
 
 		screenPreview();
 
@@ -5108,7 +5108,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		snaChooser.setBackground(Color.LIGHT_GRAY);
 
 		BufferedImage imager = new BufferedImage(288, 203, BufferedImage.SCALE_SMOOTH);
-		imager.getGraphics().drawImage(display.getImage(), 0, 0, 288, 203, null);
+		imager.getGraphics().drawImage(display.getImage(true), 0, 0, 288, 203, null);
 		imager.getGraphics().drawImage(imager, 0, 0, 288, 203, null);
 		JLabel SNADisplay = new JLabel(new ImageIcon(imager));
 		snaChooser.add(SNADisplay, getGridBagConstraints(1, 0, 1.0, 1.0, 4, GridBagConstraints.BOTH));

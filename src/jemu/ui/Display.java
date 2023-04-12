@@ -149,7 +149,6 @@ public class Display extends JComponent {
 	Image mask = mask1;
 	public static boolean scaneffect = false;
 	public static boolean horizontal = true;
-	public boolean masked = false;
 
 	private static final long serialVersionUID = 1L;
 	public static int loadgames = 0;
@@ -167,7 +166,7 @@ public class Display extends JComponent {
 	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	GraphicsDevice gs = ge.getDefaultScreenDevice();
 	GraphicsConfiguration gc = gs.getDefaultConfiguration();
-	public boolean scanlines, drawlines, showeffect;
+	public boolean scanlines, drawlines;
 	public static String monmessage = "Colour monitor"; // Message which monitor (CPC)
 	public static String automessage = "Autosave is OFF";
 	public static int showmon = 250;
@@ -416,7 +415,7 @@ public class Display extends JComponent {
 	}
 
 	@SuppressWarnings("unused")
-	protected void paintImage(Graphics g, boolean offscreenImage) {
+	protected void paintImage(Graphics g, boolean offscreenImage, boolean monitorEffect) {
 		if (showfps >= 1)
 			doTouchFPS();
 		if (showfps <= -1 && debug) {
@@ -457,18 +456,6 @@ public class Display extends JComponent {
 				drawlines = false;
 			}
 		}
-		if (scaneffect && !lowperformance) {
-			if (imageRect.height >= 544) {
-				showeffect = true;
-				masked = false;
-			} else {
-				showeffect = false;
-				masked = true;
-			}
-		} else {
-			showeffect = false;
-			masked = false;
-		}
 		if (turbotimer == 10) {
 			if (!floppyturbo) {
 				Switches.turbo = 3;
@@ -488,7 +475,7 @@ public class Display extends JComponent {
 		paintScanLines(g);
 		paintYM(g);
 		paintKeys(g);
-		paintDisplayOverlays(g, offscreenImage);
+		paintDisplayOverlays(g, offscreenImage, monitorEffect);
 	}
 
 	private void doTouchFPS() {
@@ -651,12 +638,12 @@ public class Display extends JComponent {
 		}
 	}
 
-	private void paintDisplayOverlays(Graphics g, boolean offscreenImage) {
+	private void paintDisplayOverlays(Graphics g, boolean offscreenImage, boolean monitorEffect) {
 		Graphics2D g2 = (Graphics2D) g;
 		if (getCustomDisplayOverlay() != null) {
-			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage);
+			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage, monitorEffect);
 		}
-		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage);
+		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage, monitorEffect);
 	}
 
 	@Override
@@ -666,16 +653,17 @@ public class Display extends JComponent {
 	@Override
 	public void paintComponent(Graphics g) {
 		if (image != null) {
-			paintImage(g, false);
+			boolean monitorEffect = scaneffect && !lowperformance;
+			paintImage(g, false, monitorEffect);
 		}
 		painted = true;
 		JEMU.doupdate.setSelected(true);
 	}
 
-	public BufferedImage getImage() {
+	public BufferedImage getImage(boolean monitorEffect) {
 		BufferedImage off_Image = new BufferedImage(imageRect.width, imageRect.height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = off_Image.createGraphics();
-		paintImage(g, true);
+		paintImage(g, true, monitorEffect);
 		g.dispose();
 		return off_Image;
 	}
@@ -797,7 +785,8 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage) {
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage,
+				boolean monitorEffect) {
 			if (offscreenImage)
 				return;
 			ImageObserver imageObserver = Display.this;
@@ -1010,8 +999,9 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage) {
-			if (showeffect || masked) {
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage,
+				boolean monitorEffect) {
+			if (monitorEffect) {
 				g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, Display.this);
 			}
 		}
