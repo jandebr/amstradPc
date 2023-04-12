@@ -1,6 +1,6 @@
-package org.maia.amstrad.gui.browser.components;
+package org.maia.amstrad.gui.components;
 
-public class ProgramInfoTextSpan {
+public class ColoredTextSpan {
 
 	private String text;
 
@@ -8,7 +8,7 @@ public class ProgramInfoTextSpan {
 
 	private int penColorIndex;
 
-	public ProgramInfoTextSpan(String text, int paperColorIndex, int penColorIndex) {
+	public ColoredTextSpan(String text, int paperColorIndex, int penColorIndex) {
 		this.text = text;
 		this.paperColorIndex = paperColorIndex;
 		this.penColorIndex = penColorIndex;

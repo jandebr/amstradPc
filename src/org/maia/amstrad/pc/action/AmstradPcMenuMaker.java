@@ -219,14 +219,19 @@ public class AmstradPcMenuMaker {
 
 	private JMenu createBasicMenu() {
 		JMenu menu = new JMenu("Basic");
-		menu.add(createLocomotiveBasicBreakEscapeMenuItem());
+		menu.add(createLocomotiveBasicDisplayMemoryMenuItem());
 		menu.add(new JSeparator());
+		menu.add(createLocomotiveBasicBreakEscapeMenuItem());
 		menu.add(createLocomotiveBasicNewMenuItem());
 		menu.add(createLocomotiveBasicRunMenuItem());
 		menu.add(createLocomotiveBasicListMenuItem());
 		menu.add(createLocomotiveBasicClsMenuItem());
 		menu.add(createLocomotiveBasicClearMenuItem());
 		return updateMenuLookAndFeel(menu);
+	}
+
+	private JMenuItem createLocomotiveBasicDisplayMemoryMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicDisplayMemoryAction()));
 	}
 
 	private JMenuItem createLocomotiveBasicBreakEscapeMenuItem() {

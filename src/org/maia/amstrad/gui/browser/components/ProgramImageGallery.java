@@ -1,10 +1,11 @@
 package org.maia.amstrad.gui.browser.components;
 
+import org.maia.amstrad.gui.components.ItemList;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.util.StringUtils;
 
-public class ProgramImageGallery extends ItemList {
+public class ProgramImageGallery extends ItemList<ProgramImage> {
 
 	private AmstradProgram program;
 
@@ -13,22 +14,19 @@ public class ProgramImageGallery extends ItemList {
 		this.program = program;
 	}
 
-	public ProgramImage getCurrentImage() {
-		return getImage(getIndexOfSelectedItem());
-	}
-
-	public ProgramImage getImage(int index) {
-		return getProgram().getImages().get(index);
-	}
-
 	@Override
 	public int size() {
 		return getProgram().getImages().size();
 	}
 
+	@Override
+	public ProgramImage getItem(int index) {
+		return getProgram().getImages().get(index);
+	}
+
 	public boolean hasCaptions() {
 		for (int i = 0; i < size(); i++) {
-			if (!StringUtils.isEmpty(getImage(i).getCaption()))
+			if (!StringUtils.isEmpty(getItem(i).getCaption()))
 				return true;
 		}
 		return false;

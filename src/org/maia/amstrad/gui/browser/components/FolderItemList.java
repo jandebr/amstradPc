@@ -2,10 +2,11 @@ package org.maia.amstrad.gui.browser.components;
 
 import java.util.List;
 
+import org.maia.amstrad.gui.components.ItemList;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 
-public class FolderItemList extends ItemList {
+public class FolderItemList extends ItemList<Node> {
 
 	private FolderNode folderNode;
 
@@ -19,14 +20,7 @@ public class FolderItemList extends ItemList {
 		return getItems().size();
 	}
 
-	public Node getSelectedItem() {
-		Node selectedItem = null;
-		if (!isEmpty()) {
-			return getItem(getIndexOfSelectedItem());
-		}
-		return selectedItem;
-	}
-
+	@Override
 	public Node getItem(int index) {
 		return getItems().get(index);
 	}

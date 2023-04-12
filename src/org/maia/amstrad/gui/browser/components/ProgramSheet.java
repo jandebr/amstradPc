@@ -3,24 +3,26 @@ package org.maia.amstrad.gui.browser.components;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.gui.components.ColoredLine;
+import org.maia.amstrad.gui.components.ItemList;
 import org.maia.amstrad.program.AmstradProgram;
 
-public abstract class ProgramSheet extends ItemList {
+public abstract class ProgramSheet extends ItemList<ColoredLine> {
 
 	private AmstradProgram program;
 
-	private List<ProgramInfoLine> lineItems;
+	private List<ColoredLine> lineItems;
 
 	protected ProgramSheet(AmstradProgram program, int maxItemsShowing, int maxWidth, int backgroundColorIndex) {
 		super(maxItemsShowing);
 		this.program = program;
-		this.lineItems = new Vector<ProgramInfoLine>();
+		this.lineItems = new Vector<ColoredLine>();
 		populateSheet(maxWidth, backgroundColorIndex);
 	}
 
 	protected abstract void populateSheet(int maxWidth, int backgroundColorIndex);
 
-	protected void add(ProgramInfoLine lineItem) {
+	protected void add(ColoredLine lineItem) {
 		getLineItems().add(lineItem);
 	}
 
@@ -29,7 +31,8 @@ public abstract class ProgramSheet extends ItemList {
 		return getLineItems().size();
 	}
 
-	public ProgramInfoLine getLineItem(int index) {
+	@Override
+	public ColoredLine getItem(int index) {
 		return getLineItems().get(index);
 	}
 
@@ -37,7 +40,7 @@ public abstract class ProgramSheet extends ItemList {
 		return program;
 	}
 
-	private List<ProgramInfoLine> getLineItems() {
+	private List<ColoredLine> getLineItems() {
 		return lineItems;
 	}
 

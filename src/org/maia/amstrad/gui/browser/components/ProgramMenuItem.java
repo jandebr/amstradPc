@@ -1,10 +1,11 @@
 package org.maia.amstrad.gui.browser.components;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.components.Item;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 
-public abstract class ProgramMenuItem {
+public abstract class ProgramMenuItem implements Item {
 
 	private final ProgramBrowserDisplaySource browser;
 

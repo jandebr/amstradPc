@@ -10,16 +10,16 @@ import java.util.Vector;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.gui.browser.components.FolderItemList;
-import org.maia.amstrad.gui.browser.components.ItemList;
 import org.maia.amstrad.gui.browser.components.ProgramFileReferencesSheet;
 import org.maia.amstrad.gui.browser.components.ProgramImageGallery;
-import org.maia.amstrad.gui.browser.components.ProgramInfoLine;
 import org.maia.amstrad.gui.browser.components.ProgramInfoSheet;
-import org.maia.amstrad.gui.browser.components.ProgramInfoTextSpan;
 import org.maia.amstrad.gui.browser.components.ProgramMenu;
 import org.maia.amstrad.gui.browser.components.ProgramMenuItem;
 import org.maia.amstrad.gui.browser.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.components.StackedFolderItemList;
+import org.maia.amstrad.gui.components.ColoredLine;
+import org.maia.amstrad.gui.components.ColoredTextSpan;
+import org.maia.amstrad.gui.components.ItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
@@ -47,10 +47,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private ProgramFileReferencesSheet programFileReferencesSheet;
 
 	private List<ProgramBrowserListener> browserListeners;
-
-	private long itemListCursorBlinkOffsetTime;
-
-	private static long itemListCursorBlinkTimeInterval = 500L;
 
 	private static int COLOR_BORDER = 1;
 
@@ -85,7 +81,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
 		setFollowPrimaryDisplaySourceResolution(false);
-		resetItemListCursorBlinkOffsetTime();
 		getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
 		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
 		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
@@ -288,8 +283,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		int i = sheet.getIndexOfFirstItemShowing();
 		while (i < sheet.size() && ty < ty0 + sheet.getMaxItemsShowing()) {
 			canvas.locate(tx0, ty);
-			ProgramInfoLine line = sheet.getLineItem(i);
-			for (ProgramInfoTextSpan span : line.getTextSpans()) {
+			ColoredLine line = sheet.getItem(i);
+			for (ColoredTextSpan span : line.getTextSpans()) {
 				canvas.paper(span.getPaperColorIndex()).pen(span.getPenColorIndex());
 				canvas.print(span.getText());
 			}
@@ -315,7 +310,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		renderModalWindow(4, 3, 37, 24, gallery.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
 		// Visual
 		Rectangle bounds = deriveProgramImageVisualBounds(gallery, canvas);
-		ProgramImage image = gallery.getCurrentImage();
+		ProgramImage image = gallery.getSelectedItem();
 		renderProgramImageVisual(image, canvas, bounds);
 		// Index
 		boolean hasCaptions = gallery.hasCaptions();
@@ -646,15 +641,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private List<ProgramBrowserListener> getBrowserListeners() {
 		return browserListeners;
-	}
-
-	private boolean isItemListCursorBlinkOn() {
-		long t = (System.currentTimeMillis() - itemListCursorBlinkOffsetTime) / itemListCursorBlinkTimeInterval;
-		return t % 2 == 0;
-	}
-
-	private void resetItemListCursorBlinkOffsetTime() {
-		this.itemListCursorBlinkOffsetTime = System.currentTimeMillis();
 	}
 
 	private static enum Window {

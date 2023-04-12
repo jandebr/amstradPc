@@ -7,6 +7,7 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicBreakEscapeAction;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicClearAction;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicClsAction;
+import org.maia.amstrad.pc.action.basic.LocomotiveBasicDisplayMemoryAction;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicListAction;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicNewAction;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicRunAction;
@@ -47,6 +48,8 @@ public class AmstradPcActions {
 	private PauseResumeAction pauseResumeAction;
 
 	private RebootAction rebootAction;
+
+	private LocomotiveBasicDisplayMemoryAction locomotiveBasicDisplayMemoryAction;
 
 	private LocomotiveBasicBreakEscapeAction locomotiveBasicBreakEscapeAction;
 
@@ -188,6 +191,13 @@ public class AmstradPcActions {
 			rebootAction = new RebootAction(getAmstradPc());
 		}
 		return rebootAction;
+	}
+
+	public LocomotiveBasicDisplayMemoryAction getLocomotiveBasicDisplayMemoryAction() {
+		if (locomotiveBasicDisplayMemoryAction == null) {
+			locomotiveBasicDisplayMemoryAction = new LocomotiveBasicDisplayMemoryAction(getAmstradPc());
+		}
+		return locomotiveBasicDisplayMemoryAction;
 	}
 
 	public LocomotiveBasicBreakEscapeAction getLocomotiveBasicBreakEscapeAction() {

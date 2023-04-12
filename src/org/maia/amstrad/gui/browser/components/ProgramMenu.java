@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.components.ItemList;
 import org.maia.amstrad.program.AmstradProgram;
 
-public class ProgramMenu extends ItemList {
+public class ProgramMenu extends ItemList<ProgramMenuItem> {
 
 	private ProgramBrowserDisplaySource browser;
 
@@ -63,14 +64,7 @@ public class ProgramMenu extends ItemList {
 		return getMenuItems().size();
 	}
 
-	public ProgramMenuItem getSelectedItem() {
-		ProgramMenuItem selectedItem = null;
-		if (!isEmpty()) {
-			return getItem(getIndexOfSelectedItem());
-		}
-		return selectedItem;
-	}
-
+	@Override
 	public ProgramMenuItem getItem(int index) {
 		return getMenuItems().get(index);
 	}

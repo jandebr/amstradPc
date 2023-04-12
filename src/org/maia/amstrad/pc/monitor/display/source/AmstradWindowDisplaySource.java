@@ -19,11 +19,21 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	private Rectangle modalWindowCloseButtonBounds;
 
+	private long itemListCursorBlinkOffsetTime;
+
+	private static long itemListCursorBlinkTimeInterval = 500L;
+
 	protected AmstradWindowDisplaySource(AmstradPc amstradPc, String windowTitle) {
 		super(amstradPc);
 		setWindowTitle(windowTitle);
 	}
 
+	@Override
+	protected void init(AmstradDisplayCanvas canvas) {
+		super.init(canvas);
+		resetItemListCursorBlinkOffsetTime();
+	}
+	
 	@Override
 	protected final void renderContent(AmstradDisplayCanvas canvas) {
 		setMouseOverButton(false);
@@ -199,6 +209,15 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	private void setModalWindowCloseButtonBounds(Rectangle bounds) {
 		this.modalWindowCloseButtonBounds = bounds;
+	}
+
+	protected boolean isItemListCursorBlinkOn() {
+		long t = (System.currentTimeMillis() - itemListCursorBlinkOffsetTime) / itemListCursorBlinkTimeInterval;
+		return t % 2 == 0;
+	}
+
+	protected void resetItemListCursorBlinkOffsetTime() {
+		this.itemListCursorBlinkOffsetTime = System.currentTimeMillis();
 	}
 
 }

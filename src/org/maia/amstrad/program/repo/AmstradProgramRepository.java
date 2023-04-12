@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.maia.amstrad.gui.components.Item;
 import org.maia.amstrad.program.AmstradProgram;
 
 public abstract class AmstradProgramRepository {
@@ -25,7 +26,7 @@ public abstract class AmstradProgramRepository {
 		getRootNode().refresh();
 	}
 
-	public static abstract class Node {
+	public static abstract class Node implements Item {
 
 		private String name;
 

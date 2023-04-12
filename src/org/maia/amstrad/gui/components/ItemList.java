@@ -1,6 +1,6 @@
-package org.maia.amstrad.gui.browser.components;
+package org.maia.amstrad.gui.components;
 
-public abstract class ItemList {
+public abstract class ItemList<T extends Item> {
 
 	private int maxItemsShowing;
 
@@ -66,6 +66,16 @@ public abstract class ItemList {
 	}
 
 	public abstract int size();
+
+	public abstract T getItem(int index);
+
+	public T getSelectedItem() {
+		T selectedItem = null;
+		if (!isEmpty()) {
+			return getItem(getIndexOfSelectedItem());
+		}
+		return selectedItem;
+	}
 
 	public int getIndexOfLastItemShowing() {
 		return Math.min(getIndexOfFirstItemShowing() + getMaxItemsShowing(), size()) - 1;
