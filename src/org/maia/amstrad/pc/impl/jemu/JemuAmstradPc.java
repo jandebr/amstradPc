@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -24,9 +25,12 @@ import javax.swing.JFrame;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.basic.BasicByteCode;
+import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicMemoryFullException;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcStateListener;
@@ -46,6 +50,7 @@ import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
+import org.maia.amstrad.util.AmstradIO;
 import org.maia.amstrad.util.AmstradUtils;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
@@ -104,7 +109,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		this.keyboard = new JemuKeyboardImpl();
 		this.memory = new JemuMemoryImpl();
 		this.monitor = new JemuMonitorImpl();
-		this.tape = new AmstradTape(this);
+		this.tape = new JemuTapeImpl();
 		this.audio = new JemuAudioImpl();
 		this.basicRuntime = new JemuBasicRuntimeImpl();
 		this.graphicsContext = new AmstradGraphicsContextImpl();
@@ -855,6 +860,25 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			synchronized (JemuAmstradPc.this) {
 				getJemuInstance().getDisplay().uninstallCustomDisplayOverlay();
 			}
+		}
+
+	}
+
+	private class JemuTapeImpl extends AmstradTape {
+
+		public JemuTapeImpl() {
+			super(JemuAmstradPc.this);
+		}
+
+		@Override
+		public LocomotiveBasicSourceCode readSourceCodeFromFile(File sourceCodeFile)
+				throws IOException, BasicException {
+			return new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
+		}
+
+		@Override
+		public LocomotiveBasicByteCode readByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
+			return new LocomotiveBasicByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
 		}
 
 	}

@@ -94,16 +94,6 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	@Override
-	protected LocomotiveBasicSourceCode readSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
-		return new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
-	}
-
-	@Override
-	protected LocomotiveBasicByteCode readByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
-		return new LocomotiveBasicByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
-	}
-
-	@Override
 	public BasicLineNumberLinearMapping renum(int lineNumberStart, int lineNumberStep) throws BasicException {
 		LocomotiveBasicByteCode byteCode = getUnmodifiedByteCode();
 		BasicLineNumberLinearMapping mapping = byteCode.renum(lineNumberStart, lineNumberStep);

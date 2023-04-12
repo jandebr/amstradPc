@@ -5,7 +5,6 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 
 public class LoadBasicSourceFileAction extends BasicSourceFileAction {
@@ -26,14 +25,13 @@ public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
-					BasicRuntime rt = getAmstradPc().getBasicRuntime();
-					if (!rt.isReady()) {
+					if (!getAmstradPc().getBasicRuntime().isReady()) {
 						showErrorMessageDialog("Cannot load now",
 								"Another program is still running. Stop it and then retry");
 					} else {
 						File file = getSelectedFile();
 						try {
-							rt.loadSourceCodeFromFile(file);
+							getAmstradPc().getTape().loadSourceCodeFromFile(file);
 						} catch (Exception e) {
 							System.err.println("Failed to load Basic source file: " + e.getMessage());
 							showErrorMessageDialog("Error loading Basic source file",

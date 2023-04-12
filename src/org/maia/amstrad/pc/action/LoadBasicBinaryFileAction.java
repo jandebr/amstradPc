@@ -33,7 +33,7 @@ public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
 					} else {
 						File file = getSelectedFile();
 						try {
-							getAmstradPc().getBasicRuntime().loadByteCodeFromFile(file);
+							getAmstradPc().getTape().loadByteCodeFromFile(file);
 						} catch (Exception e) {
 							System.err.println("Failed to load Basic binary file: " + e.getMessage());
 							showErrorMessageDialog("Error loading Basic binary file",

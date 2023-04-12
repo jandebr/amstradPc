@@ -1,15 +1,9 @@
 package org.maia.amstrad.basic;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
-import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.util.AmstradIO;
 import org.maia.amstrad.util.AmstradUtils;
 
 public abstract class BasicRuntime {
@@ -103,22 +97,6 @@ public abstract class BasicRuntime {
 
 	protected abstract void loadByteCode(BasicByteCode code) throws BasicException;
 
-	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
-		load(readSourceCodeFromFile(sourceCodeFile));
-		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
-		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
-	}
-
-	public void loadByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
-		load(readByteCodeFromFile(byteCodeFile));
-		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(byteCodeFile.getParentFile());
-		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
-	}
-
-	protected abstract BasicSourceCode readSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException;
-
-	protected abstract BasicByteCode readByteCodeFromFile(File byteCodeFile) throws IOException, BasicException;
-
 	public final void run(BasicCode code) throws BasicException {
 		load(code);
 		run();
@@ -178,27 +156,6 @@ public abstract class BasicRuntime {
 
 	public abstract BasicByteCode exportByteCode() throws BasicException;
 
-	public void saveSourceCodeToFile(File file) throws IOException, BasicException {
-		PrintWriter pw = new PrintWriter(file);
-		pw.print(exportSourceCode().getText());
-		pw.close();
-		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-		System.out.println("Exported source code to " + file.getPath());
-	}
-
-	public void saveByteCodeToFile(File file) throws IOException, BasicException {
-		FileOutputStream os = new FileOutputStream(file);
-		os.write(exportByteCode().getBytes());
-		os.flush();
-		os.close();
-		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-		System.out.println("Exported byte code to " + file.getPath());
-	}
-
-	public void loadBinaryFile(File binaryFile, int memoryStartAddress) throws IOException {
-		loadBinaryData(AmstradIO.readBinaryFileContents(binaryFile), memoryStartAddress);
-	}
-
 	public void loadBinaryData(byte[] data, int memoryStartAddress) {
 		loadBinaryData(data, 0, data.length, memoryStartAddress);
 	}
@@ -211,10 +168,6 @@ public abstract class BasicRuntime {
 		} finally {
 			memory.endThreadExclusiveSession();
 		}
-	}
-
-	public void saveBinaryFile(File binaryFile, int memoryStartAddress, int memoryLength) throws IOException {
-		AmstradIO.writeBinaryFileContents(binaryFile, exportBinaryData(memoryStartAddress, memoryLength));
 	}
 
 	public byte[] exportBinaryData(int memoryStartAddress, int memoryLength) {

@@ -28,7 +28,7 @@ public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 				public void run() {
 					File file = getSelectedFileWithExtension(AmstradFileType.BASIC_BYTE_CODE_FILE.getFileExtension());
 					try {
-						getAmstradPc().getBasicRuntime().saveByteCodeToFile(file);
+						getAmstradPc().getTape().saveByteCodeToFile(file);
 					} catch (Exception e) {
 						System.err.println("Failed to save Basic binary file: " + e.getMessage());
 						showErrorMessageDialog("Error saving Basic binary file", "Failed to save " + file.getName(), e);

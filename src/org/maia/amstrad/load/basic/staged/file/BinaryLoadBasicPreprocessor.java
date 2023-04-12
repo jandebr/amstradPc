@@ -104,7 +104,8 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 					loadInBlocks(command, fileReference, session);
 				} else {
 					delayFileOperation(DELAYMILLIS_BINARY_LOAD);
-					session.getBasicRuntime().loadBinaryFile(fileReference.getTargetFile(), command.getMemoryOffset());
+					session.getAmstradPc().getTape().loadBinaryFile(fileReference.getTargetFile(),
+							command.getMemoryOffset());
 				}
 				resumeRun(macro, session);
 				System.out.println("Completed " + command);

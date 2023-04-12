@@ -1,12 +1,22 @@
 package org.maia.amstrad.pc.tape;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.basic.BasicByteCode;
+import org.maia.amstrad.basic.BasicException;
+import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.util.AmstradIO;
 
-public class AmstradTape extends AmstradDevice {
+public abstract class AmstradTape extends AmstradDevice {
 
 	private List<AmstradTapeListener> tapeListeners;
 
@@ -16,9 +26,51 @@ public class AmstradTape extends AmstradDevice {
 
 	private String filenameAtTapeHead;
 
-	public AmstradTape(AmstradPc amstradPc) {
+	protected AmstradTape(AmstradPc amstradPc) {
 		super(amstradPc);
 		this.tapeListeners = new Vector<AmstradTapeListener>();
+	}
+
+	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
+		getBasicRuntime().load(readSourceCodeFromFile(sourceCodeFile));
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
+		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
+	}
+
+	public void loadByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
+		getBasicRuntime().load(readByteCodeFromFile(byteCodeFile));
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(byteCodeFile.getParentFile());
+		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
+	}
+
+	public abstract BasicSourceCode readSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException;
+
+	public abstract BasicByteCode readByteCodeFromFile(File byteCodeFile) throws IOException, BasicException;
+
+	public void saveSourceCodeToFile(File file) throws IOException, BasicException {
+		PrintWriter pw = new PrintWriter(file);
+		pw.print(getBasicRuntime().exportSourceCode().getText());
+		pw.close();
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
+		System.out.println("Exported source code to " + file.getPath());
+	}
+
+	public void saveByteCodeToFile(File file) throws IOException, BasicException {
+		FileOutputStream os = new FileOutputStream(file);
+		os.write(getBasicRuntime().exportByteCode().getBytes());
+		os.flush();
+		os.close();
+		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
+		System.out.println("Exported byte code to " + file.getPath());
+	}
+
+	public void loadBinaryFile(File binaryFile, int memoryStartAddress) throws IOException {
+		getBasicRuntime().loadBinaryData(AmstradIO.readBinaryFileContents(binaryFile), memoryStartAddress);
+	}
+
+	public void saveBinaryFile(File binaryFile, int memoryStartAddress, int memoryLength) throws IOException {
+		AmstradIO.writeBinaryFileContents(binaryFile,
+				getBasicRuntime().exportBinaryData(memoryStartAddress, memoryLength));
 	}
 
 	public void addTapeListener(AmstradTapeListener listener) {
@@ -77,6 +129,10 @@ public class AmstradTape extends AmstradDevice {
 
 	protected List<AmstradTapeListener> getTapeListeners() {
 		return tapeListeners;
+	}
+
+	protected BasicRuntime getBasicRuntime() {
+		return getAmstradPc().getBasicRuntime();
 	}
 
 	public boolean isActive() {
