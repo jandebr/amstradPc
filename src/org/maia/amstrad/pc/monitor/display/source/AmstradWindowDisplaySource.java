@@ -5,6 +5,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
+import org.maia.amstrad.gui.components.ColoredTextArea;
+import org.maia.amstrad.gui.components.ColoredTextLine;
+import org.maia.amstrad.gui.components.ColoredTextSpan;
+import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.util.StringUtils;
@@ -33,7 +37,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		super.init(canvas);
 		resetItemListCursorBlinkOffsetTime();
 	}
-	
+
 	@Override
 	protected final void renderContent(AmstradDisplayCanvas canvas) {
 		setMouseOverButton(false);
@@ -139,6 +143,45 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		}
 	}
 
+	protected void renderColoredTextArea(ColoredTextArea textArea, int tx0, int ty0, int maxWidth,
+			int backgroundColorIndex, int extentColorIndex, int cursorColorIndex, boolean blinkingCursor,
+			AmstradDisplayCanvas canvas) {
+		int ty = ty0;
+		int i = textArea.getIndexOfFirstItemShowing();
+		while (i < textArea.size() && ty < ty0 + textArea.getMaxItemsShowing()) {
+			int txRemaining = maxWidth;
+			canvas.locate(tx0, ty);
+			ColoredTextLine line = textArea.getItem(i);
+			for (ColoredTextSpan span : line.getTextSpans()) {
+				String text = span.getText();
+				if (text.length() > txRemaining)
+					text = text.substring(0, txRemaining);
+				canvas.paper(span.getPaperColorIndex()).pen(span.getPenColorIndex());
+				canvas.print(text);
+				txRemaining -= text.length();
+			}
+			canvas.paper(backgroundColorIndex);
+			if (textArea.getIndexOfSelectedItem() == i) {
+				if (!blinkingCursor || isItemListCursorBlinkOn()) {
+					canvas.pen(cursorColorIndex).locate(tx0 - 1, ty).printChr(133); // cursor
+				}
+			}
+			ty++;
+			i++;
+		}
+		// top extent hint
+		if (textArea.getIndexOfFirstItemShowing() > 0) {
+			canvas.move(canvas.getTextCursorBoundsOnCanvas(tx0 + maxWidth - 1, ty0).getLocation()).mover(0, -1);
+			canvas.pen(extentColorIndex).drawChrMonospaced(196);
+		}
+		// bottom extent hint
+		if (textArea.getIndexOfLastItemShowing() < textArea.size() - 1) {
+			canvas.move(canvas.getTextCursorBoundsOnCanvas(tx0 + maxWidth - 1, ty - 1).getLocation()).mover(0, -1);
+			canvas.pen(extentColorIndex).drawChrMonospaced(198);
+		}
+		canvas.paper(backgroundColorIndex);
+	}
+
 	@Override
 	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		super.mouseClickedOnCanvas(canvas, canvasPosition);
@@ -151,6 +194,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	@Override
 	protected void keyboardKeyPressed(KeyEvent e) {
+		resetItemListCursorBlinkOffsetTime();
 		super.keyboardKeyPressed(e);
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_ESCAPE) {
@@ -159,6 +203,23 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			} else {
 				closeMainWindow();
 			}
+		}
+	}
+
+	protected void handleKeyboardKeyInItemList(KeyEvent e, ScrollableItemList itemList) {
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_DOWN) {
+			itemList.browseOneItemDown();
+		} else if (keyCode == KeyEvent.VK_UP) {
+			itemList.browseOneItemUp();
+		} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
+			itemList.browseOnePageDown();
+		} else if (keyCode == KeyEvent.VK_PAGE_UP) {
+			itemList.browseOnePageUp();
+		} else if (keyCode == KeyEvent.VK_HOME) {
+			itemList.browseHome();
+		} else if (keyCode == KeyEvent.VK_END) {
+			itemList.browseEnd();
 		}
 	}
 

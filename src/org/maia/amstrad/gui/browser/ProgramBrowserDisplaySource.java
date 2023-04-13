@@ -17,9 +17,6 @@ import org.maia.amstrad.gui.browser.components.ProgramMenu;
 import org.maia.amstrad.gui.browser.components.ProgramMenuItem;
 import org.maia.amstrad.gui.browser.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.components.StackedFolderItemList;
-import org.maia.amstrad.gui.components.ColoredTextLine;
-import org.maia.amstrad.gui.components.ColoredTextSpan;
-import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
@@ -53,6 +50,18 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private static int COLOR_PAPER = 1;
 
 	private static int COLOR_MODAL_BACKGROUND = 0;
+
+	private static int COLOR_EMPTY_LABEL = 13;
+
+	private static int COLOR_FOLDER_LABEL = 16;
+
+	private static int COLOR_PROGRAM_LABEL = 26;
+
+	private static int COLOR_DISABLED_MENUITEM = 13;
+
+	private static int COLOR_CURSOR = 24;
+
+	private static int COLOR_EXTENT_HINT = 13;
 
 	private static int LABEL_WIDTH = 18;
 
@@ -149,9 +158,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private void renderFolderItemList(FolderItemList itemList, int tx0, int ty0, boolean hasFocus,
 			AmstradDisplayCanvas canvas) {
 		if (itemList.isEmpty()) {
-			canvas.pen(13).locate(tx0, ty0).print("<empty>");
+			canvas.pen(COLOR_EMPTY_LABEL).locate(tx0, ty0).print("<empty>");
 			if (!isModalWindowOpen() && isItemListCursorBlinkOn()) {
-				canvas.locate(tx0 - 1, ty0).printChr(133);
+				canvas.locate(tx0 - 1, ty0).printChr(133); // cursor
 			}
 		} else {
 			int ty = ty0;
@@ -162,7 +171,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				if (itemList.getIndexOfSelectedItem() == i) {
 					if (hasFocus) {
 						if (!isModalWindowOpen() && isItemListCursorBlinkOn()) {
-							canvas.pen(24).locate(tx0 - 1, ty).printChr(133);
+							canvas.pen(COLOR_CURSOR).locate(tx0 - 1, ty).printChr(133); // cursor
 						}
 						if (!isModalWindowOpen() || Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
 							renderMiniInfo(item, canvas);
@@ -173,18 +182,18 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 					}
 				}
 				if (item.isFolder()) {
-					canvas.pen(16).locate(tx0, ty).print(label);
+					canvas.pen(COLOR_FOLDER_LABEL).locate(tx0, ty).print(label);
 					canvas.paper(COLOR_PAPER).printChr(246);
 				} else {
-					canvas.pen(26).locate(tx0, ty).print(label);
+					canvas.pen(COLOR_PROGRAM_LABEL).locate(tx0, ty).print(label);
 					canvas.paper(COLOR_PAPER);
 				}
 				ty++;
 				i++;
 			}
 			if (hasFocus) {
-				renderItemListTopExtentHint(itemList, tx0, ty0, canvas);
-				renderItemListBottomExtentHint(itemList, tx0, ty0, canvas);
+				renderFolderItemListTopExtentHint(itemList, tx0, ty0, canvas);
+				renderFolderItemListBottomExtentHint(itemList, tx0, ty0, canvas);
 			}
 		}
 	}
@@ -218,22 +227,25 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				canvas.move(0, 7).pen(c1).drawStrProportional(desc, 0.5f);
 			}
 		} else {
-			canvas.move(0, 15).pen(16).drawStrProportional(node.getName(), 0.5f);
+			canvas.move(0, 15).pen(COLOR_FOLDER_LABEL).drawStrProportional(node.getName(), 0.5f);
 		}
 	}
 
-	private void renderItemListTopExtentHint(ScrollableItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
+	private void renderFolderItemListTopExtentHint(FolderItemList itemList, int tx0, int ty0,
+			AmstradDisplayCanvas canvas) {
 		if (itemList.getIndexOfFirstItemShowing() > 0) {
-			canvas.pen(13).move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 - 1).getLocation()).mover(0, -2);
+			canvas.pen(COLOR_EXTENT_HINT).move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 - 1).getLocation()).mover(0,
+					-2);
 			for (int i = 0; i < (LABEL_WIDTH + 1) / 2; i++) {
 				canvas.drawChrMonospaced(196).mover(16, 0);
 			}
 		}
 	}
 
-	private void renderItemListBottomExtentHint(ScrollableItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
+	private void renderFolderItemListBottomExtentHint(FolderItemList itemList, int tx0, int ty0,
+			AmstradDisplayCanvas canvas) {
 		if (itemList.getIndexOfLastItemShowing() < itemList.size() - 1) {
-			canvas.pen(13)
+			canvas.pen(COLOR_EXTENT_HINT)
 					.move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 + itemList.getMaxItemsShowing()).getLocation())
 					.mover(0, 4);
 			for (int i = 0; i < (LABEL_WIDTH + 1) / 2; i++) {
@@ -244,7 +256,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private void renderStackLeftExtentHint(StackedFolderItemList stack, int tx0, int ty0, AmstradDisplayCanvas canvas) {
 		if (stack.size() > 2) {
-			canvas.pen(13);
+			canvas.pen(COLOR_EXTENT_HINT);
 			for (int i = 0; i < stack.getMaxItemsShowing(); i += 2) {
 				canvas.locate(tx0 - 1, ty0 + i).printChr(199);
 			}
@@ -260,14 +272,15 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			String label = StringUtils.fitWidth(item.getLabel(), LABEL_WIDTH);
 			if (menu.getIndexOfSelectedItem() == i) {
 				if (isItemListCursorBlinkOn()) {
-					canvas.pen(item.isEnabled() ? 24 : 13).locate(tx0 - 1, ty).printChr(133);
+					canvas.pen(item.isEnabled() ? COLOR_CURSOR : COLOR_DISABLED_MENUITEM).locate(tx0 - 1, ty)
+							.printChr(133); // cursor
 				}
 				canvas.paper(item.getFocusBackgroundColor());
 			}
 			if (item.isEnabled()) {
 				canvas.pen(item.getLabelColor());
 			} else {
-				canvas.pen(13).paper(COLOR_MODAL_BACKGROUND);
+				canvas.pen(COLOR_DISABLED_MENUITEM).paper(COLOR_MODAL_BACKGROUND);
 			}
 			canvas.locate(tx0, ty).print(label);
 			canvas.paper(COLOR_MODAL_BACKGROUND);
@@ -279,30 +292,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private void renderProgramSheet(ProgramSheet sheet, AmstradDisplayCanvas canvas) {
 		renderModalWindow(4, 3, 37, 24, sheet.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
-		int tx0 = 6, ty0 = 6, ty = ty0;
-		int i = sheet.getIndexOfFirstItemShowing();
-		while (i < sheet.size() && ty < ty0 + sheet.getMaxItemsShowing()) {
-			canvas.locate(tx0, ty);
-			ColoredTextLine line = sheet.getItem(i);
-			for (ColoredTextSpan span : line.getTextSpans()) {
-				canvas.paper(span.getPaperColorIndex()).pen(span.getPenColorIndex());
-				canvas.print(span.getText());
-			}
-			canvas.paper(COLOR_MODAL_BACKGROUND);
-			if (sheet.getIndexOfSelectedItem() == i) {
-				canvas.pen(13).locate(tx0 - 1, ty).printChr(133);
-			}
-			ty++;
-			i++;
-		}
-		// top extent hint
-		if (sheet.getIndexOfFirstItemShowing() > 0) {
-			canvas.pen(13).move(560, 319).drawChrMonospaced(196);
-		}
-		// bottom extent hint
-		if (sheet.getIndexOfLastItemShowing() < sheet.size() - 1) {
-			canvas.pen(13).move(560, 47).drawChrMonospaced(198);
-		}
+		renderColoredTextArea(sheet, 6, 6, 31, COLOR_MODAL_BACKGROUND, COLOR_EXTENT_HINT, COLOR_CURSOR, true, canvas);
 		canvas.paper(COLOR_PAPER);
 	}
 
@@ -462,23 +452,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_ESCAPE) {
 			closeModalWindow();
-		}
-	}
-
-	private void handleKeyboardKeyInItemList(KeyEvent e, ScrollableItemList itemList) {
-		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_DOWN) {
-			itemList.browseOneItemDown();
-		} else if (keyCode == KeyEvent.VK_UP) {
-			itemList.browseOneItemUp();
-		} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
-			itemList.browseOnePageDown();
-		} else if (keyCode == KeyEvent.VK_PAGE_UP) {
-			itemList.browseOnePageUp();
-		} else if (keyCode == KeyEvent.VK_HOME) {
-			itemList.browseHome();
-		} else if (keyCode == KeyEvent.VK_END) {
-			itemList.browseEnd();
 		}
 	}
 

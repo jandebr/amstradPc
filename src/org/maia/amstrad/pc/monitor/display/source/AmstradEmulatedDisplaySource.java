@@ -28,6 +28,8 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	private AmstradEmulatedDisplayCanvas displayCanvas;
 
+	private BufferedImage backdropImage;
+
 	private BufferedImage offscreenImage;
 
 	private JComponent displayComponent;
@@ -99,12 +101,14 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		Graphics2D drawingSurface = deriveDrawingSurface(display, displayBounds, borderInsets, graphicsContext);
 		canvas.updateDrawingSurface(drawingSurface);
 		canvas.rememberColors();
-		canvas.cls();
+		if (!hasBackdropImage()) {
+			canvas.cls();
+		}
 		renderContent(canvas);
 		if (getOffscreenImage() != null) {
 			display.drawImage(getOffscreenImage(), displayBounds.x, displayBounds.y, displayBounds.width,
 					displayBounds.height, null);
-		} else {
+		} else if (!hasBackdropImage()) {
 			renderBorder(display, displayBounds, borderInsets);
 		}
 		drawingSurface.dispose();
@@ -148,10 +152,14 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		Dimension targetResolution = graphicsContext.getDisplayCanvasSize();
 		Dimension imageResolution = graphicsContext.getPrimaryDisplaySourceResolution();
 		BufferedImage image = provisionOffscreenImage(imageResolution);
-		// Clear (paint border)
 		Graphics2D g2 = image.createGraphics();
-		g2.setColor(getDisplayCanvas().getBorderColor());
-		g2.fillRect(0, 0, image.getWidth(), image.getHeight());
+		if (hasBackdropImage()) {
+			g2.drawImage(getBackdropImage(), 0, 0, image.getWidth(), image.getHeight(), null);
+		} else {
+			// Clear (paint border)
+			g2.setColor(getDisplayCanvas().getBorderColor());
+			g2.fillRect(0, 0, image.getWidth(), image.getHeight());
+		}
 		// Transform for canvas
 		Insets imageInsets = graphicsContext.getBorderInsetsForDisplaySize(imageResolution);
 		Dimension canvasResolution = new Dimension(imageResolution.width - imageInsets.left - imageInsets.right,
@@ -182,6 +190,10 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	private Graphics2D deriveDirectDrawingSurface(Graphics2D display, Rectangle displayBounds, Insets borderInsets,
 			AmstradGraphicsContext graphicsContext) {
+		if (hasBackdropImage()) {
+			display.drawImage(getBackdropImage(), displayBounds.x, displayBounds.y, displayBounds.width,
+					displayBounds.height, null);
+		}
 		Dimension targetResolution = graphicsContext.getDisplayCanvasSize();
 		int paperWidth = displayBounds.width - borderInsets.left - borderInsets.right;
 		int paperHeight = displayBounds.height - borderInsets.top - borderInsets.bottom;
@@ -424,6 +436,18 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	private void setDisplayCanvas(AmstradEmulatedDisplayCanvas displayCanvas) {
 		this.displayCanvas = displayCanvas;
+	}
+
+	public boolean hasBackdropImage() {
+		return getBackdropImage() != null;
+	}
+
+	public BufferedImage getBackdropImage() {
+		return backdropImage;
+	}
+
+	public void setBackdropImage(BufferedImage backdropImage) {
+		this.backdropImage = backdropImage;
 	}
 
 	private BufferedImage getOffscreenImage() {

@@ -84,6 +84,7 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 		if (isEnabled()) {
 			resumeAfterInfoMode = !getAmstradPc().isPaused();
 			getAmstradPc().pause(); // auto-pause
+			getDisplaySource().setBackdropImage(getAmstradPc().getMonitor().makeScreenshot(false));
 			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
 		}
 	}
