@@ -17,9 +17,9 @@ import org.maia.amstrad.gui.browser.components.ProgramMenu;
 import org.maia.amstrad.gui.browser.components.ProgramMenuItem;
 import org.maia.amstrad.gui.browser.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.components.StackedFolderItemList;
-import org.maia.amstrad.gui.components.ColoredLine;
+import org.maia.amstrad.gui.components.ColoredTextLine;
 import org.maia.amstrad.gui.components.ColoredTextSpan;
-import org.maia.amstrad.gui.components.ItemList;
+import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
@@ -222,7 +222,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
-	private void renderItemListTopExtentHint(ItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
+	private void renderItemListTopExtentHint(ScrollableItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
 		if (itemList.getIndexOfFirstItemShowing() > 0) {
 			canvas.pen(13).move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 - 1).getLocation()).mover(0, -2);
 			for (int i = 0; i < (LABEL_WIDTH + 1) / 2; i++) {
@@ -231,7 +231,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
-	private void renderItemListBottomExtentHint(ItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
+	private void renderItemListBottomExtentHint(ScrollableItemList itemList, int tx0, int ty0, AmstradDisplayCanvas canvas) {
 		if (itemList.getIndexOfLastItemShowing() < itemList.size() - 1) {
 			canvas.pen(13)
 					.move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 + itemList.getMaxItemsShowing()).getLocation())
@@ -283,7 +283,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		int i = sheet.getIndexOfFirstItemShowing();
 		while (i < sheet.size() && ty < ty0 + sheet.getMaxItemsShowing()) {
 			canvas.locate(tx0, ty);
-			ColoredLine line = sheet.getItem(i);
+			ColoredTextLine line = sheet.getItem(i);
 			for (ColoredTextSpan span : line.getTextSpans()) {
 				canvas.paper(span.getPaperColorIndex()).pen(span.getPenColorIndex());
 				canvas.print(span.getText());
@@ -465,7 +465,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
-	private void handleKeyboardKeyInItemList(KeyEvent e, ItemList itemList) {
+	private void handleKeyboardKeyInItemList(KeyEvent e, ScrollableItemList itemList) {
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_DOWN) {
 			itemList.browseOneItemDown();

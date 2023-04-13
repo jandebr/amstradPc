@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.maia.amstrad.gui.components.Item;
+import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.program.AmstradProgram;
 
 public abstract class AmstradProgramRepository {
@@ -26,7 +26,7 @@ public abstract class AmstradProgramRepository {
 		getRootNode().refresh();
 	}
 
-	public static abstract class Node implements Item {
+	public static abstract class Node implements ScrollableItem {
 
 		private String name;
 

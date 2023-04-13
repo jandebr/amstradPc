@@ -2,11 +2,11 @@ package org.maia.amstrad.gui.browser.components;
 
 import java.util.List;
 
-import org.maia.amstrad.gui.components.ItemList;
+import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 
-public class FolderItemList extends ItemList<Node> {
+public class FolderItemList extends ScrollableItemList<Node> {
 
 	private FolderNode folderNode;
 

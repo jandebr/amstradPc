@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicLanguage;
-import org.maia.amstrad.gui.components.Item;
+import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.util.StringUtils;
 
@@ -327,7 +327,7 @@ public abstract class AmstradProgram implements Cloneable {
 
 	}
 
-	public static abstract class ProgramImage implements Item {
+	public static abstract class ProgramImage implements ScrollableItem {
 
 		private Image visual;
 

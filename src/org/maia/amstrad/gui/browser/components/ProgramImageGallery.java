@@ -1,11 +1,11 @@
 package org.maia.amstrad.gui.browser.components;
 
-import org.maia.amstrad.gui.components.ItemList;
+import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.util.StringUtils;
 
-public class ProgramImageGallery extends ItemList<ProgramImage> {
+public class ProgramImageGallery extends ScrollableItemList<ProgramImage> {
 
 	private AmstradProgram program;
 

@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.gui.components.ColoredLine;
+import org.maia.amstrad.gui.components.ColoredTextLine;
 import org.maia.amstrad.gui.components.ColoredTextSpan;
 import org.maia.amstrad.load.basic.staged.file.DiscoveredFileReference;
 import org.maia.amstrad.load.basic.staged.file.FileReferenceDiscoveryService;
@@ -42,19 +42,19 @@ public class ProgramFileReferencesSheet extends ProgramSheet {
 				if (!filename.equals(previousFilename)) {
 					// new filename
 					if (i > 0)
-						add(new ColoredLine()); // spacer
+						add(new ColoredTextLine()); // spacer
 					String symbol = String.valueOf(linked ? (char) 186 : (char) 187);
-					add(new ColoredLine(new ColoredTextSpan(StringUtils.fitWidth(symbol, 2), bg, c1),
+					add(new ColoredTextLine(new ColoredTextSpan(StringUtils.fitWidth(symbol, 2), bg, c1),
 							new ColoredTextSpan("\"" + filename + "\"", bg, c1)));
 				}
-				add(new ColoredLine(new ColoredTextSpan("  Line ", bg, c2),
+				add(new ColoredTextLine(new ColoredTextSpan("  Line ", bg, c2),
 						new ColoredTextSpan(String.valueOf(ref.getLineNumber()), bg, c3),
 						new ColoredTextSpan(": ", bg, c2),
 						new ColoredTextSpan(ref.getInstruction().getSourceForm(), bg, c1)));
 				previousFilename = filename;
 			}
 		} catch (AmstradProgramException e) {
-			add(new ColoredLine(new ColoredTextSpan(((char) 225) + " error", bg, 13)));
+			add(new ColoredTextLine(new ColoredTextSpan(((char) 225) + " error", bg, 13)));
 		}
 	}
 

@@ -1,6 +1,6 @@
 package org.maia.amstrad.gui.components;
 
-public abstract class ItemList<T extends Item> {
+public abstract class ScrollableItemList<T extends ScrollableItem> {
 
 	private int maxItemsShowing;
 
@@ -8,7 +8,7 @@ public abstract class ItemList<T extends Item> {
 
 	private int indexOfSelectedItem;
 
-	protected ItemList(int maxItemsShowing) {
+	protected ScrollableItemList(int maxItemsShowing) {
 		this.maxItemsShowing = maxItemsShowing;
 	}
 

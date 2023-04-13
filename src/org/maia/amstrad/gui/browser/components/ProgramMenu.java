@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.components.ItemList;
+import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.program.AmstradProgram;
 
-public class ProgramMenu extends ItemList<ProgramMenuItem> {
+public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
 	private ProgramBrowserDisplaySource browser;
 

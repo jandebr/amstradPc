@@ -2,7 +2,7 @@ package org.maia.amstrad.gui.browser.components;
 
 import java.util.List;
 
-import org.maia.amstrad.gui.components.ColoredLine;
+import org.maia.amstrad.gui.components.ColoredTextLine;
 import org.maia.amstrad.gui.components.ColoredTextSpan;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
@@ -23,13 +23,13 @@ public class ProgramInfoSheet extends ProgramSheet {
 		AmstradMonitorMode mode = program.getPreferredMonitorMode();
 		if (mode != null) {
 			if (mode.equals(AmstradMonitorMode.GREEN)) {
-				add(new ColoredLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
+				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
 						new ColoredTextSpan("\u00FE GREEN", 0, 9)));
 			} else if (mode.equals(AmstradMonitorMode.GRAY)) {
-				add(new ColoredLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 5), bg, bg),
+				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 5), bg, bg),
 						new ColoredTextSpan("\u00FE GRAY", 0, 13)));
 			} else if (mode.equals(AmstradMonitorMode.COLOR)) {
-				ColoredLine line = new ColoredLine(
+				ColoredTextLine line = new ColoredTextLine(
 						new ColoredTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
 						new ColoredTextSpan("\u00FE ", 0, 25));
 				for (int i = 0; i < 5; i++)
@@ -39,75 +39,75 @@ public class ProgramInfoSheet extends ProgramSheet {
 		}
 		if (!StringUtils.isEmpty(program.getAuthor())) {
 			if (isEmpty())
-				add(new ColoredLine());
-			add(new ColoredLine(new ColoredTextSpan("Author", bg, 25)));
+				add(new ColoredTextLine());
+			add(new ColoredTextLine(new ColoredTextSpan("Author", bg, 25)));
 			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getAuthor(), maxWidth)) {
-				add(new ColoredLine(new ColoredTextSpan(text, bg, 26)));
+				add(new ColoredTextLine(new ColoredTextSpan(text, bg, 26)));
 			}
 		}
 		if (program.getProductionYear() > 0) {
 			if (!isEmpty())
-				add(new ColoredLine());
-			add(new ColoredLine(new ColoredTextSpan("Year", bg, 25)));
-			add(new ColoredLine(new ColoredTextSpan(String.valueOf(program.getProductionYear()), bg, 26)));
+				add(new ColoredTextLine());
+			add(new ColoredTextLine(new ColoredTextSpan("Year", bg, 25)));
+			add(new ColoredTextLine(new ColoredTextSpan(String.valueOf(program.getProductionYear()), bg, 26)));
 		}
 		if (!StringUtils.isEmpty(program.getNameOfTape()) || program.getBlocksOnTape() > 0) {
 			if (!isEmpty())
-				add(new ColoredLine());
+				add(new ColoredTextLine());
 			String tape = !StringUtils.isEmpty(program.getNameOfTape()) ? program.getNameOfTape() : "?";
 			String blocks = program.getBlocksOnTape() > 0 ? String.valueOf(program.getBlocksOnTape()) : "?";
-			add(new ColoredLine(new ColoredTextSpan(StringUtils.fitWidth("Tape", 20) + " Blocks", bg, 25)));
-			add(new ColoredLine(new ColoredTextSpan(StringUtils.fitWidth(tape, 20) + " ", bg, 26),
+			add(new ColoredTextLine(new ColoredTextSpan(StringUtils.fitWidth("Tape", 20) + " Blocks", bg, 25)));
+			add(new ColoredTextLine(new ColoredTextSpan(StringUtils.fitWidth(tape, 20) + " ", bg, 26),
 					new ColoredTextSpan(blocks, bg, 26)));
 		}
 		if (!StringUtils.isEmpty(program.getProgramDescription())) {
 			if (!isEmpty())
-				add(new ColoredLine());
+				add(new ColoredTextLine());
 			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getProgramDescription(), maxWidth)) {
-				add(new ColoredLine(new ColoredTextSpan(text, bg, 17)));
+				add(new ColoredTextLine(new ColoredTextSpan(text, bg, 17)));
 			}
 		}
 		if (!StringUtils.isEmpty(program.getAuthoringInformation())) {
 			if (!isEmpty())
-				add(new ColoredLine());
+				add(new ColoredTextLine());
 			for (String text : StringUtils.splitOnNewlinesAndWrap(program.getAuthoringInformation(), maxWidth)) {
-				add(new ColoredLine(new ColoredTextSpan(text, bg, 4)));
+				add(new ColoredTextLine(new ColoredTextSpan(text, bg, 4)));
 			}
 		}
 		if (!program.getUserControls().isEmpty()) {
 			if (!isEmpty()) {
-				add(new ColoredLine());
-				add(new ColoredLine());
+				add(new ColoredTextLine());
+				add(new ColoredTextLine());
 			}
-			add(new ColoredLine(
+			add(new ColoredTextLine(
 					new ColoredTextSpan("\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F", bg, 7)));
 			for (UserControl uc : program.getUserControls()) {
-				add(new ColoredLine());
+				add(new ColoredTextLine());
 				if (uc.getHeading() != null) {
 					List<String> hlines = StringUtils.splitOnNewlinesAndWrap(uc.getHeading(), maxWidth - 6);
 					for (int i = 0; i < hlines.size(); i++) {
 						String text = hlines.get(i);
 						if (hlines.size() == 1) {
-							add(new ColoredLine(
+							add(new ColoredTextLine(
 									new ColoredTextSpan("\u00CF\u00DC " + text + " \u00DD\u00CF", bg, 7)));
 						} else if (i == 0) {
-							add(new ColoredLine(new ColoredTextSpan(
+							add(new ColoredTextLine(new ColoredTextSpan(
 									"\u00CF\u00DC " + StringUtils.fitWidth(text, maxWidth - 6) + " \u00DD\u00CF", bg,
 									7)));
 						} else {
-							add(new ColoredLine(new ColoredTextSpan(
+							add(new ColoredTextLine(new ColoredTextSpan(
 									"\u00CF  " + StringUtils.fitWidth(text, maxWidth - 6) + "  \u00CF", bg, 7)));
 						}
 					}
-					add(new ColoredLine());
+					add(new ColoredTextLine());
 				}
-				add(new ColoredLine(new ColoredTextSpan(StringUtils.fitWidth(uc.getKey(), maxWidth), bg, 16)));
+				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.fitWidth(uc.getKey(), maxWidth), bg, 16)));
 				for (String text : StringUtils.splitOnNewlinesAndWrap(uc.getDescription(), maxWidth - 2)) {
-					add(new ColoredLine(new ColoredTextSpan(StringUtils.spaces(2) + text, bg, 26)));
+					add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(2) + text, bg, 26)));
 				}
 			}
 		}
-		add(new ColoredLine());
+		add(new ColoredTextLine());
 	}
 
 }

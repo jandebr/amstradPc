@@ -3,15 +3,15 @@ package org.maia.amstrad.gui.components;
 import java.util.List;
 import java.util.Vector;
 
-public class ColoredLine implements Item {
+public class ColoredTextLine implements ScrollableItem {
 
 	private List<ColoredTextSpan> textSpans;
 
-	public ColoredLine() {
+	public ColoredTextLine() {
 		this.textSpans = new Vector<ColoredTextSpan>();
 	}
 
-	public ColoredLine(ColoredTextSpan... textSpans) {
+	public ColoredTextLine(ColoredTextSpan... textSpans) {
 		this();
 		for (int i = 0; i < textSpans.length; i++) {
 			add(textSpans[i]);
