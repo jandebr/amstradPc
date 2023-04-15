@@ -10,11 +10,15 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 
-public class LocomotiveBasicMemoryDisplaySource extends AmstradWindowDisplaySource {
+public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 
 	private ColoredTextArea variablesTextArea;
 
-	public LocomotiveBasicMemoryDisplaySource(AmstradPc amstradPc) {
+	private static int COLOR_BORDER = 1;
+
+	private static int COLOR_PAPER = 1;
+
+	public BasicMemoryDisplaySource(AmstradPc amstradPc) {
 		super(amstradPc, "64K Basic Memory");
 	}
 
@@ -24,7 +28,7 @@ public class LocomotiveBasicMemoryDisplaySource extends AmstradWindowDisplaySour
 		getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
 		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
 		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
-		canvas.border(1).paper(1);
+		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
 		setVariablesTextArea(createVariablesTextArea());
 	}
 
@@ -36,9 +40,11 @@ public class LocomotiveBasicMemoryDisplaySource extends AmstradWindowDisplaySour
 
 	private void renderBasicVariables(AmstradDisplayCanvas canvas) {
 		ColoredTextArea textArea = getVariablesTextArea();
-		int tx1 = 4, tx2 = 37, ty1 = 12, ty2 = ty1 + textArea.getMaxItemsShowing() - 1;
-		canvas.paper(0).clearRect(canvas.getTextAreaBoundsOnCanvas(tx1 - 1, ty1, tx2 + 1, ty2));
-		renderColoredTextArea(textArea, tx1, ty1, tx2 - tx1 + 1, 0, 13, 24, true, canvas);
+		int tx1 = 3, tx2 = 38, ty1 = 15, ty2 = ty1 + textArea.getMaxItemsShowing() - 1;
+		canvas.paper(COLOR_PAPER).clearRect(canvas.getTextAreaBoundsOnCanvas(tx1 - 2, ty1 - 1, tx2 + 2, ty2 + 1));
+		canvas.pen(14);
+		renderWindowBorder(tx1 - 2, ty1 - 1, tx2 + 2, ty2 + 1, canvas);
+		renderColoredTextArea(textArea, tx1, ty1, tx2 - tx1 + 1, canvas);
 	}
 
 	@Override
@@ -49,9 +55,9 @@ public class LocomotiveBasicMemoryDisplaySource extends AmstradWindowDisplaySour
 
 	private ColoredTextArea createVariablesTextArea() {
 		// TODO
-		ColoredTextArea textArea = new ColoredTextArea(5);
-		for (int i = 0; i < 10; i++) {
-			textArea.add(new ColoredTextLine(new ColoredTextSpan("Hello " + (i + 1), 0, 26)));
+		ColoredTextArea textArea = new ColoredTextArea(10);
+		for (int i = 0; i < 30; i++) {
+			textArea.add(new ColoredTextLine(new ColoredTextSpan("Hello " + (i + 1), COLOR_PAPER, 26)));
 		}
 		return textArea;
 	}

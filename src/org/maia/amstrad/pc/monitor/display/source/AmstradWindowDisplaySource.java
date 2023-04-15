@@ -88,7 +88,8 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		canvas.paper(backgroundColorIndex);
 		canvas.clearRect(canvas.getTextAreaBoundsOnCanvas(tx1, ty1, tx2, ty2));
 		renderModalWindowTitle(tx1, ty1, tx2, ty2, modalWindowTitle, canvas);
-		renderModalWindowBorder(tx1, ty1, tx2, ty2, canvas);
+		canvas.pen(14);
+		renderWindowBorder(tx1, ty1, tx2, ty2, canvas);
 		renderModalWindowCloseButton(tx1, ty1, tx2, ty2, canvas);
 		canvas.paper(backgroundColorIndex);
 	}
@@ -101,20 +102,6 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		canvas.locate(tx1 + 1, ty1 + 2);
 		for (int i = 0; i < maxTitleWidth; i++)
 			canvas.printChr(216);
-	}
-
-	private void renderModalWindowBorder(int tx1, int ty1, int tx2, int ty2, AmstradDisplayCanvas canvas) {
-		canvas.pen(14);
-		for (int i = tx1 + 1; i <= tx2 - 1; i++) {
-			canvas.locate(i, ty1).printChr(154).locate(i, ty2).printChr(154);
-		}
-		for (int i = ty1 + 1; i <= ty2 - 1; i++) {
-			canvas.locate(tx1, i).printChr(149).locate(tx2, i).printChr(149);
-		}
-		canvas.locate(tx1, ty1).printChr(150);
-		canvas.locate(tx2, ty1).printChr(156);
-		canvas.locate(tx1, ty2).printChr(147);
-		canvas.locate(tx2, ty2).printChr(153);
 	}
 
 	private void renderModalWindowCloseButton(int tx1, int ty1, int tx2, int ty2, AmstradDisplayCanvas canvas) {
@@ -143,9 +130,28 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		}
 	}
 
+	protected void renderWindowBorder(int tx1, int ty1, int tx2, int ty2, AmstradDisplayCanvas canvas) {
+		for (int i = tx1 + 1; i <= tx2 - 1; i++) {
+			canvas.locate(i, ty1).printChr(154).locate(i, ty2).printChr(154);
+		}
+		for (int i = ty1 + 1; i <= ty2 - 1; i++) {
+			canvas.locate(tx1, i).printChr(149).locate(tx2, i).printChr(149);
+		}
+		canvas.locate(tx1, ty1).printChr(150);
+		canvas.locate(tx2, ty1).printChr(156);
+		canvas.locate(tx1, ty2).printChr(147);
+		canvas.locate(tx2, ty2).printChr(153);
+	}
+
 	protected void renderColoredTextArea(ColoredTextArea textArea, int tx0, int ty0, int maxWidth,
-			int backgroundColorIndex, int extentColorIndex, int cursorColorIndex, boolean blinkingCursor,
 			AmstradDisplayCanvas canvas) {
+		renderColoredTextArea(textArea, tx0, ty0, maxWidth, 13, 10, 24, true, canvas);
+	}
+
+	protected void renderColoredTextArea(ColoredTextArea textArea, int tx0, int ty0, int maxWidth,
+			int rangeBarColorIndex, int rangeThumbColorIndex, int cursorColorIndex, boolean blinkingCursor,
+			AmstradDisplayCanvas canvas) {
+		// text area
 		int ty = ty0;
 		int i = textArea.getIndexOfFirstItemShowing();
 		while (i < textArea.size() && ty < ty0 + textArea.getMaxItemsShowing()) {
@@ -160,26 +166,32 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 				canvas.print(text);
 				txRemaining -= text.length();
 			}
-			canvas.paper(backgroundColorIndex);
+			// cursor
 			if (textArea.getIndexOfSelectedItem() == i) {
 				if (!blinkingCursor || isItemListCursorBlinkOn()) {
-					canvas.pen(cursorColorIndex).locate(tx0 - 1, ty).printChr(133); // cursor
+					canvas.move(canvas.getTextCursorBoundsOnCanvas(tx0 - 1, ty).getLocation());
+					canvas.pen(cursorColorIndex).drawChrMonospaced(133);
 				}
 			}
 			ty++;
 			i++;
 		}
-		// top extent hint
-		if (textArea.getIndexOfFirstItemShowing() > 0) {
-			canvas.move(canvas.getTextCursorBoundsOnCanvas(tx0 + maxWidth - 1, ty0).getLocation()).mover(0, -1);
-			canvas.pen(extentColorIndex).drawChrMonospaced(196);
+		// range bar
+		int theight = ty - ty0;
+		if (textArea.size() > theight) {
+			Rectangle rect = canvas.getTextCursorBoundsOnCanvas(tx0 + maxWidth, ty0);
+			int rx0 = rect.x + 1;
+			int ry0 = rect.y;
+			int ry1 = canvas.getTextCursorBoundsOnCanvas(tx0, ty0 + theight).getLocation().y + 1;
+			int rwidth = rect.width - 2;
+			int rheight = ry0 - ry1 + 1;
+			canvas.paper(rangeBarColorIndex).clearRect(rx0, ry0, rwidth, rheight);
+			// range thumb
+			double r = rheight / (double) textArea.size();
+			int vy0 = ry0 - (int) Math.floor(r * textArea.getIndexOfFirstItemShowing());
+			int vheight = (int) Math.ceil(r * theight);
+			canvas.paper(rangeThumbColorIndex).clearRect(rx0, vy0, rwidth, vheight);
 		}
-		// bottom extent hint
-		if (textArea.getIndexOfLastItemShowing() < textArea.size() - 1) {
-			canvas.move(canvas.getTextCursorBoundsOnCanvas(tx0 + maxWidth - 1, ty - 1).getLocation()).mover(0, -1);
-			canvas.pen(extentColorIndex).drawChrMonospaced(198);
-		}
-		canvas.paper(backgroundColorIndex);
 	}
 
 	@Override

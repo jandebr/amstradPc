@@ -2,21 +2,21 @@ package org.maia.amstrad.gui.memory.action;
 
 import java.awt.event.ActionEvent;
 
-import org.maia.amstrad.gui.memory.LocomotiveBasicMemoryDisplaySource;
+import org.maia.amstrad.gui.memory.BasicMemoryDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicAction;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 
-public class LocomotiveBasicDisplayMemoryAction extends LocomotiveBasicAction {
+public class BasicDisplayMemoryAction extends LocomotiveBasicAction {
 
-	private LocomotiveBasicMemoryDisplaySource displaySource;
+	private BasicMemoryDisplaySource displaySource;
 
 	private static String NAME_OPEN = "Show Basic memory";
 
 	private static String NAME_CLOSE = "Hide Basic memory";
 
-	public LocomotiveBasicDisplayMemoryAction(AmstradPc amstradPc) {
+	public BasicDisplayMemoryAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		updateName();
 		amstradPc.getMonitor().addMonitorListener(this);
@@ -64,12 +64,12 @@ public class LocomotiveBasicDisplayMemoryAction extends LocomotiveBasicAction {
 	public boolean isBasicMemoryShowing() {
 		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getMonitor()
 				.getCurrentAlternativeDisplaySource();
-		return altDisplaySource != null && altDisplaySource instanceof LocomotiveBasicMemoryDisplaySource;
+		return altDisplaySource != null && altDisplaySource instanceof BasicMemoryDisplaySource;
 	}
 
-	private LocomotiveBasicMemoryDisplaySource getDisplaySource() {
+	private BasicMemoryDisplaySource getDisplaySource() {
 		if (displaySource == null) {
-			displaySource = new LocomotiveBasicMemoryDisplaySource(getAmstradPc());
+			displaySource = new BasicMemoryDisplaySource(getAmstradPc());
 		}
 		return displaySource;
 	}

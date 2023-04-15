@@ -43,13 +43,18 @@ public abstract class ScrollableItemList<T extends ScrollableItem> {
 	}
 
 	public void browseOnePageDown() {
-		for (int i = 0; i < getMaxItemsShowing(); i++)
-			browseOneItemDown();
+		if (getIndexOfLastItemShowing() < size() - 1) {
+			setIndexOfFirstItemShowing(
+					Math.min(getIndexOfFirstItemShowing() + getMaxItemsShowing(), size() - getMaxItemsShowing()));
+			setIndexOfSelectedItem(getIndexOfFirstItemShowing());
+		}
 	}
 
 	public void browseOnePageUp() {
-		for (int i = 0; i < getMaxItemsShowing(); i++)
-			browseOneItemUp();
+		if (getIndexOfFirstItemShowing() > 0) {
+			setIndexOfFirstItemShowing(Math.max(getIndexOfFirstItemShowing() - getMaxItemsShowing(), 0));
+			setIndexOfSelectedItem(getIndexOfFirstItemShowing());
+		}
 	}
 
 	public void browseTo(int itemIndex) {

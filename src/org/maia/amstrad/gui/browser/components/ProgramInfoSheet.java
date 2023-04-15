@@ -23,14 +23,14 @@ public class ProgramInfoSheet extends ProgramSheet {
 		AmstradMonitorMode mode = program.getPreferredMonitorMode();
 		if (mode != null) {
 			if (mode.equals(AmstradMonitorMode.GREEN)) {
-				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
+				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 7), bg, bg),
 						new ColoredTextSpan("\u00FE GREEN", 0, 9)));
 			} else if (mode.equals(AmstradMonitorMode.GRAY)) {
-				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 5), bg, bg),
+				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
 						new ColoredTextSpan("\u00FE GRAY", 0, 13)));
 			} else if (mode.equals(AmstradMonitorMode.COLOR)) {
 				ColoredTextLine line = new ColoredTextLine(
-						new ColoredTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
+						new ColoredTextSpan(StringUtils.spaces(maxWidth - 7), bg, bg),
 						new ColoredTextSpan("\u00FE ", 0, 25));
 				for (int i = 0; i < 5; i++)
 					line.add(new ColoredTextSpan(String.valueOf("COLOR".charAt(i)), 0, RAINBOW_COLORS[i]));
@@ -79,8 +79,7 @@ public class ProgramInfoSheet extends ProgramSheet {
 				add(new ColoredTextLine());
 				add(new ColoredTextLine());
 			}
-			add(new ColoredTextLine(
-					new ColoredTextSpan("\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F", bg, 7)));
+			add(new ColoredTextLine(new ColoredTextSpan("\u008F\u008F\u00D4 User controls \u00D5\u008F\u008F", bg, 7)));
 			for (UserControl uc : program.getUserControls()) {
 				add(new ColoredTextLine());
 				if (uc.getHeading() != null) {

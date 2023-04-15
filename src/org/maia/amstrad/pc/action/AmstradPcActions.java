@@ -4,7 +4,7 @@ import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserSetupAction;
 import org.maia.amstrad.gui.browser.action.ProgramInfoAction;
 import org.maia.amstrad.gui.colors.action.DisplaySystemColorsAction;
-import org.maia.amstrad.gui.memory.action.LocomotiveBasicDisplayMemoryAction;
+import org.maia.amstrad.gui.memory.action.BasicDisplayMemoryAction;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicBreakEscapeAction;
 import org.maia.amstrad.pc.action.basic.LocomotiveBasicClearAction;
@@ -50,7 +50,7 @@ public class AmstradPcActions {
 
 	private RebootAction rebootAction;
 
-	private LocomotiveBasicDisplayMemoryAction locomotiveBasicDisplayMemoryAction;
+	private BasicDisplayMemoryAction locomotiveBasicDisplayMemoryAction;
 
 	private LocomotiveBasicBreakEscapeAction locomotiveBasicBreakEscapeAction;
 
@@ -194,9 +194,9 @@ public class AmstradPcActions {
 		return rebootAction;
 	}
 
-	public LocomotiveBasicDisplayMemoryAction getLocomotiveBasicDisplayMemoryAction() {
+	public BasicDisplayMemoryAction getLocomotiveBasicDisplayMemoryAction() {
 		if (locomotiveBasicDisplayMemoryAction == null) {
-			locomotiveBasicDisplayMemoryAction = new LocomotiveBasicDisplayMemoryAction(getAmstradPc());
+			locomotiveBasicDisplayMemoryAction = new BasicDisplayMemoryAction(getAmstradPc());
 		}
 		return locomotiveBasicDisplayMemoryAction;
 	}

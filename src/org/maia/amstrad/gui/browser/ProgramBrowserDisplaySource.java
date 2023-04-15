@@ -292,7 +292,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private void renderProgramSheet(ProgramSheet sheet, AmstradDisplayCanvas canvas) {
 		renderModalWindow(4, 3, 37, 24, sheet.getProgram().getProgramName(), COLOR_MODAL_BACKGROUND, canvas);
-		renderColoredTextArea(sheet, 6, 6, 31, COLOR_MODAL_BACKGROUND, COLOR_EXTENT_HINT, COLOR_CURSOR, true, canvas);
+		renderColoredTextArea(sheet, 6, 6, 30, canvas);
 		canvas.paper(COLOR_PAPER);
 	}
 
