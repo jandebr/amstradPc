@@ -49,6 +49,15 @@ public class StringUtils {
 		}
 	}
 
+	public static String truncate(String str, int width) {
+		int n = str.length();
+		if (n <= width) {
+			return str;
+		} else {
+			return str.substring(0, width - 2) + "..";
+		}
+	}
+
 	public static String fitWidth(String str, int width) {
 		return fitWidthLeftAlign(str, width);
 	}

@@ -84,12 +84,11 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	protected void renderModalWindow(int tx1, int ty1, int tx2, int ty2, String modalWindowTitle,
 			int backgroundColorIndex, AmstradDisplayCanvas canvas) {
-		setModalWindowOpen(true);
 		canvas.paper(backgroundColorIndex);
-		canvas.clearRect(canvas.getTextAreaBoundsOnCanvas(tx1, ty1, tx2, ty2));
+		setModalWindowOpen(true);
+		fillTextAreaWithSolidColor(tx1, ty1, tx2, ty2, backgroundColorIndex, canvas);
 		renderModalWindowTitle(tx1, ty1, tx2, ty2, modalWindowTitle, canvas);
-		canvas.pen(14);
-		renderWindowBorder(tx1, ty1, tx2, ty2, canvas);
+		renderWindowBorder(tx1, ty1, tx2, ty2, 14, canvas);
 		renderModalWindowCloseButton(tx1, ty1, tx2, ty2, canvas);
 		canvas.paper(backgroundColorIndex);
 	}
@@ -130,17 +129,40 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		}
 	}
 
-	protected void renderWindowBorder(int tx1, int ty1, int tx2, int ty2, AmstradDisplayCanvas canvas) {
+	protected void renderWindowBorder(int tx1, int ty1, int tx2, int ty2, int colorIndex, AmstradDisplayCanvas canvas) {
+		renderWindowBorder(tx1, ty1, tx2, ty2, colorIndex, null, canvas);
+	}
+
+	protected void renderWindowBorder(int tx1, int ty1, int tx2, int ty2, int colorIndex, String title,
+			AmstradDisplayCanvas canvas) {
+		int cpen = canvas.getPenColorIndex();
+		canvas.pen(colorIndex);
+		// Edges
 		for (int i = tx1 + 1; i <= tx2 - 1; i++) {
 			canvas.locate(i, ty1).printChr(154).locate(i, ty2).printChr(154);
 		}
 		for (int i = ty1 + 1; i <= ty2 - 1; i++) {
 			canvas.locate(tx1, i).printChr(149).locate(tx2, i).printChr(149);
 		}
+		// Corners
 		canvas.locate(tx1, ty1).printChr(150);
 		canvas.locate(tx2, ty1).printChr(156);
 		canvas.locate(tx1, ty2).printChr(147);
 		canvas.locate(tx2, ty2).printChr(153);
+		// Title
+		if (title != null) {
+			int maxTitleLength = Math.max(tx2 - tx1 - 3, 0);
+			canvas.locate(tx1 + 2, ty1).print(StringUtils.truncate(title, maxTitleLength));
+		}
+		canvas.pen(cpen);
+	}
+
+	protected void fillTextAreaWithSolidColor(int textAreaX1, int textAreaY1, int textAreaX2, int textAreaY2,
+			int colorIndex, AmstradDisplayCanvas canvas) {
+		int cpaper = canvas.getPaperColorIndex();
+		canvas.paper(colorIndex)
+				.clearRect(canvas.getTextAreaBoundsOnCanvas(textAreaX1, textAreaY1, textAreaX2, textAreaY2));
+		canvas.paper(cpaper);
 	}
 
 	protected void renderColoredTextArea(ColoredTextArea textArea, int tx0, int ty0, int maxWidth,
@@ -151,6 +173,8 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 	protected void renderColoredTextArea(ColoredTextArea textArea, int tx0, int ty0, int maxWidth,
 			int rangeBarColorIndex, int rangeThumbColorIndex, int cursorColorIndex, boolean blinkingCursor,
 			AmstradDisplayCanvas canvas) {
+		int cpaper = canvas.getPaperColorIndex();
+		int cpen = canvas.getPenColorIndex();
 		// text area
 		int ty = ty0;
 		int i = textArea.getIndexOfFirstItemShowing();
@@ -192,6 +216,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			int vheight = (int) Math.ceil(r * theight);
 			canvas.paper(rangeThumbColorIndex).clearRect(rx0, vy0, rwidth, vheight);
 		}
+		canvas.paper(cpaper).pen(cpen);
 	}
 
 	@Override

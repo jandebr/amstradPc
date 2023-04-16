@@ -16,6 +16,6 @@ public abstract class TypedVariableToken extends VariableToken {
 		return getVariableNameWithoutTypeIndicator().toUpperCase() + getTypeIndicator();
 	}
 
-	protected abstract char getTypeIndicator();
+	public abstract char getTypeIndicator();
 
 }

@@ -20,7 +20,7 @@ public class StringTypedVariableToken extends TypedVariableToken {
 	}
 
 	@Override
-	protected char getTypeIndicator() {
+	public char getTypeIndicator() {
 		return TYPE_INDICATOR;
 	}
 

@@ -272,20 +272,20 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		return getUsedMemoryForByteCode() + getUsedMemoryForVariables() + getUsedMemoryForHeap() + getReservedMemory();
 	}
 
-	private int getUsedMemoryForByteCode() {
+	public int getUsedMemoryForByteCode() {
 		return getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
 	}
 
-	private int getUsedMemoryForVariables() {
+	public int getUsedMemoryForVariables() {
 		return getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER)
 				- getMemory().readWord(ADDRESS_BYTECODE_END_POINTER);
 	}
 
-	private int getUsedMemoryForHeap() {
+	public int getUsedMemoryForHeap() {
 		return getHimem() - getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
 	}
 
-	private int getReservedMemory() {
+	public int getReservedMemory() {
 		return INITIAL_HIMEM - getHimem();
 	}
 

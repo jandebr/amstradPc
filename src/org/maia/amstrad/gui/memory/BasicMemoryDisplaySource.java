@@ -1,7 +1,22 @@
 package org.maia.amstrad.gui.memory;
 
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Vector;
 
+import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace.VariableNotFoundException;
+import org.maia.amstrad.basic.locomotive.token.FloatingPointNumberToken;
+import org.maia.amstrad.basic.locomotive.token.FloatingPointTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.IntegerTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
+import org.maia.amstrad.basic.locomotive.token.TypedVariableToken;
 import org.maia.amstrad.gui.components.ColoredTextArea;
 import org.maia.amstrad.gui.components.ColoredTextLine;
 import org.maia.amstrad.gui.components.ColoredTextSpan;
@@ -9,14 +24,19 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
+import org.maia.amstrad.util.StringUtils;
 
 public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
+
+	private MemoryOutline memoryOutline;
 
 	private ColoredTextArea variablesTextArea;
 
 	private static int COLOR_BORDER = 1;
 
 	private static int COLOR_PAPER = 1;
+
+	private static int COLOR_OUTLINE_BG = 0;
 
 	public BasicMemoryDisplaySource(AmstradPc amstradPc) {
 		super(amstradPc, "64K Basic Memory");
@@ -29,22 +49,55 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
 		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
+		setMemoryOutline(new MemoryOutlineBuilder().buildFor(getAmstradPc()));
 		setVariablesTextArea(createVariablesTextArea());
 	}
 
 	@Override
 	protected void renderWindowContent(AmstradDisplayCanvas canvas) {
-		// TODO
+		renderMemoryOutline(getMemoryOutline(), canvas);
 		renderBasicVariables(canvas);
+	}
+
+	private void renderMemoryOutline(MemoryOutline outline, AmstradDisplayCanvas canvas) {
+		fillTextAreaWithSolidColor(1, 3, 40, 10, COLOR_OUTLINE_BG, canvas);
+		Rectangle barArea = canvas.getTextAreaBoundsOnCanvas(1, 3, 40, 5);
+		int padding = 8;
+		int x0 = barArea.x + padding;
+		int x1 = x0;
+		int xsize = barArea.width - 2 * padding;
+		double xscale = xsize / (double) outline.getByteLength();
+		int y0 = barArea.y - padding;
+		int ysize = barArea.height - 2 * padding;
+		for (int i = 0; i < outline.getSegmentCount(); i++) {
+			MemorySegment segment = outline.getSegment(i);
+			// Bar
+			int x2 = x0 + (int) Math.round(xscale * segment.getByteEnd());
+			if (x2 >= x1) {
+				boolean free = MemoryOutlineBuilder.LABEL_FREE.equals(segment.getLabel());
+				int dy = free ? 2 : 0;
+				canvas.paper(segment.getColorIndex());
+				canvas.clearRect(x1, y0 - dy, x2 - x1 + 1, ysize - 2 * dy);
+				x1 = x2 + 1;
+			}
+			// Label
+			int txlabel = 2 + 20 * (i / 4);
+			int tylabel = 6 + i % 4;
+			canvas.paper(COLOR_OUTLINE_BG).locate(txlabel, tylabel);
+			canvas.pen(13).print(StringUtils.fitWidthRightAlign(String.valueOf(segment.getByteLength()), 5));
+			canvas.pen(segment.getColorIndex()).print(" " + StringUtils.fitWidth(segment.getLabel(), 12));
+		}
+		canvas.paper(COLOR_PAPER);
 	}
 
 	private void renderBasicVariables(AmstradDisplayCanvas canvas) {
 		ColoredTextArea textArea = getVariablesTextArea();
-		int tx1 = 3, tx2 = 38, ty1 = 15, ty2 = ty1 + textArea.getMaxItemsShowing() - 1;
-		canvas.paper(COLOR_PAPER).clearRect(canvas.getTextAreaBoundsOnCanvas(tx1 - 2, ty1 - 1, tx2 + 2, ty2 + 1));
-		canvas.pen(14);
-		renderWindowBorder(tx1 - 2, ty1 - 1, tx2 + 2, ty2 + 1, canvas);
-		renderColoredTextArea(textArea, tx1, ty1, tx2 - tx1 + 1, canvas);
+		if (!textArea.isEmpty()) {
+			int tx1 = 3, tx2 = 38, ty1 = 13, ty2 = ty1 + textArea.getMaxItemsShowing() - 1;
+			fillTextAreaWithSolidColor(tx1 - 2, ty1 - 1, tx2 + 2, ty2 + 1, COLOR_PAPER, canvas);
+			renderWindowBorder(tx1 - 2, ty1 - 1, tx2 + 2, ty2 + 1, 14, "Variables", canvas);
+			renderColoredTextArea(textArea, tx1, ty1, tx2 - tx1 + 1, canvas);
+		}
 	}
 
 	@Override
@@ -54,12 +107,64 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private ColoredTextArea createVariablesTextArea() {
-		// TODO
-		ColoredTextArea textArea = new ColoredTextArea(10);
-		for (int i = 0; i < 30; i++) {
-			textArea.add(new ColoredTextLine(new ColoredTextSpan("Hello " + (i + 1), COLOR_PAPER, 26)));
+		ColoredTextArea textArea = new ColoredTextArea(12);
+		BasicRuntime rt = getAmstradPc().getBasicRuntime();
+		if (rt instanceof LocomotiveBasicRuntime) {
+			populateTextAreaWithVariables(textArea, 36, ((LocomotiveBasicRuntime) rt).getVariableSpace());
 		}
 		return textArea;
+	}
+
+	private void populateTextAreaWithVariables(ColoredTextArea textArea, int maxWidth,
+			LocomotiveBasicVariableSpace varSpace) {
+		List<TypedVariableToken> variables = sortVariablesByName(varSpace.getAllVariables());
+		for (TypedVariableToken variable : variables) {
+			// Variable name and type
+			textArea.add(new ColoredTextLine(
+					new ColoredTextSpan(
+							StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth - 1),
+							COLOR_PAPER, 26),
+					new ColoredTextSpan(String.valueOf(variable.getTypeIndicator()), COLOR_PAPER, 13)));
+			// Variable value
+			String valueStr = "";
+			try {
+				if (variable instanceof IntegerTypedVariableToken) {
+					valueStr = String.valueOf(varSpace.getValue((IntegerTypedVariableToken) variable));
+				} else if (variable instanceof FloatingPointTypedVariableToken) {
+					valueStr = FloatingPointNumberToken
+							.format(varSpace.getValue((FloatingPointTypedVariableToken) variable));
+				} else if (variable instanceof StringTypedVariableToken) {
+					valueStr = '"' + varSpace.getValue((StringTypedVariableToken) variable) + '"';
+				}
+			} catch (VariableNotFoundException e) {
+				// cannot happen
+			}
+			for (String line : StringUtils.splitOnNewlinesAndWrap(valueStr, maxWidth)) {
+				textArea.add(new ColoredTextLine(new ColoredTextSpan(line, COLOR_PAPER, 23)));
+			}
+			textArea.add(new ColoredTextLine());
+		}
+	}
+
+	private List<TypedVariableToken> sortVariablesByName(Collection<TypedVariableToken> variables) {
+		List<TypedVariableToken> list = new Vector<TypedVariableToken>(variables);
+		Collections.sort(list, new Comparator<TypedVariableToken>() {
+
+			@Override
+			public int compare(TypedVariableToken var1, TypedVariableToken var2) {
+				return var1.getSourceFragment().compareToIgnoreCase(var2.getSourceFragment());
+			}
+
+		});
+		return list;
+	}
+
+	private MemoryOutline getMemoryOutline() {
+		return memoryOutline;
+	}
+
+	private void setMemoryOutline(MemoryOutline memoryOutline) {
+		this.memoryOutline = memoryOutline;
 	}
 
 	private ColoredTextArea getVariablesTextArea() {
