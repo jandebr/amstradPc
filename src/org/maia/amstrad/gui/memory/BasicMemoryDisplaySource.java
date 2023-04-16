@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.memory;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
@@ -49,8 +50,33 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
 		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
-		setMemoryOutline(new MemoryOutlineBuilder().buildFor(getAmstradPc()));
-		setVariablesTextArea(createVariablesTextArea());
+		canvas.symbol(255, 46, 76, 138, 129, 81, 50, 116, 0); // refresh
+		refresh();
+	}
+
+	@Override
+	protected void renderWindowTitleBar(AmstradDisplayCanvas canvas) {
+		super.renderWindowTitleBar(canvas);
+		renderRefreshButton(canvas);
+	}
+
+	private void renderRefreshButton(AmstradDisplayCanvas canvas) {
+		if (isFocusOnRefreshButton(canvas)) {
+			setMouseOverButton(true);
+			canvas.paper(14).pen(24);
+		} else {
+			canvas.paper(5).pen(26);
+		}
+		canvas.locate(1, 1).print("  ").paper(COLOR_PAPER);
+		canvas.move(8, 399).drawChrMonospaced(255);
+	}
+
+	private boolean isFocusOnRefreshButton(AmstradDisplayCanvas canvas) {
+		return !isModalWindowOpen() && isMouseOverRefreshButton(canvas);
+	}
+
+	private boolean isMouseOverRefreshButton(AmstradDisplayCanvas canvas) {
+		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(1, 1, 2, 1));
 	}
 
 	@Override
@@ -101,9 +127,22 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	@Override
+	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
+		super.mouseClickedOnCanvas(canvas, canvasPosition);
+		if (isFocusOnRefreshButton(canvas)) {
+			refresh();
+		}
+	}
+
+	@Override
 	protected void keyboardKeyPressed(KeyEvent e) {
 		super.keyboardKeyPressed(e);
 		handleKeyboardKeyInItemList(e, getVariablesTextArea());
+	}
+
+	public void refresh() {
+		setMemoryOutline(new MemoryOutlineBuilder().buildFor(getAmstradPc()));
+		setVariablesTextArea(createVariablesTextArea());
 	}
 
 	private ColoredTextArea createVariablesTextArea() {
@@ -120,11 +159,18 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 		List<TypedVariableToken> variables = sortVariablesByName(varSpace.getAllVariables());
 		for (TypedVariableToken variable : variables) {
 			// Variable name and type
-			textArea.add(new ColoredTextLine(
-					new ColoredTextSpan(
-							StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth - 1),
-							COLOR_PAPER, 26),
-					new ColoredTextSpan(String.valueOf(variable.getTypeIndicator()), COLOR_PAPER, 13)));
+			if (variable instanceof FloatingPointTypedVariableToken) {
+				textArea.add(new ColoredTextLine(new ColoredTextSpan(
+						StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth), COLOR_PAPER,
+						26)));
+			} else {
+				int typeColor = variable instanceof StringTypedVariableToken ? 17 : 25;
+				textArea.add(new ColoredTextLine(
+						new ColoredTextSpan(
+								StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth - 1),
+								COLOR_PAPER, 26),
+						new ColoredTextSpan(String.valueOf(variable.getTypeIndicator()), COLOR_PAPER, typeColor)));
+			}
 			// Variable value
 			String valueStr = "";
 			try {
@@ -137,7 +183,6 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 					valueStr = '"' + varSpace.getValue((StringTypedVariableToken) variable) + '"';
 				}
 			} catch (VariableNotFoundException e) {
-				// cannot happen
 			}
 			for (String line : StringUtils.splitOnNewlinesAndWrap(valueStr, maxWidth)) {
 				textArea.add(new ColoredTextLine(new ColoredTextSpan(line, COLOR_PAPER, 23)));
