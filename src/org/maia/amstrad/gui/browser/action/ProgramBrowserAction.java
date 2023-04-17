@@ -93,7 +93,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	}
 
 	private String getNameToClose() {
-		return getMode().isProgramBrowserCentric() ? "Basic new prompt" : "Close program browser";
+		return getMode().isProgramBrowserCentric() ? "New Basic prompt" : "Close program browser";
 	}
 
 	private AmstradMode getMode() {

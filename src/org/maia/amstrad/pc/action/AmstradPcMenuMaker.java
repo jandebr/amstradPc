@@ -185,17 +185,33 @@ public class AmstradPcMenuMaker {
 
 	private JMenu createEmulatorMenu() {
 		JMenu menu = new JMenu("Emulator");
+		menu.add(createAmstradSystemColorsDisplayMenuItem());
+		menu.add(createBasicMemoryDisplayMenuItem());
+		menu.add(new JSeparator());
 		menu.add(createAutoTypeFileMenuItem());
-		menu.add(createBasicMenu());
+		menu.add(createBreakEscapeMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createAudioMenuItem());
+		menu.add(new JSeparator());
 		menu.add(createPauseResumeMenuItem());
 		menu.add(createRebootMenuItem());
 		return updateMenuLookAndFeel(menu);
 	}
 
+	private JMenuItem createAmstradSystemColorsDisplayMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getAmstradSystemColorsDisplayAction()));
+	}
+
+	private JMenuItem createBasicMemoryDisplayMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getBasicMemoryDisplayAction()));
+	}
+
 	private JMenuItem createAutoTypeFileMenuItem() {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getAutoTypeFileAction()));
+	}
+
+	private JMenuItem createBreakEscapeMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getBreakEscapeAction()));
 	}
 
 	private JMenuItem createAudioMenuItem() {
@@ -217,60 +233,14 @@ public class AmstradPcMenuMaker {
 		return updateMenuItemLookAndFeel(item);
 	}
 
-	private JMenu createBasicMenu() {
-		JMenu menu = new JMenu("Basic");
-		menu.add(createLocomotiveBasicDisplayMemoryMenuItem());
-		menu.add(new JSeparator());
-		menu.add(createLocomotiveBasicBreakEscapeMenuItem());
-		menu.add(createLocomotiveBasicNewMenuItem());
-		menu.add(createLocomotiveBasicRunMenuItem());
-		menu.add(createLocomotiveBasicListMenuItem());
-		menu.add(createLocomotiveBasicClsMenuItem());
-		menu.add(createLocomotiveBasicClearMenuItem());
-		return updateMenuLookAndFeel(menu);
-	}
-
-	private JMenuItem createLocomotiveBasicDisplayMemoryMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicDisplayMemoryAction()));
-	}
-
-	private JMenuItem createLocomotiveBasicBreakEscapeMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicBreakEscapeAction()));
-	}
-
-	private JMenuItem createLocomotiveBasicNewMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicNewAction()));
-	}
-
-	private JMenuItem createLocomotiveBasicRunMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicRunAction()));
-	}
-
-	private JMenuItem createLocomotiveBasicListMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicListAction()));
-	}
-
-	private JMenuItem createLocomotiveBasicClsMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicClsAction()));
-	}
-
-	private JMenuItem createLocomotiveBasicClearMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLocomotiveBasicClearAction()));
-	}
-
 	private JMenu createMonitorMenu() {
 		JMenu menu = new JMenu("Monitor");
-		menu.add(createDisplaySystemColorsMenuItem());
 		menu.add(createMonitorModeMenu());
 		menu.add(createMonitorEffectsMenu());
 		menu.add(new JSeparator());
 		menu.add(createScreenshotMenuItem());
 		menu.add(createScreenshotWithMonitorEffectMenuItem());
 		return updateMenuLookAndFeel(menu);
-	}
-
-	private JMenuItem createDisplaySystemColorsMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getDisplaySystemColorsAction()));
 	}
 
 	private JMenuItem createScreenshotMenuItem() {
@@ -318,7 +288,7 @@ public class AmstradPcMenuMaker {
 	}
 
 	private JMenu createMonitorEffectsMenu() {
-		JMenu menu = new JMenu("Effects");
+		JMenu menu = new JMenu("Monitor effects");
 		menu.add(new MonitorEffectMenuHelper(createMonitorEffectMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new MonitorScanLinesEffectMenuHelper(createMonitorScanLinesEffectMenuItem(), getMonitor())
 				.getCheckbox());

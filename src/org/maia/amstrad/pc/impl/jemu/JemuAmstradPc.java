@@ -423,6 +423,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			}
 		}
 
+		@Override
 		public void breakEscape() {
 			checkStarted();
 			checkNotTerminated();
@@ -451,11 +452,15 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public void amstradPcRebooting(AmstradPc amstradPc) {
 			resetEscapeKeyCounter();
+			if (isAutotyping())
+				notifyAutotypeEnded();
 		}
 
 		@Override
 		public void amstradPcTerminated(AmstradPc amstradPc) {
 			resetEscapeKeyCounter();
+			if (isAutotyping())
+				notifyAutotypeEnded();
 		}
 
 		@Override
@@ -492,15 +497,12 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		@Override
 		public void computerAutotypeStarted(Computer computer) {
-			System.out.println("Autotype started");
-			setAutotyping(true);
+			notifyAutotypeStarted();
 		}
 
 		@Override
-		public synchronized void computerAutotypeEnded(Computer computer) {
-			System.out.println("Autotype ended");
-			setAutotyping(false);
-			notifyAll();
+		public void computerAutotypeEnded(Computer computer) {
+			notifyAutotypeEnded();
 		}
 
 		@Override
@@ -519,6 +521,17 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public AmstradKeyboardController getController() {
 			return controller;
+		}
+
+		private void notifyAutotypeStarted() {
+			System.out.println("Autotype started");
+			setAutotyping(true);
+		}
+
+		private synchronized void notifyAutotypeEnded() {
+			System.out.println("Autotype ended");
+			setAutotyping(false);
+			notifyAll();
 		}
 
 		private void resetEscapeKeyCounter() {
@@ -924,11 +937,6 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			if (!keyboard.isOnBasicPrompt())
 				return false;
 			return keyboard.isInBasicInterpretModus();
-		}
-
-		@Override
-		public void breakEscape() {
-			getKeyboardForBasic().breakEscape();
 		}
 
 		@Override

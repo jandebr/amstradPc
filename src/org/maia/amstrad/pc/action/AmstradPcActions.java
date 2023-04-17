@@ -3,15 +3,9 @@ package org.maia.amstrad.pc.action;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserSetupAction;
 import org.maia.amstrad.gui.browser.action.ProgramInfoAction;
-import org.maia.amstrad.gui.colors.action.DisplaySystemColorsAction;
-import org.maia.amstrad.gui.memory.action.BasicDisplayMemoryAction;
+import org.maia.amstrad.gui.colors.AmstradSystemColorsDisplayAction;
+import org.maia.amstrad.gui.memory.BasicMemoryDisplayAction;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.action.basic.LocomotiveBasicBreakEscapeAction;
-import org.maia.amstrad.pc.action.basic.LocomotiveBasicClearAction;
-import org.maia.amstrad.pc.action.basic.LocomotiveBasicClsAction;
-import org.maia.amstrad.pc.action.basic.LocomotiveBasicListAction;
-import org.maia.amstrad.pc.action.basic.LocomotiveBasicNewAction;
-import org.maia.amstrad.pc.action.basic.LocomotiveBasicRunAction;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 
 public class AmstradPcActions {
@@ -50,23 +44,13 @@ public class AmstradPcActions {
 
 	private RebootAction rebootAction;
 
-	private BasicDisplayMemoryAction locomotiveBasicDisplayMemoryAction;
+	private BasicMemoryDisplayAction basicMemoryDisplayAction;
 
-	private LocomotiveBasicBreakEscapeAction locomotiveBasicBreakEscapeAction;
-
-	private LocomotiveBasicNewAction locomotiveBasicNewAction;
-
-	private LocomotiveBasicRunAction locomotiveBasicRunAction;
-
-	private LocomotiveBasicListAction locomotiveBasicListAction;
-
-	private LocomotiveBasicClsAction locomotiveBasicClsAction;
-
-	private LocomotiveBasicClearAction locomotiveBasicClearAction;
+	private BreakEscapeAction breakEscapeAction;
 
 	/* Monitor actions */
 
-	private DisplaySystemColorsAction displaySystemColorsAction;
+	private AmstradSystemColorsDisplayAction amstradSystemColorsDisplayAction;
 
 	private ScreenshotAction screenshotAction;
 
@@ -194,60 +178,25 @@ public class AmstradPcActions {
 		return rebootAction;
 	}
 
-	public BasicDisplayMemoryAction getLocomotiveBasicDisplayMemoryAction() {
-		if (locomotiveBasicDisplayMemoryAction == null) {
-			locomotiveBasicDisplayMemoryAction = new BasicDisplayMemoryAction(getAmstradPc());
+	public BasicMemoryDisplayAction getBasicMemoryDisplayAction() {
+		if (basicMemoryDisplayAction == null) {
+			basicMemoryDisplayAction = new BasicMemoryDisplayAction(getAmstradPc());
 		}
-		return locomotiveBasicDisplayMemoryAction;
+		return basicMemoryDisplayAction;
 	}
 
-	public LocomotiveBasicBreakEscapeAction getLocomotiveBasicBreakEscapeAction() {
-		if (locomotiveBasicBreakEscapeAction == null) {
-			locomotiveBasicBreakEscapeAction = new LocomotiveBasicBreakEscapeAction(getAmstradPc());
+	public BreakEscapeAction getBreakEscapeAction() {
+		if (breakEscapeAction == null) {
+			breakEscapeAction = new BreakEscapeAction(getAmstradPc());
 		}
-		return locomotiveBasicBreakEscapeAction;
+		return breakEscapeAction;
 	}
 
-	public LocomotiveBasicNewAction getLocomotiveBasicNewAction() {
-		if (locomotiveBasicNewAction == null) {
-			locomotiveBasicNewAction = new LocomotiveBasicNewAction(getAmstradPc());
+	public AmstradSystemColorsDisplayAction getAmstradSystemColorsDisplayAction() {
+		if (amstradSystemColorsDisplayAction == null) {
+			amstradSystemColorsDisplayAction = new AmstradSystemColorsDisplayAction(getAmstradPc());
 		}
-		return locomotiveBasicNewAction;
-	}
-
-	public LocomotiveBasicRunAction getLocomotiveBasicRunAction() {
-		if (locomotiveBasicRunAction == null) {
-			locomotiveBasicRunAction = new LocomotiveBasicRunAction(getAmstradPc());
-		}
-		return locomotiveBasicRunAction;
-	}
-
-	public LocomotiveBasicListAction getLocomotiveBasicListAction() {
-		if (locomotiveBasicListAction == null) {
-			locomotiveBasicListAction = new LocomotiveBasicListAction(getAmstradPc());
-		}
-		return locomotiveBasicListAction;
-	}
-
-	public LocomotiveBasicClsAction getLocomotiveBasicClsAction() {
-		if (locomotiveBasicClsAction == null) {
-			locomotiveBasicClsAction = new LocomotiveBasicClsAction(getAmstradPc());
-		}
-		return locomotiveBasicClsAction;
-	}
-
-	public LocomotiveBasicClearAction getLocomotiveBasicClearAction() {
-		if (locomotiveBasicClearAction == null) {
-			locomotiveBasicClearAction = new LocomotiveBasicClearAction(getAmstradPc());
-		}
-		return locomotiveBasicClearAction;
-	}
-
-	public DisplaySystemColorsAction getDisplaySystemColorsAction() {
-		if (displaySystemColorsAction == null) {
-			displaySystemColorsAction = new DisplaySystemColorsAction(getAmstradPc());
-		}
-		return displaySystemColorsAction;
+		return amstradSystemColorsDisplayAction;
 	}
 
 	public ScreenshotAction getScreenshotAction() {

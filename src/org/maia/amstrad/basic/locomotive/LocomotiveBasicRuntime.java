@@ -1,7 +1,5 @@
 package org.maia.amstrad.basic.locomotive;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.maia.amstrad.basic.BasicByteCode;
@@ -12,7 +10,6 @@ import org.maia.amstrad.basic.BasicMemoryFullException;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.util.AmstradIO;
 
 public abstract class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBasicMemoryMap {
 
@@ -26,22 +23,6 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	public LocomotiveBasicRuntime(AmstradPc amstradPc) {
 		super(amstradPc);
-	}
-
-	public void command_new() {
-		sendKeyboardInputIfReadyAndWait("NEW");
-	}
-
-	public void command_clear() {
-		sendKeyboardInputIfReadyAndWait("CLEAR");
-	}
-
-	public void command_cls() {
-		sendKeyboardInputIfReadyAndWait("CLS");
-	}
-
-	public void command_list() {
-		sendKeyboardInputIfReadyAndWait("LIST");
 	}
 
 	@Override

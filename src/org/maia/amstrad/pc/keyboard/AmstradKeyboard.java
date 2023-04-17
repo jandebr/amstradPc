@@ -17,9 +17,9 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 		super(amstradPc);
 		this.keyboardListeners = new Vector<AmstradKeyboardListener>();
 	}
-	
+
 	public abstract boolean isTyping();
-	
+
 	public abstract boolean isAutotyping();
 
 	public abstract void type(CharSequence text, boolean waitUntilTyped);
@@ -51,6 +51,8 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 	public void enter() {
 		enter(true);
 	}
+
+	public abstract void breakEscape();
 
 	public abstract AmstradKeyboardController getController();
 

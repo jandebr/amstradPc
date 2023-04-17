@@ -47,8 +47,6 @@ public abstract class BasicRuntime {
 		}
 	}
 
-	public abstract void breakEscape();
-
 	/**
 	 * Clears any loaded program code and variables.
 	 * <p>
