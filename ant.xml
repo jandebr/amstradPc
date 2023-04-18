@@ -14,4 +14,25 @@
 			</fileset>
         </jar>
     </target>
+    <target name="javadoc">
+        <javadoc
+        	doctitle="Amstrad PC -- A fork of the JavaCPC emulator"
+        	destdir="docs/javadoc"
+    		access="public"
+        	additionalparam="-encoding windows-1252"
+        	docencoding="utf-8"
+        	classpath="D:\Users\jan\EclipseWS\DefaultJava\Libraries\maiaSwing\maiaSwing.jar"
+        	source="1.7"
+        	sourcepath="src"
+        	packagenames="org.maia.*"
+        	noindex="false"
+        	nonavbar="false"
+        	notree="false"
+        	splitindex="true"
+        	nodeprecated="false"
+        	nodeprecatedlist="false"
+        	use="false"
+        	author="false"
+        	version="false"/>
+    </target>
 </project>
