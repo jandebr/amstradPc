@@ -20,9 +20,9 @@ public class AmstradSettingsImpl extends AmstradSettings {
 
 	private static final String DEFAULT_INI_FILE = "javacpc.ini";
 
-	public static final String SYSTEM_PROPERTY_INI_FILE_IN = "javacpc.ini";
+	public static final String SYSTEM_PROPERTY_INI_FILE_IN = "javacpc-ini-read";
 
-	public static final String SYSTEM_PROPERTY_INI_FILE_OUT = "javacpc.ini.out";
+	public static final String SYSTEM_PROPERTY_INI_FILE_OUT = "javacpc-ini-write";
 
 	public AmstradSettingsImpl() {
 		reset();

@@ -40,11 +40,15 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	public final void launch(String[] args) throws Exception {
 		System.out.println("Launching in " + getName() + " mode");
+		overrideSettingsBeforeLaunch();
+		doLaunch(args);
+	}
+
+	protected void overrideSettingsBeforeLaunch() {
 		getUserSettings().setBool(Settings.FULLSCREEN, false); // implementations can toggle to fullscreen at a later
 																// point in time, but this is a safer setting to prevent
 																// initial 'black screens'
 		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalMenu());
-		doLaunch(args);
 	}
 
 	protected abstract void doLaunch(String[] args) throws Exception;
