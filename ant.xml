@@ -1,38 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="export jar" name="AmstradPc">
-    <target name="export jar">
-        <jar destfile="${libraries.home}/amstradPc/amstradPc.jar">
-            <manifest>
-                <attribute name="Main-Class" value="org.maia.amstrad.AmstradMain"/>
-                <attribute name="Class-Path" value="."/>
-            	<attribute name="SplashScreen-Image" value="images/amstrad1.png"/>
-            </manifest>
+	<target name="export jar">
+		<jar destfile="${libraries.home}/amstradPc/amstradPc.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.maia.amstrad.AmstradMain" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="SplashScreen-Image" value="images/amstrad1.png" />
+			</manifest>
 			<zipfileset src="${libraries.home}/maiaSwing/maiaSwing.jar" />
-            <fileset dir="bin"/>
+			<fileset dir="bin" />
 			<fileset dir="resources">
 				<include name="images/*" />
 			</fileset>
-        </jar>
-    </target>
-    <target name="javadoc">
-        <javadoc
-        	doctitle="Amstrad PC -- A fork of the JavaCPC emulator"
-        	destdir="docs/javadoc"
-    		access="public"
-        	additionalparam="-encoding windows-1252"
-        	docencoding="utf-8"
-        	classpath="D:\Users\jan\EclipseWS\DefaultJava\Libraries\maiaSwing\maiaSwing.jar"
-        	source="1.7"
-        	sourcepath="src"
-        	packagenames="org.maia.*"
-        	noindex="false"
-        	nonavbar="false"
-        	notree="false"
-        	splitindex="true"
-        	nodeprecated="false"
-        	nodeprecatedlist="false"
-        	use="false"
-        	author="false"
-        	version="false"/>
-    </target>
+		</jar>
+	</target>
+
+	<target name="javadoc">
+		<javadoc doctitle="Amstrad PC -- A fork of the JavaCPC emulator" destdir="docs/javadoc" access="public" additionalparam="-encoding windows-1252" docencoding="utf-8" classpath="D:\Users\jan\EclipseWS\DefaultJava\Libraries\maiaSwing\maiaSwing.jar" source="1.7" sourcepath="src" packagenames="org.maia.*" noindex="false" nonavbar="false" notree="false" splitindex="true" nodeprecated="false" nodeprecatedlist="false" use="false" author="false" version="false" />
+	</target>
+
+	<target name="distribution">
+		<mkdir dir="dist" />
+		<war destfile="dist/amstradpc.war" webxml="resources/webapp/web.xml">
+			<fileset dir="docs">
+				<include name="javadoc/**/*" />
+			</fileset>
+		</war>
+	</target>
 </project>
