@@ -68,6 +68,8 @@ public class AmstradPcActions {
 
 	private MonitorBilinearEffectAction monitorBilinearEffectAction;
 
+	private MonitorShowSystemStatsAction monitorShowSystemStatsAction;
+
 	/* Window actions */
 
 	private WindowDynamicTitleAction windowDynamicTitleAction;
@@ -255,6 +257,13 @@ public class AmstradPcActions {
 			monitorBilinearEffectAction = new MonitorBilinearEffectAction(getAmstradPc());
 		}
 		return monitorBilinearEffectAction;
+	}
+
+	public MonitorShowSystemStatsAction getMonitorShowSystemStatsAction() {
+		if (monitorShowSystemStatsAction == null) {
+			monitorShowSystemStatsAction = new MonitorShowSystemStatsAction(getAmstradPc());
+		}
+		return monitorShowSystemStatsAction;
 	}
 
 	public WindowDynamicTitleAction getWindowDynamicTitleAction() {

@@ -289,6 +289,8 @@ public class AmstradPcMenuMaker {
 
 	private JMenu createMonitorEffectsMenu() {
 		JMenu menu = new JMenu("Monitor effects");
+		menu.add(new MonitorShowSystemStatsMenuHelper(createMonitorShowSystemStatsMenuItem(), getMonitor())
+				.getCheckbox());
 		menu.add(new MonitorEffectMenuHelper(createMonitorEffectMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new MonitorScanLinesEffectMenuHelper(createMonitorScanLinesEffectMenuItem(), getMonitor())
 				.getCheckbox());
@@ -309,6 +311,11 @@ public class AmstradPcMenuMaker {
 
 	private JCheckBoxMenuItem createMonitorBilinearEffectMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorBilinearEffectAction());
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+	}
+
+	private JCheckBoxMenuItem createMonitorShowSystemStatsMenuItem() {
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorShowSystemStatsAction());
 		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
@@ -533,6 +540,24 @@ public class AmstradPcMenuMaker {
 		@Override
 		protected boolean getState(AmstradMonitor monitor) {
 			return monitor.isMonitorBilinearEffectOn();
+		}
+
+	}
+
+	private static class MonitorShowSystemStatsMenuHelper extends MonitorCheckboxMenuHelper {
+
+		public MonitorShowSystemStatsMenuHelper(JCheckBoxMenuItem checkbox, AmstradMonitor monitor) {
+			super(checkbox, monitor);
+		}
+
+		@Override
+		public void amstradShowSystemStatsChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
+		}
+
+		@Override
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isShowSystemStats();
 		}
 
 	}

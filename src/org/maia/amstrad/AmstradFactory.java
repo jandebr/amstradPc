@@ -15,6 +15,7 @@ import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.overlay.AutotypeDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.overlay.PauseDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.overlay.StackedDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.overlay.SystemStatsDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.overlay.TapeDisplayOverlay;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
@@ -57,9 +58,10 @@ public class AmstradFactory {
 
 	private AmstradDisplayOverlay createDisplayOverlay(AmstradPc amstradPc) {
 		StackedDisplayOverlay overlay = new StackedDisplayOverlay();
-		overlay.addOverlay(new PauseDisplayOverlay(amstradPc), 0);
-		overlay.addOverlay(new AutotypeDisplayOverlay(amstradPc), 0);
-		overlay.addOverlay(new TapeDisplayOverlay(amstradPc), 0);
+		overlay.addOverlay(new PauseDisplayOverlay(amstradPc), 1);
+		overlay.addOverlay(new AutotypeDisplayOverlay(amstradPc), 1);
+		overlay.addOverlay(new TapeDisplayOverlay(amstradPc), 1);
+		overlay.addOverlay(new SystemStatsDisplayOverlay(amstradPc), 0);
 		return overlay;
 	}
 

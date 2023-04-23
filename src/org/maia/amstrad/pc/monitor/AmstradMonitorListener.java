@@ -16,6 +16,8 @@ public interface AmstradMonitorListener {
 
 	void amstradWindowTitleDynamicChanged(AmstradMonitor monitor);
 
+	void amstradShowSystemStatsChanged(AmstradMonitor monitor);
+
 	void amstradDisplaySourceChanged(AmstradMonitor monitor);
 
 }

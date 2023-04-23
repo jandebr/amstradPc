@@ -19,6 +19,8 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	private List<AmstradMonitorListener> monitorListeners;
 
+	private boolean showSystemStats;
+
 	protected AmstradMonitor(AmstradPc amstradPc) {
 		super(amstradPc);
 		this.monitorListeners = new Vector<AmstradMonitorListener>();
@@ -64,6 +66,17 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	public abstract boolean isWindowTitleDynamic();
 
 	public abstract void setWindowTitleDynamic(boolean dynamicTitle);
+
+	public boolean isShowSystemStats() {
+		return showSystemStats;
+	}
+
+	public void setShowSystemStats(boolean show) {
+		if (show != showSystemStats) {
+			showSystemStats = show;
+			fireShowSystemStatsChangedEvent();
+		}
+	}
 
 	public abstract BufferedImage makeScreenshot(boolean monitorEffect);
 
@@ -137,6 +150,11 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	protected void fireWindowTitleDynamicChangedEvent() {
 		for (AmstradMonitorListener listener : getMonitorListeners())
 			listener.amstradWindowTitleDynamicChanged(this);
+	}
+
+	protected void fireShowSystemStatsChangedEvent() {
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradShowSystemStatsChanged(this);
 	}
 
 	protected void fireDisplaySourceChangedEvent() {
