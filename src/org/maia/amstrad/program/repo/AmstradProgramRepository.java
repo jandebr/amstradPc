@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.util.KeyedCacheLRU;
 
 public abstract class AmstradProgramRepository {
 
@@ -143,68 +144,16 @@ public abstract class AmstradProgramRepository {
 
 	}
 
-	private static class AmstradProgramCache {
-
-		private int capacity;
-
-		private List<ProgramNode> recentProgramNodes;
-
-		private List<AmstradProgram> recentPrograms;
+	private static class AmstradProgramCache extends KeyedCacheLRU<ProgramNode, AmstradProgram> {
 
 		public AmstradProgramCache(int capacity) {
-			this.capacity = capacity;
-			this.recentProgramNodes = new Vector<ProgramNode>(capacity);
-			this.recentPrograms = new Vector<AmstradProgram>(capacity);
+			super(capacity);
 		}
 
-		public int size() {
-			return getRecentProgramNodes().size();
-		}
-
-		public synchronized void clear() {
-			getRecentProgramNodes().clear();
-			getRecentPrograms().clear();
-		}
-
-		public synchronized void storeInCache(ProgramNode node, AmstradProgram program) {
-			if (!getRecentProgramNodes().contains(node)) {
-				if (size() == getCapacity()) {
-					evictOne();
-				}
-				getRecentProgramNodes().add(node);
-				getRecentPrograms().add(program);
-			}
-		}
-
-		public synchronized AmstradProgram fetchFromCache(ProgramNode node) {
-			AmstradProgram program = null;
-			int index = getRecentProgramNodes().indexOf(node);
-			if (index >= 0) {
-				program = getRecentPrograms().get(index);
-				if (index < size() - 1) {
-					// move to front
-					getRecentProgramNodes().add(getRecentProgramNodes().remove(index));
-					getRecentPrograms().add(getRecentPrograms().remove(index));
-				}
-			}
-			return program;
-		}
-
-		private void evictOne() {
-			getRecentProgramNodes().remove(0);
-			getRecentPrograms().remove(0).flush();
-		}
-
-		public int getCapacity() {
-			return capacity;
-		}
-
-		private List<ProgramNode> getRecentProgramNodes() {
-			return recentProgramNodes;
-		}
-
-		private List<AmstradProgram> getRecentPrograms() {
-			return recentPrograms;
+		@Override
+		protected void evicted(ProgramNode key, AmstradProgram value) {
+			super.evicted(key, value);
+			value.flush();
 		}
 
 	}

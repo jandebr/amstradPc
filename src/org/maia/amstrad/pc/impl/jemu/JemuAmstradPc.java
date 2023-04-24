@@ -14,9 +14,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -52,6 +50,8 @@ import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.util.AmstradIO;
 import org.maia.amstrad.util.AmstradUtils;
+import org.maia.amstrad.util.AsyncSerialTaskWorker;
+import org.maia.amstrad.util.AsyncSerialTaskWorker.AsyncTask;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
 import org.maia.swing.dialog.ActionableDialogListener;
@@ -668,7 +668,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		public void notifyWrite(int memoryAddress, byte memoryValue) {
 			if (memoryValue != getMemoryTrap().getMemoryValueOff()) {
 				MemoryTrapTask task = new MemoryTrapTask(getMemoryTrap(), memoryValue);
-				getMemoryTrapProcessor().processTaskDeferred(task);
+				getMemoryTrapProcessor().addTask(task);
 			}
 		}
 
@@ -1381,82 +1381,15 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 	}
 
-	private class MemoryTrapProcessor extends Thread {
-
-		private boolean stop;
-
-		private Queue<MemoryTrapTask> taskQueue;
+	private class MemoryTrapProcessor extends AsyncSerialTaskWorker<MemoryTrapTask> {
 
 		public MemoryTrapProcessor() {
-			super("MemoryTrapProcessor");
-			setDaemon(true);
-			this.taskQueue = new LinkedList<MemoryTrapTask>();
-		}
-
-		@Override
-		public synchronized void run() {
-			System.out.println("Memorytrap processor thread started");
-			while (!isStopped()) {
-				MemoryTrapTask task = null;
-				synchronized (getTaskQueue()) {
-					task = getTaskQueue().peek();
-				}
-				boolean shouldWait = task == null;
-				if (task != null) {
-					processTask(task);
-					synchronized (getTaskQueue()) {
-						getTaskQueue().remove(task);
-						shouldWait = getTaskQueue().isEmpty();
-					}
-				}
-				if (shouldWait) {
-					try {
-						wait();
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-			System.out.println("Memorytrap processor thread stopped");
-		}
-
-		public void processTaskDeferred(MemoryTrapTask task) {
-			boolean shouldNotify = false;
-			synchronized (getTaskQueue()) {
-				if (getTaskQueue().offer(task)) {
-					if (getTaskQueue().size() == 1) {
-						shouldNotify = true;
-					}
-				}
-			}
-			if (shouldNotify) {
-				synchronized (this) {
-					notify();
-				}
-			}
-		}
-
-		private void processTask(MemoryTrapTask task) {
-			AmstradMemoryTrap memoryTrap = task.getMemoryTrap();
-			memoryTrap.reset();
-			AmstradMemoryTrapHandler handler = memoryTrap.getHandler();
-			handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), task.getMemoryValue());
-		}
-
-		public void stopProcessing() {
-			stop = true;
-		}
-
-		public boolean isStopped() {
-			return stop;
-		}
-
-		private Queue<MemoryTrapTask> getTaskQueue() {
-			return taskQueue;
+			super("Memorytrap processor");
 		}
 
 	}
 
-	private class MemoryTrapTask {
+	private class MemoryTrapTask implements AsyncTask {
 
 		private AmstradMemoryTrap memoryTrap;
 
@@ -1476,6 +1409,14 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			builder.append(getMemoryValue());
 			builder.append("]");
 			return builder.toString();
+		}
+
+		@Override
+		public void process() {
+			AmstradMemoryTrap memoryTrap = getMemoryTrap();
+			memoryTrap.reset();
+			AmstradMemoryTrapHandler handler = memoryTrap.getHandler();
+			handler.handleMemoryTrap(memoryTrap.getMemory(), memoryTrap.getMemoryAddress(), getMemoryValue());
 		}
 
 		public AmstradMemoryTrap getMemoryTrap() {
