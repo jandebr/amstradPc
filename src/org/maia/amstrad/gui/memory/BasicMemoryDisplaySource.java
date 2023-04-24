@@ -200,7 +200,7 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 
 			@Override
 			public int compare(TypedVariableToken var1, TypedVariableToken var2) {
-				return var1.getSourceFragment().compareToIgnoreCase(var2.getSourceFragment());
+				return var1.getSourceFragment().compareTo(var2.getSourceFragment());
 			}
 
 		});

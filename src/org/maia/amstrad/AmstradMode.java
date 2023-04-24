@@ -21,11 +21,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	public static final AmstradMode ORIGINAL = new OriginalAmstradMode();
 
 	public static AmstradMode forName(String name) {
-		if (DEFAULT.getName().equals(name)) {
+		if (DEFAULT.getName().equalsIgnoreCase(name)) {
 			return DEFAULT;
-		} else if (KIOSK.getName().equals(name)) {
+		} else if (KIOSK.getName().equalsIgnoreCase(name)) {
 			return KIOSK;
-		} else if (ORIGINAL.getName().equals(name)) {
+		} else if (ORIGINAL.getName().equalsIgnoreCase(name)) {
 			return ORIGINAL;
 		} else {
 			return null;

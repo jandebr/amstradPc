@@ -4,12 +4,16 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.lang.management.ManagementFactory;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+
+import com.sun.management.OperatingSystemMXBean;
 
 public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 
@@ -21,6 +25,10 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 
 	private List<String> lines;
 
+	private OperatingSystemMXBean osBean;
+
+	private static NumberFormat percentageFormat = NumberFormat.getPercentInstance();
+
 	private static Color BOX_COLOR = new Color(0, 0, 0, 100);
 
 	private static Color LINE_COLOR = Color.WHITE;
@@ -28,6 +36,7 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 	public SystemStatsDisplayOverlay(AmstradPc amstracPc) {
 		super(amstracPc);
 		this.lines = new Vector<String>();
+		this.osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	}
 
 	@Override
@@ -48,7 +57,7 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 		long bTotal = brt.getTotalMemory();
 		long bUsed = brt.getUsedMemory();
 		lines.clear();
-		lines.add("FPS: " + fps);
+		lines.add("FPS: " + fps + "  CPU: " + percentageFormat.format(getCpuLoad()));
 		lines.add("MEM Java: " + formatMemorySize(jUsed) + " used of " + formatMemorySize(jTotal)
 				+ (jMax < Long.MAX_VALUE ? " (max " + formatMemorySize(jMax) + ")" : ""));
 		lines.add("MEM Basic: " + formatMemorySize(bUsed) + " used of " + formatMemorySize(bTotal));
@@ -105,6 +114,10 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 			fpsCurrentSecondEpoch = sec;
 		}
 		fpsCurrentCounter++;
+	}
+
+	private double getCpuLoad() {
+		return Math.max(0, osBean.getSystemCpuLoad());
 	}
 
 }
