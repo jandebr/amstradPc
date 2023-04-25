@@ -1,11 +1,11 @@
 package org.maia.amstrad.program;
 
-import java.awt.Image;
 import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicLanguage;
+import org.maia.amstrad.gui.ImageProxy;
 import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.util.StringUtils;
@@ -39,6 +39,8 @@ public abstract class AmstradProgram implements Cloneable {
 	private List<String> flags;
 
 	private AmstradMonitorMode preferredMonitorMode;
+
+	private ProgramImage coverImage;
 
 	private AmstradProgramPayload payload;
 
@@ -86,6 +88,8 @@ public abstract class AmstradProgram implements Cloneable {
 		builder.append(flags);
 		builder.append(", preferredMonitorMode=");
 		builder.append(preferredMonitorMode);
+		builder.append(", coverImage=");
+		builder.append(coverImage);
 		builder.append("]");
 		return builder.toString();
 	}
@@ -105,11 +109,12 @@ public abstract class AmstradProgram implements Cloneable {
 		return clone;
 	}
 
-	public void flush() {
+	public void dispose() {
 		setPayload(null);
 		for (ProgramImage image : getImages()) {
-			image.flush();
+			image.dispose();
 		}
+		// no dispose on cover image because these are managed externally
 	}
 
 	public boolean hasDescriptiveInfo() {
@@ -254,6 +259,14 @@ public abstract class AmstradProgram implements Cloneable {
 		this.images = images;
 	}
 
+	public ProgramImage getCoverImage() {
+		return coverImage;
+	}
+
+	public void setCoverImage(ProgramImage coverImage) {
+		this.coverImage = coverImage;
+	}
+
 	public List<FileReference> getFileReferences() {
 		return fileReferences;
 	}
@@ -327,51 +340,9 @@ public abstract class AmstradProgram implements Cloneable {
 
 	}
 
-	public static abstract class ProgramImage implements ScrollableItem {
+	public static interface ProgramImage extends ImageProxy, ScrollableItem {
 
-		private Image visual;
-
-		private boolean visualFailedLoading;
-
-		private String caption;
-
-		protected ProgramImage(String caption) {
-			this.caption = caption;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder();
-			builder.append("ProgramImage [caption=");
-			builder.append(caption);
-			builder.append("]");
-			return builder.toString();
-		}
-
-		public void flush() {
-			if (visual != null) {
-				visual.flush();
-				visual = null;
-			}
-		}
-
-		protected abstract Image loadVisual() throws Exception;
-
-		public Image getVisual() {
-			if (visual == null && !visualFailedLoading) {
-				try {
-					visual = loadVisual();
-				} catch (Exception e) {
-					visualFailedLoading = true;
-					System.err.println("Failed to load program image: " + e.toString());
-				}
-			}
-			return visual;
-		}
-
-		public String getCaption() {
-			return caption;
-		}
+		String getCaption();
 
 	}
 

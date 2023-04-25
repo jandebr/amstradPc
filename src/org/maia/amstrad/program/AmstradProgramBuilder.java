@@ -1,6 +1,5 @@
 package org.maia.amstrad.program;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,9 +9,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.imageio.ImageIO;
-
 import org.maia.amstrad.basic.BasicLanguage;
+import org.maia.amstrad.gui.FileBasedImageProxy;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
@@ -97,6 +95,11 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return this;
 	}
 
+	public AmstradProgramBuilder withCoverImage(ProgramImage coverImage) {
+		getProgram().setCoverImage(coverImage);
+		return this;
+	}
+
 	public AmstradProgramBuilder withFileReferences(List<FileReference> fileReferences) {
 		getProgram().clearFileReferences();
 		for (FileReference reference : fileReferences) {
@@ -142,6 +145,7 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			withAuthoringInformation(props.getProperty(AMD_AUTHORING));
 			withUserControls(extractUserControlsFromMetaData(props));
 			withImages(extractProgramImagesFromMetaData(props, relativePath));
+			withCoverImage(extractCoverImageFromMetaData(props, relativePath));
 			withFileReferences(extractFileReferencesFromMetaData(props, relativePath));
 			withFlags(extractFlagsFromMetaData(props));
 		}
@@ -195,6 +199,16 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return images;
 	}
 
+	private ProgramImage extractCoverImageFromMetaData(Properties props, File relativePath) {
+		ProgramImage image = null;
+		String fileRef = props.getProperty(AMD_COVER_IMAGE);
+		if (fileRef != null) {
+			File file = new File(relativePath, fileRef);
+			image = new ProgramImageStoredInFile(file, "COVER");
+		}
+		return image;
+	}
+
 	private List<FileReference> extractFileReferencesFromMetaData(Properties props, File relativePath) {
 		List<FileReference> fileReferences = new Vector<FileReference>();
 		for (String key : props.stringPropertyNames()) {
@@ -242,22 +256,27 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return program;
 	}
 
-	private static class ProgramImageStoredInFile extends ProgramImage {
+	private static class ProgramImageStoredInFile extends FileBasedImageProxy implements ProgramImage {
 
-		private File file;
+		private String caption;
 
 		public ProgramImageStoredInFile(File file, String caption) {
-			super(caption);
-			this.file = file;
+			super(file);
+			this.caption = caption;
 		}
 
 		@Override
-		protected Image loadVisual() throws IOException {
-			return ImageIO.read(getFile());
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("ProgramImage [caption=");
+			builder.append(getCaption());
+			builder.append("]");
+			return builder.toString();
 		}
 
-		public File getFile() {
-			return file;
+		@Override
+		public String getCaption() {
+			return caption;
 		}
 
 	}

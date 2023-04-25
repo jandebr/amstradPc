@@ -153,7 +153,7 @@ public abstract class AmstradProgramRepository {
 		@Override
 		protected void evicted(ProgramNode key, AmstradProgram value) {
 			super.evicted(key, value);
-			value.flush();
+			value.dispose();
 		}
 
 	}

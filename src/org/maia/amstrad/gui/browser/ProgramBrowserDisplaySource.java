@@ -324,7 +324,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private void renderProgramImageVisual(ProgramImage image, AmstradDisplayCanvas canvas, Rectangle bounds) {
-		Image visual = image.getVisual();
+		Image visual = image.getImage();
 		if (visual != null) {
 			int vWidth = visual.getWidth(null);
 			int vHeight = visual.getHeight(null);

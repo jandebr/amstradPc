@@ -36,6 +36,8 @@ public interface AmstradProgramMetaDataConstants {
 
 	String AMD_IMAGES_SUFFIX_CAPTION = "CAPTION";
 
+	String AMD_COVER_IMAGE = "COVERIMAGE";
+
 	String AMD_FILEREFS_PREFIX = "FILEREFS";
 
 	String AMD_FILEREFS_DESCRIBED_BY = "DESCRIBED BY";
