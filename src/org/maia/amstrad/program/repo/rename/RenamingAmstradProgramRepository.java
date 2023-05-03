@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
+import org.maia.amstrad.program.repo.cover.CoverImage;
 
 public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
@@ -22,7 +23,8 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 		this.rootNode = new RenamingFolderNode(sourceRepository.getRootNode()); // no rename of root node
 	}
 
-	public static RenamingAmstradProgramRepository withSequenceNumbersHidden(AmstradProgramRepository sourceRepository) {
+	public static RenamingAmstradProgramRepository withSequenceNumbersHidden(
+			AmstradProgramRepository sourceRepository) {
 		RenamingAmstradProgramRepository repository = new RenamingAmstradProgramRepository(sourceRepository);
 		repository.setHideSequenceNumbers(true);
 		return repository;
@@ -52,6 +54,11 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 		public RenamingFolderNode(String name, FolderNode delegate) {
 			super(name);
 			this.delegate = delegate;
+		}
+
+		@Override
+		protected CoverImage readCoverImage() {
+			return getDelegate().getCoverImage();
 		}
 
 		@Override

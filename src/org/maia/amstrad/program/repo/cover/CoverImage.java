@@ -1,8 +1,8 @@
-package org.maia.amstrad.gui;
+package org.maia.amstrad.program.repo.cover;
 
 import java.awt.Image;
 
-public interface ImageOnDemand {
+public interface CoverImage {
 
 	/**
 	 * Returns the image when immediately available
@@ -17,6 +17,6 @@ public interface ImageOnDemand {
 	 * @return The image, when immediately available, otherwise returns <code>null</code> and retrieves the image
 	 *         asynchronously in the background
 	 */
-	Image getOrRequestImage();
+	Image demandImage();
 
 }

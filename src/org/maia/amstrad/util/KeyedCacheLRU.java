@@ -27,13 +27,17 @@ public class KeyedCacheLRU<K, V> {
 	}
 
 	public synchronized void storeInCache(K key, V value) {
-		if (!getKeysLRU().contains(key)) {
+		if (!containsKey(key)) {
 			if (size() == getCapacity()) {
 				evictOne();
 			}
 			getKeysLRU().add(key);
 			getValuesLRU().add(value);
 		}
+	}
+
+	public synchronized boolean containsKey(K key) {
+		return getKeysLRU().contains(key);
 	}
 
 	public synchronized V fetchFromCache(K key) {

@@ -12,6 +12,7 @@ import java.util.Vector;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
+import org.maia.amstrad.program.repo.cover.CoverImage;
 
 public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
@@ -105,6 +106,11 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 			super(name);
 			this.programNodesInScope = programNodesInScope;
 			this.subFacets = subFacets;
+		}
+
+		@Override
+		protected CoverImage readCoverImage() {
+			return null; // no such image
 		}
 
 		@Override

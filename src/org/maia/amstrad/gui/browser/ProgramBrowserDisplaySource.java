@@ -25,6 +25,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.cover.CoverImage;
 import org.maia.amstrad.util.StringUtils;
 
 public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
@@ -45,9 +46,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private List<ProgramBrowserListener> browserListeners;
 
-	private static int COLOR_BORDER = 1;
+	private static int COLOR_BORDER = 0;
 
-	private static int COLOR_PAPER = 1;
+	private static int COLOR_PAPER = 0;
 
 	private static int COLOR_MODAL_BACKGROUND = 0;
 
@@ -56,6 +57,10 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private static int COLOR_FOLDER_LABEL = 16;
 
 	private static int COLOR_PROGRAM_LABEL = 26;
+
+	private static int COLOR_LABEL_HIGHLIGHT = 3;
+
+	private static int COLOR_LABEL_HIGHLIGHT_FOCUS = 2;
 
 	private static int COLOR_DISABLED_MENUITEM = 13;
 
@@ -94,8 +99,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
 		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
-		canvas.symbol(254, 255, 129, 129, 129, 255, 24, 126, 0); // monitor
-		canvas.symbol(255, 24, 60, 126, 255, 126, 110, 110, 124); // home
+		canvas.symbol(254, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon
+		canvas.symbol(255, 24, 60, 126, 255, 126, 110, 110, 124); // home icon
 	}
 
 	@Override
@@ -144,18 +149,27 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private void renderStack(StackedFolderItemList stack, AmstradDisplayCanvas canvas) {
-		// left column
-		FolderItemList itemList = stack.peek(stack.size() > 1 ? 1 : 0);
-		renderFolderItemList(itemList, 2, 4, stack.size() == 1, canvas);
-		renderStackLeftExtentHint(stack, 2, 4, canvas);
-		// Right column
+		Image image = getCurrentCoverImage(); // may be null when not yet available
+		boolean showMiniInfo = !isModalWindowOpen() || Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow());
+		// left side
+		if (image != null && stack.size() > 1) {
+			renderImageCenterFit(image, canvas, canvas.getTextAreaBoundsOnCanvas(1, 3, 20, 25));
+		} else {
+			FolderItemList itemList = stack.peek(stack.size() > 1 ? 1 : 0);
+			renderFolderItemList(itemList, 2, 4, stack.size() == 1,
+					showMiniInfo && (!hasCurrentCoverImage() || getCurrentNode().isFolder()), canvas);
+			renderStackLeftExtentHint(stack, 2, 4, canvas);
+		}
+		// right side
 		if (stack.size() > 1) {
-			itemList = stack.peek();
-			renderFolderItemList(itemList, 22, 4, true, canvas);
+			FolderItemList itemList = stack.peek();
+			renderFolderItemList(itemList, 22, 4, true, showMiniInfo && !hasCurrentCoverImage(), canvas);
+		} else if (image != null) {
+			renderImageCenterFit(image, canvas, canvas.getTextAreaBoundsOnCanvas(21, 3, 40, 25));
 		}
 	}
 
-	private void renderFolderItemList(FolderItemList itemList, int tx0, int ty0, boolean hasFocus,
+	private void renderFolderItemList(FolderItemList itemList, int tx0, int ty0, boolean hasFocus, boolean showMiniInfo,
 			AmstradDisplayCanvas canvas) {
 		if (itemList.isEmpty()) {
 			canvas.pen(COLOR_EMPTY_LABEL).locate(tx0, ty0).print("<empty>");
@@ -173,12 +187,12 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 						if (!isModalWindowOpen() && isItemListCursorBlinkOn()) {
 							canvas.pen(COLOR_CURSOR).locate(tx0 - 1, ty).printChr(133); // cursor
 						}
-						if (!isModalWindowOpen() || Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
+						if (showMiniInfo) {
 							renderMiniInfo(item, canvas);
 						}
-						canvas.paper(2);
+						canvas.paper(COLOR_LABEL_HIGHLIGHT_FOCUS);
 					} else {
-						canvas.paper(3);
+						canvas.paper(COLOR_LABEL_HIGHLIGHT);
 					}
 				}
 				if (item.isFolder()) {
@@ -301,7 +315,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		// Visual
 		Rectangle bounds = deriveProgramImageVisualBounds(gallery, canvas);
 		ProgramImage image = gallery.getSelectedItem();
-		renderProgramImageVisual(image, canvas, bounds);
+		renderProgramImageCenterFit(image, canvas, bounds);
 		// Index
 		boolean hasCaptions = gallery.hasCaptions();
 		int yt = hasCaptions ? 22 : 23;
@@ -323,25 +337,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
-	private void renderProgramImageVisual(ProgramImage image, AmstradDisplayCanvas canvas, Rectangle bounds) {
-		Image visual = image.getImage();
-		if (visual != null) {
-			int vWidth = visual.getWidth(null);
-			int vHeight = visual.getHeight(null);
-			double sx = Math.min(bounds.width / (double) vWidth, 1.0);
-			double sy = Math.min(bounds.height / (double) vHeight, 1.0);
-			double s = Math.min(sx, sy); // scaling factor
-			int iWidth = (int) Math.floor(s * vWidth);
-			int iHeight = (int) Math.floor(s * vHeight);
-			int ix0 = bounds.x + (bounds.width - iWidth) / 2; // center
-			int iy0 = bounds.y - (bounds.height - iHeight) / 2; // center
-			canvas.drawImage(visual, ix0, iy0, iWidth, iHeight);
-		} else {
-			canvas.move(312, bounds.y - bounds.height / 2 + 8);
-			canvas.pen(13).drawChrMonospaced(225);
-		}
-	}
-
 	private Rectangle deriveProgramImageVisualBounds(ProgramImageGallery gallery, AmstradDisplayCanvas canvas) {
 		int y1 = 6;
 		int y2 = 23;
@@ -357,6 +352,29 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		Rectangle rect = canvas.getTextAreaBoundsOnCanvas(5, y1, 36, y2);
 		rect.height -= padding;
 		return rect;
+	}
+
+	private void renderProgramImageCenterFit(ProgramImage programImage, AmstradDisplayCanvas canvas, Rectangle bounds) {
+		Image image = programImage.getImage();
+		if (image != null) {
+			renderImageCenterFit(image, canvas, bounds);
+		} else {
+			canvas.move(bounds.x + bounds.width / 2 - 8, bounds.y - bounds.height / 2 + 8);
+			canvas.pen(13).drawChrMonospaced(225);
+		}
+	}
+
+	private void renderImageCenterFit(Image image, AmstradDisplayCanvas canvas, Rectangle bounds) {
+		int iWidth = image.getWidth(null);
+		int iHeight = image.getHeight(null);
+		double sx = Math.min(bounds.width / (double) iWidth, 1.0);
+		double sy = Math.min(bounds.height / (double) iHeight, 1.0);
+		double s = Math.min(sx, sy); // scaling factor
+		int cWidth = (int) Math.floor(s * iWidth);
+		int cHeight = (int) Math.floor(s * iHeight);
+		int x0 = bounds.x + (bounds.width - cWidth) / 2;
+		int y0 = bounds.y - (bounds.height - cHeight) / 2;
+		canvas.drawImage(image, x0, y0, cWidth, cHeight);
 	}
 
 	@Override
@@ -538,6 +556,27 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			sheet.browseOneItemDown();
 		}
 		return sheet;
+	}
+
+	private boolean hasCurrentCoverImage() {
+		Node node = getCurrentNode();
+		return node != null && node.getCoverImage() != null;
+	}
+
+	private Image getCurrentCoverImage() {
+		Image image = null;
+		Node node = getCurrentNode();
+		if (node != null) {
+			CoverImage cover = node.getCoverImage();
+			if (cover != null) {
+				image = cover.demandImage();
+			}
+		}
+		return image;
+	}
+
+	private Node getCurrentNode() {
+		return getStackedFolderItemList().peek().getSelectedItem();
 	}
 
 	private AmstradProgram getCurrentProgram() {

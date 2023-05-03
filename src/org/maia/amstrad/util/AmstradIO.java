@@ -58,6 +58,16 @@ public class AmstradIO {
 		out.close();
 	}
 
+	public static String getFileExtensionWithDot(File file) {
+		String name = file.getName();
+		int i = name.lastIndexOf('.');
+		if (i > 0) {
+			return name.substring(i);
+		} else {
+			return "";
+		}
+	}
+
 	public static File stripExtension(File file) {
 		String name = file.getName();
 		int i = name.lastIndexOf('.');

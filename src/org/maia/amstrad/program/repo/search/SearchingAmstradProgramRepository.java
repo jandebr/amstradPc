@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
+import org.maia.amstrad.program.repo.cover.CoverImage;
 import org.maia.amstrad.util.StringUtils;
 
 public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramRepository {
@@ -60,6 +61,11 @@ public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramR
 		public SearchingFolderNode(String name, FolderNode delegate) {
 			super(name);
 			this.delegate = delegate;
+		}
+
+		@Override
+		protected CoverImage readCoverImage() {
+			return null; // no such image
 		}
 
 		@Override

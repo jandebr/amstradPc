@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.maia.amstrad.gui.ImageProxy;
 import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.repo.cover.CoverImage;
+import org.maia.amstrad.program.repo.cover.CoverImageImpl;
 import org.maia.amstrad.util.KeyedCacheLRU;
 
 public abstract class AmstradProgramRepository {
@@ -31,6 +34,10 @@ public abstract class AmstradProgramRepository {
 
 		private String name;
 
+		private CoverImage coverImage;
+
+		private boolean coverImageVerified;
+
 		protected Node(String name) {
 			this.name = name;
 		}
@@ -41,6 +48,11 @@ public abstract class AmstradProgramRepository {
 			sb.append('[').append(isFolder() ? "F" : "P").append(']');
 			sb.append(' ').append(getName());
 			return sb.toString();
+		}
+
+		protected void refresh() {
+			coverImage = null;
+			coverImageVerified = false;
 		}
 
 		public abstract boolean isFolder();
@@ -65,8 +77,15 @@ public abstract class AmstradProgramRepository {
 			return name;
 		}
 
-		protected void refresh() {
+		public CoverImage getCoverImage() {
+			if (coverImage == null && !coverImageVerified) {
+				coverImage = readCoverImage();
+				coverImageVerified = true;
+			}
+			return coverImage;
 		}
+
+		protected abstract CoverImage readCoverImage();
 
 	}
 
@@ -91,6 +110,12 @@ public abstract class AmstradProgramRepository {
 			return sb.toString();
 		}
 
+		@Override
+		protected void refresh() {
+			super.refresh();
+			childNodes = null;
+		}
+
 		public boolean isEmpty() {
 			return getChildNodes().isEmpty();
 		}
@@ -100,8 +125,6 @@ public abstract class AmstradProgramRepository {
 			return true;
 		}
 
-		protected abstract List<Node> listChildNodes();
-
 		public List<Node> getChildNodes() {
 			if (childNodes == null) {
 				childNodes = new Vector<Node>(listChildNodes());
@@ -109,11 +132,7 @@ public abstract class AmstradProgramRepository {
 			return childNodes;
 		}
 
-		@Override
-		protected void refresh() {
-			super.refresh();
-			childNodes = null;
-		}
+		protected abstract List<Node> listChildNodes();
 
 	}
 
@@ -128,8 +147,6 @@ public abstract class AmstradProgramRepository {
 			return false;
 		}
 
-		protected abstract AmstradProgram readProgram();
-
 		public AmstradProgram getProgram() {
 			AmstradProgram program = null;
 			synchronized (programCache) {
@@ -140,6 +157,18 @@ public abstract class AmstradProgramRepository {
 				}
 			}
 			return program;
+		}
+
+		protected abstract AmstradProgram readProgram();
+
+		@Override
+		protected CoverImage readCoverImage() {
+			CoverImage cover = null;
+			ImageProxy proxy = getProgram().getCoverImage();
+			if (proxy != null) {
+				cover = new CoverImageImpl(this, proxy);
+			}
+			return cover;
 		}
 
 	}

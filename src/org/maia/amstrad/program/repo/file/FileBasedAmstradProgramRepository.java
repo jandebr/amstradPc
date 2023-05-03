@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.AmstradFileType;
+import org.maia.amstrad.gui.FileBasedImageProxy;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
+import org.maia.amstrad.program.repo.cover.CoverImage;
+import org.maia.amstrad.program.repo.cover.CoverImageImpl;
 import org.maia.amstrad.util.AmstradIO;
 
 public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
@@ -100,6 +103,19 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		return result;
 	}
 
+	private File selectCoverImageFileInFolder(File folder) {
+		File result = null;
+		File[] files = folder.listFiles();
+		int i = 0;
+		while (i < files.length && result == null) {
+			File file = files[i++];
+			if (isCoverImageFile(file)) {
+				result = file;
+			}
+		}
+		return result;
+	}
+
 	private boolean equalFilenamesButExtension(File one, File other) {
 		return AmstradIO.stripExtension(one).equals(AmstradIO.stripExtension(other));
 	}
@@ -110,6 +126,11 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 
 	protected boolean isMetaDataFile(File file) {
 		return AmstradFileType.AMSTRAD_METADATA_FILE.matches(file);
+	}
+
+	protected boolean isCoverImageFile(File file) {
+		String name = file.getName().toLowerCase();
+		return name.equals("cover.jpg") || name.equals("cover.png");
 	}
 
 	protected abstract AmstradProgram createProgram(String programName, File basicFile, File metadataFile);
@@ -138,6 +159,16 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		public FileBasedFolderNode(File folder) {
 			super(folder.getName());
 			this.folder = folder;
+		}
+
+		@Override
+		protected CoverImage readCoverImage() {
+			CoverImage cover = null;
+			File coverFile = selectCoverImageFileInFolder(getFolder());
+			if (coverFile != null) {
+				cover = new CoverImageImpl(this, new FileBasedImageProxy(coverFile));
+			}
+			return cover;
 		}
 
 		@Override

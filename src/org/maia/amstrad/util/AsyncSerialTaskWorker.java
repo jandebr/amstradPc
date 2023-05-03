@@ -46,10 +46,9 @@ public class AsyncSerialTaskWorker<T extends AsyncTask> extends Thread {
 	public final void addTask(T task) {
 		boolean shouldNotify = false;
 		synchronized (getTaskQueue()) {
+			boolean wasEmpty = getTaskQueue().isEmpty();
 			addTaskToQueue(task, getTaskQueue());
-			if (getTaskQueue().size() == 1) {
-				shouldNotify = true;
-			}
+			shouldNotify = wasEmpty && !getTaskQueue().isEmpty();
 		}
 		if (shouldNotify) {
 			synchronized (this) {
