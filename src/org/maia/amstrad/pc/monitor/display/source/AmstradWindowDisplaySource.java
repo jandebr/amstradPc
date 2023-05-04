@@ -52,7 +52,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 	}
 
 	private void renderWindowTitle(AmstradDisplayCanvas canvas) {
-		canvas.pen(23);
+		canvas.pen(getWindowTitleColorIndex());
 		canvas.locate(1, 1).print(StringUtils.fitWidthCenterAlign(getWindowTitle(), 40));
 		canvas.locate(1, 2);
 		for (int i = 0; i < 40; i++)
@@ -88,7 +88,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		setModalWindowOpen(true);
 		fillTextAreaWithSolidColor(tx1, ty1, tx2, ty2, backgroundColorIndex, canvas);
 		renderModalWindowTitle(tx1, ty1, tx2, ty2, modalWindowTitle, canvas);
-		renderWindowBorder(tx1, ty1, tx2, ty2, 14, canvas);
+		renderWindowBorder(tx1, ty1, tx2, ty2, getModalWindowBorderColorIndex(), canvas);
 		renderModalWindowCloseButton(tx1, ty1, tx2, ty2, canvas);
 		canvas.paper(backgroundColorIndex);
 	}
@@ -96,7 +96,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 	private void renderModalWindowTitle(int tx1, int ty1, int tx2, int ty2, String modalWindowTitle,
 			AmstradDisplayCanvas canvas) {
 		int maxTitleWidth = tx2 - tx1 - 1;
-		canvas.pen(23);
+		canvas.pen(getModalWindowTitleColorIndex());
 		canvas.locate(tx1 + 1, ty1 + 1).print(StringUtils.fitWidth(modalWindowTitle, maxTitleWidth));
 		canvas.locate(tx1 + 1, ty1 + 2);
 		for (int i = 0; i < maxTitleWidth; i++)
@@ -217,6 +217,18 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			canvas.paper(rangeThumbColorIndex).clearRect(rx0, vy0, rwidth, vheight);
 		}
 		canvas.paper(cpaper).pen(cpen);
+	}
+
+	protected int getWindowTitleColorIndex() {
+		return 23;
+	}
+
+	protected int getModalWindowTitleColorIndex() {
+		return 23;
+	}
+
+	protected int getModalWindowBorderColorIndex() {
+		return 14;
 	}
 
 	@Override

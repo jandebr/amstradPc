@@ -12,7 +12,7 @@ public class KeyedCacheLRU<K, V> {
 	private List<V> valuesLRU;
 
 	public KeyedCacheLRU(int capacity) {
-		this.capacity = capacity;
+		this.capacity = Math.max(capacity, 1);
 		this.keysLRU = new Vector<K>(capacity);
 		this.valuesLRU = new Vector<V>(capacity);
 	}

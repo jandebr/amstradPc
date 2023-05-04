@@ -2,6 +2,7 @@ package org.maia.amstrad.program.repo.cover;
 
 import java.awt.Image;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.util.KeyedCacheLRU;
 
@@ -9,10 +10,11 @@ public class CoverImageCache extends KeyedCacheLRU<Node, Image> {
 
 	private static CoverImageCache instance;
 
-	public static int IMAGE_CAPACITY = 10;
+	private static final String SETTING_CACHE_CAPACITY = "program_browser.cover_images.cache_capacity";
 
 	private CoverImageCache() {
-		super(IMAGE_CAPACITY);
+		super(Integer.parseInt(
+				AmstradFactory.getInstance().getAmstradContext().getUserSettings().get(SETTING_CACHE_CAPACITY, "10")));
 	}
 
 	@Override
