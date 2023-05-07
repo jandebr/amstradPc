@@ -1,5 +1,5 @@
-# Amstrad PC
-Amstrad PC -- A fork of the *JavaCPC* emulator
+# AmstradPc
+AmstradPc -- A fork of the *JavaCPC* emulator
 
 
 ## Copyright
@@ -47,7 +47,7 @@ You can launch the software using these VM arguments :
 
 
 ## Screenshots
-Emulated Amstrad PC
+Emulated AmstradPc
 ![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/amstradPc.png)
 
 Integrated program browser

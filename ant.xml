@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="export jar" name="AmstradPc">
-	<target name="export jar">
+<project name="AmstradPc" basedir="." default="distribute">
+	<taskdef name="getdown-dot-text" classname="org.maia.amstrad.ant.GetdownDotTextGeneratorTask" />
+
+	<taskdef name="getdown-digest" classname="com.threerings.getdown.tools.DigesterTask">
+		<classpath>
+			<pathelement location="${libraries.home}/getdown/1.8.7/getdown-ant-1.8.7.jar" />
+			<pathelement location="${libraries.home}/getdown/1.8.7/getdown-core-1.8.7.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="javadoc">
+		<mkdir dir="docs/javadoc" />
+		<javadoc doctitle="Amstrad PC -- A fork of the JavaCPC emulator" destdir="docs/javadoc" access="public" additionalparam="-encoding windows-1252" docencoding="utf-8" classpath="D:\Users\jan\EclipseWS\DefaultJava\Libraries\maiaSwing\maiaSwing.jar" source="1.7" sourcepath="src" packagenames="org.maia.*" noindex="false" nonavbar="false" notree="false" splitindex="true" nodeprecated="false" nodeprecatedlist="false" use="false" author="false" version="false" />
+	</target>
+
+	<target name="package-ant-tools">
+		<jar destfile="${libraries.home}/amstradPc/amstradPc-ant.jar">
+			<fileset dir="bin">
+				<include name="org/maia/amstrad/ant/**/*" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="package">
 		<jar destfile="${libraries.home}/amstradPc/amstradPc.jar">
 			<manifest>
 				<attribute name="Main-Class" value="org.maia.amstrad.AmstradMain" />
 				<attribute name="Class-Path" value="." />
-				<attribute name="SplashScreen-Image" value="images/amstrad1.png" />
+				<attribute name="SplashScreen-Image" value="images/splash.png" />
 			</manifest>
 			<zipfileset src="${libraries.home}/maiaSwing/maiaSwing.jar" />
 			<fileset dir="bin" />
@@ -15,17 +37,32 @@
 		</jar>
 	</target>
 
-	<target name="javadoc">
-		<mkdir dir="docs/javadoc" />
-		<javadoc doctitle="Amstrad PC -- A fork of the JavaCPC emulator" destdir="docs/javadoc" access="public" additionalparam="-encoding windows-1252" docencoding="utf-8" classpath="D:\Users\jan\EclipseWS\DefaultJava\Libraries\maiaSwing\maiaSwing.jar" source="1.7" sourcepath="src" packagenames="org.maia.*" noindex="false" nonavbar="false" notree="false" splitindex="true" nodeprecated="false" nodeprecatedlist="false" use="false" author="false" version="false" />
+	<target name="stage" depends="package">
+		<delete dir="dist/staging" />
+		<mkdir dir="dist/staging" />
+		<copy todir="dist/staging/images">
+			<fileset dir="resources/images/launcher" />
+		</copy>
+		<copy todir="dist/staging/programs">
+			<fileset dir="${program-repo.home}" />
+		</copy>
+		<copy todir="dist/staging">
+			<file file="${libraries.home}/amstradPc/amstradPc.jar" />
+		</copy>
+		<jar destfile="dist/staging/system/cpc.jar">
+			<fileset dir="system" />
+		</jar>
+		<getdown-dot-text destfile="dist/staging/getdown.txt" repodir="${program-repo.home}" />
+		<getdown-digest appdir="dist/staging" />
 	</target>
 
-	<target name="distribution">
-		<mkdir dir="dist" />
-		<war destfile="dist/amstradpc.war" webxml="resources/webapp/web.xml">
+	<target name="distribute" depends="stage">
+		<war destfile="dist/amstradpc.war" webxml="resources/dist/web.xml">
 			<fileset dir="docs">
 				<include name="javadoc/**/*" />
 			</fileset>
+			<fileset dir="dist/staging" />
 		</war>
+		<delete dir="dist/staging" />
 	</target>
 </project>
