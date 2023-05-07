@@ -43,6 +43,7 @@ public class GetdownDotTextGeneratorTask extends Task {
 	}
 
 	private void writeGetdownDotText(PrintWriter out) throws IOException {
+		String version = versionDateFormatter.format(new Date());
 		BufferedReader reader = new BufferedReader(new FileReader("resources/dist/getdown.template.txt"));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
@@ -55,7 +56,6 @@ public class GetdownDotTextGeneratorTask extends Task {
 				}
 			} else {
 				if (line.contains(VAR_AMSTRADPC_VERSION)) {
-					String version = versionDateFormatter.format(new Date());
 					line = line.replace(VAR_AMSTRADPC_VERSION, version);
 				}
 				out.println(line);
