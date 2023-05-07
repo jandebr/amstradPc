@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -16,6 +19,12 @@ public class GetdownDotTextGeneratorTask extends Task {
 	private File programRepositoryDir;
 
 	private static final String PROGRAM_RESOURCE_PREFIX = "programs/";
+
+	private static final String VAR_AMSTRADPC_VERSION = "%AMSTRADPC_VERSION%";
+
+	private static final String VAR_AMSTRADPC_PROGRAMS = "%AMSTRADPC_PROGRAMS%";
+
+	private static DateFormat versionDateFormatter = new SimpleDateFormat("'v'yyyyMMdd'-'HHmm");
 
 	public GetdownDotTextGeneratorTask() {
 	}
@@ -37,7 +46,7 @@ public class GetdownDotTextGeneratorTask extends Task {
 		BufferedReader reader = new BufferedReader(new FileReader("resources/dist/getdown.template.txt"));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
-			if (line.startsWith("# %PROGRAMS%")) {
+			if (line.startsWith("#") && line.contains(VAR_AMSTRADPC_PROGRAMS)) {
 				if (getProgramRepositoryDir() != null && getProgramRepositoryDir().exists()) {
 					String basePath = getProgramRepositoryDir().getAbsolutePath().replace('\\', '/');
 					writeProgramsRecursively(getProgramRepositoryDir(), basePath, out);
@@ -45,6 +54,10 @@ public class GetdownDotTextGeneratorTask extends Task {
 					System.out.println("WARNING no programs inserted");
 				}
 			} else {
+				if (line.contains(VAR_AMSTRADPC_VERSION)) {
+					String version = versionDateFormatter.format(new Date());
+					line = line.replace(VAR_AMSTRADPC_VERSION, version);
+				}
 				out.println(line);
 			}
 		}

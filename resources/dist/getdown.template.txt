@@ -2,7 +2,7 @@
 appbase = https://www.orbit11.space:7171/amstradpc/
 
 # UI Configuration
-ui.name = AmstradPc
+ui.name = AmstradPc %AMSTRADPC_VERSION%
 ui.hide_decorations = false
 ui.background = 000000
 ui.background_image = images/launcher-background.png
@@ -28,7 +28,7 @@ resource = images/splash.png
 uresource = system/cpc.jar
 
 # Program resources
-# %PROGRAMS%
+# %AMSTRADPC_PROGRAMS%
 
 # Application jar files
 code = amstradPc.jar
@@ -37,8 +37,8 @@ code = amstradPc.jar
 class = org.maia.amstrad.AmstradMain
 
 # JVM arguments
+# jvmarg = -splash:images/splash.png
 jvmarg = -Xmx512m
-jvmarg = -splash:images/splash.png
 jvmarg = -Djavacpc-ini-read="javacpc.ini"
 jvmarg = -Djavacpc-ini-write="javacpc.ini"
 jvmarg = -Djavacpc.mode=%ENV.JAVACPC_MODE%
