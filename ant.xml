@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="AmstradPc" basedir="." default="distribute">
-	<taskdef name="getdown-dot-text" classname="org.maia.amstrad.ant.GetdownDotTextGeneratorTask" />
+	<taskdef name="getdown-dot-text" classname="org.maia.amstrad.util.getdown.GetdownDotTextGeneratorTask" />
 
 	<taskdef name="getdown-digest" classname="com.threerings.getdown.tools.DigesterTask">
 		<classpath>
@@ -14,10 +14,10 @@
 		<javadoc doctitle="Amstrad PC -- A fork of the JavaCPC emulator" destdir="docs/javadoc" access="public" additionalparam="-encoding windows-1252" docencoding="utf-8" classpath="D:\Users\jan\EclipseWS\DefaultJava\Libraries\maiaSwing\maiaSwing.jar" source="1.7" sourcepath="src" packagenames="org.maia.*" noindex="false" nonavbar="false" notree="false" splitindex="true" nodeprecated="false" nodeprecatedlist="false" use="false" author="false" version="false" />
 	</target>
 
-	<target name="package-ant-tools">
+	<target name="package-custom-ant-tasks">
 		<jar destfile="${libraries.home}/amstradPc/amstradPc-ant.jar">
 			<fileset dir="bin">
-				<include name="org/maia/amstrad/ant/**/*" />
+				<include name="org/maia/amstrad/util/getdown/*Task.class" />
 			</fileset>
 		</jar>
 	</target>
@@ -27,13 +27,9 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.maia.amstrad.AmstradMain" />
 				<attribute name="Class-Path" value="." />
-				<attribute name="SplashScreen-Image" value="images/splash.png" />
 			</manifest>
 			<zipfileset src="${libraries.home}/maiaSwing/maiaSwing.jar" />
 			<fileset dir="bin" />
-			<fileset dir="resources">
-				<include name="images/*" />
-			</fileset>
 		</jar>
 	</target>
 

@@ -1,4 +1,4 @@
-package org.maia.amstrad.ant;
+package org.maia.amstrad.util.getdown;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,12 +44,14 @@ public class GetdownDotTextGeneratorTask extends Task {
 
 	private void writeGetdownDotText(PrintWriter out) throws IOException {
 		String version = versionDateFormatter.format(new Date());
+		System.out.println("INFO version: " + version);
 		BufferedReader reader = new BufferedReader(new FileReader("resources/dist/getdown.template.txt"));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			if (line.startsWith("#") && line.contains(VAR_AMSTRADPC_PROGRAMS)) {
 				if (getProgramRepositoryDir() != null && getProgramRepositoryDir().exists()) {
 					String basePath = getProgramRepositoryDir().getAbsolutePath().replace('\\', '/');
+					System.out.println("INFO scanning program repository in " + basePath);
 					writeProgramsRecursively(getProgramRepositoryDir(), basePath, out);
 				} else {
 					System.out.println("WARNING no programs inserted");
@@ -71,7 +73,9 @@ public class GetdownDotTextGeneratorTask extends Task {
 				path = path.substring(basePath.length());
 				if (path.startsWith("/"))
 					path = path.substring(1);
-				out.println("resource = " + PROGRAM_RESOURCE_PREFIX + path);
+				String resourcePath = PROGRAM_RESOURCE_PREFIX + path;
+				out.println("resource = " + resourcePath);
+				System.out.println("INFO adding resource " + resourcePath);
 			}
 		} else if (root.isDirectory()) {
 			for (File child : root.listFiles()) {

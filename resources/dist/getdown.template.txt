@@ -8,10 +8,10 @@ ui.background = 000000
 ui.background_image = images/launcher-background.png
 ui.error_background = images/launcher-error.png
 ui.icon = images/launcher-icon.png
-ui.progress = 16, 360, 608, 20
+ui.progress = 16, 352, 608, 28
 ui.progress_bar = 395D88
 ui.progress_text = FFFFFF
-ui.status = 16, 330, 608, 20
+ui.status = 16, 322, 608, 20
 ui.status_text = FFFFFF
 ui.text_shadow = 111111
 
@@ -41,4 +41,6 @@ class = org.maia.amstrad.AmstradMain
 jvmarg = -Xmx512m
 jvmarg = -Djavacpc-ini-read="javacpc.ini"
 jvmarg = -Djavacpc-ini-write="javacpc.ini"
-jvmarg = -Djavacpc.mode=%ENV.JAVACPC_MODE%
+default.jvmarg = -Djavacpc.mode=DEFAULT
+kiosk.jvmarg = -Djavacpc.mode=KIOSK
+original.jvmarg = -Djavacpc.mode=ORIGINAL
