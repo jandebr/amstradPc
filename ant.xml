@@ -17,7 +17,7 @@
 	<target name="package-custom-ant-tasks">
 		<jar destfile="${libraries.home}/amstradPc/amstradPc-ant.jar">
 			<fileset dir="bin">
-				<include name="org/maia/amstrad/util/getdown/*Task.class" />
+				<include name="org/maia/amstrad/util/getdown/GetdownDotTextGeneratorTask.class" />
 			</fileset>
 		</jar>
 	</target>
