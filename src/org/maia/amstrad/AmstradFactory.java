@@ -29,6 +29,8 @@ import org.maia.amstrad.program.repo.file.BasicProgramFileRepository;
 import org.maia.amstrad.program.repo.rename.RenamingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.search.SearchingAmstradProgramRepository;
 
+import jemu.ui.Console;
+
 public class AmstradFactory {
 
 	private static AmstradFactory instance;
@@ -167,6 +169,11 @@ public class AmstradFactory {
 		@Override
 		public PrintStream getConsoleErrorStream() {
 			return consoleErrorStream;
+		}
+
+		@Override
+		public void showJavaConsole() {
+			Console.frameconsole.setVisible(true);
 		}
 
 		@Override

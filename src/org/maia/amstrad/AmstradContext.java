@@ -38,6 +38,8 @@ public abstract class AmstradContext {
 
 	public abstract PrintStream getConsoleErrorStream();
 
+	public abstract void showJavaConsole();
+
 	public abstract void showProgramBrowser(AmstradPc amstradPc);
 
 	public abstract boolean isBasicProtectiveMode(AmstradPc amstradPc);

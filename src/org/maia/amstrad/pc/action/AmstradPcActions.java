@@ -72,6 +72,8 @@ public class AmstradPcActions {
 
 	/* Window actions */
 
+	private ShowJavaConsoleAction showJavaConsoleAction;
+
 	private WindowDynamicTitleAction windowDynamicTitleAction;
 
 	private WindowAlwaysOnTopAction windowAlwaysOnTopAction;
@@ -264,6 +266,13 @@ public class AmstradPcActions {
 			monitorShowSystemStatsAction = new MonitorShowSystemStatsAction(getAmstradPc());
 		}
 		return monitorShowSystemStatsAction;
+	}
+
+	public ShowJavaConsoleAction getShowJavaConsoleAction() {
+		if (showJavaConsoleAction == null) {
+			showJavaConsoleAction = new ShowJavaConsoleAction(getAmstradPc());
+		}
+		return showJavaConsoleAction;
 	}
 
 	public WindowDynamicTitleAction getWindowDynamicTitleAction() {

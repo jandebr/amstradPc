@@ -59,6 +59,6 @@
 			</fileset>
 			<fileset dir="dist/staging" />
 		</war>
-		<delete dir="dist/staging" />
+		<!-- <delete dir="dist/staging" /> -->
 	</target>
 </project>
