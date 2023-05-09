@@ -9,11 +9,9 @@ public class AmstradMain {
 
 	public static final String SETTING_OVERRIDE_PREFIX = "javacpc.";
 
-	private static final String GETDOWN_HINT_PROPERTY = "com.threerings.getdown";
-
 	public static void main(String[] args) throws Exception {
 		overrideSettingsFromSytemProperties();
-		cleanProgramRepository();
+		cleanManagedProgramRepository();
 		AmstradFactory.getInstance().getAmstradContext().getMode().launch(args);
 	}
 
@@ -29,15 +27,14 @@ public class AmstradMain {
 		}
 	}
 
-	private static void cleanProgramRepository() {
-		if (isLaunchedByGetdown()) {
-			File rootFolder = AmstradFactory.getInstance().getAmstradContext().getProgramRepositoryRootFolder();
-			new GetdownProgramFileRepositoryCleaner().cleanProgramRepository(rootFolder, true);
+	private static void cleanManagedProgramRepository() {
+		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
+		if (context.isLaunchedByGetdown()) {
+			File managedFolder = context.getManagedProgramRepositoryRootFolder();
+			if (managedFolder != null) {
+				new GetdownProgramFileRepositoryCleaner().cleanProgramRepository(managedFolder, true);
+			}
 		}
-	}
-
-	private static boolean isLaunchedByGetdown() {
-		return Boolean.parseBoolean(System.getProperty(GETDOWN_HINT_PROPERTY, "false"));
 	}
 
 }

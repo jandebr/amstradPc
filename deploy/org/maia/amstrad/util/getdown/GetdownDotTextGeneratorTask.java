@@ -18,7 +18,7 @@ public class GetdownDotTextGeneratorTask extends Task {
 
 	private File programRepositoryDir;
 
-	private static final String PROGRAM_RESOURCE_PREFIX = "programs/";
+	private String programPathPrefix = "";
 
 	private static final String VAR_AMSTRADPC_VERSION = "%AMSTRADPC_VERSION%";
 
@@ -73,7 +73,7 @@ public class GetdownDotTextGeneratorTask extends Task {
 				path = path.substring(basePath.length());
 				if (path.startsWith("/"))
 					path = path.substring(1);
-				String resourcePath = PROGRAM_RESOURCE_PREFIX + path;
+				String resourcePath = getProgramPathPrefix() + path;
 				out.println("resource = " + resourcePath);
 				System.out.println("INFO adding resource " + resourcePath);
 			}
@@ -98,6 +98,14 @@ public class GetdownDotTextGeneratorTask extends Task {
 
 	public void setRepodir(File dir) {
 		this.programRepositoryDir = dir;
+	}
+
+	public String getProgramPathPrefix() {
+		return programPathPrefix;
+	}
+
+	public void setPathprefix(String pathPrefix) {
+		this.programPathPrefix = pathPrefix;
 	}
 
 }

@@ -78,4 +78,11 @@ public class AmstradIO {
 		}
 	}
 
+	public static boolean isFileInsideFolder(File file, File folder) {
+		File current = file;
+		while (current != null && !current.equals(folder))
+			current = current.getParentFile();
+		return current != null;
+	}
+
 }

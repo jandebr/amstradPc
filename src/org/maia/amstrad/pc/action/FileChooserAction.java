@@ -4,8 +4,8 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.util.AmstradIO;
 
 public abstract class FileChooserAction extends AmstradPcAction {
 
@@ -50,6 +50,27 @@ public abstract class FileChooserAction extends AmstradPcAction {
 
 	protected abstract JFileChooser buildFileChooser(File currentDirectory);
 
+	protected boolean checkFileOutputDestination(File file) {
+		if (isFileInsideManagedFolder(file)) {
+			showErrorMessageDialog("Invalid destination",
+					"Cannot write inside the managed folder "
+							+ getAmstradContext().getManagedProgramRepositoryRootFolder().getAbsolutePath()
+							+ "\nTry using a different destination");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	protected boolean isFileInsideManagedFolder(File file) {
+		File managedFolder = getAmstradContext().getManagedProgramRepositoryRootFolder();
+		if (managedFolder != null) {
+			return AmstradIO.isFileInsideFolder(file, managedFolder);
+		} else {
+			return false;
+		}
+	}
+
 	protected void updateCurrentDirectoryFromSelectedFile() {
 		File file = getSelectedFile();
 		if (file != null) {
@@ -58,11 +79,11 @@ public abstract class FileChooserAction extends AmstradPcAction {
 	}
 
 	private File getCurrentDirectory() {
-		return AmstradFactory.getInstance().getAmstradContext().getCurrentDirectory();
+		return getAmstradContext().getCurrentDirectory();
 	}
 
 	private void setCurrentDirectory(File currentDirectory) {
-		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(currentDirectory);
+		getAmstradContext().setCurrentDirectory(currentDirectory);
 	}
 
 }

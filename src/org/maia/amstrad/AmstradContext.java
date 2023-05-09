@@ -25,6 +25,10 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAM_REPO_FACETS = "program_repo.facet.facets";
 
+	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED = "program_repo.file.dir-managed";
+
+	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
+
 	protected AmstradContext() {
 	}
 
@@ -95,6 +99,19 @@ public abstract class AmstradContext {
 		settings.set(SETTING_PROGRAM_REPO_SEARCH_STRING, configuration.getSearchString());
 		settings.setBool(SETTING_PROGRAM_REPO_FACETED, configuration.isFaceted());
 		settings.set(SETTING_PROGRAM_REPO_FACETS, FacetFactory.getInstance().toExternalForm(configuration.getFacets()));
+	}
+
+	public File getManagedProgramRepositoryRootFolder() {
+		File folder = null;
+		String path = getUserSettings().get(SETTING_PROGRAM_REPO_DIR_MANAGED, "");
+		if (!path.isEmpty()) {
+			folder = new File(path);
+		}
+		return folder;
+	}
+
+	public boolean isLaunchedByGetdown() {
+		return Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_GETDOWN, "false"));
 	}
 
 }

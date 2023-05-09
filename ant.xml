@@ -39,7 +39,7 @@
 		<copy todir="dist/staging/images">
 			<fileset dir="resources/images/launcher" />
 		</copy>
-		<copy todir="dist/staging/programs">
+		<copy todir="dist/staging/programs/LEGACY">
 			<fileset dir="${program-repo.home}" />
 		</copy>
 		<copy todir="dist/staging">
@@ -48,7 +48,7 @@
 		<jar destfile="dist/staging/system/cpc.jar">
 			<fileset dir="system" />
 		</jar>
-		<getdown-dot-text destfile="dist/staging/getdown.txt" repodir="${program-repo.home}" />
+		<getdown-dot-text destfile="dist/staging/getdown.txt" repodir="${program-repo.home}" pathprefix="programs/LEGACY/" />
 		<getdown-digest appdir="dist/staging" />
 	</target>
 
