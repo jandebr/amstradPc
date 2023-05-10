@@ -172,6 +172,11 @@ public class AmstradFactory {
 		}
 
 		@Override
+		public void initJavaConsole() {
+			Console.init();
+		}
+
+		@Override
 		public void showJavaConsole() {
 			Console.frameconsole.setVisible(true);
 		}

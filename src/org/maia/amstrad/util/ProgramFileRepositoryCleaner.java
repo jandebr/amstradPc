@@ -15,6 +15,7 @@ public abstract class ProgramFileRepositoryCleaner {
 		if (removeEmptySubfolders) {
 			removeEmptyProgramSubfolders(rootFolder);
 		}
+		System.out.println();
 	}
 
 	private void removeObsoleteProgramFiles(File rootFolder) {
@@ -24,6 +25,7 @@ public abstract class ProgramFileRepositoryCleaner {
 			System.out.println("Attempting to remove " + filesToRemove.size() + " obsolete program file(s)");
 			int removed = 0;
 			for (File file : filesToRemove) {
+				System.out.println("Removing " + file.getAbsolutePath());
 				if (file.delete())
 					removed++;
 			}
@@ -43,6 +45,7 @@ public abstract class ProgramFileRepositoryCleaner {
 			if (child.isDirectory()) {
 				removed += removeEmptySubfolders(child);
 				if (isEmptyFolder(child)) {
+					System.out.println("Removing " + child.getAbsolutePath());
 					if (child.delete())
 						removed++;
 				}

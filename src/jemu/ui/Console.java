@@ -57,14 +57,16 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 	private final PipedInputStream pin2 = new PipedInputStream();
 	protected Font font;
 
-	public Console() {
+	private static Console instance;
+
+	private Console() {
 		// create all components and add them
 		frameconsole = new JFrame("JavaCPC Console");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = new Dimension((int) (screenSize.width / 2), (int) (screenSize.height / 2));
 		int x = (int) (frameSize.width / 2);
 		int y = (int) (frameSize.height / 2);
-		frameconsole.setBounds(x, y, 350, 400);
+		frameconsole.setBounds(x, y, frameSize.width, frameSize.height);
 
 		textArea = new JTextArea();
 		InputStream in = getClass().getResourceAsStream("amstrad.ttf");
@@ -76,10 +78,10 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		textArea.setEditable(true);
 		textArea.setAutoscrolls(true);
 		textArea.setBackground(Color.BLACK);
-		textArea.setForeground(Color.GREEN);
-		textArea.setCaretColor(Color.GREEN);
-		textArea.setSelectedTextColor(Color.RED);
-		textArea.setSelectionColor(Color.ORANGE);
+		textArea.setForeground(Color.WHITE);
+		textArea.setCaretColor(Color.WHITE);
+		textArea.setSelectedTextColor(Color.BLACK);
+		textArea.setSelectionColor(Color.PINK);
 		textArea.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		// textArea.setFont(new Font("", 1, 10));
 		textArea.setLineWrap(true);
@@ -168,6 +170,12 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		this.gbcConstraints.gridwidth = width;
 		this.gbcConstraints.fill = fill;
 		return this.gbcConstraints;
+	}
+
+	public static synchronized void init() {
+		if (instance == null) {
+			instance = new Console();
+		}
 	}
 
 	public synchronized void windowClosing(WindowEvent evt) {

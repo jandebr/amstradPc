@@ -38,6 +38,8 @@ public abstract class AmstradContext {
 
 	public abstract PrintStream getConsoleErrorStream();
 
+	public abstract void initJavaConsole();
+
 	public abstract void showJavaConsole();
 
 	public abstract void showProgramBrowser(AmstradPc amstradPc);

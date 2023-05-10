@@ -728,7 +728,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		new Autotype();
 		new CPCPrinter();
 		if (useConsole)
-			new Console();
+			Console.init();
 		System.out.println("JavaCPC [v." + version + "]\n\n[" + cal.getTime() + "]\n");
 		System.out.println("executable is " + executable);
 		Runtime r = Runtime.getRuntime();
