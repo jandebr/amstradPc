@@ -1,5 +1,5 @@
 # The URL from which the application is downloaded
-appbase = https://www.orbit11.space:7171/amstradpc/
+appbase = %AMSTRADPC_APPBASE%
 
 # UI Configuration
 ui.name = AmstradPc %AMSTRADPC_VERSION%
@@ -41,6 +41,7 @@ class = org.maia.amstrad.AmstradMain
 jvmarg = -Xmx512m
 jvmarg = -Djavacpc-ini-read="javacpc.ini"
 jvmarg = -Djavacpc-ini-write="javacpc.ini"
+jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
 default.jvmarg = -Djavacpc.mode=DEFAULT
 kiosk.jvmarg = -Djavacpc.mode=KIOSK
 original.jvmarg = -Djavacpc.mode=ORIGINAL

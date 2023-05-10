@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,15 +15,19 @@ public class GetdownDotTextGeneratorTask extends Task {
 
 	private File destinationFile;
 
-	private File programRepositoryDir;
+	private File programSourceDir;
 
-	private String programPathPrefix = "";
+	private String programTargetBasePath = "";
+
+	private String applicationBaseUrl = "https://localhost/amstradpc/";
+
+	private static final String VAR_AMSTRADPC_APPBASE = "%AMSTRADPC_APPBASE%";
 
 	private static final String VAR_AMSTRADPC_VERSION = "%AMSTRADPC_VERSION%";
 
 	private static final String VAR_AMSTRADPC_PROGRAMS = "%AMSTRADPC_PROGRAMS%";
 
-	private static DateFormat versionDateFormatter = new SimpleDateFormat("'v'yyyyMMdd'-'HHmm");
+	private static final String VAR_AMSTRADPC_PROGRAMBASE = "%AMSTRADPC_PROGRAMBASE%";
 
 	public GetdownDotTextGeneratorTask() {
 	}
@@ -43,45 +46,59 @@ public class GetdownDotTextGeneratorTask extends Task {
 	}
 
 	private void writeGetdownDotText(PrintWriter out) throws IOException {
-		String version = versionDateFormatter.format(new Date());
+		String version = generateVersionString();
 		System.out.println("INFO version: " + version);
 		BufferedReader reader = new BufferedReader(new FileReader("resources/dist/getdown.template.txt"));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			if (line.startsWith("#") && line.contains(VAR_AMSTRADPC_PROGRAMS)) {
-				if (getProgramRepositoryDir() != null && getProgramRepositoryDir().exists()) {
-					String basePath = getProgramRepositoryDir().getAbsolutePath().replace('\\', '/');
-					System.out.println("INFO scanning program repository in " + basePath);
-					writeProgramsRecursively(getProgramRepositoryDir(), basePath, out);
+				if (getProgramSourceDir() != null && getProgramSourceDir().exists()) {
+					String rootPath = getProgramSourceDir().getAbsolutePath().replace('\\', '/');
+					System.out.println("INFO scanning program repository in " + rootPath);
+					writeProgramsRecursively(getProgramSourceDir(), rootPath, out);
 				} else {
 					System.out.println("WARNING no programs inserted");
 				}
 			} else {
-				if (line.contains(VAR_AMSTRADPC_VERSION)) {
-					line = line.replace(VAR_AMSTRADPC_VERSION, version);
-				}
-				out.println(line);
+				out.println(replaceVariables(line, version));
 			}
 		}
 		reader.close();
 	}
 
-	private void writeProgramsRecursively(File root, String basePath, PrintWriter out) throws IOException {
-		if (root.isFile()) {
-			String path = root.getAbsolutePath().replace('\\', '/');
-			if (path.startsWith(basePath)) {
-				path = path.substring(basePath.length());
+	private void writeProgramsRecursively(File current, String rootPath, PrintWriter out) throws IOException {
+		if (current.isFile()) {
+			String path = current.getAbsolutePath().replace('\\', '/');
+			if (path.startsWith(rootPath)) {
+				path = path.substring(rootPath.length());
 				if (path.startsWith("/"))
 					path = path.substring(1);
-				String resourcePath = getProgramPathPrefix() + path;
+				String resourcePath = new File(getProgramTargetBasePath(), path).getPath();
 				out.println("resource = " + resourcePath);
 				System.out.println("INFO adding resource " + resourcePath);
 			}
-		} else if (root.isDirectory()) {
-			for (File child : root.listFiles()) {
-				writeProgramsRecursively(child, basePath, out);
+		} else if (current.isDirectory()) {
+			for (File child : current.listFiles()) {
+				writeProgramsRecursively(child, rootPath, out);
 			}
 		}
+	}
+
+	private String replaceVariables(String line, String version) {
+		if (line.contains(VAR_AMSTRADPC_APPBASE)) {
+			line = line.replace(VAR_AMSTRADPC_APPBASE, getApplicationBaseUrl());
+		}
+		if (line.contains(VAR_AMSTRADPC_VERSION)) {
+			line = line.replace(VAR_AMSTRADPC_VERSION, version);
+		}
+		if (line.contains(VAR_AMSTRADPC_PROGRAMBASE)) {
+			line = line.replace(VAR_AMSTRADPC_PROGRAMBASE, getProgramTargetBasePath());
+		}
+		return line;
+	}
+
+	private String generateVersionString() {
+		return new SimpleDateFormat("'v'yyyyMMdd'-'HHmm").format(new Date());
 	}
 
 	public File getDestinationFile() {
@@ -92,20 +109,28 @@ public class GetdownDotTextGeneratorTask extends Task {
 		this.destinationFile = file;
 	}
 
-	public File getProgramRepositoryDir() {
-		return programRepositoryDir;
+	public File getProgramSourceDir() {
+		return programSourceDir;
 	}
 
-	public void setRepodir(File dir) {
-		this.programRepositoryDir = dir;
+	public void setProgramsource(File dir) {
+		this.programSourceDir = dir;
 	}
 
-	public String getProgramPathPrefix() {
-		return programPathPrefix;
+	public String getProgramTargetBasePath() {
+		return programTargetBasePath;
 	}
 
-	public void setPathprefix(String pathPrefix) {
-		this.programPathPrefix = pathPrefix;
+	public void setProgrambase(String basePath) {
+		this.programTargetBasePath = basePath;
+	}
+
+	public String getApplicationBaseUrl() {
+		return applicationBaseUrl;
+	}
+
+	public void setAppbase(String baseUrl) {
+		this.applicationBaseUrl = baseUrl;
 	}
 
 }

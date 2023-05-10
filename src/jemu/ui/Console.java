@@ -13,17 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-
-/**
- * Title:        JEMU by cpc.devilmarkus.de / jemu.winape.net
- * Description:  JAVA emulator for Amstrad Homecomputers
- * Copyright:    Copyright (c) 2002-2008
- * Company:
- * @author       Devilmarkus
- * @version 4.0
- * 
- * 
- */
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,6 +34,13 @@ import org.maia.amstrad.util.MultiplexOutputStream;
 
 import jemu.settings.Settings;
 
+/**
+ * Title: JEMU by cpc.devilmarkus.de / jemu.winape.net Description: JAVA emulator for Amstrad Homecomputers Copyright:
+ * Copyright (c) 2002-2008 Company:
+ * 
+ * @author Devilmarkus
+ * @version 4.0
+ */
 public class Console extends WindowAdapter implements WindowListener, ActionListener, Runnable {
 	JFileChooser saveFileChooser = new JFileChooser();
 	protected GridBagConstraints gbcConstraints = null;

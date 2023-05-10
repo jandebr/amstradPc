@@ -35,21 +35,21 @@
 
 	<target name="stage" depends="package">
 		<delete dir="dist/staging" />
-		<mkdir dir="dist/staging" />
-		<copy todir="dist/staging/images">
-			<fileset dir="resources/images/launcher" />
-		</copy>
-		<copy todir="dist/staging/programs/LEGACY">
-			<fileset dir="${program-repo.home}" />
-		</copy>
-		<copy todir="dist/staging">
+		<mkdir dir="dist/staging/${distribution.id}" />
+		<copy todir="dist/staging/${distribution.id}">
 			<file file="${libraries.home}/amstradPc/amstradPc.jar" />
 		</copy>
-		<jar destfile="dist/staging/system/cpc.jar">
+		<jar destfile="dist/staging/${distribution.id}/system/cpc.jar">
 			<fileset dir="system" />
 		</jar>
-		<getdown-dot-text destfile="dist/staging/getdown.txt" repodir="${program-repo.home}" pathprefix="programs/LEGACY/" />
-		<getdown-digest appdir="dist/staging" />
+		<copy todir="dist/staging/${distribution.id}/images">
+			<fileset dir="resources/images/launcher" />
+		</copy>
+		<copy todir="dist/staging/${distribution.id}/${distribution.programbase}">
+			<fileset dir="${program-repo.source}" />
+		</copy>
+		<getdown-dot-text destfile="dist/staging/${distribution.id}/getdown.txt" appbase="${distribution.appbase}" programsource="${program-repo.source}" programbase="${distribution.programbase}" />
+		<getdown-digest appdir="dist/staging/${distribution.id}" />
 	</target>
 
 	<target name="distribute" depends="stage">
@@ -59,6 +59,6 @@
 			</fileset>
 			<fileset dir="dist/staging" />
 		</war>
-		<!-- <delete dir="dist/staging" /> -->
+		<delete dir="dist/staging" />
 	</target>
 </project>

@@ -79,8 +79,17 @@ public class AmstradIO {
 	}
 
 	public static boolean isFileInsideFolder(File file, File folder) {
-		File current = file;
-		while (current != null && !current.equals(folder))
+		File absFile = null;
+		File absFolder = null;
+		try {
+			absFile = file.getCanonicalFile();
+			absFolder = folder.getCanonicalFile();
+		} catch (IOException e) {
+			absFile = file.getAbsoluteFile();
+			absFolder = folder.getAbsoluteFile();
+		}
+		File current = absFile;
+		while (current != null && !current.equals(absFolder))
 			current = current.getParentFile();
 		return current != null;
 	}
