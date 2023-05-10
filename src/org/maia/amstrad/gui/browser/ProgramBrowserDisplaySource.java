@@ -142,7 +142,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			FolderItemList itemList = stack.peek(stack.size() > 1 ? 1 : 0);
 			renderFolderItemList(itemList, 2, 4, stack.size() == 1,
 					canShowMiniInfo() && (!hasCurrentCoverImage() || getCurrentNode().isFolder()), canvas);
-			renderStackLeftExtentHint(stack, 2, 4, canvas);
+			if (stack.size() > 2) {
+				renderStackLeftExtentHint(stack, 2, 4, canvas);
+			}
 		}
 		// right side
 		if (stack.size() > 1) {
@@ -233,9 +235,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			AmstradDisplayCanvas canvas) {
 		if (itemList.getIndexOfFirstItemShowing() > 0) {
 			canvas.pen(getTheme().getExtentHintInk())
-					.move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 - 1).getLocation()).mover(0, -2);
-			for (int i = 0; i < (LABEL_WIDTH + 1) / 2; i++) {
-				canvas.drawChrMonospaced(196).mover(16, 0);
+					.move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 - 1).getLocation()).mover(0, 2);
+			for (int i = 0; i < LABEL_WIDTH; i++) {
+				canvas.drawChrMonospaced(244);
 			}
 		}
 	}
@@ -245,19 +247,17 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		if (itemList.getIndexOfLastItemShowing() < itemList.size() - 1) {
 			canvas.pen(getTheme().getExtentHintInk())
 					.move(canvas.getTextCursorBoundsOnCanvas(tx0, ty0 + itemList.getMaxItemsShowing()).getLocation())
-					.mover(0, 4);
-			for (int i = 0; i < (LABEL_WIDTH + 1) / 2; i++) {
-				canvas.drawChrMonospaced(198).mover(16, 0);
+					.mover(0, 2);
+			for (int i = 0; i < LABEL_WIDTH; i++) {
+				canvas.drawChrMonospaced(245);
 			}
 		}
 	}
 
 	private void renderStackLeftExtentHint(StackedFolderItemList stack, int tx0, int ty0, AmstradDisplayCanvas canvas) {
-		if (stack.size() > 2) {
-			canvas.pen(getTheme().getExtentHintInk());
-			for (int i = 0; i < stack.getMaxItemsShowing(); i += 2) {
-				canvas.locate(tx0 - 1, ty0 + i).printChr(199);
-			}
+		canvas.pen(getTheme().getExtentHintInk());
+		for (int i = 0; i < stack.getMaxItemsShowing(); i++) {
+			canvas.locate(tx0 - 1, ty0 + i).printChr(247);
 		}
 	}
 
