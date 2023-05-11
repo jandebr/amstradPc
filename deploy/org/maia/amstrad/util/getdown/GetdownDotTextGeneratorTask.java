@@ -73,7 +73,7 @@ public class GetdownDotTextGeneratorTask extends Task {
 				path = path.substring(rootPath.length());
 				if (path.startsWith("/"))
 					path = path.substring(1);
-				String resourcePath = new File(getProgramTargetBasePath(), path).getPath();
+				String resourcePath = new File(getProgramTargetBasePath(), path).getPath().replace('\\', '/');
 				out.println("resource = " + resourcePath);
 				System.out.println("INFO adding resource " + resourcePath);
 			}
