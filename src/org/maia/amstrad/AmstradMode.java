@@ -53,12 +53,27 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	protected abstract void doLaunch(String[] args) throws Exception;
 
+	/**
+	 * Tells whether the AmstradPc primary display is the central and start screen at launch
+	 * 
+	 * @return <code>true</code> iff the AmstradPc primary display is centric
+	 */
 	public final boolean isPrimaryDisplayCentric() {
 		return !isProgramBrowserCentric();
 	}
 
+	/**
+	 * Tells whether the program browser is the central and start screen at launch
+	 * 
+	 * @return <code>true</code> iff the program browser is centric
+	 */
 	public abstract boolean isProgramBrowserCentric();
 
+	/**
+	 * Tells whether the original (Jemu) menu is to be shown
+	 * 
+	 * @return <code>true</code> iff the original menu is to be shown
+	 */
 	protected abstract boolean isUsingOriginalMenu();
 
 	protected AmstradSettings getUserSettings() {
