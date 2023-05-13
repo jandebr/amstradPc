@@ -1,5 +1,7 @@
 package org.maia.amstrad.gui.browser.components;
 
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.pc.AmstradPc;
@@ -24,11 +26,11 @@ public abstract class ProgramMenuItem implements ScrollableItem {
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public int getLabelColor() {
 		return 22;
 	}
-	
+
 	public int getFocusBackgroundColor() {
 		return 9;
 	}
@@ -39,6 +41,10 @@ public abstract class ProgramMenuItem implements ScrollableItem {
 
 	protected AmstradPc getAmstradPc() {
 		return getBrowser().getAmstradPc();
+	}
+
+	protected AmstradSettings getAmstradSettings() {
+		return AmstradFactory.getInstance().getAmstradContext().getUserSettings();
 	}
 
 	public AmstradProgram getProgram() {

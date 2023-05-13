@@ -13,6 +13,8 @@ import org.maia.amstrad.program.AmstradProgramType;
 
 public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 
+	private static final String SETTING_ENABLE_BASIC_STAGING = "basic_staging.enable";
+
 	public ProgramRunMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program) {
 		super(browser, program, "Run");
 	}
@@ -25,8 +27,7 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 
 	@Override
 	protected AmstradProgramLoader getProgramLoader(AmstradProgram program) {
-		if (AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType())
-				&& !program.getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOSTAGE)) {
+		if (useStagedBasicProgramLoader(program)) {
 			return AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(getAmstradPc(),
 					new EndingBasicAction() {
 
@@ -41,6 +42,16 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 		} else {
 			return super.getProgramLoader(program);
 		}
+	}
+
+	private boolean useStagedBasicProgramLoader(AmstradProgram program) {
+		if (!AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType()))
+			return false;
+		if (program.getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOSTAGE))
+			return false;
+		if (!getAmstradSettings().getBool(SETTING_ENABLE_BASIC_STAGING, true))
+			return false;
+		return true;
 	}
 
 }
