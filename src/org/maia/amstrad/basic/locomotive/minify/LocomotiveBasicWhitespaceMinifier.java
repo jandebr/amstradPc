@@ -9,6 +9,9 @@ import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralToken;
 import org.maia.amstrad.basic.locomotive.token.OperatorToken;
 
+/**
+ * Saves bytes by removing optional whitespace from source code
+ */
 public class LocomotiveBasicWhitespaceMinifier extends LocomotiveBasicMinifier {
 
 	public LocomotiveBasicWhitespaceMinifier() {

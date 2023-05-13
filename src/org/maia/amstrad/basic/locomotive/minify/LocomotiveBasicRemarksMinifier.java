@@ -7,6 +7,9 @@ import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 
+/**
+ * Saves bytes by removing remarks from source code
+ */
 public class LocomotiveBasicRemarksMinifier extends LocomotiveBasicMinifier {
 
 	public LocomotiveBasicRemarksMinifier() {

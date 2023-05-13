@@ -12,6 +12,9 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 
+/**
+ * Saves bytes by replacing variable names in source code with shorter names
+ */
 public class LocomotiveBasicVariableNameMinifier extends LocomotiveBasicMinifier {
 
 	private Map<VariableToken, VariableToken> renameMap;

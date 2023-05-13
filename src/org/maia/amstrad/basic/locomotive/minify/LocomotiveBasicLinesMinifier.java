@@ -12,6 +12,9 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 
+/**
+ * Saves bytes by joining together consecutive lines of source code within functional and technical constraints
+ */
 public class LocomotiveBasicLinesMinifier extends LocomotiveBasicMinifier {
 
 	public static final double MINIMUM_INTENSITY = 0;
