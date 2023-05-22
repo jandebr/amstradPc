@@ -46,4 +46,6 @@ public interface AmstradProgramMetaDataConstants {
 	
 	String AMD_FLAG_NOSTAGE = "NO-STAGE";
 
+	String AMD_FLAG_NOLAUNCH = "NO-LAUNCH";
+
 }

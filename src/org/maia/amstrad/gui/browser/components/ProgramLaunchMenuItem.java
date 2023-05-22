@@ -6,6 +6,7 @@ import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
 
 public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 
@@ -56,7 +57,11 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 
 	@Override
 	public boolean isEnabled() {
-		return !failed;
+		if (failed)
+			return false;
+		if (getProgram().getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOLAUNCH))
+			return false;
+		return true;
 	}
 
 	@Override

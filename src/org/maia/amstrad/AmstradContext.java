@@ -73,7 +73,10 @@ public abstract class AmstradContext {
 	}
 
 	public File getProgramRepositoryRootFolder() {
-		return new File(getUserSettings().get(SETTING_PROGRAM_REPO_DIR, "."));
+		File rootFolder = new File(getUserSettings().get(SETTING_PROGRAM_REPO_DIR, "."));
+		if (!rootFolder.exists() || !rootFolder.isDirectory())
+			rootFolder = new File(".");
+		return rootFolder;
 	}
 
 	public void setProgramRepositoryRootFolder(File rootFolder) {
