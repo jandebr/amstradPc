@@ -141,7 +141,7 @@ public class Display extends JComponent {
 	int mCurrFPS;
 	// scaneffect masks
 
-	final URL Mask1 = getClass().getResource("image/tv.png");
+	final URL Mask1 = getClass().getResource("image/ctm644.png");
 	final Image mask1 = getToolkit().getImage(Mask1);
 	final URL Mask3 = Mask1; // getClass().getResource("image/FinalTele5.png");
 	final Image mask3 = getToolkit().getImage(Mask3);

@@ -18,6 +18,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.action.AmstradPcMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.util.AmstradUtils;
@@ -39,6 +40,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		addWindowListener(this);
 		setFocusable(false);
 		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
+		setIconImage(UIResources.cpcIcon.getImage());
 		buildUI();
 	}
 

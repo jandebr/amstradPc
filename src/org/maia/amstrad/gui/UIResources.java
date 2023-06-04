@@ -18,6 +18,8 @@ import org.maia.amstrad.pc.action.PauseResumeAction;
 
 public class UIResources {
 
+	public static ImageIcon cpcIcon = loadIcon("cpc24.png");
+
 	public static ImageIcon basicIcon = loadIcon("basic32.png");
 
 	public static ImageIcon browserIcon = loadIcon("browser32.png");

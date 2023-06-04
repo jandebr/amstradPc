@@ -128,6 +128,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	private boolean mouseClickActionsEnabled = true;
 
 	protected boolean isbackground;
+	private static final Color BACKGROUND_COLOR = Color.BLACK;
 	JInternalFrame intern = new JInternalFrame(null);
 	int updateP = 0;
 	public static JCheckBox doupdate = new JCheckBox("update");
@@ -779,7 +780,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			intern.add(leftlabel, BorderLayout.WEST);
 			intern.add(rightlabel, BorderLayout.EAST);
 			intern.setTitle("Output");
-			intern.setBackground(new Color(0x222222));
+			intern.setBackground(BACKGROUND_COLOR);
 			intern.setVisible(true);
 			intern.setBorder(null);
 			intern.setResizable(false);
@@ -792,7 +793,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			intern.pack();
 			this.add(intern, BorderLayout.CENTER);
 			display.setBorder(null);
-			display.setBackground(Color.DARK_GRAY);
+			display.setBackground(Color.BLACK);
 			display.addKeyListener(this);
 			display.addMouseListener(this);
 			display.addFocusListener(this);
@@ -1406,7 +1407,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public void update() {
 		if (isbackground != Display.scaneffect || useBorderColor) {
 			if (Display.scaneffect)
-				intern.setBackground(new Color(0x222222));
+				intern.setBackground(BACKGROUND_COLOR);
 			else {
 				if (useBorderColor)
 					intern.setBackground(new Color(display.getColor()));
