@@ -30,10 +30,12 @@ public class AmstradMain {
 	}
 
 	private static void cleanManagedProgramRepository(AmstradContext context) {
-		File managedFolder = context.getManagedProgramRepositoryRootFolder();
-		if (managedFolder != null) {
-			if (context.isLaunchedByGetdown()) {
-				new GetdownProgramFileRepositoryCleaner().cleanProgramRepository(managedFolder, true);
+		if (context.isManagedProgramRepositoryCleanupEnabled()) {
+			File managedFolder = context.getManagedProgramRepositoryRootFolder();
+			if (managedFolder != null) {
+				if (context.isLaunchedByGetdown()) {
+					new GetdownProgramFileRepositoryCleaner().cleanProgramRepository(managedFolder, true);
+				}
 			}
 		}
 	}

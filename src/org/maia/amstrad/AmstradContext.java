@@ -27,6 +27,8 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED = "program_repo.file.dir-managed";
 
+	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED_CLEANUP = "program_repo.file.dir-managed.cleanup.enable";
+
 	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
 
 	protected AmstradContext() {
@@ -115,6 +117,10 @@ public abstract class AmstradContext {
 			folder = new File(path);
 		}
 		return folder;
+	}
+
+	public boolean isManagedProgramRepositoryCleanupEnabled() {
+		return getUserSettings().getBool(SETTING_PROGRAM_REPO_DIR_MANAGED_CLEANUP, true);
 	}
 
 	public boolean isLaunchedByGetdown() {
