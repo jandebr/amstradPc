@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -20,6 +21,8 @@ import javax.swing.event.PopupMenuListener;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.action.AmstradPcMenuMaker;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.util.AmstradUtils;
 
@@ -56,6 +59,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		JPopupMenu popupMenu = new AmstradPcMenuMaker(getAmstradPc().getActions(),
 				AmstradPcMenuMaker.MenuFlavor.KIOSK_MENU).createPopupMenu();
 		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(popupMenu);
+		getAmstradPc().getKeyboard().addKeyboardListener(new PopupMenuTriggerByKeyPress(KeyEvent.VK_F2));
 		popupMenu.addPopupMenuListener(new PopupMenuController());
 		installControllerOnMenus(popupMenu, new MenuController());
 	}
@@ -219,6 +223,40 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 				centerOnScreen();
 				System.out.println("Display is centered on screen");
 			}
+		}
+
+	}
+
+	private class PopupMenuTriggerByKeyPress extends AmstradKeyboardAdapter {
+
+		private int triggerKeyCode;
+
+		public PopupMenuTriggerByKeyPress(int triggerKeyCode) {
+			this.triggerKeyCode = triggerKeyCode;
+		}
+
+		@Override
+		public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
+			if (event.isKeyPressed() && event.getKeyCode() == getTriggerKeyCode()) {
+				JPopupMenu popupMenu = getPopupMenu();
+				if (popupMenu != null) {
+					Dimension dim = popupMenu.getPreferredSize();
+					JComponent comp = getPopupMenuInvoker();
+					popupMenu.show(comp, (comp.getWidth() - dim.width) / 2, (comp.getHeight() - dim.height) / 2);
+				}
+			}
+		}
+
+		private JPopupMenu getPopupMenu() {
+			return getPopupMenuInvoker().getComponentPopupMenu();
+		}
+
+		private JComponent getPopupMenuInvoker() {
+			return getAmstradPc().getMonitor().getDisplayComponent();
+		}
+
+		public int getTriggerKeyCode() {
+			return triggerKeyCode;
 		}
 
 	}
