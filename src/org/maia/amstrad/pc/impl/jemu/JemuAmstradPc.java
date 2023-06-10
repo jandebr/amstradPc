@@ -68,6 +68,7 @@ import jemu.ui.DisplayOverlay;
 import jemu.ui.FrameAdapter;
 import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
+import jemu.ui.MonitorMask;
 import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
 
@@ -1250,6 +1251,8 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		private AmstradDisplayOverlay source;
 
+		private final Insets ZERO_INSETS = new Insets(0, 0, 0, 0);
+
 		public JemuDisplayOverlayBridge(AmstradDisplayOverlay source) {
 			this.source = source;
 		}
@@ -1260,9 +1263,26 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
-				boolean monitorEffect) {
-			getSource().renderOntoDisplay(display, displayBounds, offscreenImage, getGraphicsContext());
+		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, MonitorMask monitorMask,
+				boolean offscreenImage) {
+			Insets monitorInsets = computeMonitorInsets(monitorMask, displayBounds);
+			getSource().renderOntoDisplay(display, displayBounds, monitorInsets, offscreenImage, getGraphicsContext());
+		}
+
+		private Insets computeMonitorInsets(MonitorMask monitorMask, Rectangle displayBounds) {
+			Insets monitorInsets = ZERO_INSETS;
+			if (monitorMask != null) {
+				Insets in = monitorMask.getInsetsToInnerArea();
+				int maskWidth = monitorMask.getImage().getWidth(null);
+				if (displayBounds.width == maskWidth) {
+					monitorInsets = in;
+				} else {
+					double scale = displayBounds.getWidth() / maskWidth;
+					monitorInsets = new Insets((int) Math.round(in.top * scale), (int) Math.round(in.left * scale),
+							(int) Math.round(in.bottom * scale), (int) Math.round(in.right * scale));
+				}
+			}
+			return monitorInsets;
 		}
 
 		@Override

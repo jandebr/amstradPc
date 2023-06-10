@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.monitor.display.overlay;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
@@ -40,12 +41,12 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
-			AmstradGraphicsContext graphicsContext) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		updateFps();
 		if (!getAmstracPc().getMonitor().isShowSystemStats() || offscreenImage)
 			return;
-		drawStatLines(produceStatLines(), display, displayBounds, graphicsContext);
+		drawStatLines(produceStatLines(), display, displayBounds, monitorInsets, graphicsContext);
 	}
 
 	private List<String> produceStatLines() {
@@ -74,7 +75,7 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 		}
 	}
 
-	private void drawStatLines(List<String> lines, Graphics2D display, Rectangle displayBounds,
+	private void drawStatLines(List<String> lines, Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
 			AmstradGraphicsContext graphicsContext) {
 		if (lines.isEmpty())
 			return;
@@ -85,7 +86,7 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 		int boxHeight = lines.size() * lineHeight;
 		int boxWidth = computeBoxWidth(lines, fm);
 		int xcenter = displayBounds.x + displayBounds.width / 2;
-		int ytop = Math.max(14, (int) Math.ceil(12.0 * Math.pow(displayBounds.getHeight() / 544.0, 1.6)));
+		int ytop = Math.max(monitorInsets.top - 8, 0);
 		display.setColor(BOX_COLOR);
 		display.fillRect(xcenter - boxWidth / 2, ytop - 4, boxWidth, boxHeight + 6);
 		// Lines

@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.monitor.display.overlay;
 
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Rectangle;
 
 import javax.swing.ImageIcon;
@@ -15,9 +16,14 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
 	private Rectangle iconBounds;
 
+	private double iconOutsideInnerAreaRatio;
+
+	private static double DEFAULT_ICON_OUTSIDE_INNER_AREA_RATIO = 0.3;
+
 	protected AbstractDisplayOverlay(AmstradPc amstracPc) {
 		this.amstracPc = amstracPc;
 		this.iconBounds = new Rectangle();
+		this.iconOutsideInnerAreaRatio = DEFAULT_ICON_OUTSIDE_INNER_AREA_RATIO;
 	}
 
 	@Override
@@ -26,8 +32,8 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
-			AmstradGraphicsContext graphicsContext) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		// Subclasses to override
 	}
 
@@ -36,17 +42,19 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 		// Subclasses to override
 	}
 
-	protected Rectangle drawIconTopLeft(ImageIcon icon, Graphics2D display, Rectangle displayBounds) {
-		int x = computeXmarginForIcon(icon, displayBounds);
-		int y = computeYmarginForIcon(icon, displayBounds);
+	protected Rectangle drawIconTopLeft(ImageIcon icon, Graphics2D display, Rectangle displayBounds,
+			Insets monitorInsets) {
+		int x = computeLeftMarginForIcon(icon, monitorInsets);
+		int y = computeTopMarginForIcon(icon, monitorInsets);
 		drawIcon(icon, x, y, display);
 		iconBounds.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
 		return iconBounds;
 	}
 
-	protected Rectangle drawIconTopRight(ImageIcon icon, Graphics2D display, Rectangle displayBounds) {
-		int x = displayBounds.width - computeXmarginForIcon(icon, displayBounds) - icon.getIconWidth();
-		int y = computeYmarginForIcon(icon, displayBounds);
+	protected Rectangle drawIconTopRight(ImageIcon icon, Graphics2D display, Rectangle displayBounds,
+			Insets monitorInsets) {
+		int x = displayBounds.width - computeRightMarginForIcon(icon, monitorInsets) - icon.getIconWidth();
+		int y = computeTopMarginForIcon(icon, monitorInsets);
 		drawIcon(icon, x, y, display);
 		iconBounds.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
 		return iconBounds;
@@ -56,12 +64,19 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 		display.drawImage(icon.getImage(), x, y, null);
 	}
 
-	private int computeXmarginForIcon(ImageIcon icon, Rectangle displayBounds) {
-		return Math.max(8, (int) Math.ceil(16.0 * Math.pow(displayBounds.getWidth() / 768.0, 1.2)));
+	private int computeLeftMarginForIcon(ImageIcon icon, Insets monitorInsets) {
+		int dx = (int) Math.round(icon.getIconWidth() * iconOutsideInnerAreaRatio);
+		return monitorInsets.left - dx;
 	}
 
-	private int computeYmarginForIcon(ImageIcon icon, Rectangle displayBounds) {
-		return Math.max(6, (int) Math.ceil(12.0 * Math.pow(displayBounds.getHeight() / 544.0, 1.6)));
+	private int computeRightMarginForIcon(ImageIcon icon, Insets monitorInsets) {
+		int dx = (int) Math.round(icon.getIconWidth() * iconOutsideInnerAreaRatio);
+		return monitorInsets.right - dx;
+	}
+
+	private int computeTopMarginForIcon(ImageIcon icon, Insets monitorInsets) {
+		int dy = (int) Math.round(icon.getIconHeight() * iconOutsideInnerAreaRatio);
+		return monitorInsets.top - dy;
 	}
 
 	protected boolean isLargeDisplay(Rectangle displayBounds) {

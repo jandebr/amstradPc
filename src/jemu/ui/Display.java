@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 
 import jemu.core.Util;
 import jemu.core.samples.Samples;
+import jemu.settings.Settings;
 
 /**
  * Title: JEMU Description: The Java Emulation Platform Copyright: Copyright (c) 2002 Company:
@@ -475,7 +476,7 @@ public class Display extends JComponent {
 		paintScanLines(g);
 		paintYM(g);
 		paintKeys(g);
-		paintDisplayOverlays(g, offscreenImage, monitorEffect);
+		paintDisplayOverlays(g, getMonitorMask(), offscreenImage);
 	}
 
 	private void doTouchFPS() {
@@ -638,12 +639,12 @@ public class Display extends JComponent {
 		}
 	}
 
-	private void paintDisplayOverlays(Graphics g, boolean offscreenImage, boolean monitorEffect) {
+	private void paintDisplayOverlays(Graphics g, MonitorMask monitorMask, boolean offscreenImage) {
 		Graphics2D g2 = (Graphics2D) g;
 		if (getCustomDisplayOverlay() != null) {
-			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage, monitorEffect);
+			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect, monitorMask, offscreenImage);
 		}
-		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect, offscreenImage, monitorEffect);
+		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect, monitorMask, offscreenImage);
 	}
 
 	@Override
@@ -726,6 +727,20 @@ public class Display extends JComponent {
 		}
 	}
 
+	public MonitorMask getMonitorMask() {
+		MonitorMask mask = null;
+		MonitorMaskFactory factory = MonitorMaskFactory.getInstance();
+		String monitor = Settings.get(Settings.MONITOR, "");
+		if (Settings.MONITOR_COLOUR.equals(monitor)) {
+			mask = factory.getCTM644MonitorMask();
+		} else if (Settings.MONITOR_GREEN.equals(monitor)) {
+			mask = factory.getGT65MonitorMask();
+		} else {
+			mask = factory.getDefaultMonitorMask();
+		}
+		return mask;
+	}
+
 	public DisplayOverlay getCustomDisplayOverlay() {
 		return customDisplayOverlay;
 	}
@@ -785,8 +800,8 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage,
-				boolean monitorEffect) {
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, MonitorMask monitorMask,
+				boolean offscreenImage) {
 			if (offscreenImage)
 				return;
 			ImageObserver imageObserver = Display.this;
@@ -999,10 +1014,11 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, boolean offscreenImage,
-				boolean monitorEffect) {
-			if (monitorEffect) {
-				g.drawImage(mask, imageRect.x, imageRect.y, imageRect.width, imageRect.height, Display.this);
+		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, MonitorMask monitorMask,
+				boolean offscreenImage) {
+			if (monitorMask != null) {
+				g.drawImage(monitorMask.getImage(), imageRect.x, imageRect.y, imageRect.width, imageRect.height,
+						Display.this);
 			}
 		}
 

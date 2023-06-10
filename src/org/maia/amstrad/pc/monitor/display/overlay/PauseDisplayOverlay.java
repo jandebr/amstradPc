@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.monitor.display.overlay;
 
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Rectangle;
 
 import javax.swing.ImageIcon;
@@ -16,12 +17,12 @@ public class PauseDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
-			AmstradGraphicsContext graphicsContext) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		if (getAmstracPc().isPaused() && !offscreenImage) {
 			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.pauseOverlayIcon
 					: UIResources.pauseSmallOverlayIcon;
-			drawIconTopRight(icon, display, displayBounds);
+			drawIconTopRight(icon, display, displayBounds, monitorInsets);
 		}
 	}
 

@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.monitor.display.overlay;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Rectangle;
 
 import javax.swing.ImageIcon;
@@ -27,13 +28,13 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, boolean offscreenImage,
-			AmstradGraphicsContext graphicsContext) {
+	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		AmstradTape tape = getAmstracPc().getTape();
 		if (tape.isActive() && !offscreenImage) {
 			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.tapeOverlayIcon
 					: UIResources.tapeSmallOverlayIcon;
-			Rectangle iconBounds = drawIconTopLeft(icon, display, displayBounds);
+			Rectangle iconBounds = drawIconTopLeft(icon, display, displayBounds, monitorInsets);
 			int x1 = iconBounds.x + iconBounds.width - 1;
 			int yc = iconBounds.y + iconBounds.height / 2;
 			if (tape.isWriting()) {
