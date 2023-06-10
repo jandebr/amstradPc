@@ -476,7 +476,7 @@ public class Display extends JComponent {
 		paintScanLines(g);
 		paintYM(g);
 		paintKeys(g);
-		paintDisplayOverlays(g, getMonitorMask(), offscreenImage);
+		paintDisplayOverlays(g, monitorEffect ? getMonitorMask() : null, offscreenImage);
 	}
 
 	private void doTouchFPS() {
