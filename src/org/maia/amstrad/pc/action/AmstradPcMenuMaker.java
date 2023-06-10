@@ -30,44 +30,42 @@ public class AmstradPcMenuMaker {
 
 	private AmstradPcActions actions;
 
-	private MenuFlavor menuFlavor;
+	private LookAndFeel lookAndFeel;
 
-	private Font kioskMenuItemFont;
+	private Font emulatorMenuItemFont;
 
-	private static final int KIOSK_COLOR_BACKGROUND = 0;
+	private static final int EMULATOR_LAF_COLOR_BACKGROUND = 0;
 
-	private static final int KIOSK_COLOR_FOREGROUND = 26;
+	private static final int EMULATOR_LAF_COLOR_FOREGROUND = 26;
 
-	private static final int KIOSK_COLOR_BORDER = 3;
+	private static final int EMULATOR_LAF_COLOR_BORDER = 3;
 
-	private static final int KIOSK_COLOR_SELECTION_BG = 3;
+	private static final int EMULATOR_LAF_COLOR_SELECTION_BG = 3;
 
-	private static final int KIOSK_COLOR_SELECTION_FG = 25;
+	private static final int EMULATOR_LAF_COLOR_SELECTION_FG = 25;
 
-	public AmstradPcMenuMaker(AmstradPcActions actions) {
-		this(actions, MenuFlavor.FULL_MENU);
-	}
-
-	public AmstradPcMenuMaker(AmstradPcActions actions, MenuFlavor menuFlavor) {
+	public AmstradPcMenuMaker(AmstradPcActions actions, LookAndFeel lookAndFeel) {
 		this.actions = actions;
-		this.menuFlavor = menuFlavor;
+		this.lookAndFeel = lookAndFeel;
 		initLookAndFeel();
 	}
 
 	private void initLookAndFeel() {
-		if (isKioskFlavor()) {
-			UIManager.put("Menu.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
-			UIManager.put("Menu.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+		if (isEmulatorLookAndFeel()) {
+			UIManager.put("Menu.selectionBackground", getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_BG));
+			UIManager.put("Menu.selectionForeground", getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_FG));
 			UIManager.put("Menu.arrowIcon", UIResources.menuArrowIcon);
-			UIManager.put("MenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
-			UIManager.put("MenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
-			UIManager.put("CheckBoxMenuItem.selectionBackground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
-			UIManager.put("CheckBoxMenuItem.selectionForeground", getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+			UIManager.put("MenuItem.selectionBackground", getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_BG));
+			UIManager.put("MenuItem.selectionForeground", getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_FG));
+			UIManager.put("CheckBoxMenuItem.selectionBackground",
+					getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_BG));
+			UIManager.put("CheckBoxMenuItem.selectionForeground",
+					getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_FG));
 			UIManager.put("CheckBoxMenuItem.checkIcon", UIResources.checkBoxMenuItemIcon);
 			UIManager.put("RadioButtonMenuItem.selectionBackground",
-					getSystemColors().getColor(KIOSK_COLOR_SELECTION_BG));
+					getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_BG));
 			UIManager.put("RadioButtonMenuItem.selectionForeground",
-					getSystemColors().getColor(KIOSK_COLOR_SELECTION_FG));
+					getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_FG));
 			UIManager.put("RadioButtonMenuItem.checkIcon", UIResources.radioButtonMenuItemIcon);
 		}
 	}
@@ -81,15 +79,7 @@ public class AmstradPcMenuMaker {
 		return updateMenuBarLookAndFeel(menubar);
 	}
 
-	public JPopupMenu createPopupMenu() {
-		if (isKioskFlavor()) {
-			return createKioskPopupMenu();
-		} else {
-			return createFullPopupMenu();
-		}
-	}
-
-	private JPopupMenu createFullPopupMenu() {
+	public JPopupMenu createFullPopupMenu() {
 		JPopupMenu popup = new JPopupMenu("Amstrad Menu");
 		popup.add(createFileMenu());
 		popup.add(createEmulatorMenu());
@@ -98,7 +88,7 @@ public class AmstradPcMenuMaker {
 		return updatePopupMenuLookAndFeel(popup);
 	}
 
-	private JPopupMenu createKioskPopupMenu() {
+	public JPopupMenu createStandardPopupMenu() {
 		JPopupMenu popup = new JPopupMenu("Amstrad Menu");
 		popup.add(createProgramBrowserMenuItem());
 		popup.add(createProgramBrowserSetupMenuItem());
@@ -110,6 +100,7 @@ public class AmstradPcMenuMaker {
 		popup.add(createScreenshotWithMonitorEffectMenuItem());
 		popup.add(createMonitorModeMenu());
 		popup.add(createMonitorEffectsMenu());
+		popup.add(createMonitorFullscreenMenuItem());
 		popup.add(new JSeparator());
 		popup.add(createQuitMenuItem());
 		return updatePopupMenuLookAndFeel(popup);
@@ -346,7 +337,7 @@ public class AmstradPcMenuMaker {
 	private JMenuItem createMonitorFullscreenMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getMonitorFullscreenAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
-		return updateMenuItemLookAndFeel(item);
+		return updateMenuItemLookAndFeel(item, UIResources.fullscreenIcon);
 	}
 
 	private JMenuBar updateMenuBarLookAndFeel(JMenuBar menubar) {
@@ -354,12 +345,12 @@ public class AmstradPcMenuMaker {
 	}
 
 	private JPopupMenu updatePopupMenuLookAndFeel(JPopupMenu menu) {
-		if (isKioskFlavor()) {
-			menu.setBackground(getSystemColors().getColor(KIOSK_COLOR_BACKGROUND));
-			menu.setForeground(getSystemColors().getColor(KIOSK_COLOR_FOREGROUND));
+		if (isEmulatorLookAndFeel()) {
+			menu.setBackground(getSystemColors().getColor(EMULATOR_LAF_COLOR_BACKGROUND));
+			menu.setForeground(getSystemColors().getColor(EMULATOR_LAF_COLOR_FOREGROUND));
 			menu.setBorder(BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(getSystemColors().getColor(KIOSK_COLOR_BACKGROUND), 1),
-					BorderFactory.createLineBorder(getSystemColors().getColor(KIOSK_COLOR_BORDER), 4)));
+					BorderFactory.createLineBorder(getSystemColors().getColor(EMULATOR_LAF_COLOR_BACKGROUND), 1),
+					BorderFactory.createLineBorder(getSystemColors().getColor(EMULATOR_LAF_COLOR_BORDER), 4)));
 			menu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 		return menu;
@@ -379,11 +370,11 @@ public class AmstradPcMenuMaker {
 	}
 
 	private JMenuItem updateMenuItemLookAndFeel(JMenuItem item, Icon icon) {
-		if (isKioskFlavor()) {
-			item.setBackground(getSystemColors().getColor(KIOSK_COLOR_BACKGROUND));
-			item.setForeground(getSystemColors().getColor(KIOSK_COLOR_FOREGROUND));
+		if (isEmulatorLookAndFeel()) {
+			item.setBackground(getSystemColors().getColor(EMULATOR_LAF_COLOR_BACKGROUND));
+			item.setForeground(getSystemColors().getColor(EMULATOR_LAF_COLOR_FOREGROUND));
 			item.setFont(getFontForMenuItem(item));
-			item.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
+			item.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 			item.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			if (icon != null) {
 				item.setIcon(icon);
@@ -393,22 +384,22 @@ public class AmstradPcMenuMaker {
 	}
 
 	private Font getFontForMenuItem(JMenuItem item) {
-		if (isKioskFlavor()) {
-			if (kioskMenuItemFont == null) {
-				kioskMenuItemFont = getMonitor().getGraphicsContext().getSystemFont().deriveFont(24f);
+		if (isEmulatorLookAndFeel()) {
+			if (emulatorMenuItemFont == null) {
+				emulatorMenuItemFont = getMonitor().getGraphicsContext().getSystemFont().deriveFont(16f);
 			}
-			return kioskMenuItemFont;
+			return emulatorMenuItemFont;
 		} else {
 			return item.getFont();
 		}
 	}
 
-	private boolean isKioskFlavor() {
-		return MenuFlavor.KIOSK_MENU.equals(getMenuFlavor());
+	private boolean isEmulatorLookAndFeel() {
+		return LookAndFeel.EMULATOR.equals(getLookAndFeel());
 	}
 
 	private AmstradSystemColors getSystemColors() {
-		return getMonitor().getGraphicsContext().getSystemColors();
+		return AmstradSystemColors.getSystemColors(AmstradMonitorMode.COLOR);
 	}
 
 	private AmstradMonitor getMonitor() {
@@ -419,15 +410,15 @@ public class AmstradPcMenuMaker {
 		return actions;
 	}
 
-	public MenuFlavor getMenuFlavor() {
-		return menuFlavor;
+	public LookAndFeel getLookAndFeel() {
+		return lookAndFeel;
 	}
 
-	public static enum MenuFlavor {
+	public static enum LookAndFeel {
 
-		FULL_MENU,
+		EMULATOR,
 
-		KIOSK_MENU;
+		JAVA;
 
 	}
 

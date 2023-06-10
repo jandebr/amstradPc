@@ -50,6 +50,8 @@ public class UIResources {
 
 	public static ImageIcon monitorEffectIcon = loadIcon("monitor-effect32.png");
 
+	public static ImageIcon fullscreenIcon = loadIcon("fullscreen32.png");
+
 	public static ImageIcon menuArrowIcon = loadIcon("menu-arrowh-right12x22.png");
 
 	public static Icon checkBoxMenuItemIcon = new ButtonStateIcon(loadIcon("unchecked32.png"),

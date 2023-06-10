@@ -70,6 +70,13 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	public abstract boolean isProgramBrowserCentric();
 
 	/**
+	 * Tells whether fullscreen toggling is enabled
+	 * 
+	 * @return <code>true</code> iff fullscreen can be toggled
+	 */
+	public abstract boolean isFullscreenToggleEnabled();
+
+	/**
 	 * Tells whether the original (Jemu) menu is to be shown
 	 * 
 	 * @return <code>true</code> iff the original menu is to be shown
@@ -103,6 +110,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			frame.installMenuBar();
+			frame.installPopupMenu(true);
 			if (args.length == 0) {
 				amstradPc.start();
 			} else if (args.length == 1) {
@@ -116,6 +124,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		@Override
 		public boolean isProgramBrowserCentric() {
 			return false;
+		}
+
+		@Override
+		public boolean isFullscreenToggleEnabled() {
+			return true;
 		}
 
 		@Override
@@ -139,7 +152,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			monitor.setWindowAlwaysOnTop(true);
 			amstradPc.addStateListener(this);
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
-			frame.installPopupMenu();
+			frame.installPopupMenu(false);
 			amstradPc.start();
 		}
 
@@ -152,6 +165,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		@Override
 		public boolean isProgramBrowserCentric() {
 			return true;
+		}
+
+		@Override
+		public boolean isFullscreenToggleEnabled() {
+			return false; // always in fullscreen
 		}
 
 		@Override
@@ -184,6 +202,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		@Override
 		public boolean isProgramBrowserCentric() {
 			return false;
+		}
+
+		@Override
+		public boolean isFullscreenToggleEnabled() {
+			return true;
 		}
 
 		@Override
