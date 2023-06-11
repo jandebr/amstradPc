@@ -100,7 +100,7 @@ public class AmstradPcMenuMaker {
 		popup.add(createScreenshotWithMonitorEffectMenuItem());
 		popup.add(createMonitorModeMenu());
 		popup.add(createMonitorEffectsMenu());
-		popup.add(createMonitorFullscreenMenuItem());
+		popup.add(createWindowFullscreenMenuItem());
 		popup.add(new JSeparator());
 		popup.add(createQuitMenuItem());
 		return updatePopupMenuLookAndFeel(popup);
@@ -320,7 +320,7 @@ public class AmstradPcMenuMaker {
 		menu.add(new WindowTitleAutoUpdateMenuHelper(createWindowDynamicTitleMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new WindowAlwaysOnTopMenuHelper(createWindowAlwaysOnTopMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new JSeparator());
-		menu.add(createMonitorFullscreenMenuItem());
+		menu.add(createWindowFullscreenMenuItem());
 		return updateMenuLookAndFeel(menu);
 	}
 
@@ -334,10 +334,10 @@ public class AmstradPcMenuMaker {
 				new JCheckBoxMenuItem(getActions().getWindowAlwaysOnTopAction()));
 	}
 
-	private JMenuItem createMonitorFullscreenMenuItem() {
-		JMenuItem item = new JMenuItem(getActions().getMonitorFullscreenAction());
+	private JMenuItem createWindowFullscreenMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getWindowFullscreenAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
-		return updateMenuItemLookAndFeel(item, UIResources.fullscreenIcon);
+		return updateMenuItemLookAndFeel(item, UIResources.windowIcon);
 	}
 
 	private JMenuBar updateMenuBarLookAndFeel(JMenuBar menubar) {

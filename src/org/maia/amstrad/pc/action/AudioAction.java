@@ -9,9 +9,9 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 
 public class AudioAction extends AmstradPcAction {
 
-	private static String NAME_MUTE = "Audio off";
+	private static String NAME_MUTE = "Turn audio off";
 
-	private static String NAME_UNMUTE = "Audio on";
+	private static String NAME_UNMUTE = "Turn audio on";
 
 	public AudioAction(AmstradPc amstradPc) {
 		super(amstradPc, "");

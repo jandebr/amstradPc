@@ -2,11 +2,13 @@ package org.maia.amstrad.pc;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -27,7 +29,7 @@ import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.util.AmstradUtils;
 
-public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener {
+public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener, WindowStateListener {
 
 	private AmstradPc amstradPc;
 
@@ -44,6 +46,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		this.amstradPc = amstradPc;
 		amstradPc.addStateListener(this);
 		addWindowListener(this);
+		addWindowStateListener(this);
 		setFocusable(false);
 		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
 		setIconImage(UIResources.cpcIcon.getImage());
@@ -204,6 +207,13 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 	@Override
 	public void windowOpened(WindowEvent event) {
 		// no action
+	}
+
+	@Override
+	public void windowStateChanged(WindowEvent event) {
+		if ((event.getNewState() & Frame.MAXIMIZED_BOTH) != 0) {
+			getAmstradPc().getMonitor().makeWindowFullscreen();
+		}
 	}
 
 	private void refreshUI() {

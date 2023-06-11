@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.AudioAction;
 import org.maia.amstrad.pc.action.PauseResumeAction;
+import org.maia.amstrad.pc.action.WindowFullscreenAction;
 
 public class UIResources {
 
@@ -40,6 +41,12 @@ public class UIResources {
 
 	public static Icon pauseResumeIcon = new PauseResumeIcon(pauseIcon, resumeIcon);
 
+	public static ImageIcon fullscreenIcon = loadIcon("fullscreen32.png");
+
+	public static ImageIcon windowedIcon = loadIcon("windowed32.png");
+
+	public static Icon windowIcon = new WindowIcon(fullscreenIcon, windowedIcon);
+
 	public static ImageIcon infoIcon = loadIcon("info32.png");
 
 	public static ImageIcon screenshotIcon = loadIcon("photo32.png");
@@ -49,8 +56,6 @@ public class UIResources {
 	public static ImageIcon monitorModeIcon = loadIcon("monitor-mode32.png");
 
 	public static ImageIcon monitorEffectIcon = loadIcon("monitor-effect32.png");
-
-	public static ImageIcon fullscreenIcon = loadIcon("fullscreen32.png");
 
 	public static ImageIcon menuArrowIcon = loadIcon("menu-arrowh-right12x22.png");
 
@@ -158,6 +163,20 @@ public class UIResources {
 		protected boolean isSelected(Component c) {
 			Action a = ((JMenuItem) c).getAction();
 			return ((PauseResumeAction) a).isPaused();
+		}
+
+	}
+
+	private static class WindowIcon extends ButtonStateIcon {
+
+		public WindowIcon(Icon fullscreenIcon, Icon windowedIcon) {
+			super(fullscreenIcon, windowedIcon);
+		}
+
+		@Override
+		protected boolean isSelected(Component c) {
+			Action a = ((JMenuItem) c).getAction();
+			return ((WindowFullscreenAction) a).isFullscreen();
 		}
 
 	}

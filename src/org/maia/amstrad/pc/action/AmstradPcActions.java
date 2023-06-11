@@ -78,7 +78,7 @@ public class AmstradPcActions {
 
 	private WindowAlwaysOnTopAction windowAlwaysOnTopAction;
 
-	private MonitorFullscreenAction monitorFullscreenAction;
+	private WindowFullscreenAction windowFullscreenAction;
 
 	public AmstradPcActions(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
@@ -289,11 +289,11 @@ public class AmstradPcActions {
 		return windowAlwaysOnTopAction;
 	}
 
-	public MonitorFullscreenAction getMonitorFullscreenAction() {
-		if (monitorFullscreenAction == null) {
-			monitorFullscreenAction = new MonitorFullscreenAction(getAmstradPc());
+	public WindowFullscreenAction getWindowFullscreenAction() {
+		if (windowFullscreenAction == null) {
+			windowFullscreenAction = new WindowFullscreenAction(getAmstradPc());
 		}
-		return monitorFullscreenAction;
+		return windowFullscreenAction;
 	}
 
 	public AmstradPc getAmstradPc() {
