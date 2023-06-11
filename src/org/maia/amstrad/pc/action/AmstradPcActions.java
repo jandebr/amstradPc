@@ -80,6 +80,8 @@ public class AmstradPcActions {
 
 	private WindowFullscreenAction windowFullscreenAction;
 
+	private WindowCenterOnScreenAction windowCenterOnScreenAction;
+
 	public AmstradPcActions(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 	}
@@ -294,6 +296,13 @@ public class AmstradPcActions {
 			windowFullscreenAction = new WindowFullscreenAction(getAmstradPc());
 		}
 		return windowFullscreenAction;
+	}
+
+	public WindowCenterOnScreenAction getWindowCenterOnScreenAction() {
+		if (windowCenterOnScreenAction == null) {
+			windowCenterOnScreenAction = new WindowCenterOnScreenAction(getAmstradPc());
+		}
+		return windowCenterOnScreenAction;
 	}
 
 	public AmstradPc getAmstradPc() {

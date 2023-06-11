@@ -321,6 +321,7 @@ public class AmstradPcMenuMaker {
 		menu.add(new WindowAlwaysOnTopMenuHelper(createWindowAlwaysOnTopMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new JSeparator());
 		menu.add(createWindowFullscreenMenuItem());
+		menu.add(createWindowCenterOnScreenMenuItem());
 		return updateMenuLookAndFeel(menu);
 	}
 
@@ -338,6 +339,10 @@ public class AmstradPcMenuMaker {
 		JMenuItem item = new JMenuItem(getActions().getWindowFullscreenAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
 		return updateMenuItemLookAndFeel(item, UIResources.windowIcon);
+	}
+
+	private JMenuItem createWindowCenterOnScreenMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getWindowCenterOnScreenAction()));
 	}
 
 	private JMenuBar updateMenuBarLookAndFeel(JMenuBar menubar) {
