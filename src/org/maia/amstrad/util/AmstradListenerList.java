@@ -20,7 +20,6 @@ import java.util.NoSuchElementException;
  * }</pre>
  * 
  * Iteration follows the order in which listeners were added
- * </p>
  * <p>
  * Unlike traditional use of {@link List} for storing listeners, this implementation is robust against concurrent
  * modifications while iterating (within the same thread or by other threads). The behavior is as follows:
@@ -31,9 +30,8 @@ import java.util.NoSuchElementException;
  * {@link #setIncludeAdditionsWhileIterating(boolean)} and passing the value <code>true</code>. This will take effect on
  * both open and newly created iterators. For this to also work in the special case that the last listener, when
  * invoked, wishes to add another listener <em>and</em> remove itself as a listener, it should do so in this specific
- * order. Since a listener usually does not know it's the last in sequence, this order is always recommended.
+ * order. Since a listener usually does not know it's the last in sequence, this order is always recommended.</li>
  * </ul>
- * </p>
  * <p>
  * The implementation is thread-safe
  * </p>
