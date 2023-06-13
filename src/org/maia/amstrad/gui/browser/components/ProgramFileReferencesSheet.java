@@ -47,10 +47,9 @@ public class ProgramFileReferencesSheet extends ProgramSheet {
 					add(new ColoredTextLine(new ColoredTextSpan(StringUtils.fitWidth(symbol, 2), bg, c1),
 							new ColoredTextSpan("\"" + filename + "\"", bg, c1)));
 				}
-				add(new ColoredTextLine(new ColoredTextSpan("  Line ", bg, c2),
-						new ColoredTextSpan(String.valueOf(ref.getLineNumber()), bg, c3),
-						new ColoredTextSpan(": ", bg, c2),
-						new ColoredTextSpan(ref.getInstruction().getSourceForm(), bg, c1)));
+				add(new ColoredTextLine(new ColoredTextSpan("  " + ref.getInstruction().getSourceForm(), bg, c1),
+						new ColoredTextSpan(" on line ", bg, c2),
+						new ColoredTextSpan(String.valueOf(ref.getLineNumber()), bg, c3)));
 				previousFilename = filename;
 			}
 		} catch (AmstradProgramException e) {
