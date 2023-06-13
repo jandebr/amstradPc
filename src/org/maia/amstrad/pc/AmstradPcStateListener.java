@@ -1,6 +1,8 @@
 package org.maia.amstrad.pc;
 
-public interface AmstradPcStateListener {
+import org.maia.amstrad.util.AmstradListener;
+
+public interface AmstradPcStateListener extends AmstradListener {
 
 	void amstradPcStarted(AmstradPc amstradPc);
 

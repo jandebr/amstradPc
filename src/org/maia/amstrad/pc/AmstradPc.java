@@ -1,8 +1,6 @@
 package org.maia.amstrad.pc;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.load.AmstradProgramLoader;
@@ -17,6 +15,7 @@ import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.util.AmstradListenerList;
 import org.maia.swing.dialog.ActionableDialog;
 
 public abstract class AmstradPc {
@@ -25,11 +24,11 @@ public abstract class AmstradPc {
 
 	private AmstradPcActions actions;
 
-	private List<AmstradPcStateListener> stateListeners;
+	private AmstradListenerList<AmstradPcStateListener> stateListeners;
 
 	protected AmstradPc() {
 		this.actions = new AmstradPcActions(this);
-		this.stateListeners = new Vector<AmstradPcStateListener>();
+		this.stateListeners = new AmstradListenerList<AmstradPcStateListener>();
 	}
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
@@ -120,15 +119,15 @@ public abstract class AmstradPc {
 	}
 
 	public void addStateListener(AmstradPcStateListener listener) {
-		getStateListeners().add(listener);
+		getStateListeners().addListener(listener);
 	}
 
 	public void removeStateListener(AmstradPcStateListener listener) {
-		getStateListeners().remove(listener);
+		getStateListeners().removeListener(listener);
 	}
 
 	protected void fireStartedEvent() {
-		for (AmstradPcStateListener listener : getStateListenersFixedList())
+		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcStarted(this);
 	}
 
@@ -143,17 +142,17 @@ public abstract class AmstradPc {
 	}
 
 	protected void fireRebootingEvent() {
-		for (AmstradPcStateListener listener : getStateListenersFixedList())
+		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcRebooting(this);
 	}
 
 	protected void fireTerminatedEvent() {
-		for (AmstradPcStateListener listener : getStateListenersFixedList())
+		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcTerminated(this);
 	}
 
 	protected void fireProgramLoaded() {
-		for (AmstradPcStateListener listener : getStateListenersFixedList())
+		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcProgramLoaded(this);
 	}
 
@@ -169,11 +168,7 @@ public abstract class AmstradPc {
 		return actions;
 	}
 
-	private List<AmstradPcStateListener> getStateListenersFixedList() {
-		return new Vector<AmstradPcStateListener>(getStateListeners());
-	}
-
-	protected List<AmstradPcStateListener> getStateListeners() {
+	protected AmstradListenerList<AmstradPcStateListener> getStateListeners() {
 		return stateListeners;
 	}
 

@@ -2,20 +2,19 @@ package org.maia.amstrad.pc.keyboard;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.util.AmstradIO;
+import org.maia.amstrad.util.AmstradListenerList;
 
 public abstract class AmstradKeyboard extends AmstradDevice {
 
-	private List<AmstradKeyboardListener> keyboardListeners;
+	private AmstradListenerList<AmstradKeyboardListener> keyboardListeners;
 
 	protected AmstradKeyboard(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.keyboardListeners = new Vector<AmstradKeyboardListener>();
+		this.keyboardListeners = new AmstradListenerList<AmstradKeyboardListener>();
 	}
 
 	public abstract boolean isTyping();
@@ -57,11 +56,11 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 	public abstract AmstradKeyboardController getController();
 
 	public void addKeyboardListener(AmstradKeyboardListener listener) {
-		getKeyboardListeners().add(listener);
+		getKeyboardListeners().addListener(listener);
 	}
 
 	public void removeKeyboardListener(AmstradKeyboardListener listener) {
-		getKeyboardListeners().remove(listener);
+		getKeyboardListeners().removeListener(listener);
 	}
 
 	protected void fireKeyboardEventDispatched(AmstradKeyboardEvent event) {
@@ -73,16 +72,12 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 	}
 
 	protected void fireKeyboardBreakEscaped() {
-		for (AmstradKeyboardListener listener : getKeyboardListenersFixedList()) {
+		for (AmstradKeyboardListener listener : getKeyboardListeners()) {
 			listener.amstradKeyboardBreakEscaped(this);
 		}
 	}
 
-	private List<AmstradKeyboardListener> getKeyboardListenersFixedList() {
-		return new Vector<AmstradKeyboardListener>(getKeyboardListeners());
-	}
-
-	protected List<AmstradKeyboardListener> getKeyboardListeners() {
+	protected AmstradListenerList<AmstradKeyboardListener> getKeyboardListeners() {
 		return keyboardListeners;
 	}
 

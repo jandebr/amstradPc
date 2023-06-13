@@ -4,8 +4,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.util.List;
-import java.util.Vector;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradMode;
@@ -26,6 +24,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.util.AmstradListenerList;
 import org.maia.amstrad.util.StringUtils;
 
 public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
@@ -44,7 +43,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private ProgramFileReferencesSheet programFileReferencesSheet;
 
-	private List<ProgramBrowserListener> browserListeners;
+	private AmstradListenerList<ProgramBrowserListener> browserListeners;
 
 	private ProgramBrowserTheme theme;
 
@@ -57,7 +56,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private ProgramBrowserDisplaySource(AmstradPc amstradPc, String windowTitle, Window initialWindow) {
 		super(amstradPc, windowTitle);
 		this.currentWindow = initialWindow;
-		this.browserListeners = new Vector<ProgramBrowserListener>();
+		this.browserListeners = new AmstradListenerList<ProgramBrowserListener>();
 		setTheme(new ProgramBrowserThemeFromSettings());
 	}
 
@@ -525,11 +524,11 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	public void addListener(ProgramBrowserListener listener) {
-		getBrowserListeners().add(listener);
+		getBrowserListeners().addListener(listener);
 	}
 
 	public void removeListener(ProgramBrowserListener listener) {
-		getBrowserListeners().remove(listener);
+		getBrowserListeners().removeListener(listener);
 	}
 
 	public void notifyProgramLoaded(AmstradProgram program) {
@@ -665,7 +664,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return AmstradFactory.getInstance().getAmstradContext().getUserSettings();
 	}
 
-	private List<ProgramBrowserListener> getBrowserListeners() {
+	private AmstradListenerList<ProgramBrowserListener> getBrowserListeners() {
 		return browserListeners;
 	}
 

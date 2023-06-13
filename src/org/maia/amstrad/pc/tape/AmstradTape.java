@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
-import java.util.Vector;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicByteCode;
@@ -15,10 +13,11 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.util.AmstradIO;
+import org.maia.amstrad.util.AmstradListenerList;
 
 public abstract class AmstradTape extends AmstradDevice {
 
-	private List<AmstradTapeListener> tapeListeners;
+	private AmstradListenerList<AmstradTapeListener> tapeListeners;
 
 	private boolean reading;
 
@@ -28,7 +27,7 @@ public abstract class AmstradTape extends AmstradDevice {
 
 	protected AmstradTape(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.tapeListeners = new Vector<AmstradTapeListener>();
+		this.tapeListeners = new AmstradListenerList<AmstradTapeListener>();
 	}
 
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
@@ -74,11 +73,11 @@ public abstract class AmstradTape extends AmstradDevice {
 	}
 
 	public void addTapeListener(AmstradTapeListener listener) {
-		getTapeListeners().add(listener);
+		getTapeListeners().addListener(listener);
 	}
 
 	public void removeTapeListener(AmstradTapeListener listener) {
-		getTapeListeners().remove(listener);
+		getTapeListeners().removeListener(listener);
 	}
 
 	public void notifyTapeReading(String filename) {
@@ -127,7 +126,7 @@ public abstract class AmstradTape extends AmstradDevice {
 			listener.amstradTapeStoppedWriting(this);
 	}
 
-	protected List<AmstradTapeListener> getTapeListeners() {
+	protected AmstradListenerList<AmstradTapeListener> getTapeListeners() {
 		return tapeListeners;
 	}
 

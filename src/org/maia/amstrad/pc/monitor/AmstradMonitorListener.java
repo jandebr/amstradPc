@@ -1,6 +1,8 @@
 package org.maia.amstrad.pc.monitor;
 
-public interface AmstradMonitorListener {
+import org.maia.amstrad.util.AmstradListener;
+
+public interface AmstradMonitorListener extends AmstradListener {
 
 	void amstradMonitorModeChanged(AmstradMonitor monitor);
 

@@ -2,8 +2,6 @@ package org.maia.amstrad.pc.monitor;
 
 import java.awt.Component;
 import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JComponent;
 
@@ -14,16 +12,17 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.overlay.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradCoverImageDisplaySource;
+import org.maia.amstrad.util.AmstradListenerList;
 
 public abstract class AmstradMonitor extends AmstradDevice {
 
-	private List<AmstradMonitorListener> monitorListeners;
+	private AmstradListenerList<AmstradMonitorListener> monitorListeners;
 
 	private boolean showSystemStats;
 
 	protected AmstradMonitor(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.monitorListeners = new Vector<AmstradMonitorListener>();
+		this.monitorListeners = new AmstradListenerList<AmstradMonitorListener>();
 	}
 
 	public abstract AmstradGraphicsContext getGraphicsContext();
@@ -110,11 +109,11 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	public abstract void resetCustomDisplayOverlay();
 
 	public void addMonitorListener(AmstradMonitorListener listener) {
-		getMonitorListeners().add(listener);
+		getMonitorListeners().addListener(listener);
 	}
 
 	public void removeMonitorListener(AmstradMonitorListener listener) {
-		getMonitorListeners().remove(listener);
+		getMonitorListeners().removeListener(listener);
 	}
 
 	protected void fireMonitorModeChangedEvent() {
@@ -162,7 +161,7 @@ public abstract class AmstradMonitor extends AmstradDevice {
 			listener.amstradDisplaySourceChanged(this);
 	}
 
-	protected List<AmstradMonitorListener> getMonitorListeners() {
+	protected AmstradListenerList<AmstradMonitorListener> getMonitorListeners() {
 		return monitorListeners;
 	}
 

@@ -1,18 +1,16 @@
 package org.maia.amstrad.pc.audio;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.util.AmstradListenerList;
 
 public abstract class AmstradAudio extends AmstradDevice {
 
-	private List<AmstradAudioListener> audioListeners;
+	private AmstradListenerList<AmstradAudioListener> audioListeners;
 
 	public AmstradAudio(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.audioListeners = new Vector<AmstradAudioListener>();
+		this.audioListeners = new AmstradListenerList<AmstradAudioListener>();
 	}
 
 	public abstract void mute();
@@ -22,11 +20,11 @@ public abstract class AmstradAudio extends AmstradDevice {
 	public abstract boolean isMuted();
 
 	public void addAudioListener(AmstradAudioListener listener) {
-		getAudioListeners().add(listener);
+		getAudioListeners().addListener(listener);
 	}
 
 	public void removeAudioListener(AmstradAudioListener listener) {
-		getAudioListeners().remove(listener);
+		getAudioListeners().removeListener(listener);
 	}
 
 	protected void fireAudioMutedEvent() {
@@ -39,7 +37,7 @@ public abstract class AmstradAudio extends AmstradDevice {
 			listener.amstradAudioUnmuted(this);
 	}
 
-	protected List<AmstradAudioListener> getAudioListeners() {
+	protected AmstradListenerList<AmstradAudioListener> getAudioListeners() {
 		return audioListeners;
 	}
 

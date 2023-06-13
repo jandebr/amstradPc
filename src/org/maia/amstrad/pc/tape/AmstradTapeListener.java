@@ -1,6 +1,8 @@
 package org.maia.amstrad.pc.tape;
 
-public interface AmstradTapeListener {
+import org.maia.amstrad.util.AmstradListener;
+
+public interface AmstradTapeListener extends AmstradListener {
 
 	void amstradTapeReading(AmstradTape tape);
 

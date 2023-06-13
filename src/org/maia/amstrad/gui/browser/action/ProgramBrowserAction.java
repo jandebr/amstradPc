@@ -2,8 +2,6 @@ package org.maia.amstrad.gui.browser.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.List;
-import java.util.Vector;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradMode;
@@ -15,16 +13,17 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.util.AmstradListenerList;
 
 public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrowserListener {
 
 	private ProgramBrowserDisplaySource displaySource;
 
-	private List<ProgramBrowserListener> browserListeners;
+	private AmstradListenerList<ProgramBrowserListener> browserListeners;
 
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
-		this.browserListeners = new Vector<ProgramBrowserListener>();
+		this.browserListeners = new AmstradListenerList<ProgramBrowserListener>();
 		updateName();
 		amstradPc.getMonitor().addMonitorListener(this);
 		amstradPc.getKeyboard().addKeyboardListener(this);
@@ -111,11 +110,11 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	}
 
 	public void addListener(ProgramBrowserListener listener) {
-		getBrowserListeners().add(listener);
+		getBrowserListeners().addListener(listener);
 	}
 
 	public void removeListener(ProgramBrowserListener listener) {
-		getBrowserListeners().remove(listener);
+		getBrowserListeners().removeListener(listener);
 	}
 
 	@Override
@@ -147,7 +146,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		return displaySource;
 	}
 
-	private List<ProgramBrowserListener> getBrowserListeners() {
+	private AmstradListenerList<ProgramBrowserListener> getBrowserListeners() {
 		return browserListeners;
 	}
 

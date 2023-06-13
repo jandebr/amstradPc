@@ -1,11 +1,9 @@
 package org.maia.amstrad.load;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.util.AmstradListenerList;
 
 public abstract class AmstradProgramRuntime {
 
@@ -17,31 +15,30 @@ public abstract class AmstradProgramRuntime {
 
 	private boolean disposed;
 
-	private List<AmstradProgramRuntimeListener> listeners;
+	private AmstradListenerList<AmstradProgramRuntimeListener> listeners;
 
 	protected AmstradProgramRuntime(AmstradProgram program, AmstradPc amstradPc) {
 		this.program = program;
 		this.amstradPc = amstradPc;
-		this.listeners = new Vector<AmstradProgramRuntimeListener>();
+		this.listeners = new AmstradListenerList<AmstradProgramRuntimeListener>();
 	}
 
 	public void addListener(AmstradProgramRuntimeListener listener) {
-		getListeners().add(listener);
+		getListeners().addListener(listener);
 	}
 
 	public void removeListener(AmstradProgramRuntimeListener listener) {
-		getListeners().remove(listener);
+		getListeners().removeListener(listener);
 	}
 
 	public final synchronized void run(String... args) throws AmstradProgramException {
 		checkNotDisposed();
-		List<AmstradProgramRuntimeListener> listeners = getListenersFixedList();
-		for (AmstradProgramRuntimeListener listener : listeners) {
+		for (AmstradProgramRuntimeListener listener : getListeners()) {
 			listener.amstradProgramIsAboutToRun(this);
 		}
 		doRun(args);
 		setRun(true);
-		for (AmstradProgramRuntimeListener listener : listeners) {
+		for (AmstradProgramRuntimeListener listener : getListeners()) {
 			listener.amstradProgramIsRun(this);
 		}
 	}
@@ -51,7 +48,7 @@ public abstract class AmstradProgramRuntime {
 	public synchronized void dispose(boolean programRemainsLoaded) {
 		if (!isDisposed()) {
 			setDisposed(true);
-			for (AmstradProgramRuntimeListener listener : getListenersFixedList()) {
+			for (AmstradProgramRuntimeListener listener : getListeners()) {
 				listener.amstradProgramIsDisposed(this, programRemainsLoaded);
 			}
 		}
@@ -86,11 +83,7 @@ public abstract class AmstradProgramRuntime {
 		this.disposed = disposed;
 	}
 
-	private List<AmstradProgramRuntimeListener> getListenersFixedList() {
-		return new Vector<AmstradProgramRuntimeListener>(getListeners());
-	}
-
-	protected List<AmstradProgramRuntimeListener> getListeners() {
+	protected AmstradListenerList<AmstradProgramRuntimeListener> getListeners() {
 		return listeners;
 	}
 

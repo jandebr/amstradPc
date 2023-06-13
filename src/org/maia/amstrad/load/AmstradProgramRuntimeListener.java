@@ -1,6 +1,8 @@
 package org.maia.amstrad.load;
 
-public interface AmstradProgramRuntimeListener {
+import org.maia.amstrad.util.AmstradListener;
+
+public interface AmstradProgramRuntimeListener extends AmstradListener {
 
 	void amstradProgramIsAboutToRun(AmstradProgramRuntime programRuntime);
 
