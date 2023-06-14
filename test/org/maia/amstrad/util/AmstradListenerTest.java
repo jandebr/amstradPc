@@ -1,8 +1,5 @@
 package org.maia.amstrad.util;
 
-import org.maia.amstrad.util.AmstradListener;
-import org.maia.amstrad.util.AmstradListenerList;
-
 public class AmstradListenerTest {
 
 	private AmstradListenerList<MyListener> listeners;
@@ -34,6 +31,10 @@ public class AmstradListenerTest {
 		getListeners().removeListener(listener);
 	}
 
+	private void removeAllListeners() {
+		getListeners().removeAllListeners();
+	}
+
 	private void notifyThem() {
 		for (MyListener listener : getListeners()) {
 			listener.notifyMe();
@@ -56,8 +57,8 @@ public class AmstradListenerTest {
 		public void notifyMe() {
 			System.out.println("NOTIFIED: " + getName());
 			if ("A".equals(getName())) {
+				removeAllListeners();
 				addListener(new MyObserver("C"));
-				removeListener(this);
 			} else if ("C".equals(getName())) {
 				addListener(new MyObserver("D"));
 				removeListener(this);

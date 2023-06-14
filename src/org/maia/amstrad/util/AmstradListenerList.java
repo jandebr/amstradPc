@@ -1,12 +1,13 @@
 package org.maia.amstrad.util;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * An iterable list of <code>AmstradListener</code> or any of its sub-interfaces. The primary use case is to provide one
- * consistent implementation of the <em>Observer</em> design pattern.
+ * An iterable list of <code>AmstradListener</code> or any of its sub-interfaces. The primary use case is to provide a
+ * consistent and reusable implementation of the <em>Observer</em> design pattern.
  * 
  * <p>
  * Iteration can be performed using the following code idiom:
@@ -21,23 +22,32 @@ import java.util.NoSuchElementException;
  * 
  * Iteration follows the order in which listeners were added
  * <p>
- * Unlike traditional use of {@link List} for storing listeners, this implementation is robust against concurrent
- * modifications while iterating (within the same thread or by other threads). The behavior is as follows:
+ * Unlike traditional {@link List} implementations for storing listeners, this implementation is robust against
+ * concurrent modifications while iterating (within the same thread or by other threads). In particular, an
+ * <code>AmstradListenerList</code> will never throw any {@link ConcurrentModificationException}. The behavior is
+ * defined as follows:
  * <ul>
- * <li>When a listener is removed and is ahead of an open iterator, it will be skipped by that iterator</li>
- * <li>When a listener is added, the default behavior is that it will not be returned by open iterators. Newly created
- * iterators will include the new listener. The default behavior can be altered by
- * {@link #setIncludeAdditionsWhileIterating(boolean)} and passing the value <code>true</code>. This will take effect on
- * both open and newly created iterators. For this to also work in the special case that the last listener, when
- * invoked, wishes to add another listener <em>and</em> remove itself as a listener, it should do so in this specific
- * order. Since a listener usually does not know it's the last in sequence, this order is always recommended.</li>
+ * <li>When a listener is added by {@link #addListener(AmstradListener)}, the default behavior is that it will not be
+ * returned by open iterators. It requires a new iterator to include the added listener. The default behavior can be
+ * altered by {@link #setIncludeAdditionsWhileIterating(boolean)} and passing the value <code>true</code>. This will
+ * take effect on both open and newly created iterators. However, whenever a situation arises where the listener most
+ * recently returned by an open iterator as well as any listeners ahead have been removed, any future additions will no
+ * longer be returned by that iterator, regardless the setting</li>
+ * <li>When a listener is removed by {@link #removeListener(AmstradListener)} and is <em>before</em> the one most
+ * recently returned by an open iterator, it has no effect on that iterator</li>
+ * <li>When a listener is removed by {@link #removeListener(AmstradListener)} and is <em>ahead</em> of an open iterator,
+ * it will be skipped by that iterator. However, this behavior is no longer guaranteed within that iterator as soon as
+ * the <em>most recently returned</em> listener by that iterator is removed</li>
+ * <li>When all listeners are removed at once by {@link #removeAllListeners()}, an open iterator will be instantly
+ * exhausted, except when the <em>most recently returned</em> listener by that iterator and one or more listeners ahead
+ * have been removed before. In that case the iterator may still return some of those listeners</li>
  * </ul>
  * <p>
  * The implementation is thread-safe
  * </p>
  * 
  * @param <T>
- *            The element type of this list, a sub-interface of <code>AmstradListener</code>
+ *            The type of listener contained in this list, a sub-interface of <code>AmstradListener</code>
  * 
  * @see AmstradListener
  */
@@ -54,13 +64,6 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 	private EmptyListenerIterator emptyListenerIterator;
 
 	public AmstradListenerList() {
-		clear();
-	}
-
-	public synchronized void clear() {
-		setHeadElement(null);
-		setTailElement(null);
-		setNextElementSequenceNumber(0);
 	}
 
 	public synchronized void addListener(T listener) {
@@ -97,6 +100,19 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 				current = next;
 			}
 		}
+	}
+
+	public synchronized void removeAllListeners() {
+		// Break the chain
+		ListenerElement current = getHeadElement();
+		while (current != null) {
+			ListenerElement next = current.getNextElement();
+			current.setNextElement(null);
+			current = next;
+		}
+		setHeadElement(null);
+		setTailElement(null);
+		setNextElementSequenceNumber(0);
 	}
 
 	@Override
