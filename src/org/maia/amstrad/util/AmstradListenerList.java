@@ -4,13 +4,14 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Vector;
 
 /**
  * An iterable list of <code>AmstradListener</code> or any of its sub-interfaces. The primary use case is to provide a
- * consistent and reusable implementation of the <em>Observer</em> design pattern.
+ * consistent and reusable implementation of the <em>Observer</em> design pattern
  * 
  * <p>
- * Iteration can be performed using the following code idiom:
+ * Iteration can be performed using the traditional code idiom:
  * 
  * <pre>{@code
  * AmstradListenerList<MyListener> listeners = new AmstradListenerList<MyListener>();
@@ -22,25 +23,23 @@ import java.util.NoSuchElementException;
  * 
  * Iteration follows the order in which listeners were added
  * <p>
+ * A listener can only participate once in an <code>AmstradListenerList</code>. This is checked when adding listeners
+ * <p>
  * Unlike traditional {@link List} implementations for storing listeners, this implementation is robust against
  * concurrent modifications while iterating (within the same thread or by other threads). In particular, an
- * <code>AmstradListenerList</code> will never throw any {@link ConcurrentModificationException}. The behavior is
- * defined as follows:
+ * <code>AmstradListenerList</code> will never throw any {@link ConcurrentModificationException}. The modification
+ * behavior is defined as follows:
  * <ul>
- * <li>When a listener is added by {@link #addListener(AmstradListener)}, the default behavior is that it will not be
- * returned by open iterators. It requires a new iterator to include the added listener. The default behavior can be
- * altered by {@link #setIncludeAdditionsWhileIterating(boolean)} and passing the value <code>true</code>. This will
- * take effect on both open and newly created iterators. However, whenever a situation arises where the listener most
- * recently returned by an open iterator as well as any listeners ahead have been removed, any future additions will no
- * longer be returned by that iterator, regardless the setting</li>
- * <li>When a listener is removed by {@link #removeListener(AmstradListener)} and is <em>before</em> the one most
- * recently returned by an open iterator, it has no effect on that iterator</li>
- * <li>When a listener is removed by {@link #removeListener(AmstradListener)} and is <em>ahead</em> of an open iterator,
- * it will be skipped by that iterator. However, this behavior is no longer guaranteed within that iterator as soon as
- * the <em>most recently returned</em> listener by that iterator is removed</li>
- * <li>When all listeners are removed at once by {@link #removeAllListeners()}, an open iterator will be instantly
- * exhausted, except when the <em>most recently returned</em> listener by that iterator and one or more listeners ahead
- * have been removed before. In that case the iterator may still return some of those listeners</li>
+ * <li>Listeners added by {@link #addListener(AmstradListener)} are not returned by open iterators. It requires a new
+ * iterator to include the added listener. This is the default behavior but it can be altered by
+ * {@link #setIncludeAdditionsWhileIterating(boolean)} passing the value <code>true</code>. This has immediate effect on
+ * both newly created iterators and open iterators with one exception. When all listeners ahead of an iterator have been
+ * removed as well as its last returned listener, additions will no longer apply to that iterator. Those iterators have
+ * become fully exhausted</li>
+ * <li>Listeners removed by {@link #removeListener(AmstradListener)} will no longer be returned by any iterator (unless
+ * they are added again, see previous point). Removal takes effect immediately</li>
+ * <li>Removing all listeners at once by {@link #removeAllListeners()} or {@link #clear()} will instantly exhaust all
+ * open iterators</li>
  * </ul>
  * <p>
  * The implementation is thread-safe
@@ -53,30 +52,81 @@ import java.util.NoSuchElementException;
  */
 public class AmstradListenerList<T extends AmstradListener> implements Iterable<T> {
 
-	private ListenerElement headElement;
+	/**
+	 * All added listener elements in between <code>clear</code> operations. Can contain removed listeners as well
+	 * 
+	 * @see ListenerElement#isRemoved()
+	 */
+	private List<ListenerElement> addedElements;
 
-	private ListenerElement tailElement;
+	private ListenerElement headElement; // starting point for new iterators
 
-	private int nextElementSequenceNumber;
+	private ListenerElement tailElement; // attachment point for added listeners
 
 	private boolean includeAdditionsWhileIterating; // false by default
 
 	private EmptyListenerIterator emptyListenerIterator;
 
 	public AmstradListenerList() {
+		this.addedElements = new Vector<ListenerElement>();
 	}
 
-	public synchronized void addListener(T listener) {
-		ListenerElement element = new ListenerElement(listener);
-		if (isEmpty()) {
-			setHeadElement(element);
-		} else {
-			getTailElement().setNextElement(element);
+	/**
+	 * Tells whether a given listener is a member of this list
+	 * <p>
+	 * The method of comparison is via the <code>listener.equals()</code> method
+	 * </p>
+	 * 
+	 * @param listener
+	 *            The listener to check
+	 * @return <code>true</code> if the listener is part of this list, <code>false</code> otherwise
+	 */
+	public synchronized boolean containsListener(T listener) {
+		ListenerElement current = getHeadElement();
+		while (current != null) {
+			if (current.getListener().equals(listener))
+				return true;
+			current = current.getNextElement();
 		}
-		setTailElement(element);
+		return false;
 	}
 
-	public synchronized void removeListener(T listener) {
+	/**
+	 * Adds a listener to this list
+	 * 
+	 * @param listener
+	 *            The listener to add
+	 * @return <code>true</code> if this list changed as a result of the call, <code>false</code> if the listener was
+	 *         already in this list
+	 * @see #containsListener(AmstradListener)
+	 */
+	public synchronized boolean addListener(T listener) {
+		if (!containsListener(listener)) {
+			int sequenceNumber = getAddedElements().size();
+			ListenerElement element = new ListenerElement(listener, sequenceNumber);
+			if (isEmpty()) {
+				setHeadElement(element);
+			} else {
+				getTailElement().setNextElement(element);
+			}
+			setTailElement(element);
+			getAddedElements().add(element);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Removes a listener from this list
+	 * 
+	 * @param listener
+	 *            The listener to remove
+	 * @return <code>true</code> if this list changed as a result of the call, <code>false</code> if the listener was
+	 *         not in this list
+	 * @see #containsListener(AmstradListener)
+	 */
+	public synchronized boolean removeListener(T listener) {
 		boolean removed = false;
 		ListenerElement previous = null;
 		ListenerElement current = getHeadElement();
@@ -94,25 +144,37 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 						setTailElement(previous); // removed at tail
 					}
 				}
+				current.setRemoved(true);
 				removed = true;
 			} else {
 				previous = current;
 				current = next;
 			}
 		}
+		return removed;
 	}
 
+	/**
+	 * Remove all listeners from this list
+	 */
 	public synchronized void removeAllListeners() {
-		// Break the chain
-		ListenerElement current = getHeadElement();
-		while (current != null) {
-			ListenerElement next = current.getNextElement();
-			current.setNextElement(null);
-			current = next;
+		for (ListenerElement element : getAddedElements()) {
+			element.setRemoved(true);
 		}
+		getAddedElements().clear();
 		setHeadElement(null);
 		setTailElement(null);
-		setNextElementSequenceNumber(0);
+	}
+
+	/**
+	 * Remove all listeners from this list
+	 * <p>
+	 * Identical to <code>removeAllListeners()</code> but the naming is more similar to that of the <code>List</code>
+	 * interface
+	 * </p>
+	 */
+	public synchronized void clear() {
+		removeAllListeners();
 	}
 
 	@Override
@@ -127,14 +189,13 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 		}
 	}
 
+	/**
+	 * Tells whether no listeners are present in this list
+	 * 
+	 * @return <code>true</code> if there are no listeners in this list, <code>false</code> otherwise
+	 */
 	public boolean isEmpty() {
 		return getHeadElement() == null;
-	}
-
-	private synchronized int pullNextElementSequenceNumber() {
-		int n = getNextElementSequenceNumber();
-		setNextElementSequenceNumber(n + 1);
-		return n;
 	}
 
 	private ListenerElement getHeadElement() {
@@ -153,20 +214,28 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 		this.tailElement = tailElement;
 	}
 
+	private List<ListenerElement> getAddedElements() {
+		return addedElements;
+	}
+
+	/**
+	 * Tells whether added listeners take part in open iterators
+	 * 
+	 * @return <code>true</code> when added listeners take part in open iterators, <code>false</code> (default)
+	 *         otherwise
+	 */
 	public boolean isIncludeAdditionsWhileIterating() {
 		return includeAdditionsWhileIterating;
 	}
 
+	/**
+	 * Sets whether added listeners take part in open iterators
+	 * 
+	 * @param include
+	 *            <code>true</code> when added listeners should take part in open iterators, <code>false</code> if not
+	 */
 	public void setIncludeAdditionsWhileIterating(boolean include) {
 		this.includeAdditionsWhileIterating = include;
-	}
-
-	private int getNextElementSequenceNumber() {
-		return nextElementSequenceNumber;
-	}
-
-	private void setNextElementSequenceNumber(int number) {
-		this.nextElementSequenceNumber = number;
 	}
 
 	private class ListenerElement {
@@ -177,9 +246,11 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 
 		private int sequenceNumber;
 
-		public ListenerElement(T listener) {
+		private boolean removed;
+
+		public ListenerElement(T listener, int sequenceNumber) {
 			this.listener = listener;
-			this.sequenceNumber = pullNextElementSequenceNumber();
+			this.sequenceNumber = sequenceNumber;
 		}
 
 		public ListenerElement getNextElement() {
@@ -198,6 +269,14 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 			return sequenceNumber;
 		}
 
+		public boolean isRemoved() {
+			return removed;
+		}
+
+		public void setRemoved(boolean removed) {
+			this.removed = removed;
+		}
+
 	}
 
 	private class ListenerIterator implements Iterator<T> {
@@ -205,6 +284,10 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 		private ListenerElement initialHeadElement;
 
 		private ListenerElement lastReturnedElement;
+
+		private ListenerElement nextElement;
+
+		private boolean nextElementDefined;
 
 		private int maximumElementSequenceNumber;
 
@@ -219,33 +302,39 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 		}
 
 		@Override
-		public boolean hasNext() {
-			return findNextElement() != null;
+		public synchronized boolean hasNext() {
+			return defineNextElement() != null;
 		}
 
 		@Override
-		public T next() {
-			ListenerElement element = findNextElement();
-			if (element == null) {
-				throw new NoSuchElementException();
+		public synchronized T next() {
+			if (hasNext()) {
+				ListenerElement next = getNextElement();
+				setNextElement(null);
+				setNextElementDefined(false);
+				setLastReturnedElement(next);
+				return next.getListener();
 			} else {
-				setLastReturnedElement(element);
+				throw new NoSuchElementException();
 			}
-			return element.getListener();
 		}
 
-		private ListenerElement findNextElement() {
-			ListenerElement next = null;
-			if (getLastReturnedElement() == null) {
-				next = getInitialHeadElement();
-			} else {
-				next = getLastReturnedElement().getNextElement();
+		private ListenerElement defineNextElement() {
+			if (!isNextElementDefined()) {
+				ListenerElement next = null;
+				if (getLastReturnedElement() == null) {
+					next = getInitialHeadElement();
+				} else {
+					next = getLastReturnedElement().getNextElement();
+				}
+				while (next != null && (next.isRemoved() || (!isIncludeAdditionsWhileIterating()
+						&& next.getSequenceNumber() > getMaximumElementSequenceNumber()))) {
+					next = next.getNextElement();
+				}
+				setNextElement(next);
+				setNextElementDefined(true);
 			}
-			if (next != null && !isIncludeAdditionsWhileIterating()
-					&& next.getSequenceNumber() > getMaximumElementSequenceNumber()) {
-				next = null;
-			}
-			return next;
+			return getNextElement();
 		}
 
 		private ListenerElement getInitialHeadElement() {
@@ -262,6 +351,22 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 
 		private void setLastReturnedElement(ListenerElement element) {
 			this.lastReturnedElement = element;
+		}
+
+		private ListenerElement getNextElement() {
+			return nextElement;
+		}
+
+		private void setNextElement(ListenerElement nextElement) {
+			this.nextElement = nextElement;
+		}
+
+		private boolean isNextElementDefined() {
+			return nextElementDefined;
+		}
+
+		private void setNextElementDefined(boolean nextElementDefined) {
+			this.nextElementDefined = nextElementDefined;
 		}
 
 		private int getMaximumElementSequenceNumber() {
