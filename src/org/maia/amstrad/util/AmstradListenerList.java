@@ -4,11 +4,10 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Vector;
 
 /**
  * An iterable list of <code>AmstradListener</code> or any of its sub-interfaces. The primary use case is to provide a
- * consistent and reusable implementation of the <em>Observer</em> design pattern
+ * consistent and reusable implementation for the <em>Observer</em> design pattern
  * 
  * <p>
  * Iteration can be performed using the traditional code idiom:
@@ -26,7 +25,7 @@ import java.util.Vector;
  * A listener can only participate once in an <code>AmstradListenerList</code>. This is checked when adding listeners
  * <p>
  * Unlike traditional {@link List} implementations for storing listeners, this implementation is robust against
- * concurrent modifications while iterating (within the same thread or by other threads). In particular, an
+ * concurrent modifications while iterating (by the same thread or by other threads). In particular, an
  * <code>AmstradListenerList</code> will never throw any {@link ConcurrentModificationException}. The modification
  * behavior is defined as follows:
  * <ul>
@@ -34,10 +33,9 @@ import java.util.Vector;
  * iterator to include the added listener. This is the default behavior but it can be altered by
  * {@link #setIncludeAdditionsWhileIterating(boolean)} passing the value <code>true</code>. This has immediate effect on
  * both newly created iterators and open iterators with one exception. When all listeners ahead of an iterator have been
- * removed as well as its last returned listener, additions will no longer apply to that iterator. Those iterators have
- * become fully exhausted</li>
+ * removed as well as its last returned listener, additions will no longer be visible to that (exhausted) iterator</li>
  * <li>Listeners removed by {@link #removeListener(AmstradListener)} will no longer be returned by any iterator (unless
- * they are added again, see previous point). Removal takes effect immediately</li>
+ * they are added again, see previous point)</li>
  * <li>Removing all listeners at once by {@link #removeAllListeners()} or {@link #clear()} will instantly exhaust all
  * open iterators</li>
  * </ul>
@@ -52,23 +50,17 @@ import java.util.Vector;
  */
 public class AmstradListenerList<T extends AmstradListener> implements Iterable<T> {
 
-	/**
-	 * All added listener elements in between <code>clear</code> operations. Can contain removed listeners as well
-	 * 
-	 * @see ListenerElement#isRemoved()
-	 */
-	private List<ListenerElement> addedElements;
-
 	private ListenerElement headElement; // starting point for new iterators
 
 	private ListenerElement tailElement; // attachment point for added listeners
+
+	private int sequenceNumberForNextElement;
 
 	private boolean includeAdditionsWhileIterating; // false by default
 
 	private EmptyListenerIterator emptyListenerIterator;
 
 	public AmstradListenerList() {
-		this.addedElements = new Vector<ListenerElement>();
 	}
 
 	/**
@@ -102,15 +94,13 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 	 */
 	public synchronized boolean addListener(T listener) {
 		if (!containsListener(listener)) {
-			int sequenceNumber = getAddedElements().size();
-			ListenerElement element = new ListenerElement(listener, sequenceNumber);
+			ListenerElement element = new ListenerElement(listener, sequenceNumberForNextElement++);
 			if (isEmpty()) {
 				setHeadElement(element);
 			} else {
 				getTailElement().setNextElement(element);
 			}
 			setTailElement(element);
-			getAddedElements().add(element);
 			return true;
 		} else {
 			return false;
@@ -158,10 +148,11 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 	 * Remove all listeners from this list
 	 */
 	public synchronized void removeAllListeners() {
-		for (ListenerElement element : getAddedElements()) {
-			element.setRemoved(true);
+		ListenerElement current = getHeadElement();
+		while (current != null) {
+			current.setRemoved(true);
+			current = current.getNextElement();
 		}
-		getAddedElements().clear();
 		setHeadElement(null);
 		setTailElement(null);
 	}
@@ -212,10 +203,6 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 
 	private void setTailElement(ListenerElement tailElement) {
 		this.tailElement = tailElement;
-	}
-
-	private List<ListenerElement> getAddedElements() {
-		return addedElements;
 	}
 
 	/**
