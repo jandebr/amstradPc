@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="AmstradPc" basedir="." default="package-custom-ant-tasks">
+	<target name="package-custom-ant-tasks">
+		<jar destfile="lib/amstradPc-ant.jar">
+			<fileset dir="bin">
+				<include name="org/maia/amstrad/util/getdown/GetdownDotTextGeneratorTask.class" />
+			</fileset>
+		</jar>
+	</target>
+</project>

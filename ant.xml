@@ -1,34 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="AmstradPc" basedir="." default="distribute">
-	<taskdef name="getdown-dot-text" classname="org.maia.amstrad.util.getdown.GetdownDotTextGeneratorTask" />
-
-	<taskdef name="getdown-digest" classname="com.threerings.getdown.tools.DigesterTask">
+	<taskdef name="getdown-dot-text" classname="org.maia.amstrad.util.getdown.GetdownDotTextGeneratorTask">
 		<classpath>
-			<pathelement location="${libraries.home}/getdown/1.8.7/getdown-ant-1.8.7.jar" />
-			<pathelement location="${libraries.home}/getdown/1.8.7/getdown-core-1.8.7.jar" />
+			<pathelement location="lib/amstradPc-ant.jar" />
 		</classpath>
 	</taskdef>
 
-	<target name="javadoc">
-		<mkdir dir="docs/javadoc" />
-		<javadoc doctitle="Amstrad PC -- A fork of the JavaCPC emulator" destdir="docs/javadoc" access="public" additionalparam="-encoding windows-1252" docencoding="utf-8" classpath="D:\Users\jan\EclipseWS\DefaultJava\Libraries\maiaSwing\maiaSwing.jar" source="1.7" sourcepath="src" packagenames="org.maia.*" noindex="false" nonavbar="false" notree="false" splitindex="true" nodeprecated="false" nodeprecatedlist="false" use="false" author="false" version="false" />
-	</target>
-
-	<target name="package-custom-ant-tasks">
-		<jar destfile="${libraries.home}/amstradPc/amstradPc-ant.jar">
-			<fileset dir="bin">
-				<include name="org/maia/amstrad/util/getdown/GetdownDotTextGeneratorTask.class" />
-			</fileset>
-		</jar>
-	</target>
+	<taskdef name="getdown-digest" classname="com.threerings.getdown.tools.DigesterTask">
+		<classpath>
+			<pathelement location="lib/getdown-ant-1.8.7.jar" />
+			<pathelement location="lib/getdown-core-1.8.7.jar" />
+		</classpath>
+	</taskdef>
 
 	<target name="package">
-		<jar destfile="${libraries.home}/amstradPc/amstradPc.jar">
+		<jar destfile="dist/amstradPc.jar">
 			<manifest>
 				<attribute name="Main-Class" value="org.maia.amstrad.AmstradMain" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
-			<zipfileset src="${libraries.home}/maiaSwing/maiaSwing.jar" />
+			<zipfileset src="lib/maiaSwing.jar" />
 			<fileset dir="bin" />
 		</jar>
 	</target>
@@ -37,7 +28,7 @@
 		<delete dir="dist/staging" />
 		<mkdir dir="dist/staging/${distribution.id}" />
 		<copy todir="dist/staging/${distribution.id}">
-			<file file="${libraries.home}/amstradPc/amstradPc.jar" />
+			<file file="dist/amstradPc.jar" />
 		</copy>
 		<jar destfile="dist/staging/${distribution.id}/system/cpc.jar">
 			<fileset dir="system" />
