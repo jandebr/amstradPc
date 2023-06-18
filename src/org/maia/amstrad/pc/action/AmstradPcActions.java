@@ -222,7 +222,7 @@ public class AmstradPcActions {
 	public MonitorModeAction getMonitorModeColorAction() {
 		if (monitorModeColorAction == null) {
 			monitorModeColorAction = new MonitorModeAction(AmstradMonitorMode.COLOR, getAmstradPc(),
-					"Color monitor (CTM640)");
+					"Color monitor (CTM644)");
 		}
 		return monitorModeColorAction;
 	}
@@ -230,7 +230,7 @@ public class AmstradPcActions {
 	public MonitorModeAction getMonitorModeGreenAction() {
 		if (monitorModeGreenAction == null) {
 			monitorModeGreenAction = new MonitorModeAction(AmstradMonitorMode.GREEN, getAmstradPc(),
-					"Green monitor (GT64)");
+					"Green monitor (GT65)");
 		}
 		return monitorModeGreenAction;
 	}
