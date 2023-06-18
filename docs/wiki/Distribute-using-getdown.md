@@ -46,7 +46,7 @@ On the client pc, go into the installation folder and run the launcher. Use one 
 - `java -jar getdown.jar . default` for default mode
 - `java -jar getdown.jar . kiosk` for kiosk mode
 - `java -jar getdown.jar . original` for original *JavaCPC* mode
-- `java -jar getdown.jar` to keep the same mode from previous run
+- `java -jar getdown.jar` to use the mode from previous run
 
 
 
