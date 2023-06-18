@@ -48,6 +48,8 @@ On the client pc, go into the installation folder and run the launcher. Use one 
 - `java -jar getdown.jar . original` for original *JavaCPC* mode
 - `java -jar getdown.jar` to use the mode from previous run
 
+![Splash screen of the launcher](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-Getdown-Launcher.png)
+
 
 
 ## Update a distribution
