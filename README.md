@@ -1,23 +1,24 @@
 # Amstrad PC
 
-Amstrad PC -- A fork of the *JavaCPC* emulator  
-It was primarily designed for managing and playing a collection of Basic source code programs
+*Amstrad PC* -- A fork of the *JavaCPC* emulator  
+Primarily designed for managing and playing a collection of Basic source code programs
+
+This software was created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
 
 
 
 ## Copyright
 
-This is a modified work based on *JavaCPC* (based on JEMU)
+*Amstrad PC* is a modified work based on [JavaCPC][1], by Markus Hohmann
+*JavaCPC* is based on the original [JEMU][2], by Richard Wilson
+ 
 *JavaCPC* is distributed under the [GNU GENERAL PUBLIC LICENSE](https://github.com/jandebr/amstradPc/blob/main/LICENSE) and so is this work
-
-[JEMU][1] originally by Richard Wilson
-[JavaCPC][2] by Markus Hohmann
 
 
 
 ## Features
 
-*Amstrad PC* is a pure Java software that builds on *JavaCPC (JEMU)* and provides several improvements and features
+*Amstrad PC* is a pure Java software that is based on *JavaCPC (JEMU)* and provides several improvements and features
 
 - Modern keyboard key mapping
 - Instant loading and saving of Basic source code
@@ -27,44 +28,26 @@ This is a modified work based on *JavaCPC* (based on JEMU)
 - Insights into Basic memory allocation
 - Context menu in fullscreen mode
 - *Kiosk mode* for playing games
-- A clean API for integrators
+- A clean API to integrate and extend *Amstrad PC*
 - A Basic parser, compiler and decompiler written in Java
-- Customizable alternative display sources in Java
+- Customizable alternative display sources rendered with Java code
 - Stability and bug fixes
+
+For more information see the [Features](Features) documentation
 
 
 
 ## Getting started
 
+Getting started with *Amstrad PC* is a simple three-step process
+
+1. Obtain source code from [github](https://github.com/jandebr/amstradPc)
+2. Build using `ant -buildfile ant.xml package`, which produces `dist/amstradPc.jar`
+3. Run using `java -jar dist/amstradPc.jar`, which uses the config file `./javacpc.ini`
+
+Alternatively, one can distribute *Amstrad PC* to end user computers, as detailed in the [Distribution](Distribute-Using-Getdown) documentation
 
 
 
-An instance of `AmstradPc` can be obtained from [AmstradFactory](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/AmstradFactory.java) 
-
-See also the main class [AmstradMain](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/AmstradMain.java)
-
-You can launch the software using these VM arguments :
-
-- `-splash:resources/images/amstrad1.png` for a splash startup image
-- `-Djavacpc.ini="javacpc.ini"` for locating the *JavaCPC* configuration file (default ./javacpc.ini)
-- `-Djavacpc.ini.out="javacpc.ini"` for writing the modified *JavaCPC* configuration file (default read-only)
-
-
-
-## Screenshots
-
-Emulated AmstradPc
-![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/amstradPc.png)
-
-Integrated program browser
-![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/program-browser-menu.png)
-
-Program info
-![screenshot](https://github.com/jandebr/amstradPc/blob/main/screenshots/program-browser-info.png)
-
-
-
-## References
-
-[1]: <http://jemu.winape.net> "JEMU"
-[2]: <http://cpc-live.com> "JavaCPC"
+[1]: <http://cpc-live.com> "JavaCPC"
+[2]: <http://jemu.winape.net> "JEMU"

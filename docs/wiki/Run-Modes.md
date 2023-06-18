@@ -1,0 +1,3 @@
+# Amstrad PC run modes
+
+to be worked out...
