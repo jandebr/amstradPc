@@ -39,7 +39,7 @@ To install a distribution on a client pc, follow these steps
     - `getdown.txt` as the launcher configuration
     - `javacpc.ini` as the initial *Amstrad PC* configuration
 3. On the client pc, make sure a Java Runtime Environment (JRE) is available (version 9 or higher)
-4. On the client pc, go into the folder and run either command (see [modes](Run-Modes))
+4. On the client pc, go into the folder and run either command (see [modes](Run-Modes.md))
     - `java -jar getdown.jar . default` for default mode
     - `java -jar getdown.jar . kiosk` for kiosk mode
     - `java -jar getdown.jar . original` for original JavaCPC mode
