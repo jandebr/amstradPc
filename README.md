@@ -10,18 +10,20 @@ This software was created using the Java Development Kit (JDK) 9 and should be c
 ## Copyright
 
 *Amstrad PC* is a modified work based on [JavaCPC][1], by Markus Hohmann
+
 *JavaCPC* is based on the original [JEMU][2], by Richard Wilson
  
-*JavaCPC* is distributed under the [GNU GENERAL PUBLIC LICENSE](https://github.com/jandebr/amstradPc/blob/main/LICENSE) and so is this work
+*JavaCPC* is distributed under the [GNU GENERAL PUBLIC LICENSE](LICENSE.txt) and so is this work
 
 
 
 ## Features
 
-*Amstrad PC* is a pure Java software that is based on *JavaCPC (JEMU)* and provides several improvements and features
+*Amstrad PC* provides several improvements and features over *JavaCPC* / *JEMU*
 
 - Modern keyboard key mapping
-- Instant loading and saving of Basic source code
+- Instant loading of Basic source code
+- Instant saving of Basic source code
 - Integrated program browser
 - Quick access to program info (e.g. game controls) depending on available metadata
 - Support for Basic IO instructions using the host filesystem
@@ -33,7 +35,7 @@ This software was created using the Java Development Kit (JDK) 9 and should be c
 - Customizable alternative display sources rendered with Java code
 - Stability and bug fixes
 
-For more information see the [Features](Features) documentation
+For more information see the [Features](docs/wiki/Features) documentation
 
 
 
@@ -45,7 +47,7 @@ Getting started with *Amstrad PC* is a simple three-step process
 2. Build using `ant -buildfile ant.xml package`, which produces `dist/amstradPc.jar`
 3. Run using `java -jar dist/amstradPc.jar`, which uses the config file `./javacpc.ini`
 
-Alternatively, one can distribute *Amstrad PC* to end user computers, as detailed in the [Distribution](Distribute-Using-Getdown) documentation
+Alternatively, one can distribute *Amstrad PC* to end user computers, as detailed in the [Distribution](docs/wiki/Distribute-Using-Getdown) documentation
 
 
 
