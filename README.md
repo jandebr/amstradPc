@@ -5,6 +5,10 @@ Primarily designed for managing and playing a collection of Basic source code pr
 
 This software was created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
 
+![AmstradPC CTM644 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-CTM644.png)
+
+![AmstradPC GT65 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-GT65.png)
+
 
 
 ## Copyright
@@ -36,6 +40,8 @@ This software was created using the Java Development Kit (JDK) 9 and should be c
 - Stability and bug fixes
 
 For more information see the [Features](https://github.com/jandebr/amstradPc/wiki/Features) documentation
+
+![Integrated program browser](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-Program-Browser.png)
 
 
 

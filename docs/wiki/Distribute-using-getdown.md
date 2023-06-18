@@ -15,10 +15,10 @@ To create a distribution, follow these steps
 
 1. Obtain source code from [github](https://github.com/jandebr/amstradPc)
 2. Build using `ant -buildfile ant.xml -Ddistribution.appbase=https://hostname/did/ -Ddistribution.id=did -Ddistribution.programbase=distpath/to/programs -Dprogram-repo.source=/localpath/to/programs distribute`
-    - **distribution.appbase** defines the URL from which the distribution can be downloaded
-    - **distribution.id** is your distribution name and should match the web context root in *distribution.appbase*
-    - **distribution.programbase** is the relative path of the program collection in the distribution
-    - **program-repo.source** is the absolute path to the program collection to include in the distribution
+    - *distribution.appbase* defines the URL from which the distribution can be downloaded
+    - *distribution.id* is your distribution name and should match the web context root in *distribution.appbase*
+    - *distribution.programbase* is the relative path of the program collection in the distribution
+    - *program-repo.source* is the absolute path to the program collection to include in the distribution
     - When successfully run, produces `dist/amstradPc.war`
 3. Deploy `dist/amstradPc.war` on a web server of choice
 
