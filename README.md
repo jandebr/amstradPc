@@ -1,13 +1,13 @@
 # Amstrad PC
 
 *Amstrad PC* -- A fork of the *JavaCPC* emulator  
-Primarily designed for managing and playing a collection of Basic source code programs
+Primarily designed for managing and playing a collection of Basic source code files
 
 This software was created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
 
-![AmstradPC CTM644 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-CTM644.png)
-
 ![AmstradPC GT65 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-GT65.png)
+
+![AmstradPC CTM644 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-CTM644.png)
 
 
 
