@@ -242,7 +242,7 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		if (value != null) {
 			StringTokenizer st = new StringTokenizer(value, ",");
 			while (st.hasMoreTokens()) {
-				flags.add(st.nextToken());
+				flags.add(st.nextToken().trim());
 			}
 		}
 		return flags;
