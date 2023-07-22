@@ -52,6 +52,10 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private static final String SETTING_SHOW_MINI_INFO = "program_browser.mini_info.show";
 
 	private static final int LABEL_WIDTH = 18;
+	
+	public static int SYMBOL_CODE_MONITOR = 176;
+	
+	public static int SYMBOL_CODE_HOME = 177;
 
 	private ProgramBrowserDisplaySource(AmstradPc amstradPc, String windowTitle, Window initialWindow) {
 		super(amstradPc, windowTitle);
@@ -83,8 +87,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
 		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(getTheme().getMainWindowBorderInk()).paper(getTheme().getMainWindowBackgroundInk());
-		canvas.symbol(254, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon
-		canvas.symbol(255, 24, 60, 126, 255, 126, 110, 110, 124); // home icon
+		canvas.symbol(SYMBOL_CODE_MONITOR, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon
+		canvas.symbol(SYMBOL_CODE_HOME, 24, 60, 126, 255, 126, 110, 110, 124); // home icon
 	}
 
 	@Override
@@ -103,7 +107,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			canvas.paper(5).pen(26);
 		}
 		canvas.locate(1, 1).print("  ").paper(getTheme().getMainWindowBackgroundInk());
-		canvas.move(8, 399).drawChrMonospaced(255);
+		canvas.move(8, 399).drawChrMonospaced(SYMBOL_CODE_HOME);
 	}
 
 	private boolean isFocusOnHomeButton(AmstradDisplayCanvas canvas) {

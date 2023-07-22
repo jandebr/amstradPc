@@ -2,6 +2,7 @@ package org.maia.amstrad.gui.browser.components;
 
 import java.util.List;
 
+import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.components.ColoredTextLine;
 import org.maia.amstrad.gui.components.ColoredTextSpan;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
@@ -22,16 +23,17 @@ public class ProgramInfoSheet extends ProgramSheet {
 		AmstradProgram program = getProgram();
 		AmstradMonitorMode mode = program.getPreferredMonitorMode();
 		if (mode != null) {
+			char monitorSymbol = (char) ProgramBrowserDisplaySource.SYMBOL_CODE_MONITOR;
 			if (mode.equals(AmstradMonitorMode.GREEN)) {
 				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 7), bg, bg),
-						new ColoredTextSpan("\u00FE GREEN", 0, 9)));
+						new ColoredTextSpan(monitorSymbol + " GREEN", 0, 9)));
 			} else if (mode.equals(AmstradMonitorMode.GRAY)) {
 				add(new ColoredTextLine(new ColoredTextSpan(StringUtils.spaces(maxWidth - 6), bg, bg),
-						new ColoredTextSpan("\u00FE GRAY", 0, 13)));
+						new ColoredTextSpan(monitorSymbol + " GRAY", 0, 13)));
 			} else if (mode.equals(AmstradMonitorMode.COLOR)) {
 				ColoredTextLine line = new ColoredTextLine(
 						new ColoredTextSpan(StringUtils.spaces(maxWidth - 7), bg, bg),
-						new ColoredTextSpan("\u00FE ", 0, 25));
+						new ColoredTextSpan(monitorSymbol + " ", 0, 25));
 				for (int i = 0; i < 5; i++)
 					line.add(new ColoredTextSpan(String.valueOf("COLOR".charAt(i)), 0, RAINBOW_COLORS[i]));
 				add(line);

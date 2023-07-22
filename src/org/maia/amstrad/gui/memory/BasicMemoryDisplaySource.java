@@ -42,6 +42,8 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 
 	private static int COLOR_OUTLINE_BG = 0;
 
+	public static int SYMBOL_CODE_REFRESH = 176;
+
 	public BasicMemoryDisplaySource(AmstradPc amstradPc) {
 		super(amstradPc, "64K Basic Memory");
 	}
@@ -53,7 +55,7 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
 		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
-		canvas.symbol(255, 46, 76, 138, 129, 81, 50, 116, 0); // refresh
+		canvas.symbol(SYMBOL_CODE_REFRESH, 46, 76, 138, 129, 81, 50, 116, 0); // refresh
 		refresh();
 	}
 
@@ -71,7 +73,7 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 			canvas.paper(5).pen(26);
 		}
 		canvas.locate(1, 1).print("  ").paper(COLOR_PAPER);
-		canvas.move(8, 399).drawChrMonospaced(255);
+		canvas.move(8, 399).drawChrMonospaced(SYMBOL_CODE_REFRESH);
 	}
 
 	private boolean isFocusOnRefreshButton(AmstradDisplayCanvas canvas) {
