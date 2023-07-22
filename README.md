@@ -1,9 +1,10 @@
 # Amstrad PC
 
-*Amstrad PC* -- A fork of the *JavaCPC* emulator  
-Primarily designed for managing and playing a collection of Basic source code files
+*Amstrad PC* -- A fork of the *JavaCPC* emulator, primarily designed for managing and playing a collection of Basic program files
 
 This software was created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
+
+There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the software
 
 ![AmstradPC GT65 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-GT65.png)
 
@@ -54,6 +55,10 @@ Getting started with *Amstrad PC* is a simple three-step process
 3. Run with Java `java -jar dist/amstradPc.jar`, which uses the provided [config file](https://github.com/jandebr/amstradPc/wiki/Config-javacpc.ini) `javacpc.ini`
 
 Alternatively, one can distribute *Amstrad PC* to end user computers using [getdown](https://github.com/threerings/getdown) as detailed in the [Distribution](https://github.com/jandebr/amstradPc/wiki/Distribute-using-getdown) documentation
+
+A *getdown distribution* may ship with a (managed) collection of Basic program files. It is *managed* so not intended to make local changes as these will get overridden upon update
+
+To setup your own (local) program collection, see the [repository](https://github.com/jandebr/amstradPc/wiki/Program-repository) documentation
 
 
 
