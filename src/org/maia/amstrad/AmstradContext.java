@@ -31,6 +31,8 @@ public abstract class AmstradContext {
 
 	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
 
+	private static final String SYSTEM_PROPERTY_VERSION = "javacpc-version";
+
 	protected AmstradContext() {
 	}
 
@@ -125,6 +127,10 @@ public abstract class AmstradContext {
 
 	public boolean isLaunchedByGetdown() {
 		return Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_GETDOWN, "false"));
+	}
+
+	public String getVersionString() {
+		return System.getProperty(SYSTEM_PROPERTY_VERSION, "");
 	}
 
 }

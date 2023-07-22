@@ -19,6 +19,8 @@ import org.maia.amstrad.pc.action.WindowFullscreenAction;
 
 public class UIResources {
 
+	public static ImageIcon aboutBackdrop = loadIcon("about.png");
+
 	public static ImageIcon cpcIcon = loadIcon("cpc24.png");
 
 	public static ImageIcon basicIcon = loadIcon("basic32.png");

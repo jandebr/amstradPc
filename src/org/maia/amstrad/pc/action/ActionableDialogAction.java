@@ -35,6 +35,11 @@ public abstract class ActionableDialogAction extends AmstradPcAction implements 
 	}
 
 	@Override
+	public void dialogConfirmed(ActionableDialog dialog) {
+		// Subclasses may override
+	}
+
+	@Override
 	public void dialogCancelled(ActionableDialog dialog) {
 		// Subclasses may override
 	}

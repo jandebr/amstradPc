@@ -322,6 +322,8 @@ public class AmstradPcMenuMaker {
 		menu.add(new JSeparator());
 		menu.add(createWindowFullscreenMenuItem());
 		menu.add(createWindowCenterOnScreenMenuItem());
+		menu.add(new JSeparator());
+		menu.add(createAboutMenuItem());
 		return updateMenuLookAndFeel(menu);
 	}
 
@@ -343,6 +345,10 @@ public class AmstradPcMenuMaker {
 
 	private JMenuItem createWindowCenterOnScreenMenuItem() {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getWindowCenterOnScreenAction()));
+	}
+
+	private JMenuItem createAboutMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getAboutAction()));
 	}
 
 	private JMenuBar updateMenuBarLookAndFeel(JMenuBar menubar) {

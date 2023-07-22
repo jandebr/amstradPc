@@ -82,6 +82,8 @@ public class AmstradPcActions {
 
 	private WindowCenterOnScreenAction windowCenterOnScreenAction;
 
+	private AboutAction aboutAction;
+
 	public AmstradPcActions(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 	}
@@ -303,6 +305,13 @@ public class AmstradPcActions {
 			windowCenterOnScreenAction = new WindowCenterOnScreenAction(getAmstradPc());
 		}
 		return windowCenterOnScreenAction;
+	}
+
+	public AboutAction getAboutAction() {
+		if (aboutAction == null) {
+			aboutAction = new AboutAction(getAmstradPc());
+		}
+		return aboutAction;
 	}
 
 	public AmstradPc getAmstradPc() {
