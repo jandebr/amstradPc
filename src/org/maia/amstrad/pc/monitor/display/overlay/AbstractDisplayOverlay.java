@@ -7,6 +7,9 @@ import java.awt.Rectangle;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
+import org.maia.amstrad.AmstradContext;
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
@@ -81,6 +84,14 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
 	protected boolean isLargeDisplay(Rectangle displayBounds) {
 		return displayBounds.height >= 540;
+	}
+
+	protected AmstradMode getMode() {
+		return getAmstradContext().getMode();
+	}
+
+	protected AmstradContext getAmstradContext() {
+		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
 	public AmstradPc getAmstracPc() {

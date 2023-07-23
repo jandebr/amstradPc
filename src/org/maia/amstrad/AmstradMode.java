@@ -7,6 +7,7 @@ import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
@@ -83,6 +84,15 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	 */
 	protected abstract boolean isUsingOriginalMenu();
 
+	/**
+	 * Tells whether visual indications for tape activity are to be shown
+	 * 
+	 * @return <code>true</code> iff tape activity is to be shown
+	 * 
+	 * @see AmstradTape#isActive()
+	 */
+	public abstract boolean isTapeActivityShown();
+
 	protected AmstradSettings getUserSettings() {
 		return getAmstradContext().getUserSettings();
 	}
@@ -136,6 +146,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			return false;
 		}
 
+		@Override
+		public boolean isTapeActivityShown() {
+			return true;
+		}
+
 	}
 
 	private static class KioskAmstradMode extends AmstradMode {
@@ -177,6 +192,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			return false;
 		}
 
+		@Override
+		public boolean isTapeActivityShown() {
+			return false;
+		}
+
 	}
 
 	private static class OriginalAmstradMode extends AmstradMode {
@@ -212,6 +232,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		@Override
 		protected boolean isUsingOriginalMenu() {
 			return true;
+		}
+
+		@Override
+		public boolean isTapeActivityShown() {
+			return false;
 		}
 
 	}
