@@ -40,6 +40,23 @@ Learn by example
 
 
 
+## Custom display overlays
+
+A *display overlay* is rendered on top of the display and may indicate a certain state or actions taking place. Example overlays are the *pause* or the *auto-type* indicator shown near the border of the monitor
+
+> Display overlays are always rendered on top of the display but underneath the monitor mask
+
+To add a custom display overlay, follow these steps
+
+1. Create a class for the overlay implementing the [AmstradDisplayOverlay](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/pc/monitor/display/overlay/AmstradDisplayOverlay.java) interface
+2. Add an instance of the overlay to the stack of overlays in the method `createDisplayOverlay(AmstradPc amstradPc)` of [AmstradFactory](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/AmstradFactory.java)
+
+Learn by example
+- [PauseDisplayOverlay](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/pc/monitor/display/overlay/PauseDisplayOverlay.java)
+
+
+
+
 ## Program repositories
 
 The [program browser](Features#program-browser) integrated in the *Amstrad PC* references an instance of [AmstradProgramRepository](https://github.com/jandebr/amstradPc/blob/main/src/org/maia/amstrad/program/repo/AmstradProgramRepository.java) that provides the browser with a collection of programs organized in some hierarchy (see [program repository](Program-repository))
