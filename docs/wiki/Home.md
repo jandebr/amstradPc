@@ -1,14 +1,16 @@
-# Amstrad PC
+Welcome to the *Amstrad PC* wiki
 
-*Amstrad PC* -- A fork of the *JavaCPC* emulator, primarily designed for managing and playing a collection of Basic program files
+
+## Introduction
+
+The *Amstrad PC* is a fork of the *JavaCPC* emulator, primarily designed for managing and playing a collection of Basic program files
 
 This software was created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
-
-There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the software
 
 ![AmstradPC GT65 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-GT65.png)
 
 ![AmstradPC CTM644 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-CTM644.png)
+
 
 
 
@@ -19,6 +21,7 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 *JavaCPC* is based on the original [JEMU][2], by Richard Wilson
  
 *JavaCPC* is distributed under the [GNU GENERAL PUBLIC LICENSE](LICENSE.txt) and so is this work
+
 
 
 
@@ -40,9 +43,10 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 - Customizable displays rendered with Java code
 - Stability and bug fixes
 
-For more information see the [Features](https://github.com/jandebr/amstradPc/wiki/Features) documentation
+For more information see the [Features](Features) documentation
 
-![Integrated program browser](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-Program-Browser.png)
+![Integrated program browser](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-Program-Browser-Menu.png)
+
 
 
 
@@ -52,13 +56,13 @@ Getting started with *Amstrad PC* is a simple three-step process
 
 1. Obtain source code from [github](https://github.com/jandebr/amstradPc)
 2. Build with Ant `ant -buildfile ant.xml package`, which produces `dist/amstradPc.jar`
-3. Run with Java `java -jar dist/amstradPc.jar`, which uses the provided [config file](https://github.com/jandebr/amstradPc/wiki/Config-javacpc.ini) `javacpc.ini`
+3. Run with Java `java -jar dist/amstradPc.jar`, which uses the provided [config file](Config-javacpc.ini) `javacpc.ini`
 
-Alternatively, one can distribute *Amstrad PC* to end user computers using [getdown](https://github.com/threerings/getdown) as detailed in the [distribution](https://github.com/jandebr/amstradPc/wiki/Distribute-using-getdown) documentation
+Alternatively, one can distribute *Amstrad PC* to end user computers using [getdown](https://github.com/threerings/getdown) as detailed in the [distribution](Distribute-using-getdown) documentation
 
 A *getdown distribution* may ship with a (managed) collection of Basic program files. It is *managed* so not intended to make local changes as these will get overridden upon update
 
-To setup your own (local) program collection, see the [repository](https://github.com/jandebr/amstradPc/wiki/Program-repository) documentation
+To setup your own (local) program collection, see the [repository](Program-repository) documentation
 
 
 

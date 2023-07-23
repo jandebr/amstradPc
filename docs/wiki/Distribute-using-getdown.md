@@ -14,11 +14,11 @@ The advantange of a distribution is an easy installation process on end user com
 To create a distribution, follow these steps
 
 1. Obtain source code from [github](https://github.com/jandebr/amstradPc)
-2. Build using `ant -buildfile ant.xml -Ddistribution.appbase=https://hostname/did/ -Ddistribution.id=did -Ddistribution.programbase=distpath/to/programs -Dprogram-repo.source=/localpath/to/programs distribute`
+2. Build with Ant `ant -buildfile ant.xml -Ddistribution.appbase=https://hostname/did/ -Ddistribution.id=did -Ddistribution.programbase=distpath/to/programs -Dprogram-repo.source=/localpath/to/programs distribute`
     - *distribution.appbase* defines the URL from which the distribution can be downloaded
     - *distribution.id* is your distribution name and should match the web context root in *distribution.appbase*
     - *distribution.programbase* is the relative path of the program collection in the distribution
-    - *program-repo.source* is the absolute path to the program collection to include in the distribution
+    - *program-repo.source* is the absolute path to the local program collection to include in the distribution
     - When successfully run, produces `dist/amstradPc.war`
 3. Deploy `dist/amstradPc.war` on a web server of choice
 
@@ -34,19 +34,19 @@ To install a distribution on a client pc, follow these steps
     ```
 2. On the client pc, create an empty installation folder and copy the following files into the folder. The files can be found in the [install](https://github.com/jandebr/amstradPc/tree/main/install) folder
     - `getdown.jar` as the launcher jar
-    - `getdown.txt` as the launcher configuration
-    - `javacpc.ini` as the initial *Amstrad PC* configuration
+    - `getdown.txt` as the above modified launcher configuration
+    - `javacpc.ini` as the initial *Amstrad PC* [configuration file](Config-javacpc.ini)
 3. On the client pc, make sure a Java Runtime Environment (JRE) is available (version 9 or higher)
 4. On the client pc, go into the installation folder and run the launcher (see next section)
 
 
 
 ## Run a distribution
-On the client pc, go into the installation folder and run the launcher. Use one of the [run modes](Run-modes) as listed below
+On the client pc, go into the installation folder and run the launcher with Java. Use one of the [run modes](Run-modes) as listed below
 - `java -jar getdown.jar . default` for default mode
 - `java -jar getdown.jar . kiosk` for kiosk mode
 - `java -jar getdown.jar . original` for original *JavaCPC* mode
-- `java -jar getdown.jar` to use the mode from previous run
+- `java -jar getdown.jar` to use the same mode from previous run
 
 ![Splash screen of the launcher](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-Getdown-Launcher.png)
 

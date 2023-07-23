@@ -2,7 +2,7 @@ The *Amstrad PC* can be launched in so-called *run modes*
 
 A *run mode* fits a specific purpose and comes with a corresponding look & feel
 
-The run mode is defined by the property `mode` in the [javacpc.ini file](Config-javacpc.ini). As such, it can be overridden at launch time using the system property `javacpc.mode`, for example `-Djavacpc.mode="DEFAULT"`
+The run mode is defined by the setting `mode` in the [javacpc.ini](Config-javacpc.ini) file. As such, it can be overridden at launch time using the system property `javacpc.mode`, for example `-Djavacpc.mode="DEFAULT"`
 
 
 ## Default mode
@@ -21,7 +21,7 @@ This run mode has full [Amstrad PC API](Features#api) support
 
 `mode=KIOSK`
 
-The *kiosk* run mode exclusively operates in fullscreen and starts in the [program browser](Features#program-browser). It is meant to run programs and play games, not to create or edit programs. Because it operates in fullscreen, there is no menu bar but a context menu that can be invoked either by right mouse click or by pressing "F2"
+The *kiosk* run mode exclusively operates in fullscreen and starts in the [program browser](Features#program-browser). It is meant to run programs and play games, not to create or edit programs. Because it operates in fullscreen, there is no menu bar but a context menu that can be invoked either by right mouse click or by pressing `F2`
 
 This run mode has full [Amstrad PC API](Features#api) support
 
