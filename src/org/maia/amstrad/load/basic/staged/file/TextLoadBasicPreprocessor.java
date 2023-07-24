@@ -240,7 +240,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
-				startFileOperation(session, fileReference, false);
+				startFileOperation(session, fileReference, false, command.isSuppressMessages());
 				LocomotiveBasicVariableSpace vars = getRuntimeVariables(session);
 				TextFileReader reader = session.openTextFileReader(fileReference.getTargetFile());
 				vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0);

@@ -91,7 +91,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
-				startFileOperation(session, fileReference, true);
+				startFileOperation(session, fileReference, true, command.isSuppressMessages());
 				session.getAmstradPc().getTape().saveBinaryFile(fileReference.getTargetFile(),
 						command.getMemoryOffset(), command.getMemoryLength());
 				delayFileOperation(DELAYMILLIS_BINARY_SAVE);

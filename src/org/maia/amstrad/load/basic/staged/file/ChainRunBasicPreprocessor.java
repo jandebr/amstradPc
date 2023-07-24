@@ -123,7 +123,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
-				startFileOperation(session, chainedProgramReference, false);
+				startFileOperation(session, chainedProgramReference, false, command.isSuppressMessages());
 				delayFileOperation(DELAYMILLIS_CHAIN_RUN);
 				performChainRun(command, chainedProgram, session.getLoader());
 				System.out.println("Completed " + command);

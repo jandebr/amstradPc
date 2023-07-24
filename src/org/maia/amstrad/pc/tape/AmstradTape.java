@@ -23,6 +23,8 @@ public abstract class AmstradTape extends AmstradDevice {
 
 	private boolean writing;
 
+	private boolean suppressMessages;
+
 	private String filenameAtTapeHead;
 
 	protected AmstradTape(AmstradPc amstradPc) {
@@ -80,28 +82,32 @@ public abstract class AmstradTape extends AmstradDevice {
 		getTapeListeners().removeListener(listener);
 	}
 
-	public void notifyTapeReading(String filename) {
+	public void notifyTapeReading(String filename, boolean suppressMessages) {
 		setReading(true);
 		setWriting(false);
+		setSuppressMessages(suppressMessages);
 		setFilenameAtTapeHead(filename);
 		fireTapeReadingEvent();
 	}
 
 	public void notifyTapeStoppedReading() {
 		setReading(false);
+		setSuppressMessages(false);
 		setFilenameAtTapeHead(null);
 		fireTapeStoppedReadingEvent();
 	}
 
-	public void notifyTapeWriting(String filename) {
+	public void notifyTapeWriting(String filename, boolean suppressMessages) {
 		setWriting(true);
 		setReading(false);
+		setSuppressMessages(suppressMessages);
 		setFilenameAtTapeHead(filename);
 		fireTapeWritingEvent();
 	}
 
 	public void notifyTapeStoppedWriting() {
 		setWriting(false);
+		setSuppressMessages(false);
 		setFilenameAtTapeHead(null);
 		fireTapeStoppedWritingEvent();
 	}
@@ -152,6 +158,14 @@ public abstract class AmstradTape extends AmstradDevice {
 
 	private void setWriting(boolean writing) {
 		this.writing = writing;
+	}
+
+	public boolean isSuppressMessages() {
+		return suppressMessages;
+	}
+
+	private void setSuppressMessages(boolean suppressMessages) {
+		this.suppressMessages = suppressMessages;
 	}
 
 	public String getFilenameAtTapeHead() {

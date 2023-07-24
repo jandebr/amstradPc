@@ -203,7 +203,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
-				startFileOperation(session, fileReference, true);
+				startFileOperation(session, fileReference, true, command.isSuppressMessages());
 				session.openTextFileWriter(fileReference.getTargetFile());
 				delayFileOperation(DELAYMILLIS_OPENOUT);
 				resumeRun(macro, session);

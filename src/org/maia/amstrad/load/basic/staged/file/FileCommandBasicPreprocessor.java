@@ -65,13 +65,13 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 	}
 
 	protected void startFileOperation(StagedBasicProgramLoaderSession session, FileReference fileReference,
-			boolean write) {
+			boolean write, boolean suppressMessages) {
 		AmstradTape tape = session.getAmstradPc().getTape();
 		String filename = fileReference.getSourceFilename();
 		if (write) {
-			tape.notifyTapeWriting(filename);
+			tape.notifyTapeWriting(filename, suppressMessages);
 		} else {
-			tape.notifyTapeReading(filename);
+			tape.notifyTapeReading(filename, suppressMessages);
 		}
 	}
 

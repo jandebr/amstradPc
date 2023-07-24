@@ -132,7 +132,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 			BasicSourceCode sourceCodeBeforeMerge = sourceCode.clone();
 			try {
 				if (!isProgramAlreadyChained(chainedProgram, session)) {
-					startFileOperation(session, chainedProgramReference, false);
+					startFileOperation(session, chainedProgramReference, false, command.isSuppressMessages());
 					delayFileOperation(DELAYMILLIS_CHAIN_MERGE);
 					performChainMerge(command, chainedProgram, sourceCode, session);
 				}

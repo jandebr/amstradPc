@@ -97,7 +97,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			try {
-				startFileOperation(session, fileReference, false);
+				startFileOperation(session, fileReference, false, command.isSuppressMessages());
 				if (shouldLoadInBytes(command)) {
 					loadInBytes(command, fileReference, session);
 				} else if (shouldLoadInBlocks(command)) {
