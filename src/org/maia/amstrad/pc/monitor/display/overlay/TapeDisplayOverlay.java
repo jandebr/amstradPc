@@ -32,20 +32,23 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		AmstradTape tape = getAmstracPc().getTape();
 		if (tape.isActive() && !tape.isSuppressMessages() && getMode().isTapeActivityShown() && !offscreenImage) {
-			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.tapeOverlayIcon
-					: UIResources.tapeSmallOverlayIcon;
-			Rectangle iconBounds = drawIconTopLeft(icon, display, displayBounds, monitorInsets);
-			int x1 = iconBounds.x + iconBounds.width - 1;
-			int yc = iconBounds.y + iconBounds.height / 2;
-			if (tape.isWriting()) {
-				drawIcon(UIResources.tapeWriteOverlayIcon, x1 + 4, yc - 10, display);
-				display.setColor(colorWrite);
-			} else {
-				drawIcon(UIResources.tapeReadOverlayIcon, x1 + 4, yc - 10, display);
-				display.setColor(colorRead);
+			String filename = tape.getFilenameAtTapeHead();
+			if (filename != null) {
+				ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.tapeOverlayIcon
+						: UIResources.tapeSmallOverlayIcon;
+				Rectangle iconBounds = drawIconTopLeft(icon, display, displayBounds, monitorInsets);
+				int x1 = iconBounds.x + iconBounds.width - 1;
+				int yc = iconBounds.y + iconBounds.height / 2;
+				if (tape.isWriting()) {
+					drawIcon(UIResources.tapeWriteOverlayIcon, x1 + 4, yc - 10, display);
+					display.setColor(colorWrite);
+				} else {
+					drawIcon(UIResources.tapeReadOverlayIcon, x1 + 4, yc - 10, display);
+					display.setColor(colorRead);
+				}
+				display.setFont(getLabelFont(graphicsContext));
+				display.drawString(filename, x1 + 28, yc + 5);
 			}
-			display.setFont(getLabelFont(graphicsContext));
-			display.drawString(tape.getFilenameAtTapeHead(), x1 + 28, yc + 5);
 		}
 	}
 
