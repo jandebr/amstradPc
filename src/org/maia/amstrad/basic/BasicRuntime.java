@@ -81,6 +81,16 @@ public abstract class BasicRuntime {
 	 */
 	public abstract void clear() throws BasicException;
 
+	/**
+	 * Loads the given program code, replacing any previous code and clearing all variables
+	 * 
+	 * @param code
+	 *            The new code to load
+	 * @throws BasicException
+	 *             If the language of the <code>code</code> does not match this runtime, is unrecognized, cannot be
+	 *             compiled or cannot be loaded for some reason (e.g., does not fit into memory)
+	 * @see #getLanguage()
+	 */
 	public final void load(BasicCode code) throws BasicException {
 		if (!code.getLanguage().equals(getLanguage()))
 			throw new BasicException("Basic language mismatch");
