@@ -28,6 +28,8 @@ There is a top-left *home* button that takes you back to the *home folder*
 To exit the browser, click its top-right *close* button or press `Esc`
 > In [kiosk mode](Run-modes#kiosk-mode), one cannot (accidentally) `Esc` the browser but clicking its *close* button terminates the *Amstrad PC*
 
+When navigating, there can be *cover images* shown for programs and/or folders. For details, see [program metadata](Program-metadata) and [program repository](Program-repository). The available display area for *cover images* measures 320 pixels wide by 368 pixels high, although a pixel may be subsampled. Larger images will be downscaled to fit the area. Smaller images will be centered inside the area
+
 When navigating to a program and pressing `Enter`, a *program menu* pops up that lists a number of options. Options may be either disabled or not shown when not available
 
 ![Program menu](https://github.com/jandebr/amstradPc/blob/main/docs/wiki/Program-menu.png)

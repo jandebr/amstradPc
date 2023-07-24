@@ -52,14 +52,14 @@ A few general settings
 - `current_dir` (*.*) The path of the most recently used folder for loading and saving files. When empty or missing, defaults to the *current user folder*
 
 
-### Program browser
+### Program repository
 
-Settings related to the integrated [program browser](Features#program-browser)
+Settings related to the [program repository](Program-repository) and how it is accessible from the [program browser](Features#program-browser)
 
-- `program_repo.file.dir` (*.*) The path of the root folder of the program browser. When empty or missing, defaults to the *current user folder*
-- `program_repo.file.dir-managed` (*.*) The path of the root folder of the program collection that is managed via the [distribution](Distribute-using-getdown). The application prohibits users from saving or updating files inside this folder, as these would get overridden upon the next distribution update
+- `program_repo.file.dir` (*.*) The path of the root folder of the program repository. When empty or missing, defaults to the *current user folder*
+- `program_repo.file.dir-managed` (*.*) The path of the root folder of the program repository that is managed via the [distribution](Distribute-using-getdown). The application prohibits users from saving or updating files inside this folder, as these would get overridden upon the next distribution update
 - `program_repo.file.dir-managed.cleanup.enable` (*true*) When *true*, obsolete files and folders from previous [distributions](Distribute-using-getdown) will be removed at startup. When *false* this is skipped
-- `program_repo.rename.hide_seqnr` (*true*) When *true*, program file and folder names on the file system can be prepended with a numerical sequence number, which is hidden from view in the program browser but used to control their list order. For example `01_Pirates`, `02_Chess` would be shown simply as `Pirates`, `Chess` and in that order. Sequence numbers should be separated from the displayed name by either a space (' '), a dot ('.') or an underscore ('_') character. When *false*, the displayed name is the literal file or folder name, ordered lexicographically
+- `program_repo.rename.hide_seqnr` (*true*) When *true*, the repository item display order can be controlled via sequence numbers in the item names that remain hidden from view. See [program repository](Program-repository#order-of-items) for details. When *false*, the literal file or folder names are displayed, ordered lexicographically
 - `program_repo.search.by_name` (*false*) When *true*, the program browser will display only those programs whose name (partially) matches `program_repo.search.string`. When *false* no name filter is applied
 - `program_repo.search.string` (*""*) The search string used when filtering programs
 - `program_repo.facet.enable` (*false*) When *true*, the program browser will organize the programs by (nested) facets. When *false*, programs are organized as per the folder structure on the file system
@@ -69,7 +69,7 @@ Settings related to the integrated [program browser](Features#program-browser)
 
 ### Program browser UI
 
-Settings related to the *User Interface* of the integrated [program browser](Features#program-browser)
+Settings related to the *User Interface* of the [program browser](Features#program-browser)
 
 - `program_browser.cover_images.cache_capacity` (*10*) The maximum number of cover images to keep in memory cache
 - `program_browser.cover_images.show` (*true*) When *true*, cover images are shown inside the program browser
