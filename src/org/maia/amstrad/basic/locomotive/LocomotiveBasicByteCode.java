@@ -1,7 +1,9 @@
 package org.maia.amstrad.basic.locomotive;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicByteCode;
@@ -237,6 +239,18 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 		new LineReferenceSanitizer().sanitize();
 	}
 
+	/**
+	 * Replaces absolute line number references with line pointers.
+	 * 
+	 * This operation preserves the exact byte count.
+	 * 
+	 * @throws BasicException
+	 *             When byte code interpretation is faulty
+	 */
+	public synchronized void updateLineReferencesToPointers() throws BasicException {
+		new LineReferencePointerMapper().map();
+	}
+
 	private abstract class Sanitizer extends LocomotiveBasicDecompiler {
 
 		protected Sanitizer() {
@@ -318,6 +332,43 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 
 		private void setCurrentLineNumber(int currentLineNumber) {
 			this.currentLineNumber = currentLineNumber;
+		}
+
+	}
+
+	private class LineReferencePointerMapper extends LocomotiveBasicDecompiler {
+
+		private Map<Integer, Integer> lineNumberPointerMap; // maps absolute line numbers to memory addresses
+
+		public LineReferencePointerMapper() {
+			this.lineNumberPointerMap = buildLineNumberPointerMap();
+		}
+
+		public void map() throws BasicException {
+			decompile(LocomotiveBasicByteCode.this);
+		}
+
+		@Override
+		protected void encounteredLineNumberReferenceByValue(int bytecodeOffset, int lineNumber) {
+			if (getLineNumberPointerMap().containsKey(lineNumber)) {
+				setByte(bytecodeOffset, (byte) 0x1d); // make pointer
+				setWord(bytecodeOffset + 1, getLineNumberPointerMap().get(lineNumber));
+			}
+		}
+
+		private Map<Integer, Integer> buildLineNumberPointerMap() {
+			List<Integer> lineNumbers = getAscendingLineNumbers();
+			int[] lineOffsetIndices = getLineOffsetIndices();
+			int memoryBaseOffset = ADDRESS_BYTECODE_START - 1;
+			Map<Integer, Integer> map = HashMap.newHashMap(lineNumbers.size());
+			for (int i = 0; i < lineNumbers.size(); i++) {
+				map.put(lineNumbers.get(i), memoryBaseOffset + lineOffsetIndices[i]);
+			}
+			return map;
+		}
+
+		private Map<Integer, Integer> getLineNumberPointerMap() {
+			return lineNumberPointerMap;
 		}
 
 	}

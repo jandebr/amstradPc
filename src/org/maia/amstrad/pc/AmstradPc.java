@@ -86,6 +86,8 @@ public abstract class AmstradPc {
 	public abstract void reboot(boolean waitUntilReady, boolean silent);
 
 	public abstract void pause();
+	
+	public abstract void pauseImmediately();
 
 	public abstract void resume();
 

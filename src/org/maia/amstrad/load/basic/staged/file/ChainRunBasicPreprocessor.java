@@ -125,6 +125,8 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 			try {
 				startFileOperation(session, chainedProgramReference, false, command.isSuppressMessages());
 				delayFileOperation(DELAYMILLIS_CHAIN_RUN);
+				waitUntilBasicInterpreterInWaitLoop(); // save to swap code
+				session.getAmstradPc().pauseImmediately();
 				performChainRun(command, chainedProgram, session.getLoader());
 				System.out.println("Completed " + command);
 			} catch (Exception e) {
@@ -132,6 +134,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 				endWithError(ERR_CHAIN_RUN_FAILURE, sourceCode, macro, session);
 			} finally {
 				stopFileOperation(session);
+				session.getAmstradPc().resume();
 			}
 		}
 	}

@@ -2,10 +2,12 @@ package org.maia.amstrad.load.basic.staged.file;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
+import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.BasicSyntaxException;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
@@ -91,12 +93,17 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 		}
 	}
 
+	protected void waitUntilBasicInterpreterInWaitLoop() {
+		AmstradUtils.sleep(DELAYMILLIS_ENTER_MACRO_WAIT_LOOP);
+	}
+
 	protected void endWithError(int errorCode, BasicSourceCode sourceCode, FileCommandMacro macro,
 			StagedBasicProgramLoaderSession session) {
 		System.err.println("FileCommand ended with ERROR " + errorCode);
 		try {
 			substituteErrorCode(errorCode, sourceCode, session);
 			addCodeLine(sourceCode, macro.getLineNumberTo(), "GOTO " + session.getErrorOutMacroLineNumber());
+			waitUntilBasicInterpreterInWaitLoop(); // save to swap code
 			resumeWithNewSourceCode(sourceCode, macro, session);
 		} catch (BasicException e) {
 			e.printStackTrace();
@@ -105,12 +112,23 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 
 	protected void resumeWithNewSourceCode(BasicSourceCode newSourceCode, FileCommandMacro macro,
 			StagedBasicProgramLoaderSession session) throws BasicException {
-		session.getBasicRuntime().swap(newSourceCode);
+		BasicByteCode newByteCode = prepareCodeForSwapping(newSourceCode, session);
+		session.getBasicRuntime().swap(newByteCode);
 		resumeRun(macro, session);
 	}
 
 	protected void resumeRun(FileCommandMacro macro, StagedBasicProgramLoaderSession session) {
 		session.getBasicRuntime().poke(macro.getResumeMemoryAddress(), (byte) 1);
+	}
+
+	private BasicByteCode prepareCodeForSwapping(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
+			throws BasicException {
+		BasicByteCode byteCode = session.getBasicRuntime().getCompiler().compile(sourceCode);
+		if (byteCode instanceof LocomotiveBasicByteCode) {
+			// Keep the macro code bitwise identical so there can be no issues with the running Basic interpreter
+			((LocomotiveBasicByteCode) byteCode).updateLineReferencesToPointers();
+		}
+		return byteCode;
 	}
 
 }

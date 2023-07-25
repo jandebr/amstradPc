@@ -130,10 +130,15 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
 		} else {
 			BasicSourceCode sourceCodeBeforeMerge = sourceCode.clone();
+			final boolean alreadyChained = isProgramAlreadyChained(chainedProgram, session);
 			try {
-				if (!isProgramAlreadyChained(chainedProgram, session)) {
+				if (!alreadyChained) {
 					startFileOperation(session, chainedProgramReference, false, command.isSuppressMessages());
 					delayFileOperation(DELAYMILLIS_CHAIN_MERGE);
+				}
+				waitUntilBasicInterpreterInWaitLoop(); // save to swap code
+				session.getAmstradPc().pauseImmediately();
+				if (!alreadyChained) {
 					performChainMerge(command, chainedProgram, sourceCode, session);
 				}
 				resumeWithNewSourceCode(getResumeLineNumber(command, sourceCode), sourceCode, session);
@@ -145,6 +150,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 				endWithError(ERR_CHAIN_MERGE_FAILURE, sourceCodeBeforeMerge, macro, session);
 			} finally {
 				stopFileOperation(session);
+				session.getAmstradPc().resume();
 			}
 		}
 	}

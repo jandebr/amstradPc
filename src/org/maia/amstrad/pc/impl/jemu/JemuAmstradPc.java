@@ -177,7 +177,17 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		checkStarted();
 		checkNotTerminated();
 		if (!isPaused()) {
-			getJemuInstance().pauseToggle();
+			getJemuInstance().pauseToggle(); // will be notified as PauseListener
+		}
+	}
+
+	@Override
+	public synchronized void pauseImmediately() {
+		checkStarted();
+		checkNotTerminated();
+		if (!isPaused()) {
+			getJemuInstance().pauseComputer(); // blocking call until computer is stopped
+			pauseStateChanged(getJemuInstance(), true); // in this case no PauseListener notification from Jemu
 		}
 	}
 
@@ -186,7 +196,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		checkStarted();
 		checkNotTerminated();
 		if (isPaused()) {
-			getJemuInstance().pauseToggle();
+			getJemuInstance().pauseToggle(); // will be notified as PauseListener
 		}
 	}
 

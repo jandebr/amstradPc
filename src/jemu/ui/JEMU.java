@@ -2302,6 +2302,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public void goComputer() {
 		Display.showpause = 0;
 		computer.start();
+		setPaused(0);
+		System.out.println("System resumed");
 	}
 
 	public void stopComputer() {
@@ -2312,6 +2314,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void pauseComputer() {
 		computer.stop();
+		setPaused(1);
+		System.out.println("System halted");
 	}
 
 	public void fsoundcheck() {
@@ -2359,11 +2363,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		if (!isPaused()) {
 			setPaused(1);
 			stopComputer();
-			System.out.println("System halted");
 		} else {
 			setPaused(0);
 			goComputer();
-			System.out.println("System resumed");
 		}
 		firePauseStateChanged();
 	}

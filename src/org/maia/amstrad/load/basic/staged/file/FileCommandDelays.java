@@ -26,4 +26,6 @@ public interface FileCommandDelays {
 
 	long DELAYMILLIS_CLOSEIN = 0L;
 
+	long DELAYMILLIS_ENTER_MACRO_WAIT_LOOP = 100L;
+
 }
