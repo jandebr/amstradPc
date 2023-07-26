@@ -31,7 +31,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 						browser.releaseKeyboard();
 						browser.getAmstradPc().reboot(true, true);
 						launchProgram(getProgram());
-						failed = false;
+						setFailed(false);
 						// browser.closeModalWindow();
 						browser.close(); // restores monitor mode & settings
 						if (mode != null) {
@@ -40,7 +40,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 					} catch (AmstradProgramException exc) {
 						exc.printStackTrace();
 						browser.acquireKeyboard();
-						failed = true;
+						setFailed(true);
 					} finally {
 						executeStartTime = 0L;
 					}
@@ -57,7 +57,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 
 	@Override
 	public boolean isEnabled() {
-		if (failed)
+		if (isFailed())
 			return false;
 		if (getProgram().getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOLAUNCH))
 			return false;
@@ -71,11 +71,19 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 			int t = (int) ((System.currentTimeMillis() - executeStartTime) / 100L);
 			label += ' ';
 			label += (char) (192 + t % 4);
-		} else if (failed) {
+		} else if (isFailed()) {
 			label += ' ';
 			label += (char) 225;
 		}
 		return label;
+	}
+
+	protected boolean isFailed() {
+		return failed;
+	}
+
+	protected void setFailed(boolean failed) {
+		this.failed = failed;
 	}
 
 }

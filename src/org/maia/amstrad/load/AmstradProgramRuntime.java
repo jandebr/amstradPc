@@ -15,6 +15,8 @@ public abstract class AmstradProgramRuntime {
 
 	private boolean disposed;
 
+	private int exitCode;
+
 	private AmstradListenerList<AmstradProgramRuntimeListener> listeners;
 
 	protected AmstradProgramRuntime(AmstradProgram program, AmstradPc amstradPc) {
@@ -45,9 +47,10 @@ public abstract class AmstradProgramRuntime {
 
 	protected abstract void doRun(String... args) throws AmstradProgramException;
 
-	public synchronized void dispose(boolean programRemainsLoaded) {
+	public synchronized void dispose(boolean programRemainsLoaded, int exitCode) {
 		if (!isDisposed()) {
 			setDisposed(true);
+			setExitCode(exitCode);
 			for (AmstradProgramRuntimeListener listener : getListeners()) {
 				listener.amstradProgramIsDisposed(this, programRemainsLoaded);
 			}
@@ -81,6 +84,14 @@ public abstract class AmstradProgramRuntime {
 
 	private void setDisposed(boolean disposed) {
 		this.disposed = disposed;
+	}
+
+	public int getExitCode() {
+		return exitCode;
+	}
+
+	private void setExitCode(int exitCode) {
+		this.exitCode = exitCode;
 	}
 
 	protected AmstradListenerList<AmstradProgramRuntimeListener> getListeners() {

@@ -62,10 +62,12 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 	private void addEndingMacro(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
 			throws BasicException {
 		int addrTrap = session.reserveMemory(1);
+		int errorCodeAddress = session.reserveMemory(1);
 		int ln = session.acquireLargestAvailablePreambleLineNumber();
 		addCodeLine(sourceCode, ln,
-				"POKE &" + Integer.toHexString(addrTrap) + ",1:END" + (session.produceRemarks() ? ":REM @end" : ""));
-		session.addMacro(new EndingMacro(new BasicLineNumberRange(ln), addrTrap));
+				"POKE &" + Integer.toHexString(addrTrap) + ",1:POKE &" + Integer.toHexString(errorCodeAddress) + ",ERR:"
+						+ "END" + (session.produceRemarks() ? ":REM @end" : ""));
+		session.addMacro(new EndingMacro(new BasicLineNumberRange(ln), addrTrap, errorCodeAddress));
 		// Install global macro handler via listener
 		EndingRuntimeListener listener = new EndingRuntimeListener(session, addrTrap);
 		listener.install();
@@ -207,13 +209,20 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 		private int memoryTrapAddress;
 
-		public EndingMacro(BasicLineNumberRange range, int memoryTrapAddress) {
+		private int errorCodeAddress;
+
+		public EndingMacro(BasicLineNumberRange range, int memoryTrapAddress, int errorCodeAddress) {
 			super(range);
 			this.memoryTrapAddress = memoryTrapAddress;
+			this.errorCodeAddress = errorCodeAddress;
 		}
 
 		public int getMemoryTrapAddress() {
 			return memoryTrapAddress;
+		}
+
+		public int getErrorCodeAddress() {
+			return errorCodeAddress;
 		}
 
 	}
@@ -255,7 +264,9 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		@Override
 		public void handleMemoryTrap(AmstradMemory memory, int memoryAddress, byte memoryValue) {
 			getSession().getBasicRuntime().waitUntilReady();
-			getSession().getProgramRuntime().dispose(true);
+			int errorCode = memory.readByte(getSession().getEndingMacro().getErrorCodeAddress()) & 0xff;
+			System.out.println("Basic program ended" + (errorCode != 0 ? " with error code " + errorCode : ""));
+			getSession().getProgramRuntime().dispose(true, errorCode);
 			handleProgramEnded(getSession());
 		}
 

@@ -60,17 +60,17 @@ public abstract class AmstradProgramLoader {
 
 		@Override
 		public void amstradPcProgramLoaded(AmstradPc amstradPc) {
-			getProgramRuntime().dispose(false); // another program got loaded
+			getProgramRuntime().dispose(false, 0); // another program got loaded
 		}
 
 		@Override
 		public void amstradPcRebooting(AmstradPc amstradPc) {
-			getProgramRuntime().dispose(false);
+			getProgramRuntime().dispose(false, 0);
 		}
 
 		@Override
 		public void amstradPcTerminated(AmstradPc amstradPc) {
-			getProgramRuntime().dispose(false);
+			getProgramRuntime().dispose(false, 0);
 		}
 
 		@Override

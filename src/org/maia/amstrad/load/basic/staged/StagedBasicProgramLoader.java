@@ -27,6 +27,8 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
 	private StagedBasicProgramLoaderSession lastSession;
 
+	private static final int MINIMUM_RESERVED_BYTES = 16;
+
 	public StagedBasicProgramLoader(AmstradPc amstradPc, EndingBasicAction endingAction,
 			EndingBasicCodeDisclosure codeDisclosure, boolean produceRemarks) {
 		super(amstradPc);
@@ -56,7 +58,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(new ErrorOutBasicPreprocessor());
 		addPreprocessor(new PreambleJumpingBasicPreprocessor());
 		addPreprocessor(new InterruptBasicPreprocessor());
-		addPreprocessor(new HimemBasicPreprocessor(16));
+		addPreprocessor(new HimemBasicPreprocessor(MINIMUM_RESERVED_BYTES));
 		preamble.setPreambleLineCount(getDesiredPreambleLineCount()); // set number of preamble lines needed
 	}
 
