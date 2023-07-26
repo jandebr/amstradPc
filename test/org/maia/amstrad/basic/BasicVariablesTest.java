@@ -41,9 +41,9 @@ public class BasicVariablesTest {
 		runtime.waitUntilReady();
 		LocomotiveBasicVariableSpace variableSpace = runtime.getVariableSpace();
 		System.out.println(variableSpace);
-		variableSpace.setValue(new IntegerTypedVariableToken("a%"), 245);
-		variableSpace.setValue(new FloatingPointTypedVariableToken("fp!"), -0.86);
-		variableSpace.setCharAt(new StringTypedVariableToken("text$"), 1, 'o');
+		variableSpace.setValue(new IntegerTypedVariableToken("a%"), 245, false);
+		variableSpace.setValue(new FloatingPointTypedVariableToken("fp!"), -0.86, false);
+		variableSpace.setCharAt(new StringTypedVariableToken("text$"), 1, 'o', false);
 		System.out.println(variableSpace);
 		Set<VariableToken> vars = new HashSet<VariableToken>(variableSpace.getAllVariables());
 		for (int i = 0; i < 10; i++) {

@@ -222,7 +222,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			LocomotiveBasicVariableSpace vars = getRuntimeVariables(session);
-			String value = vars.getValue(textBufferVariable);
+			String value = vars.getValue(textBufferVariable, false);
 			session.getTextFileWriter().writeLine(value);
 			delayFileOperation(DELAYMILLIS_PRINTSTREAM);
 			resumeRun(macro, session);

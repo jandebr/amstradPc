@@ -243,7 +243,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 				startFileOperation(session, fileReference, false, command.isSuppressMessages());
 				LocomotiveBasicVariableSpace vars = getRuntimeVariables(session);
 				TextFileReader reader = session.openTextFileReader(fileReference.getTargetFile());
-				vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0);
+				vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0, false);
 				delayFileOperation(DELAYMILLIS_OPENIN);
 				resumeRun(macro, session);
 				System.out.println("Completed " + command);
@@ -266,10 +266,10 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 			String value = reader.isEndOfFile() ? "" : reader.readLine();
 			int n = Math.min(value.length(), LocomotiveBasicVariableSpace.MAXIMUM_STRING_LENGTH);
 			for (int i = 0; i < n; i++) {
-				vars.setCharAt(textBufferVariable, i, value.charAt(i));
+				vars.setCharAt(textBufferVariable, i, value.charAt(i), false);
 			}
-			vars.setValue(textLengthVariable, n);
-			vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0);
+			vars.setValue(textLengthVariable, n, false);
+			vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0, false);
 			delayFileOperation(DELAYMILLIS_INPUTSTREAM);
 			resumeRun(macro, session);
 			System.out.println("Completed " + command);

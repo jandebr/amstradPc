@@ -23,7 +23,7 @@ public class BasicStagingTest {
 		AmstradFactory fac = AmstradFactory.getInstance();
 		BasicStagingTest test = new BasicStagingTest();
 		// test.run(fac.createBasicProgram(new File(dir, "looprun-1.bas")));
-		test.run(fac.createBasicDescribedProgram(new File(dir, "chainmerge-1.bas"), new File(dir, "chainmerge-1.amd")));
+		test.run(fac.createBasicDescribedProgram(new File(dir, "textload.bas"), new File(dir, "textload.amd")));
 		// test.discoverFileReferences(fac.createBasicProgram(new File(dir, "filerefs.bas")));
 	}
 

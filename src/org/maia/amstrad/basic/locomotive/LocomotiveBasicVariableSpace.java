@@ -46,11 +46,11 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 				sb.append("  ").append(variable);
 				try {
 					if (variable instanceof IntegerTypedVariableToken) {
-						sb.append(" = ").append(getValue((IntegerTypedVariableToken) variable));
+						sb.append(" = ").append(getValue((IntegerTypedVariableToken) variable, false));
 					} else if (variable instanceof FloatingPointTypedVariableToken) {
-						sb.append(" = ").append(getValue((FloatingPointTypedVariableToken) variable));
+						sb.append(" = ").append(getValue((FloatingPointTypedVariableToken) variable, false));
 					} else if (variable instanceof StringTypedVariableToken) {
-						sb.append(" = \"").append(getValue((StringTypedVariableToken) variable)).append('"');
+						sb.append(" = \"").append(getValue((StringTypedVariableToken) variable, false)).append('"');
 					}
 				} catch (VariableNotFoundException e) {
 					// cannot happen
@@ -134,77 +134,93 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 		return sb.toString();
 	}
 
-	public int getValue(IntegerTypedVariableToken variable) throws VariableNotFoundException {
+	public int getValue(IntegerTypedVariableToken variable, boolean lockMemory) throws VariableNotFoundException {
 		int value = 0;
-		getMemory().startThreadExclusiveSession();
+		if (lockMemory)
+			getMemory().startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			value = LocomotiveBasicNumericRepresentation.wordToInteger(getMemory().readWord(memoryOffset));
 		} finally {
-			getMemory().endThreadExclusiveSession();
+			if (lockMemory)
+				getMemory().endThreadExclusiveSession();
 		}
 		return value;
 	}
 
-	public void setValue(IntegerTypedVariableToken variable, int value)
+	public void setValue(IntegerTypedVariableToken variable, int value, boolean lockMemory)
 			throws VariableNotFoundException, NumberOverflowException {
-		getMemory().startThreadExclusiveSession();
+		if (lockMemory)
+			getMemory().startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			getMemory().writeWord(memoryOffset, LocomotiveBasicNumericRepresentation.integerToWord(value));
 		} finally {
-			getMemory().endThreadExclusiveSession();
+			if (lockMemory)
+				getMemory().endThreadExclusiveSession();
 		}
 	}
 
-	public double getValue(FloatingPointTypedVariableToken variable) throws VariableNotFoundException {
+	public double getValue(FloatingPointTypedVariableToken variable, boolean lockMemory)
+			throws VariableNotFoundException {
 		double value = 0;
-		getMemory().startThreadExclusiveSession();
+		if (lockMemory)
+			getMemory().startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			value = LocomotiveBasicNumericRepresentation.bytesToFloatingPoint(getMemory().readBytes(memoryOffset, 5));
 		} finally {
-			getMemory().endThreadExclusiveSession();
+			if (lockMemory)
+				getMemory().endThreadExclusiveSession();
 		}
 		return value;
 	}
 
-	public void setValue(FloatingPointTypedVariableToken variable, double value) throws VariableNotFoundException {
-		getMemory().startThreadExclusiveSession();
+	public void setValue(FloatingPointTypedVariableToken variable, double value, boolean lockMemory)
+			throws VariableNotFoundException {
+		if (lockMemory)
+			getMemory().startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			getMemory().writeBytes(memoryOffset, LocomotiveBasicNumericRepresentation.floatingPointToBytes(value));
 		} finally {
-			getMemory().endThreadExclusiveSession();
+			if (lockMemory)
+				getMemory().endThreadExclusiveSession();
 		}
 	}
 
-	public double getValue(UntypedVariableToken variable) throws VariableNotFoundException {
+	public double getValue(UntypedVariableToken variable, boolean lockMemory) throws VariableNotFoundException {
 		double value = 0;
-		getMemory().startThreadExclusiveSession();
+		if (lockMemory)
+			getMemory().startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			value = LocomotiveBasicNumericRepresentation.bytesToFloatingPoint(getMemory().readBytes(memoryOffset, 5));
 		} finally {
-			getMemory().endThreadExclusiveSession();
+			if (lockMemory)
+				getMemory().endThreadExclusiveSession();
 		}
 		return value;
 	}
 
-	public void setValue(UntypedVariableToken variable, double value) throws VariableNotFoundException {
-		getMemory().startThreadExclusiveSession();
+	public void setValue(UntypedVariableToken variable, double value, boolean lockMemory)
+			throws VariableNotFoundException {
+		if (lockMemory)
+			getMemory().startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			getMemory().writeBytes(memoryOffset, LocomotiveBasicNumericRepresentation.floatingPointToBytes(value));
 		} finally {
-			getMemory().endThreadExclusiveSession();
+			if (lockMemory)
+				getMemory().endThreadExclusiveSession();
 		}
 	}
 
-	public String getValue(StringTypedVariableToken variable) throws VariableNotFoundException {
+	public String getValue(StringTypedVariableToken variable, boolean lockMemory) throws VariableNotFoundException {
 		String value = null;
 		AmstradMemory memory = getMemory();
-		memory.startThreadExclusiveSession();
+		if (lockMemory)
+			memory.startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			int strLength = memory.readByte(memoryOffset) & 0xff;
@@ -212,15 +228,17 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 			byte[] strData = memory.readBytes(strAddr, strLength);
 			value = new String(strData, STRING_CHARSET);
 		} finally {
-			memory.endThreadExclusiveSession();
+			if (lockMemory)
+				memory.endThreadExclusiveSession();
 		}
 		return value;
 	}
 
-	public void setCharAt(StringTypedVariableToken variable, int charIndex, char c)
+	public void setCharAt(StringTypedVariableToken variable, int charIndex, char c, boolean lockMemory)
 			throws VariableNotFoundException, SubscriptOutOfRangeException {
 		AmstradMemory memory = getMemory();
-		memory.startThreadExclusiveSession();
+		if (lockMemory)
+			memory.startThreadExclusiveSession();
 		try {
 			int memoryOffset = findPayloadValueMemoryOffset(variable);
 			int strLength = memory.readByte(memoryOffset) & 0xff;
@@ -229,7 +247,8 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 			int strAddr = memory.readWord(memoryOffset + 1);
 			memory.writeByte(strAddr + charIndex, (byte) (c & 0xff));
 		} finally {
-			memory.endThreadExclusiveSession();
+			if (lockMemory)
+				memory.endThreadExclusiveSession();
 		}
 	}
 

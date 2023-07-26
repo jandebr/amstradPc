@@ -25,6 +25,7 @@ import org.maia.amstrad.gui.memory.model.MemoryOutline;
 import org.maia.amstrad.gui.memory.model.MemoryOutlineBuilder;
 import org.maia.amstrad.gui.memory.model.MemorySegment;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
@@ -161,38 +162,45 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 
 	private void populateTextAreaWithVariables(ColoredTextArea textArea, int maxWidth,
 			LocomotiveBasicVariableSpace varSpace) {
-		List<TypedVariableToken> variables = sortVariablesByName(varSpace.getAllVariables());
-		for (TypedVariableToken variable : variables) {
-			// Variable name and type
-			if (variable instanceof FloatingPointTypedVariableToken) {
-				textArea.add(new ColoredTextLine(new ColoredTextSpan(
-						StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth), COLOR_PAPER,
-						26)));
-			} else {
-				int typeColor = variable instanceof StringTypedVariableToken ? 17 : 25;
-				textArea.add(new ColoredTextLine(
-						new ColoredTextSpan(
-								StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth - 1),
-								COLOR_PAPER, 26),
-						new ColoredTextSpan(String.valueOf(variable.getTypeIndicator()), COLOR_PAPER, typeColor)));
-			}
-			// Variable value
-			String valueStr = "";
-			try {
-				if (variable instanceof IntegerTypedVariableToken) {
-					valueStr = String.valueOf(varSpace.getValue((IntegerTypedVariableToken) variable));
-				} else if (variable instanceof FloatingPointTypedVariableToken) {
-					valueStr = FloatingPointNumberToken
-							.format(varSpace.getValue((FloatingPointTypedVariableToken) variable));
-				} else if (variable instanceof StringTypedVariableToken) {
-					valueStr = '"' + varSpace.getValue((StringTypedVariableToken) variable) + '"';
+		AmstradMemory memory = getAmstradPc().getMemory();
+		memory.startThreadExclusiveSession();
+		try {
+			List<TypedVariableToken> variables = sortVariablesByName(varSpace.getAllVariables());
+			for (TypedVariableToken variable : variables) {
+				// Variable name and type
+				if (variable instanceof FloatingPointTypedVariableToken) {
+					textArea.add(new ColoredTextLine(new ColoredTextSpan(
+							StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth), COLOR_PAPER,
+							26)));
+				} else {
+					int typeColor = variable instanceof StringTypedVariableToken ? 17 : 25;
+					textArea.add(new ColoredTextLine(
+							new ColoredTextSpan(
+									StringUtils.truncate(variable.getVariableNameWithoutTypeIndicator(), maxWidth - 1),
+									COLOR_PAPER, 26),
+							new ColoredTextSpan(String.valueOf(variable.getTypeIndicator()), COLOR_PAPER, typeColor)));
 				}
-			} catch (VariableNotFoundException e) {
+				// Variable value
+				String valueStr = "";
+				try {
+					if (variable instanceof IntegerTypedVariableToken) {
+						valueStr = String.valueOf(varSpace.getValue((IntegerTypedVariableToken) variable, false));
+					} else if (variable instanceof FloatingPointTypedVariableToken) {
+						valueStr = FloatingPointNumberToken
+								.format(varSpace.getValue((FloatingPointTypedVariableToken) variable, false));
+					} else if (variable instanceof StringTypedVariableToken) {
+						valueStr = '"' + varSpace.getValue((StringTypedVariableToken) variable, false) + '"';
+					}
+				} catch (VariableNotFoundException e) {
+					// should not be possible
+				}
+				for (String line : StringUtils.splitOnNewlinesAndWrap(valueStr, maxWidth)) {
+					textArea.add(new ColoredTextLine(new ColoredTextSpan(line, COLOR_PAPER, 23)));
+				}
+				textArea.add(new ColoredTextLine());
 			}
-			for (String line : StringUtils.splitOnNewlinesAndWrap(valueStr, maxWidth)) {
-				textArea.add(new ColoredTextLine(new ColoredTextSpan(line, COLOR_PAPER, 23)));
-			}
-			textArea.add(new ColoredTextLine());
+		} finally {
+			memory.endThreadExclusiveSession();
 		}
 	}
 
