@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicLanguage;
-import org.maia.amstrad.gui.ImageProxy;
-import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.util.StringUtils;
 
@@ -32,7 +30,7 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private List<UserControl> userControls;
 
-	private List<ProgramImage> images;
+	private List<AmstradProgramImage> images;
 
 	private List<FileReference> fileReferences;
 
@@ -40,7 +38,7 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private AmstradMonitorMode preferredMonitorMode;
 
-	private ProgramImage coverImage;
+	private AmstradProgramImage coverImage;
 
 	private AmstradProgramPayload payload;
 
@@ -52,7 +50,7 @@ public abstract class AmstradProgram implements Cloneable {
 		this.programType = programType;
 		this.programName = programName;
 		this.userControls = new Vector<UserControl>();
-		this.images = new Vector<ProgramImage>();
+		this.images = new Vector<AmstradProgramImage>();
 		this.fileReferences = new Vector<FileReference>();
 		this.flags = new Vector<String>();
 	}
@@ -100,7 +98,7 @@ public abstract class AmstradProgram implements Cloneable {
 		try {
 			clone = (AmstradProgram) super.clone();
 			clone.setUserControls(new Vector<UserControl>(getUserControls()));
-			clone.setImages(new Vector<ProgramImage>(getImages()));
+			clone.setImages(new Vector<AmstradProgramImage>(getImages()));
 			clone.setFileReferences(new Vector<FileReference>(getFileReferences()));
 			clone.setFlags(new Vector<String>(getFlags()));
 		} catch (CloneNotSupportedException e) {
@@ -111,7 +109,7 @@ public abstract class AmstradProgram implements Cloneable {
 
 	public void dispose() {
 		setPayload(null);
-		for (ProgramImage image : getImages()) {
+		for (AmstradProgramImage image : getImages()) {
 			image.dispose();
 		}
 		// no dispose on cover image because these are managed externally
@@ -135,7 +133,7 @@ public abstract class AmstradProgram implements Cloneable {
 		getImages().clear();
 	}
 
-	public void addImage(ProgramImage image) {
+	public void addImage(AmstradProgramImage image) {
 		getImages().add(image);
 	}
 
@@ -251,19 +249,19 @@ public abstract class AmstradProgram implements Cloneable {
 		this.userControls = userControls;
 	}
 
-	public List<ProgramImage> getImages() {
+	public List<AmstradProgramImage> getImages() {
 		return images;
 	}
 
-	private void setImages(List<ProgramImage> images) {
+	private void setImages(List<AmstradProgramImage> images) {
 		this.images = images;
 	}
 
-	public ProgramImage getCoverImage() {
+	public AmstradProgramImage getCoverImage() {
 		return coverImage;
 	}
 
-	public void setCoverImage(ProgramImage coverImage) {
+	public void setCoverImage(AmstradProgramImage coverImage) {
 		this.coverImage = coverImage;
 	}
 
@@ -337,12 +335,6 @@ public abstract class AmstradProgram implements Cloneable {
 		public void setHeading(String heading) {
 			this.heading = heading;
 		}
-
-	}
-
-	public static interface ProgramImage extends ImageProxy, ScrollableItem {
-
-		String getCaption();
 
 	}
 

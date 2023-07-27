@@ -2,10 +2,10 @@ package org.maia.amstrad.gui.browser.components;
 
 import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgram.ProgramImage;
+import org.maia.amstrad.program.AmstradProgramImage;
 import org.maia.amstrad.util.StringUtils;
 
-public class ProgramImageGallery extends ScrollableItemList<ProgramImage> {
+public class ProgramImageGallery extends ScrollableItemList<AmstradProgramImage> {
 
 	private AmstradProgram program;
 
@@ -20,7 +20,7 @@ public class ProgramImageGallery extends ScrollableItemList<ProgramImage> {
 	}
 
 	@Override
-	public ProgramImage getItem(int index) {
+	public AmstradProgramImage getItem(int index) {
 		return getProgram().getImages().get(index);
 	}
 

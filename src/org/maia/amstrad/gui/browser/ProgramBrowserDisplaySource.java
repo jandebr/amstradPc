@@ -21,7 +21,7 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgram.ProgramImage;
+import org.maia.amstrad.program.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.util.AmstradListenerList;
@@ -304,7 +304,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				canvas);
 		// Visual
 		Rectangle bounds = deriveProgramImageVisualBounds(gallery, canvas);
-		ProgramImage image = gallery.getSelectedItem();
+		AmstradProgramImage image = gallery.getSelectedItem();
 		renderProgramImageCenterFit(image, canvas, bounds);
 		// Index
 		boolean hasCaptions = gallery.hasCaptions();
@@ -344,7 +344,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return rect;
 	}
 
-	private void renderProgramImageCenterFit(ProgramImage programImage, AmstradDisplayCanvas canvas, Rectangle bounds) {
+	private void renderProgramImageCenterFit(AmstradProgramImage programImage, AmstradDisplayCanvas canvas, Rectangle bounds) {
 		Image image = programImage.getImage();
 		if (image != null) {
 			renderImageCenterFit(image, canvas, bounds);

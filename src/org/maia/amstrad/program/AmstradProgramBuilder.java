@@ -13,7 +13,6 @@ import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.gui.FileBasedImageProxy;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
-import org.maia.amstrad.program.AmstradProgram.ProgramImage;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
 import org.maia.amstrad.util.StringUtils;
 
@@ -87,15 +86,15 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return this;
 	}
 
-	public AmstradProgramBuilder withImages(List<ProgramImage> images) {
+	public AmstradProgramBuilder withImages(List<AmstradProgramImage> images) {
 		getProgram().clearImages();
-		for (ProgramImage image : images) {
+		for (AmstradProgramImage image : images) {
 			getProgram().addImage(image);
 		}
 		return this;
 	}
 
-	public AmstradProgramBuilder withCoverImage(ProgramImage coverImage) {
+	public AmstradProgramBuilder withCoverImage(AmstradProgramImage coverImage) {
 		getProgram().setCoverImage(coverImage);
 		return this;
 	}
@@ -184,14 +183,14 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return userControls;
 	}
 
-	private List<ProgramImage> extractProgramImagesFromMetaData(Properties props, File relativePath) {
-		List<ProgramImage> images = new Vector<ProgramImage>();
+	private List<AmstradProgramImage> extractProgramImagesFromMetaData(Properties props, File relativePath) {
+		List<AmstradProgramImage> images = new Vector<AmstradProgramImage>();
 		int i = 1;
 		String fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
 		while (fileRef != null) {
 			File file = new File(relativePath, fileRef);
 			String caption = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_CAPTION);
-			ProgramImage image = new ProgramImageStoredInFile(file, caption);
+			AmstradProgramImage image = new ProgramImageStoredInFile(file, caption);
 			images.add(image);
 			i++;
 			fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
@@ -199,8 +198,8 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return images;
 	}
 
-	private ProgramImage extractCoverImageFromMetaData(Properties props, File relativePath) {
-		ProgramImage image = null;
+	private AmstradProgramImage extractCoverImageFromMetaData(Properties props, File relativePath) {
+		AmstradProgramImage image = null;
 		String fileRef = props.getProperty(AMD_COVER_IMAGE);
 		if (fileRef != null) {
 			File file = new File(relativePath, fileRef);
@@ -256,7 +255,7 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return program;
 	}
 
-	private static class ProgramImageStoredInFile extends FileBasedImageProxy implements ProgramImage {
+	private static class ProgramImageStoredInFile extends FileBasedImageProxy implements AmstradProgramImage {
 
 		private String caption;
 
