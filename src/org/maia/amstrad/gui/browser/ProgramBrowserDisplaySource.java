@@ -52,9 +52,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private static final String SETTING_SHOW_MINI_INFO = "program_browser.mini_info.show";
 
 	private static final int LABEL_WIDTH = 18;
-	
+
 	public static int SYMBOL_CODE_MONITOR = 176;
-	
+
 	public static int SYMBOL_CODE_HOME = 177;
 
 	private ProgramBrowserDisplaySource(AmstradPc amstradPc, String windowTitle, Window initialWindow) {
@@ -519,12 +519,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		setProgramFileReferencesSheet(new ProgramFileReferencesSheet(program, getAmstradPc(), 18, 30,
 				getTheme().getModalWindowBackgroundInk()));
 		setCurrentWindow(Window.PROGRAM_FILE_REFERENCES_MODAL);
-	}
-
-	public void addReturnToProgramMenu() {
-		if (getProgramMenu() != null) {
-			getProgramMenu().addReturnMenuItem();
-		}
 	}
 
 	public void addListener(ProgramBrowserListener listener) {

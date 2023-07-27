@@ -1,12 +1,9 @@
 package org.maia.amstrad.gui.browser.components;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.program.AmstradProgram;
-
 public class ProgramInfoMenuItem extends ProgramMenuItem {
 
-	public ProgramInfoMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program) {
-		super(browser, program, "Info");
+	public ProgramInfoMenuItem(ProgramMenu menu) {
+		super(menu, "Info");
 	}
 
 	@Override

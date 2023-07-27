@@ -4,7 +4,6 @@ import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.load.AmstradProgramLoader;
 import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
-import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
 
@@ -14,8 +13,8 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 
 	private boolean failed;
 
-	protected ProgramLaunchMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program, String label) {
-		super(browser, program, label);
+	protected ProgramLaunchMenuItem(ProgramMenu menu, String label) {
+		super(menu, label);
 	}
 
 	@Override
@@ -30,7 +29,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 					try {
 						browser.releaseKeyboard();
 						browser.getAmstradPc().reboot(true, true);
-						launchProgram(getProgram());
+						launchProgram();
 						setFailed(false);
 						// browser.closeModalWindow();
 						browser.close(); // restores monitor mode & settings
@@ -49,10 +48,10 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 		}
 	}
 
-	protected abstract void launchProgram(AmstradProgram program) throws AmstradProgramException;
+	protected abstract void launchProgram() throws AmstradProgramException;
 
-	protected AmstradProgramLoader getProgramLoader(AmstradProgram program) {
-		return AmstradProgramLoaderFactory.getInstance().createLoaderFor(program, getAmstradPc());
+	protected AmstradProgramLoader getProgramLoader() {
+		return AmstradProgramLoaderFactory.getInstance().createLoaderFor(getProgram(), getAmstradPc());
 	}
 
 	@Override

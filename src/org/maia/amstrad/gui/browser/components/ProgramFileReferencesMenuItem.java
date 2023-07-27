@@ -2,7 +2,6 @@ package org.maia.amstrad.gui.browser.components;
 
 import java.util.Collection;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.load.basic.staged.file.DiscoveredFileReference;
 import org.maia.amstrad.load.basic.staged.file.FileReferenceDiscoveryService;
 import org.maia.amstrad.program.AmstradProgram;
@@ -14,8 +13,8 @@ public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 
 	private boolean attention;
 
-	public ProgramFileReferencesMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program) {
-		super(browser, program, "File refs");
+	public ProgramFileReferencesMenuItem(ProgramMenu menu) {
+		super(menu, "File refs");
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package org.maia.amstrad.gui.browser.components;
 
-import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.pc.AmstradPc;
@@ -9,15 +7,12 @@ import org.maia.amstrad.program.AmstradProgram;
 
 public abstract class ProgramMenuItem implements ScrollableItem {
 
-	private final ProgramBrowserDisplaySource browser;
-
-	private AmstradProgram program;
+	private ProgramMenu menu;
 
 	private String label;
 
-	protected ProgramMenuItem(ProgramBrowserDisplaySource browser, AmstradProgram program, String label) {
-		this.browser = browser;
-		this.program = program;
+	protected ProgramMenuItem(ProgramMenu menu, String label) {
+		this.menu = menu;
 		this.label = label;
 	}
 
@@ -35,20 +30,20 @@ public abstract class ProgramMenuItem implements ScrollableItem {
 		return 9;
 	}
 
-	protected ProgramBrowserDisplaySource getBrowser() {
-		return browser;
-	}
-
 	protected AmstradPc getAmstradPc() {
 		return getBrowser().getAmstradPc();
 	}
 
-	protected AmstradSettings getAmstradSettings() {
-		return AmstradFactory.getInstance().getAmstradContext().getUserSettings();
+	protected ProgramBrowserDisplaySource getBrowser() {
+		return getMenu().getBrowser();
 	}
 
 	public AmstradProgram getProgram() {
-		return program;
+		return getMenu().getProgram();
+	}
+
+	public ProgramMenu getMenu() {
+		return menu;
 	}
 
 	public String getLabel() {

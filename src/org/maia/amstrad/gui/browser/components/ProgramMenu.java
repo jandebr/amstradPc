@@ -24,18 +24,17 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 	}
 
 	private void populateMenu() {
-		ProgramBrowserDisplaySource browser = getBrowser();
-		AmstradProgram program = getProgram();
-		addMenuItem(new ProgramRunMenuItem(browser, program));
-		if (browser.getMode().isPrimaryDisplayCentric()) {
-			addMenuItem(new ProgramLoadMenuItem(browser, program));
+		boolean primaryDisplayCentric = getBrowser().getMode().isPrimaryDisplayCentric();
+		addMenuItem(new ProgramRunMenuItem(this));
+		if (primaryDisplayCentric) {
+			addMenuItem(new ProgramLoadMenuItem(this));
 		}
-		addMenuItem(new ProgramInfoMenuItem(browser, program));
-		addMenuItem(new ProgramImagesMenuItem(browser, program));
-		if (browser.getMode().isPrimaryDisplayCentric()) {
-			addMenuItem(new ProgramFileReferencesMenuItem(browser, program));
+		addMenuItem(new ProgramInfoMenuItem(this));
+		addMenuItem(new ProgramImagesMenuItem(this));
+		if (primaryDisplayCentric) {
+			addMenuItem(new ProgramFileReferencesMenuItem(this));
 		}
-		addMenuItem(new ProgramCloseMenuItem(browser, program));
+		addMenuItem(new ProgramCloseMenuItem(this));
 	}
 
 	private void addMenuItem(ProgramMenuItem menuItem) {
@@ -54,7 +53,7 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 			}
 		}
 		if (insertionIndex >= 0) {
-			getMenuItems().add(insertionIndex, new ProgramReturnMenuItem(getBrowser(), getProgram()));
+			getMenuItems().add(insertionIndex, new ProgramReturnMenuItem(this));
 			browseTo(insertionIndex); // make it the selected item
 		}
 	}
@@ -69,7 +68,7 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 		return getMenuItems().get(index);
 	}
 
-	private ProgramBrowserDisplaySource getBrowser() {
+	public ProgramBrowserDisplaySource getBrowser() {
 		return browser;
 	}
 
