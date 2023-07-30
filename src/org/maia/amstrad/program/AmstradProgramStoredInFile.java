@@ -1,10 +1,11 @@
 package org.maia.amstrad.program;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.maia.amstrad.AmstradFileType;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.amstrad.program.payload.AmstradProgramBinaryFilePayload;
+import org.maia.amstrad.program.payload.AmstradProgramPayload;
+import org.maia.amstrad.program.payload.AmstradProgramTextFilePayload;
 
 public class AmstradProgramStoredInFile extends AmstradProgram {
 
@@ -54,14 +55,10 @@ public class AmstradProgramStoredInFile extends AmstradProgram {
 	@Override
 	protected AmstradProgramPayload loadPayload() throws AmstradProgramException {
 		AmstradProgramPayload payload = null;
-		try {
-			if (isBinaryFileData()) {
-				payload = new AmstradProgramBinaryPayload(AmstradIO.readBinaryFileContents(getFile()));
-			} else {
-				payload = new AmstradProgramTextPayload(AmstradIO.readTextFileContents(getFile()));
-			}
-		} catch (IOException e) {
-			throw new AmstradProgramException(this, "Could not load payload of " + getProgramName(), e);
+		if (isBinaryFileData()) {
+			payload = new AmstradProgramBinaryFilePayload(this, getFile());
+		} else {
+			payload = new AmstradProgramTextFilePayload(this, getFile());
 		}
 		return payload;
 	}
