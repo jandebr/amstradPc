@@ -37,12 +37,12 @@ code = amstradPc.jar
 class = org.maia.amstrad.AmstradMain
 
 # JVM arguments
-# jvmarg = -splash:images/splash.png
+jvmarg = -splash:images/splash.png
 jvmarg = -Xmx512m
-jvmarg = -Djavacpc-version="%AMSTRADPC_VERSION%"
-jvmarg = -Djavacpc-ini-read="javacpc.ini"
-jvmarg = -Djavacpc-ini-write="javacpc.ini"
-jvmarg = -Djavacpc.program_repo.file.dir-managed="%AMSTRADPC_PROGRAMBASE%"
+jvmarg = -Djavacpc-version=%AMSTRADPC_VERSION%
+jvmarg = -Djavacpc-ini-read=javacpc.ini
+jvmarg = -Djavacpc-ini-write=javacpc.ini
+jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
 default.jvmarg = -Djavacpc.mode=DEFAULT
 kiosk.jvmarg = -Djavacpc.mode=KIOSK
 original.jvmarg = -Djavacpc.mode=ORIGINAL
