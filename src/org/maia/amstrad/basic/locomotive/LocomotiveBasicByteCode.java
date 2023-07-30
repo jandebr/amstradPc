@@ -360,7 +360,7 @@ public class LocomotiveBasicByteCode extends BasicByteCode {
 			List<Integer> lineNumbers = getAscendingLineNumbers();
 			int[] lineOffsetIndices = getLineOffsetIndices();
 			int memoryBaseOffset = ADDRESS_BYTECODE_START - 1;
-			Map<Integer, Integer> map = HashMap.newHashMap(lineNumbers.size());
+			Map<Integer, Integer> map = new HashMap<Integer, Integer>(lineNumbers.size());
 			for (int i = 0; i < lineNumbers.size(); i++) {
 				map.put(lineNumbers.get(i), memoryBaseOffset + lineOffsetIndices[i]);
 			}
