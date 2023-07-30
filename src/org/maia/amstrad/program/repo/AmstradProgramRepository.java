@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.ImageProxy;
 import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.program.AmstradProgram;
@@ -13,7 +14,23 @@ import org.maia.amstrad.util.KeyedCacheLRU;
 
 public abstract class AmstradProgramRepository {
 
-	private static AmstradProgramCache programCache = new AmstradProgramCache(10);
+	private static AmstradProgramCache programCache;
+
+	private static final int PROGRAM_CACHE_DEFAULT_CAPACITY = 40;
+
+	private static final String PROGRAM_CACHE_CAPACITY_SETTING = "program_repo.cache_capacity";
+
+	static {
+		int capacity = PROGRAM_CACHE_DEFAULT_CAPACITY;
+		try {
+			capacity = Integer.parseInt(AmstradFactory.getInstance().getAmstradContext().getUserSettings()
+					.get(PROGRAM_CACHE_CAPACITY_SETTING, String.valueOf(capacity)));
+		} catch (NumberFormatException e) {
+			// use default
+		}
+		System.out.println("Init program repository cache, capacity=" + capacity);
+		programCache = new AmstradProgramCache(capacity);
+	}
 
 	protected AmstradProgramRepository() {
 	}

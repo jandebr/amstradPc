@@ -10,7 +10,7 @@ public abstract class ProgramFileRepositoryCleaner {
 	}
 
 	public void cleanProgramRepository(File rootFolder, boolean removeEmptySubfolders) {
-		System.out.println("Checking program file repository for cleanup");
+		System.out.println("Cleaning program repository at " + rootFolder.getAbsolutePath());
 		removeObsoleteProgramFiles(rootFolder);
 		if (removeEmptySubfolders) {
 			removeEmptyProgramSubfolders(rootFolder);
