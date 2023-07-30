@@ -19,7 +19,12 @@ public class CoverImageImpl implements CoverImage {
 
 	@Override
 	public Image probeImage() {
-		return getCache().fetchFromCache(getNode());
+		Image image = null;
+		ImageProxy imageProxy = getCache().fetchFromCache(getNode());
+		if (imageProxy != null) {
+			image = imageProxy.getImage();
+		}
+		return image;
 	}
 
 	@Override
@@ -55,9 +60,10 @@ public class CoverImageImpl implements CoverImage {
 		@Override
 		public void process() {
 			// System.out.println("Fetching cover image for " + getNode().getName());
-			Image image = getImageProxy().getImage();
+			ImageProxy imageProxy = getImageProxy();
+			Image image = imageProxy.getImage(); // loads the image and keeps it in memory
 			// System.out.println("Caching cover image for " + getNode().getName());
-			getCache().storeInCache(getNode(), image);
+			getCache().storeInCache(getNode(), imageProxy);
 		}
 
 		public Node getNode() {

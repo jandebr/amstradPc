@@ -16,7 +16,7 @@ public abstract class AmstradProgramRepository {
 
 	private static AmstradProgramCache programCache;
 
-	private static final int PROGRAM_CACHE_DEFAULT_CAPACITY = 40;
+	private static final int PROGRAM_CACHE_DEFAULT_CAPACITY = 50;
 
 	private static final String PROGRAM_CACHE_CAPACITY_SETTING = "program_repo.cache_capacity";
 
@@ -197,9 +197,10 @@ public abstract class AmstradProgramRepository {
 		}
 
 		@Override
-		protected void evicted(ProgramNode key, AmstradProgram value) {
-			super.evicted(key, value);
-			value.dispose();
+		protected void evicted(ProgramNode node, AmstradProgram program) {
+			super.evicted(node, program);
+			program.dispose();
+			// System.out.println("CACHE-EVICTED program " + program.getProgramName());
 		}
 
 	}

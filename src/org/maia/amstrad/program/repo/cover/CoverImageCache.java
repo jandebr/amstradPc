@@ -1,12 +1,11 @@
 package org.maia.amstrad.program.repo.cover;
 
-import java.awt.Image;
-
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.gui.ImageProxy;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.util.KeyedCacheLRU;
 
-public class CoverImageCache extends KeyedCacheLRU<Node, Image> {
+public class CoverImageCache extends KeyedCacheLRU<Node, ImageProxy> {
 
 	private static CoverImageCache instance;
 
@@ -18,10 +17,10 @@ public class CoverImageCache extends KeyedCacheLRU<Node, Image> {
 	}
 
 	@Override
-	protected void evicted(Node key, Image value) {
-		super.evicted(key, value);
-		value.flush();
-		// System.out.println("Disposed cover image for " + key.getName());
+	protected void evicted(Node node, ImageProxy imageProxy) {
+		super.evicted(node, imageProxy);
+		imageProxy.dispose(); // disposes the memory in use by the image
+		// System.out.println("CACHE-EVICTED cover image for " + node.getName());
 	}
 
 	public static CoverImageCache getInstance() {
