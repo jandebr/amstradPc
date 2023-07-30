@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,11 +32,14 @@ public abstract class AmstradDisplayCanvas {
 
 	private Point textPosition;
 
+	private Rectangle reusableTextCursorBounds;
+
 	protected AmstradDisplayCanvas(AmstradGraphicsContext graphicsContext) {
 		this.graphicsContext = graphicsContext;
 		this.graphicsOrigin = new Point();
 		this.graphicsPosition = new Point();
 		this.textPosition = new Point();
+		this.reusableTextCursorBounds = new Rectangle();
 		resetColors();
 		resetTextPosition();
 		setAsciiSymbolRenderer(new AsciiSymbolRenderer());
@@ -260,7 +264,7 @@ public abstract class AmstradDisplayCanvas {
 
 	private void printAsciiSymbolAtTextPosition(char c, boolean transparentBackground) {
 		Point p = getTextPosition();
-		Rectangle bounds = getTextCursorBoundsOnGraphics2D(p.x, p.y);
+		Rectangle bounds = getTextCursorBoundsOnGraphics2D(p.x, p.y, getReusableTextCursorBounds());
 		printAsciiSymbolInBounds(c, bounds, transparentBackground);
 	}
 
@@ -273,14 +277,11 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	private void printAsciiSymbolInBounds(char c, Rectangle bounds, boolean transparentBackground) {
-		double scale = getWidth() / getGraphicsContext().getTextColumns() / 8.0;
-		Graphics2D g2 = (Graphics2D) getGraphics2D().create();
-		g2.translate(bounds.x, bounds.y);
-		g2.scale(scale, scale);
+		int scale = (int) Math.round(getWidth() / getGraphicsContext().getTextColumns() / 8f);
+		Graphics2D g2 = getGraphics2D();
 		g2.setBackground(transparentBackground ? null : getPaperColor());
 		g2.setColor(getPenColor());
-		getAsciiSymbolRenderer().printSymbol(c, g2);
-		g2.dispose();
+		getAsciiSymbolRenderer().printSymbol(c, bounds.x, bounds.y, scale, g2);
 	}
 
 	private void advanceTextPosition() {
@@ -323,7 +324,7 @@ public abstract class AmstradDisplayCanvas {
 		return getGraphicsOrigin().y + y;
 	}
 
-	protected abstract Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY);
+	protected abstract Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY, Rectangle returnValue);
 
 	public Rectangle getTextCursorBoundsOnCanvas(int cursorX, int cursorY) {
 		int charWidth = getWidth() / getGraphicsContext().getTextColumns();
@@ -401,6 +402,10 @@ public abstract class AmstradDisplayCanvas {
 		return textPosition;
 	}
 
+	private Rectangle getReusableTextCursorBounds() {
+		return reusableTextCursorBounds;
+	}
+
 	private AsciiSymbolRenderer getAsciiSymbolRenderer() {
 		return asciiSymbolRenderer;
 	}
@@ -413,10 +418,12 @@ public abstract class AmstradDisplayCanvas {
 
 		private BufferedImage symbolChart;
 
+		private Raster symbolChartRaster;
+
 		private boolean customSymbol32;
 
 		public AsciiSymbolRenderer() {
-			loadSystemSymbolChart();
+			reset();
 		}
 
 		public void reset() {
@@ -427,6 +434,7 @@ public abstract class AmstradDisplayCanvas {
 			try {
 				InputStream in = getClass().getResourceAsStream("image/amstrad-ascii.png");
 				symbolChart = ImageIO.read(in);
+				symbolChartRaster = symbolChart.getRaster();
 				customSymbol32 = false;
 				in.close();
 			} catch (IOException e) {
@@ -434,21 +442,36 @@ public abstract class AmstradDisplayCanvas {
 			}
 		}
 
-		public void printSymbol(int code, Graphics2D canonicalGraphics2D) {
-			if (canonicalGraphics2D.getBackground() != null) {
-				canonicalGraphics2D.clearRect(0, 0, 8, 8);
+		public void printSymbol(int code, int x0, int y0, int scale, Graphics2D g2) {
+			if (g2.getBackground() != null) {
+				// fill background
+				Color fg = g2.getColor();
+				g2.setColor(g2.getBackground());
+				g2.fillRect(x0, y0, 8 * scale, 8 * scale);
+				g2.setColor(fg);
 			}
 			if ((code > 32 && code <= 255) || (code == 32 && customSymbol32)) {
-				BufferedImage chart = getSymbolChart();
+				Raster raster = getSymbolChartRaster();
 				int chartX0 = 8 * ((code - 32) % 40);
 				int chartY0 = 8 * ((code - 32) / 40);
-				for (int i = 0; i < 8; i++) {
-					int chartY = chartY0 + i;
-					for (int j = 0; j < 8; j++) {
-						int chartX = chartX0 + j;
-						if ((chart.getRGB(chartX, chartY) & 0xff) != 0) {
-							canonicalGraphics2D.fillRect(j, i, 1, 1);
+				for (int yi = 0; yi < 8; yi++) {
+					int chartY = chartY0 + yi;
+					int y1 = y0 + yi * scale;
+					boolean inside = false;
+					int insideX = 0;
+					for (int xi = 0; xi < 8; xi++) {
+						int chartX = chartX0 + xi;
+						boolean chartOn = raster.getSample(chartX, chartY, 0) != 0;
+						if (!inside && chartOn) {
+							inside = true;
+							insideX = xi;
+						} else if (inside && !chartOn) {
+							inside = false;
+							g2.fillRect(x0 + insideX * scale, y1, scale * (xi - insideX), scale);
 						}
+					}
+					if (inside) {
+						g2.fillRect(x0 + insideX * scale, y1, scale * (8 - insideX), scale);
 					}
 				}
 			}
@@ -460,9 +483,9 @@ public abstract class AmstradDisplayCanvas {
 				int chartY0 = 8 * ((code - 32) / 40);
 				BufferedImage chart = getSymbolChart();
 				Graphics2D g2 = chart.createGraphics();
-				g2.setBackground(Color.BLACK);
+				g2.setColor(Color.BLACK);
+				g2.fillRect(chartX0, chartY0, 8, 8);
 				g2.setColor(Color.WHITE);
-				g2.clearRect(chartX0, chartY0, 8, 8);
 				for (int i = 0; i < Math.min(values.length, 8); i++) {
 					int chartY = chartY0 + i;
 					int value = values[i];
@@ -488,6 +511,10 @@ public abstract class AmstradDisplayCanvas {
 
 		private BufferedImage getSymbolChart() {
 			return symbolChart;
+		}
+
+		private Raster getSymbolChartRaster() {
+			return symbolChartRaster;
 		}
 
 	}

@@ -570,12 +570,20 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		}
 
 		@Override
-		protected Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY) {
+		protected Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY, Rectangle returnValue) {
 			int charWidth = getWidth() / getGraphicsContext().getTextColumns();
 			int charHeight = getHeight() / getGraphicsContext().getTextRows();
 			int xLeft = (cursorX - 1) * charWidth;
 			int yTop = (cursorY - 1) * charHeight;
-			return new Rectangle(xLeft, yTop, charWidth, charHeight);
+			if (returnValue == null) {
+				return new Rectangle(xLeft, yTop, charWidth, charHeight);
+			} else {
+				returnValue.x = xLeft;
+				returnValue.y = yTop;
+				returnValue.width = charWidth;
+				returnValue.height = charHeight;
+				return returnValue;
+			}
 		}
 
 		public void rememberColors() {

@@ -344,7 +344,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return rect;
 	}
 
-	private void renderProgramImageCenterFit(AmstradProgramImage programImage, AmstradDisplayCanvas canvas, Rectangle bounds) {
+	private void renderProgramImageCenterFit(AmstradProgramImage programImage, AmstradDisplayCanvas canvas,
+			Rectangle bounds) {
 		Image image = programImage.getImage();
 		if (image != null) {
 			renderImageCenterFit(image, canvas, bounds);
