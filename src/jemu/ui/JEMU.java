@@ -46,6 +46,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -1651,6 +1652,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			alt = true;
 		}
 		// Keyboard mapping
+		// System.out.println("KEY PRESSED  " + formatKeyEvent(e));
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;
 		virtualUnshiftKey = false;
@@ -1809,6 +1811,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void keyReleased(KeyEvent e) {
 		// Keyboard mapping
+		// System.out.println("KEY RELEASED " + formatKeyEvent(e));
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;
 		virtualUnshiftKey = false;
@@ -1854,8 +1857,21 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	private KeyEvent cloneKeyEvent(KeyEvent e) {
-		return new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(), e.getKeyCode(), e.getKeyChar(),
-				e.getKeyLocation());
+		return new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiersEx(), e.getKeyCode(),
+				e.getKeyChar(), e.getKeyLocation());
+	}
+
+	private static String formatKeyEvent(KeyEvent e) {
+		StringBuilder sb = new StringBuilder(64);
+		sb.append("KeyEvent");
+		sb.append(" code:").append(e.getKeyCode());
+		sb.append(" char:").append(e.getKeyChar());
+		sb.append(" charNr:").append((int) e.getKeyChar());
+		sb.append(" mod:").append(InputEvent.getModifiersExText(e.getModifiersEx()));
+		sb.append(" ctrl:").append(e.isControlDown());
+		sb.append(" shift:").append(e.isShiftDown());
+		sb.append(" alt:").append(e.isAltDown());
+		return sb.toString();
 	}
 
 	private boolean keyToProcessByComputer(KeyEvent e) {
@@ -1968,12 +1984,12 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 		char keyChar = e.getKeyChar();
 		int keyCode = e.getKeyCode();
-		if ("²³°ι§θηΰωµ~¨".indexOf(keyChar) >= 0) {
+		if (keyCode == 65406 || "²³°ι§θηΰωµ~¨".indexOf(keyChar) >= 0) {
 			e.setKeyCode(KeyEvent.VK_UNDEFINED);
-		} else if (keyCode == 48 && e.isShiftDown()) {
+		} else if (keyChar == '0' && e.isShiftDown()) {
 			e.setKeyCode(123); // 0
-		} else if (keyCode >= 49 && keyCode <= 57 && e.isShiftDown()) {
-			e.setKeyCode(112 + keyCode - 49); // 1,2,...,9
+		} else if (keyChar >= '1' && keyChar <= '9' && e.isShiftDown()) {
+			e.setKeyCode(112 + (keyChar - '1')); // 1,2,...,9
 		} else if (keyCode == 106) {
 			virtualShiftKey = true;
 			e.setKeyCode(59); // numpad '*'
@@ -2035,8 +2051,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			e.setKeyCode(45);
 		} else if (keyChar == '^') {
 			e.setKeyCode(61);
-		} else if (keyChar == '[') {
-			e.setKeyCode(65406);
+		} else if (keyCode == 130) {
+			e.setKeyCode(65406); // [
 		} else if (keyChar == ']') {
 			e.setKeyCode(93);
 		} else if (keyChar == '\\') {
