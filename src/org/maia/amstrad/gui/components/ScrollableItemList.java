@@ -43,17 +43,18 @@ public abstract class ScrollableItemList<T extends ScrollableItem> {
 	}
 
 	public void browseOnePageDown() {
-		if (getIndexOfLastItemShowing() < size() - 1) {
-			setIndexOfFirstItemShowing(
-					Math.min(getIndexOfFirstItemShowing() + getMaxItemsShowing(), size() - getMaxItemsShowing()));
-			setIndexOfSelectedItem(getIndexOfFirstItemShowing());
+		for (int i = 0; i < getPageSize(); i++) {
+			browseOneItemDown();
+			if (getIndexOfSelectedItem() == size() - 1)
+				break;
 		}
 	}
 
 	public void browseOnePageUp() {
-		if (getIndexOfFirstItemShowing() > 0) {
-			setIndexOfFirstItemShowing(Math.max(getIndexOfFirstItemShowing() - getMaxItemsShowing(), 0));
-			setIndexOfSelectedItem(getIndexOfFirstItemShowing());
+		for (int i = 0; i < getPageSize(); i++) {
+			browseOneItemUp();
+			if (getIndexOfSelectedItem() == 0)
+				break;
 		}
 	}
 
@@ -80,6 +81,10 @@ public abstract class ScrollableItemList<T extends ScrollableItem> {
 			return getItem(getIndexOfSelectedItem());
 		}
 		return selectedItem;
+	}
+
+	public int getPageSize() {
+		return getMaxItemsShowing();
 	}
 
 	public int getIndexOfLastItemShowing() {
