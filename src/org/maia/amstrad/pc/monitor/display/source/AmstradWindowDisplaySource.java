@@ -54,9 +54,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 	private void renderWindowTitle(AmstradDisplayCanvas canvas) {
 		canvas.pen(getWindowTitleColorIndex());
 		canvas.locate(1, 1).print(StringUtils.fitWidthCenterAlign(getWindowTitle(), 40));
-		canvas.locate(1, 2);
-		for (int i = 0; i < 40; i++)
-			canvas.printChr(216);
+		canvas.locate(1, 2).printChrHorizontalRepeat(216, 40);
 	}
 
 	private void renderWindowCloseButton(AmstradDisplayCanvas canvas) {
@@ -98,9 +96,7 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		int maxTitleWidth = tx2 - tx1 - 1;
 		canvas.pen(getModalWindowTitleColorIndex());
 		canvas.locate(tx1 + 1, ty1 + 1).print(StringUtils.fitWidth(modalWindowTitle, maxTitleWidth));
-		canvas.locate(tx1 + 1, ty1 + 2);
-		for (int i = 0; i < maxTitleWidth; i++)
-			canvas.printChr(216);
+		canvas.locate(tx1 + 1, ty1 + 2).printChrHorizontalRepeat(216, maxTitleWidth);
 	}
 
 	private void renderModalWindowCloseButton(int tx1, int ty1, int tx2, int ty2, AmstradDisplayCanvas canvas) {
@@ -138,12 +134,10 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		int cpen = canvas.getPenColorIndex();
 		canvas.pen(colorIndex);
 		// Edges
-		for (int i = tx1 + 1; i <= tx2 - 1; i++) {
-			canvas.locate(i, ty1).printChr(154).locate(i, ty2).printChr(154);
-		}
-		for (int i = ty1 + 1; i <= ty2 - 1; i++) {
-			canvas.locate(tx1, i).printChr(149).locate(tx2, i).printChr(149);
-		}
+		canvas.locate(tx1 + 1, ty1).printChrHorizontalRepeat(154, tx2 - tx1 - 1);
+		canvas.locate(tx1 + 1, ty2).printChrHorizontalRepeat(154, tx2 - tx1 - 1);
+		canvas.locate(tx1, ty1 + 1).printChrVerticalRepeat(149, ty2 - ty1 - 1);
+		canvas.locate(tx2, ty1 + 1).printChrVerticalRepeat(149, ty2 - ty1 - 1);
 		// Corners
 		canvas.locate(tx1, ty1).printChr(150);
 		canvas.locate(tx2, ty1).printChr(156);

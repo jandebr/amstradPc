@@ -201,9 +201,38 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	public AmstradDisplayCanvas print(String str, boolean transparentBackground) {
+		if (transparentBackground) {
+			for (int i = 0; i < str.length(); i++) {
+				boolean lastChar = isTextPositionAtEndOfScreen();
+				printChr(str.charAt(i), transparentBackground);
+				if (lastChar)
+					break;
+			}
+			return this;
+		} else {
+			return printOptimizedOpaque(str);
+		}
+	}
+
+	private AmstradDisplayCanvas printOptimizedOpaque(String str) {
+		int cols = getGraphicsContext().getTextColumns();
 		for (int i = 0; i < str.length(); i++) {
 			boolean lastChar = isTextPositionAtEndOfScreen();
-			printChr(str.charAt(i), transparentBackground);
+			char c = str.charAt(i);
+			int j = str.indexOf(c);
+			if (j < i) {
+				// copy a previously rendered character
+				int iy = getTextPosition().y;
+				int ix = getTextPosition().x;
+				int jp = (iy - 1) * cols + (ix - 1) - (i - j);
+				int jy = 1 + jp / cols;
+				int jx = 1 + jp % cols;
+				Rectangle bounds = getTextCursorBoundsOnGraphics2D(ix, iy, getReusableTextCursorBounds());
+				copyTextCursorArea(jx, jy, ix, iy);
+				advanceTextPosition();
+			} else {
+				printChr(c);
+			}
 			if (lastChar)
 				break;
 		}
@@ -225,6 +254,42 @@ public abstract class AmstradDisplayCanvas {
 	public AmstradDisplayCanvas printChr(char c, boolean transparentBackground) {
 		printAsciiSymbolAtTextPosition(c, transparentBackground);
 		advanceTextPosition();
+		return this;
+	}
+
+	public AmstradDisplayCanvas printChrHorizontalRepeat(int code, int repeat) {
+		return printChrHorizontalRepeat((char) code, repeat);
+	}
+
+	public AmstradDisplayCanvas printChrHorizontalRepeat(char c, int repeat) {
+		if (repeat > 0) {
+			int sx = getTextPosition().x;
+			int sy = getTextPosition().y;
+			printAsciiSymbolAtTextPosition(c, false);
+			int n = 0;
+			while (++n < repeat && !isTextPositionAtEndOfScreen()) {
+				advanceTextPosition();
+				copyTextCursorArea(sx, sy, getTextPosition().x, getTextPosition().y);
+			}
+		}
+		return this;
+	}
+
+	public AmstradDisplayCanvas printChrVerticalRepeat(int code, int repeat) {
+		return printChrVerticalRepeat((char) code, repeat);
+	}
+
+	public AmstradDisplayCanvas printChrVerticalRepeat(char c, int repeat) {
+		if (repeat > 0) {
+			int sx = getTextPosition().x;
+			int sy = getTextPosition().y;
+			printAsciiSymbolAtTextPosition(c, false);
+			int n = 0;
+			while (++n < repeat && !isTextPositionAtLastRow()) {
+				advanceTextPositionOneRow();
+				copyTextCursorArea(sx, sy, getTextPosition().x, getTextPosition().y);
+			}
+		}
 		return this;
 	}
 
@@ -284,6 +349,21 @@ public abstract class AmstradDisplayCanvas {
 		getAsciiSymbolRenderer().printSymbol(c, bounds.x, bounds.y, scale, g2);
 	}
 
+	private void copyTextCursorArea(int sourceCursorX, int sourceCursorY, int destCursorX, int destCursorY) {
+		if (sourceCursorX == destCursorX && sourceCursorY == destCursorY)
+			return;
+		Rectangle bounds = getReusableTextCursorBounds();
+		getTextCursorBoundsOnGraphics2D(sourceCursorX, sourceCursorY, bounds);
+		int sx = bounds.x;
+		int sy = bounds.y;
+		int width = bounds.width;
+		int height = bounds.height;
+		getTextCursorBoundsOnGraphics2D(destCursorX, destCursorY, bounds);
+		int deltax = bounds.x - sx;
+		int deltay = bounds.y - sy;
+		getGraphics2D().copyArea(sx, sy, width, height, deltax, deltay);
+	}
+
 	private void advanceTextPosition() {
 		if (!isTextPositionAtEndOfScreen()) {
 			Point p = getTextPosition();
@@ -295,9 +375,23 @@ public abstract class AmstradDisplayCanvas {
 		}
 	}
 
+	private void advanceTextPositionOneRow() {
+		if (!isTextPositionAtLastRow()) {
+			Point p = getTextPosition();
+			p.setLocation(p.x, p.y + 1);
+		}
+	}
+
 	private boolean isTextPositionAtEndOfScreen() {
-		Point p = getTextPosition();
-		return p.x == getGraphicsContext().getTextColumns() && p.y == getGraphicsContext().getTextRows();
+		return isTextPositionAtLastColumn() && isTextPositionAtLastRow();
+	}
+
+	private boolean isTextPositionAtLastColumn() {
+		return getTextPosition().x == getGraphicsContext().getTextColumns();
+	}
+
+	private boolean isTextPositionAtLastRow() {
+		return getTextPosition().y == getGraphicsContext().getTextRows();
 	}
 
 	public int getWidth() {

@@ -476,6 +476,10 @@ public class Display extends JComponent {
 		paintScanLines(g);
 		paintYM(g);
 		paintKeys(g);
+		if (Switches.bilinear && !lowperformance) {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		}
 		paintDisplayOverlays(g, monitorEffect ? getMonitorMask() : null, offscreenImage);
 	}
 
