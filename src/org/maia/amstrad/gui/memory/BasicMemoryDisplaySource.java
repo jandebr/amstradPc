@@ -53,8 +53,6 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
 		getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
-		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
-		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
 		canvas.symbol(SYMBOL_CODE_REFRESH, 46, 76, 138, 129, 81, 50, 116, 0); // refresh
 		refresh();

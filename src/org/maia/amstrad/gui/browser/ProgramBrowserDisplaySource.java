@@ -82,10 +82,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
-		setFollowPrimaryDisplaySourceResolution(false);
 		getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
-		getAmstradPc().getMonitor().setMonitorBilinearEffect(false);
-		getAmstradPc().getMonitor().setMonitorScanLinesEffect(false);
 		canvas.border(getTheme().getMainWindowBorderInk()).paper(getTheme().getMainWindowBackgroundInk());
 		canvas.symbol(SYMBOL_CODE_MONITOR, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon
 		canvas.symbol(SYMBOL_CODE_HOME, 24, 60, 126, 255, 126, 110, 110, 124); // home icon

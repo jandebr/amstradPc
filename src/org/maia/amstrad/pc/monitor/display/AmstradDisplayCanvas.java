@@ -55,6 +55,10 @@ public abstract class AmstradDisplayCanvas {
 		getTextPosition().setLocation(1, 1);
 	}
 
+	public void dispose() {
+		// Subclasses may override this to release resources
+	}
+
 	public AmstradDisplayCanvas border(int colorIndex) {
 		setBorderColorIndex(colorIndex);
 		return this;
@@ -70,9 +74,36 @@ public abstract class AmstradDisplayCanvas {
 		return this;
 	}
 
+	/**
+	 * Fills the entire canvas with the solid paper color and resets the text position
+	 * 
+	 * <p>
+	 * The text position is reset as if by a call to <code>locate(1,1);</code>
+	 * </p>
+	 * 
+	 * @return This canvas
+	 * @see #paper(int)
+	 * @see #locate(int, int)
+	 */
 	public AmstradDisplayCanvas cls() {
 		resetTextPosition();
-		return clearRect(0, getHeight() - 1, getWidth(), getHeight());
+		return fillRect(0, getHeight() - 1, getWidth(), getHeight(), getPaperColor());
+	}
+
+	/**
+	 * Erases the entire canvas with a full transparent paper color
+	 * 
+	 * <p>
+	 * To fill the canvas with the solid paper color, use {@link #cls()} instead
+	 * </p>
+	 * 
+	 * @return This canvas
+	 * @see #paper(int)
+	 * @see #cls()
+	 */
+	public AmstradDisplayCanvas erase() {
+		Color fillColor = new Color(getPaperColor().getRGB() & 0x00ffffff, true);
+		return fillRect(0, getHeight() - 1, getWidth(), getHeight(), fillColor);
 	}
 
 	public AmstradDisplayCanvas origin() {
@@ -141,7 +172,7 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	public AmstradDisplayCanvas clearRect(int xLeft, int yTop, int width, int height) {
-		return fillRect(xLeft, yTop, width, height, getPaperColorIndex());
+		return fillRect(xLeft, yTop, width, height, getPaperColor());
 	}
 
 	public AmstradDisplayCanvas fillRect(Rectangle rect) {
@@ -149,17 +180,17 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	public AmstradDisplayCanvas fillRect(int xLeft, int yTop, int width, int height) {
-		return fillRect(xLeft, yTop, width, height, getPenColorIndex());
+		return fillRect(xLeft, yTop, width, height, getPenColor());
 	}
 
-	private AmstradDisplayCanvas fillRect(int xLeft, int yTop, int width, int height, int colorIndex) {
+	private AmstradDisplayCanvas fillRect(int xLeft, int yTop, int width, int height, Color fillColor) {
 		int x1 = projectX(xLeft);
 		int y1 = projectY(yTop);
 		int x2 = projectX(xLeft + width - 1);
 		int y2 = projectY(yTop - height + 1);
 		Graphics2D g2 = getGraphics2D();
-		g2.setColor(getSystemColor(colorIndex));
-		g2.fillRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1);
+		g2.setBackground(fillColor);
+		g2.clearRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1);
 		return this;
 	}
 
