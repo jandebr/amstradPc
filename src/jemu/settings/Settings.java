@@ -107,6 +107,10 @@ public class Settings {
 	public static final String SCANEFFECT = "display_effect";
 	public static final String BILINEAR = "bilinear";
 
+	public static final String ALLOW_SCANLINES_LOWPERFORMANCE = "lowperformance.allow_scanlines";
+	public static final String ALLOW_SCANEFFECT_LOWPERFORMANCE = "lowperformance.allow_display_effect";
+	public static final String ALLOW_BILINEAR_LOWPERFORMANCE = "lowperformance.allow_bilinear";
+
 	// Enum values for "MONITOR" setting
 	public static final String MONITOR_COLOUR = "COLOUR";
 	public static final String MONITOR_GREEN = "GREEN";

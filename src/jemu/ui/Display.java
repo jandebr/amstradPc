@@ -423,7 +423,8 @@ public class Display extends JComponent {
 			showfps++;
 			doTouchFPS();
 		}
-		if (Switches.bilinear && !lowperformance) {
+		boolean bilinear = Switches.bilinear && (!lowperformance || allowBilinearWhenLowPerformance());
+		if (bilinear) {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		}
@@ -450,7 +451,7 @@ public class Display extends JComponent {
 			zoom = 1;
 		}
 		scanlines = Switches.ScanLines;
-		if (scanlines && !lowperformance) {
+		if (scanlines && (!lowperformance || allowScanLinesWhenLowPerformance())) {
 			if (imageRect.height >= 544) {
 				drawlines = true;
 			} else {
@@ -476,7 +477,7 @@ public class Display extends JComponent {
 		paintScanLines(g);
 		paintYM(g);
 		paintKeys(g);
-		if (Switches.bilinear && !lowperformance) {
+		if (bilinear) {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 		}
@@ -535,10 +536,10 @@ public class Display extends JComponent {
 	}
 
 	private void paintScanLines(Graphics g) {
-		if (scanlines && !lowperformance) {
+		if (scanlines && (!lowperformance || allowScanLinesWhenLowPerformance())) {
 			if (Switches.bilinear)
 				drawlines = true;
-			if (drawlines && !lowperformance) {
+			if (drawlines && (!lowperformance || allowScanLinesWhenLowPerformance())) {
 				mask = mask3;
 				if (Switches.bilinear && (Switches.monitormode == 0 || Switches.monitormode == 1)) {
 					mask = mask1;
@@ -658,7 +659,7 @@ public class Display extends JComponent {
 	@Override
 	public void paintComponent(Graphics g) {
 		if (image != null) {
-			boolean monitorEffect = scaneffect && !lowperformance;
+			boolean monitorEffect = scaneffect && (!lowperformance || allowScanEffectWhenLowPerformance());
 			paintImage(g, false, monitorEffect);
 		}
 		painted = true;
@@ -729,6 +730,18 @@ public class Display extends JComponent {
 		} else {
 			// System.out.println("Display Lost Focus");
 		}
+	}
+
+	private boolean allowScanLinesWhenLowPerformance() {
+		return Settings.getBoolean(Settings.ALLOW_SCANLINES_LOWPERFORMANCE, false);
+	}
+
+	private boolean allowScanEffectWhenLowPerformance() {
+		return Settings.getBoolean(Settings.ALLOW_SCANEFFECT_LOWPERFORMANCE, false);
+	}
+
+	private boolean allowBilinearWhenLowPerformance() {
+		return Settings.getBoolean(Settings.ALLOW_BILINEAR_LOWPERFORMANCE, false);
 	}
 
 	public MonitorMask getMonitorMask() {
