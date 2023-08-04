@@ -22,7 +22,6 @@ public class AmstradSystemColorsDisplaySource extends AmstradWindowDisplaySource
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
-		canvas.border(1).paper(1);
 	}
 
 	@Override

@@ -214,12 +214,12 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 	public synchronized void terminate() {
 		if (!isTerminated()) {
 			if (isStarted()) {
-				if (getMonitor().isAlternativeDisplaySourceShowing()) {
-					getMonitor().resetDisplaySource();
-				}
 				Autotype.clearText();
 				getJemuInstance().quit();
 				getMemoryTrapProcessor().stopProcessing();
+				if (getMonitor().isAlternativeDisplaySourceShowing()) {
+					getMonitor().resetDisplaySource();
+				}
 			}
 			setTerminated(true);
 			setInstanceRunning(false);

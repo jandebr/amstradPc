@@ -46,9 +46,9 @@ public abstract class AmstradDisplayCanvas {
 	}
 
 	public void resetColors() {
-		setBorderColorIndex(getGraphicsContext().getDefaultBorderColorIndex());
-		setPaperColorIndex(getGraphicsContext().getDefaultPaperColorIndex());
-		setPenColorIndex(getGraphicsContext().getDefaultPenColorIndex());
+		border(getGraphicsContext().getDefaultBorderColorIndex());
+		paper(getGraphicsContext().getDefaultPaperColorIndex());
+		pen(getGraphicsContext().getDefaultPenColorIndex());
 	}
 
 	private void resetTextPosition() {

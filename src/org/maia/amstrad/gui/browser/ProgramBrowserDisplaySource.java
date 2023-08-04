@@ -493,7 +493,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	@Override
 	public void closeMainWindow() {
 		if (getMode().isProgramBrowserCentric()) {
-			getAmstradPc().terminate();
+			getAmstradPc().getActions().getQuitAction().quit();
 		} else {
 			super.closeMainWindow();
 		}

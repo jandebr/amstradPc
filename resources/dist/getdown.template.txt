@@ -44,5 +44,8 @@ jvmarg = -Djavacpc-ini-read=javacpc.ini
 jvmarg = -Djavacpc-ini-write=javacpc.ini
 jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
 default.jvmarg = -Djavacpc.mode=DEFAULT
+default.jvmarg = -Djavacpc.quit.animate=false
 kiosk.jvmarg = -Djavacpc.mode=KIOSK
+kiosk.jvmarg = -Djavacpc.quit.animate=true
 original.jvmarg = -Djavacpc.mode=ORIGINAL
+original.jvmarg = -Djavacpc.quit.animate=false

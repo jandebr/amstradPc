@@ -30,13 +30,9 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	private BufferedImage backdropImage;
 
+	private int backgroundColorIndex;
+
 	private Rectangle boundsOnDisplayComponent;
-
-	private int rememberedBorderColorIndex;
-
-	private int rememberedPaperColorIndex;
-
-	private int rememberedPenColorIndex;
 
 	private JComponent displayComponent;
 
@@ -82,6 +78,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		displayComponent.addKeyListener(this);
 		acquireKeyboard();
 		init(getDisplayCanvas());
+		setBackgroundColorIndex(getDisplayCanvas().getPaperColorIndex());
 	}
 
 	protected void init(AmstradDisplayCanvas canvas) {
@@ -109,18 +106,17 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		AmstradDisplayCanvasOverImage canvas = getDisplayCanvas();
 		Insets borderInsets = graphicsContext.getBorderInsetsForDisplaySize(displayBounds.getSize());
 		Rectangle canvasBounds = updateDisplayCanvasBounds(displayBounds, borderInsets);
-		// Background
+		// Opaque bottom layer
 		display.setColor(canvas.getBorderColor());
 		display.fillRect(displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height);
+		// Backdrop
 		if (hasBackdropImage()) {
 			display.drawImage(getBackdropImage(), displayBounds.x, displayBounds.y, displayBounds.width,
 					displayBounds.height, null);
 		}
 		// Content
-		canvas.erase();
-		rememberCanvasColors();
+		canvas.paper(getBackgroundColorIndex()).cls();
 		renderContent(canvas);
-		restoreCanvasColors();
 		BufferedImage canvasImage = canvas.getImage();
 		display.drawImage(canvasImage, canvasBounds.x, canvasBounds.y, canvasBounds.width, canvasBounds.height, null);
 	}
@@ -135,20 +131,6 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		Rectangle rect = new Rectangle(x, y, width, height);
 		setBoundsOnDisplayComponent(rect);
 		return rect;
-	}
-
-	private void rememberCanvasColors() {
-		AmstradDisplayCanvas canvas = getDisplayCanvas();
-		rememberedBorderColorIndex = canvas.getBorderColorIndex();
-		rememberedPaperColorIndex = canvas.getPaperColorIndex();
-		rememberedPenColorIndex = canvas.getPenColorIndex();
-	}
-
-	private void restoreCanvasColors() {
-		AmstradDisplayCanvas canvas = getDisplayCanvas();
-		canvas.border(rememberedBorderColorIndex);
-		canvas.paper(rememberedPaperColorIndex);
-		canvas.pen(rememberedPenColorIndex);
 	}
 
 	protected Cursor getDefaultCursor() {
@@ -379,6 +361,14 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	public void setBackdropImage(BufferedImage backdropImage) {
 		this.backdropImage = backdropImage;
+	}
+
+	public int getBackgroundColorIndex() {
+		return backgroundColorIndex;
+	}
+
+	public void setBackgroundColorIndex(int colorIndex) {
+		this.backgroundColorIndex = colorIndex;
 	}
 
 	private Rectangle getBoundsOnDisplayComponent() {

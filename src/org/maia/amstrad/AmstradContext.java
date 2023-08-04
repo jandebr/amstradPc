@@ -29,6 +29,10 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED_CLEANUP = "program_repo.file.dir-managed.cleanup.enable";
 
+	private static final String SETTING_TERMINATE_ANIMATE = "quit.animate";
+
+	private static final String SETTING_TERMINATE_SYSTEM_COMMAND = "quit.command";
+
 	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
 
 	private static final String SYSTEM_PROPERTY_VERSION = "javacpc-version";
@@ -131,6 +135,32 @@ public abstract class AmstradContext {
 
 	public String getVersionString() {
 		return System.getProperty(SYSTEM_PROPERTY_VERSION, "");
+	}
+
+	public boolean isAnimateOnTerminate() {
+		return getUserSettings().getBool(SETTING_TERMINATE_ANIMATE, false);
+	}
+
+	public String getSystemCommandOnTerminate() {
+		String mode = getMode().getName().toLowerCase();
+		String command = getUserSettings().get(SETTING_TERMINATE_SYSTEM_COMMAND + "." + mode, null);
+		if (command == null) {
+			command = getUserSettings().get(SETTING_TERMINATE_SYSTEM_COMMAND, null);
+		}
+		return command;
+	}
+
+	public void executeSystemCommand(String systemCommand) {
+		if (systemCommand == null || systemCommand.isEmpty())
+			return;
+		try {
+			System.out.println("Executing system command: " + systemCommand);
+			Runtime.getRuntime().exec(systemCommand.trim().split(" "));
+			System.out.println("System command executed");
+		} catch (Exception e) {
+			System.err.println("Failed to execute system command");
+			System.err.println(e);
+		}
 	}
 
 }
