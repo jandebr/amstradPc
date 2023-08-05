@@ -14,6 +14,8 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
+	private static final String SETTING_SHOW_CONTROLKEYS = "show_controlkeys";
+
 	private static long FADEOUT_TIME_MILLIS = 8000L;
 
 	private static int BOX_HOR_PADDING = 16;
@@ -60,6 +62,8 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		if (offscreenImage)
+			return;
+		if (!getAmstradContext().getUserSettings().getBool(SETTING_SHOW_CONTROLKEYS, true))
 			return;
 		long now = System.currentTimeMillis();
 		if (getAmstracPc().getBasicRuntime().isDirectModus())
