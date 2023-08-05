@@ -408,11 +408,11 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		StackedFolderItemList stack = getStackedFolderItemList();
 		handleKeyboardKeyInItemList(e, stack.peek());
 		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_RIGHT) {
+		if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_NUMPAD6) {
 			stack.browseIntoSelectedItem();
-		} else if (keyCode == KeyEvent.VK_LEFT) {
+		} else if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_NUMPAD4) {
 			stack.browseBack();
-		} else if (keyCode == KeyEvent.VK_ENTER) {
+		} else if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_NUMPAD5) {
 			if (stack.canBrowseIntoSelectedItem()) {
 				stack.browseIntoSelectedItem();
 			} else if (stack.canCreateProgramMenu()) {
@@ -435,7 +435,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		ProgramMenu menu = getProgramMenu();
 		handleKeyboardKeyInItemList(e, menu);
 		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_ENTER) {
+		if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_NUMPAD5) {
 			menu.getSelectedItem().execute();
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			closeModalWindow();
@@ -454,9 +454,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private void handleKeyboardKeyInProgramImageGallery(KeyEvent e) {
 		ProgramImageGallery gallery = getProgramImageGallery();
 		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_RIGHT) {
+		if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_NUMPAD6) {
 			gallery.browseOneItemDown();
-		} else if (keyCode == KeyEvent.VK_LEFT) {
+		} else if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_NUMPAD4) {
 			gallery.browseOneItemUp();
 		} else if (keyCode == KeyEvent.VK_HOME) {
 			gallery.browseHome();
