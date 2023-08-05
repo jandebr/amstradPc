@@ -251,9 +251,9 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	protected void handleKeyboardKeyInItemList(KeyEvent e, ScrollableItemList itemList) {
 		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_DOWN) {
+		if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_NUMPAD2) {
 			itemList.browseOneItemDown();
-		} else if (keyCode == KeyEvent.VK_UP) {
+		} else if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_NUMPAD8) {
 			itemList.browseOneItemUp();
 		} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
 			itemList.browseOnePageDown();
