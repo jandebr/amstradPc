@@ -48,7 +48,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	protected AmstradEmulatedDisplaySource(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
-		setRestoreMonitorSettingsOnDispose(true);
+		setRestoreMonitorSettingsOnDispose(false);
 	}
 
 	/**

@@ -65,6 +65,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		this.currentWindow = initialWindow;
 		this.browserListeners = new AmstradListenerList<ProgramBrowserListener>();
 		setTheme(new ProgramBrowserThemeFromSettings());
+		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 	}
 
 	public static ProgramBrowserDisplaySource createProgramRepositoryBrowser(AmstradPc amstradPc,

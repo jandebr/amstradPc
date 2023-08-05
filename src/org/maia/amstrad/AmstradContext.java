@@ -3,7 +3,11 @@ package org.maia.amstrad;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.action.AmstradPcActions;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 
@@ -29,6 +33,14 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED_CLEANUP = "program_repo.file.dir-managed.cleanup.enable";
 
+	private static final String SETTING_LOWPERFORMANCE = "lowperformance";
+
+	private static final String SETTING_LOWPERFORMANCE_ALLOW_MONITOR_EFFECT = "lowperformance.allow_display_effect";
+
+	private static final String SETTING_LOWPERFORMANCE_ALLOW_BILINEAR_EFFECT = "lowperformance.allow_bilinear";
+
+	private static final String SETTING_LOWPERFORMANCE_ALLOW_SCANLINES_EFFECT = "lowperformance.allow_scanlines";
+
 	private static final String SETTING_TERMINATE_ANIMATE = "quit.animate";
 
 	private static final String SETTING_TERMINATE_SYSTEM_COMMAND = "quit.command";
@@ -51,6 +63,39 @@ public abstract class AmstradContext {
 	public abstract void showJavaConsole();
 
 	public abstract void showProgramBrowser(AmstradPc amstradPc);
+
+	public boolean isProgramBrowserShowing(AmstradPc amstradPc) {
+		AmstradAlternativeDisplaySource altDisplaySource = amstradPc.getMonitor().getCurrentAlternativeDisplaySource();
+		if (altDisplaySource == null)
+			return false;
+		if (!(altDisplaySource instanceof ProgramBrowserDisplaySource))
+			return false;
+		return !((ProgramBrowserDisplaySource) altDisplaySource).isStandaloneInfo();
+	}
+
+	public boolean isLowPerformance() {
+		return getUserSettings().getBool(SETTING_LOWPERFORMANCE, false);
+	}
+
+	public void activateLowPerformance(AmstradPc amstradPc) {
+		getUserSettings().setBool(SETTING_LOWPERFORMANCE, true);
+		// Turn off cpu-intensive monitor options
+		AmstradMonitor monitor = amstradPc.getMonitor();
+		boolean allowMonitor = getUserSettings().getBool(SETTING_LOWPERFORMANCE_ALLOW_MONITOR_EFFECT, false);
+		boolean allowBilinear = getUserSettings().getBool(SETTING_LOWPERFORMANCE_ALLOW_BILINEAR_EFFECT, false);
+		boolean allowScanlines = getUserSettings().getBool(SETTING_LOWPERFORMANCE_ALLOW_SCANLINES_EFFECT, false);
+		if (!allowMonitor)
+			monitor.setMonitorEffect(false);
+		if (!allowBilinear)
+			monitor.setMonitorBilinearEffect(false);
+		if (!allowScanlines)
+			monitor.setMonitorScanLinesEffect(false);
+		// Disable monitor options
+		AmstradPcActions actions = amstradPc.getActions();
+		actions.getMonitorEffectAction().setEnabled(allowMonitor);
+		actions.getMonitorBilinearEffectAction().setEnabled(allowBilinear);
+		actions.getMonitorScanLinesEffectAction().setEnabled(allowScanlines);
+	}
 
 	public abstract boolean isBasicProtectiveMode(AmstradPc amstradPc);
 

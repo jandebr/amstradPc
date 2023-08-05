@@ -55,6 +55,8 @@ public class AmstradFactory {
 	public AmstradPc createAmstradPc() {
 		JemuAmstradPc amstradPc = new JemuAmstradPc();
 		amstradPc.getMonitor().setCustomDisplayOverlay(createDisplayOverlay(amstradPc));
+		if (getAmstradContext().isLowPerformance())
+			getAmstradContext().activateLowPerformance(amstradPc);
 		return amstradPc;
 	}
 
@@ -183,9 +185,11 @@ public class AmstradFactory {
 
 		@Override
 		public void showProgramBrowser(AmstradPc amstradPc) {
-			ProgramBrowserAction browserAction = amstradPc.getActions().getProgramBrowserAction();
-			if (browserAction != null && !browserAction.isProgramBrowserShowing()) {
-				browserAction.showProgramBrowser();
+			if (!isProgramBrowserShowing(amstradPc)) {
+				ProgramBrowserAction browserAction = amstradPc.getActions().getProgramBrowserAction();
+				if (browserAction != null) {
+					browserAction.showProgramBrowser();
+				}
 			}
 		}
 

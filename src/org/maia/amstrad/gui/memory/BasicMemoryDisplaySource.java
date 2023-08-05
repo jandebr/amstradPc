@@ -47,6 +47,7 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 
 	public BasicMemoryDisplaySource(AmstradPc amstradPc) {
 		super(amstradPc, "64K Basic Memory");
+		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 	}
 
 	@Override

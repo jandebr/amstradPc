@@ -1241,6 +1241,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		public void dispose(JComponent displayComponent) {
 			getSource().dispose(displayComponent);
 			if (getSource().isRestoreMonitorSettingsOnDispose()) {
+				System.out.println("Restoring monitor settings");
 				restoreMonitorSettings();
 			}
 		}
