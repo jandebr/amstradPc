@@ -11,6 +11,7 @@ import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.components.FolderItemList;
 import org.maia.amstrad.gui.browser.components.ProgramFileReferencesSheet;
 import org.maia.amstrad.gui.browser.components.ProgramImageGallery;
+import org.maia.amstrad.gui.browser.components.ProgramInfoMenuItem;
 import org.maia.amstrad.gui.browser.components.ProgramInfoSheet;
 import org.maia.amstrad.gui.browser.components.ProgramMenu;
 import org.maia.amstrad.gui.browser.components.ProgramMenuItem;
@@ -65,7 +66,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		this.currentWindow = initialWindow;
 		this.browserListeners = new AmstradListenerList<ProgramBrowserListener>();
 		setTheme(new ProgramBrowserThemeFromSettings());
-		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
+		setRestoreMonitorSettingsOnDispose(!isStandaloneInfo()); // as this source may switch to COLOR
 	}
 
 	public static ProgramBrowserDisplaySource createProgramRepositoryBrowser(AmstradPc amstradPc,
@@ -86,7 +87,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
-		getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
+		if (!isStandaloneInfo()) {
+			getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
+		}
 		canvas.border(getTheme().getMainWindowBorderInk()).paper(getTheme().getMainWindowBackgroundInk());
 		canvas.symbol(SYMBOL_CODE_MONITOR, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon
 		canvas.symbol(SYMBOL_CODE_HOME, 24, 60, 126, 255, 126, 110, 110, 124); // home icon
@@ -447,6 +450,14 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			menu.getSelectedItem().execute();
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			closeModalWindow();
+		} else if (keyCode == KeyEvent.VK_F1) {
+			ProgramInfoMenuItem menuItem = menu.getItemTyped(ProgramInfoMenuItem.class);
+			if (menuItem != null)
+				menuItem.execute();
+		} else if (keyCode == KeyEvent.VK_SPACE) {
+			ProgramRunMenuItem menuItem = menu.getItemTyped(ProgramRunMenuItem.class);
+			if (menuItem != null)
+				menuItem.execute();
 		}
 	}
 
