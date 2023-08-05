@@ -47,6 +47,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private ProgramBrowserTheme theme;
 
+	private boolean programInfoShortcutActive;
+
 	private static final String SETTING_SHOW_COVER_IMAGES = "program_browser.cover_images.show";
 
 	private static final String SETTING_SHOW_MINI_INFO = "program_browser.mini_info.show";
@@ -428,6 +430,12 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
 			home();
+		} else if (keyCode == KeyEvent.VK_F1) {
+			AmstradProgram program = getCurrentProgram();
+			if (program != null && program.hasDescriptiveInfo()) {
+				setProgramInfoShortcutActive(true);
+				openProgramInfoModalWindow(program);
+			}
 		}
 	}
 
@@ -481,11 +489,12 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		super.closeModalWindow();
 		if (isStandaloneInfo()) {
 			close();
-		} else if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())
+		} else if ((Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow()) && !isProgramInfoShortcutActive())
 				|| Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())
 				|| Window.PROGRAM_FILE_REFERENCES_MODAL.equals(getCurrentWindow())) {
 			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
 		} else {
+			setProgramInfoShortcutActive(false);
 			setCurrentWindow(Window.MAIN);
 		}
 	}
@@ -584,10 +593,15 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return getStackedFolderItemList().peek().getSelectedItem();
 	}
 
-	private AmstradProgram getCurrentProgram() {
+	public AmstradProgram getCurrentProgram() {
 		AmstradProgram program = null;
-		if (getProgramMenu() != null) {
-			program = getProgramMenu().getProgram();
+		if (isStandaloneInfo()) {
+			program = getProgramInfoSheet().getProgram();
+		} else {
+			Node node = getCurrentNode();
+			if (node != null && node.isProgram()) {
+				program = node.asProgram().getProgram();
+			}
 		}
 		return program;
 	}
@@ -670,6 +684,14 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	public void setTheme(ProgramBrowserTheme theme) {
 		this.theme = theme;
+	}
+
+	private boolean isProgramInfoShortcutActive() {
+		return programInfoShortcutActive;
+	}
+
+	private void setProgramInfoShortcutActive(boolean shortcutActive) {
+		this.programInfoShortcutActive = shortcutActive;
 	}
 
 	private static enum Window {
