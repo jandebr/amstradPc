@@ -73,10 +73,12 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	}
 
 	public void toggleProgramInfo() {
-		if (NAME_OPEN.equals(getName())) {
-			showProgramInfo();
-		} else {
-			hideProgramInfo();
+		if (isEnabled()) {
+			if (NAME_OPEN.equals(getName())) {
+				showProgramInfo();
+			} else {
+				hideProgramInfo();
+			}
 		}
 	}
 
@@ -99,15 +101,18 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
 		super.amstradDisplaySourceChanged(monitor);
 		updateName();
-		if (monitor.getAmstradPc().getMonitor().isPrimaryDisplaySourceShowing()) {
-			if (infoMode) {
-				infoMode = false; // exit info screen
-				if (resumeAfterInfoMode) {
+		if (isProgramInfoShowing()) {
+			infoMode = true; // enter info screen
+		} else {
+			if (monitor.isPrimaryDisplaySourceShowing()) {
+				if (infoMode && resumeAfterInfoMode) {
 					monitor.getAmstradPc().resume(); // auto-resume
 				}
+				setEnabled(getDisplaySource() != null);
+			} else {
+				setEnabled(false);
 			}
-		} else if (isProgramInfoShowing()) {
-			infoMode = true;
+			infoMode = false;
 		}
 	}
 

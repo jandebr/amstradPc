@@ -113,9 +113,10 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		if (hasBackdropImage()) {
 			display.drawImage(getBackdropImage(), displayBounds.x, displayBounds.y, displayBounds.width,
 					displayBounds.height, null);
+		} else {
+			canvas.paper(getBackgroundColorIndex()).cls();
 		}
 		// Content
-		canvas.paper(getBackgroundColorIndex()).cls();
 		renderContent(canvas);
 		BufferedImage canvasImage = canvas.getImage();
 		display.drawImage(canvasImage, canvasBounds.x, canvasBounds.y, canvasBounds.width, canvasBounds.height, null);

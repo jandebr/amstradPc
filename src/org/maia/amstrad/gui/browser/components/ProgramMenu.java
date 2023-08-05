@@ -15,6 +15,12 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
 	private List<ProgramMenuItem> menuItems;
 
+	private static int DEFAULT_MAX_ITEMS_SHOWING = 7;
+
+	public ProgramMenu(ProgramBrowserDisplaySource browser, AmstradProgram program) {
+		this(browser, program, DEFAULT_MAX_ITEMS_SHOWING);
+	}
+
 	public ProgramMenu(ProgramBrowserDisplaySource browser, AmstradProgram program, int maxItemsShowing) {
 		super(maxItemsShowing);
 		this.browser = browser;

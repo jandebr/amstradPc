@@ -131,26 +131,29 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 	}
 
 	@Override
-	public synchronized void start(boolean waitUntilReady, boolean silent) {
-		checkNoInstanceRunning();
-		checkNotStarted();
-		checkNotTerminated();
-		boolean floppySound = Switches.FloppySound;
-		if (silent)
-			Switches.FloppySound = false;
-		JEMU jemu = getJemuInstance();
-		jemu.init();
-		jemu.start();
-		jemu.addPauseListener(this);
-		jemu.getDisplay().addPrimaryDisplaySourceListener(this);
-		getGraphicsContext().setPrimaryDisplaySourceResolution(
-				new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
-		getFrameBridge().pack();
-		setMemoryTrapProcessor(new MemoryTrapProcessor());
-		getMemoryTrapProcessor().start();
-		setStarted(true);
-		setInstanceRunning(true);
-		fireStartedEvent();
+	public void start(boolean waitUntilReady, boolean silent) {
+		boolean floppySound = false;
+		synchronized (this) {
+			checkNoInstanceRunning();
+			checkNotStarted();
+			checkNotTerminated();
+			floppySound = Switches.FloppySound;
+			if (silent)
+				Switches.FloppySound = false;
+			JEMU jemu = getJemuInstance();
+			jemu.init();
+			jemu.start();
+			jemu.addPauseListener(this);
+			jemu.getDisplay().addPrimaryDisplaySourceListener(this);
+			getGraphicsContext().setPrimaryDisplaySourceResolution(
+					new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
+			getFrameBridge().pack();
+			setMemoryTrapProcessor(new MemoryTrapProcessor());
+			getMemoryTrapProcessor().start();
+			setStarted(true);
+			setInstanceRunning(true);
+			fireStartedEvent();
+		}
 		if (waitUntilReady)
 			waitUntilReady();
 		if (silent)
@@ -854,12 +857,10 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		@Override
 		public AmstradAlternativeDisplaySource getCurrentAlternativeDisplaySource() {
 			AmstradAlternativeDisplaySource altDisplaySource = null;
-			synchronized (JemuAmstradPc.this) {
-				if (isStarted()) {
-					SecondaryDisplaySource sds = getJemuInstance().getDisplay().getSecondaryDisplaySource();
-					if (sds != null && sds instanceof JemuSecondaryDisplaySourceBridge) {
-						altDisplaySource = ((JemuSecondaryDisplaySourceBridge) sds).getSource();
-					}
+			if (isStarted()) {
+				SecondaryDisplaySource sds = getJemuInstance().getDisplay().getSecondaryDisplaySource();
+				if (sds != null && sds instanceof JemuSecondaryDisplaySourceBridge) {
+					altDisplaySource = ((JemuSecondaryDisplaySourceBridge) sds).getSource();
 				}
 			}
 			return altDisplaySource;
@@ -944,12 +945,12 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		@Override
 		public boolean isReady() {
-			JemuKeyboardImpl keyboard = getKeyboardForBasic();
-			if (keyboard.isTyping())
-				return false;
-			if (!keyboard.isOnBasicPrompt())
-				return false;
-			return keyboard.isInBasicInterpretModus();
+			return isDirectModus() && !getKeyboardForBasic().isTyping();
+		}
+
+		@Override
+		public boolean isDirectModus() {
+			return getKeyboardForBasic().isOnBasicPrompt() && getKeyboardForBasic().isInBasicInterpretModus();
 		}
 
 		@Override

@@ -96,7 +96,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(null);
 	}
 
-	private boolean isPopupMenuEnabled() {
+	public boolean isPopupMenuEnabled() {
 		return getPopupMenu() != null
 				&& getPopupMenu().equals(getAmstradPc().getMonitor().getDisplayComponent().getComponentPopupMenu());
 	}

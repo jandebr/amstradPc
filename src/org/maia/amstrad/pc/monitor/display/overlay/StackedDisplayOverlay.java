@@ -21,6 +21,15 @@ public class StackedDisplayOverlay implements AmstradDisplayOverlay {
 		this.zOrders = new Vector<Integer>();
 	}
 
+	/**
+	 * Adds the specified overlay to this stack
+	 * 
+	 * @param overlay
+	 *            The overlay to add
+	 * @param zOrder
+	 *            The z-order of the overlay, which defines its depth (drawing order). An overlay with a lower z-order
+	 *            is drawn on top of overlays with a higher z-order
+	 */
 	public void addOverlay(AmstradDisplayOverlay overlay, int zOrder) {
 		int i = deriveInsertionIndex(zOrder);
 		getOverlays().add(i, overlay);

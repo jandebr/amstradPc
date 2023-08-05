@@ -11,7 +11,6 @@ import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.components.FolderItemList;
 import org.maia.amstrad.gui.browser.components.ProgramFileReferencesSheet;
 import org.maia.amstrad.gui.browser.components.ProgramImageGallery;
-import org.maia.amstrad.gui.browser.components.ProgramInfoMenuItem;
 import org.maia.amstrad.gui.browser.components.ProgramInfoSheet;
 import org.maia.amstrad.gui.browser.components.ProgramMenu;
 import org.maia.amstrad.gui.browser.components.ProgramMenuItem;
@@ -409,6 +408,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (Window.PROGRAM_FILE_REFERENCES_MODAL.equals(getCurrentWindow())) {
 			handleKeyboardKeyInProgramFileReferencesSheet(e);
 		}
+		handleShortcutKey(e); // must come last
 	}
 
 	private void handleKeyboardKeyInMainWindow(KeyEvent e) {
@@ -424,7 +424,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				stack.browseIntoSelectedItem();
 			} else if (stack.canCreateProgramMenu()) {
 				AmstradProgram program = stack.getSelectedItem().asProgram().getProgram();
-				setProgramMenu(createProgramMenu(program, 7));
+				setProgramMenu(createProgramMenu(program));
 				setCurrentWindow(Window.PROGRAM_MENU_MODAL);
 			}
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
@@ -435,10 +435,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
 			home();
-		} else if (keyCode == KeyEvent.VK_F1) {
-			openCurrentProgramInfoAsShortcut();
-		} else if (keyCode == KeyEvent.VK_SPACE) {
-			runCurrentProgramAsShortcut();
 		}
 	}
 
@@ -450,14 +446,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			menu.getSelectedItem().execute();
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			closeModalWindow();
-		} else if (keyCode == KeyEvent.VK_F1) {
-			ProgramInfoMenuItem menuItem = menu.getItemTyped(ProgramInfoMenuItem.class);
-			if (menuItem != null)
-				menuItem.execute();
-		} else if (keyCode == KeyEvent.VK_SPACE) {
-			ProgramRunMenuItem menuItem = menu.getItemTyped(ProgramRunMenuItem.class);
-			if (menuItem != null)
-				menuItem.execute();
 		}
 	}
 
@@ -495,6 +483,42 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
+	private void handleShortcutKey(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_F1) {
+			// Info
+			if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())
+					|| Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow())) {
+				// Already showing info
+			} else {
+				AmstradProgram program = getCurrentProgram();
+				if (program != null && program.hasDescriptiveInfo()) {
+					setProgramInfoShortcutActive(Window.MAIN.equals(getCurrentWindow()));
+					openProgramInfoModalWindow(program);
+				}
+			}
+		} else if (keyCode == KeyEvent.VK_SPACE) {
+			// Run
+			if (isStandaloneInfo()) {
+				closeModalWindow(); // Resume run
+			} else if (Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
+				ProgramRunMenuItem runItem = getProgramMenu().getItemTyped(ProgramRunMenuItem.class);
+				if (runItem != null && runItem.isEnabled()) {
+					runItem.execute();
+				}
+			} else {
+				AmstradProgram program = getCurrentProgram();
+				if (program != null) {
+					ProgramRunMenuItem runItem = createProgramMenu(program).getItemTyped(ProgramRunMenuItem.class);
+					if (runItem != null && runItem.isEnabled()) {
+						close();
+						runItem.execute();
+					}
+				}
+			}
+		}
+	}
+
 	@Override
 	public void closeModalWindow() {
 		super.closeModalWindow();
@@ -503,8 +527,10 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if ((Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow()) && !isProgramInfoShortcutActive())
 				|| Window.PROGRAM_IMAGE_GALLERY_MODAL.equals(getCurrentWindow())
 				|| Window.PROGRAM_FILE_REFERENCES_MODAL.equals(getCurrentWindow())) {
+			// Return to program menu
 			setCurrentWindow(Window.PROGRAM_MENU_MODAL);
 		} else {
+			// Return to main window
 			setProgramInfoShortcutActive(false);
 			setCurrentWindow(Window.MAIN);
 		}
@@ -539,30 +565,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		setCurrentWindow(Window.PROGRAM_FILE_REFERENCES_MODAL);
 	}
 
-	public void openCurrentProgramInfoAsShortcut() {
-		if (!isStandaloneInfo() && !isModalWindowOpen()) {
-			AmstradProgram program = getCurrentProgram();
-			if (program != null && program.hasDescriptiveInfo()) {
-				setProgramInfoShortcutActive(true);
-				openProgramInfoModalWindow(program);
-			}
-		}
-	}
-
-	public void runCurrentProgramAsShortcut() {
-		if (!isStandaloneInfo() && !isModalWindowOpen()) {
-			AmstradProgram program = getCurrentProgram();
-			if (program != null) {
-				ProgramMenu programMenu = createProgramMenu(program, 7);
-				ProgramRunMenuItem runItem = programMenu.getItemTyped(ProgramRunMenuItem.class);
-				if (runItem != null && runItem.isEnabled()) {
-					close();
-					runItem.execute();
-				}
-			}
-		}
-	}
-
 	public void addListener(ProgramBrowserListener listener) {
 		getBrowserListeners().addListener(listener);
 	}
@@ -587,8 +589,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return new StackedFolderItemList(getProgramRepository(), maxItemsShowing);
 	}
 
-	private ProgramMenu createProgramMenu(AmstradProgram program, int maxItemsShowing) {
-		return new ProgramMenu(this, program, maxItemsShowing);
+	private ProgramMenu createProgramMenu(AmstradProgram program) {
+		return new ProgramMenu(this, program);
 	}
 
 	private ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {

@@ -1,5 +1,6 @@
 package org.maia.amstrad.pc.monitor.display.overlay;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -43,6 +44,15 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 	@Override
 	public void dispose(JComponent displayComponent) {
 		// Subclasses to override
+	}
+
+	protected Color makeColorMoreTransparent(Color baseColor, double transparencyFactor) {
+		if (transparencyFactor == 0)
+			return baseColor;
+		double transparency = 1.0 - baseColor.getAlpha() / 255.0;
+		double newTransparency = transparency + (1.0 - transparency) * transparencyFactor;
+		int newAlpha = (int) Math.round((1.0 - newTransparency) * 255.0);
+		return new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), newAlpha);
 	}
 
 	protected Rectangle drawIconTopLeft(ImageIcon icon, Graphics2D display, Rectangle displayBounds,

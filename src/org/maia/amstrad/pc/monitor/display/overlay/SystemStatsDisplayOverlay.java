@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.monitor.display.overlay;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -27,6 +28,8 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 	private List<String> lines;
 
 	private OperatingSystemMXBean osBean;
+
+	private Font font;
 
 	private static NumberFormat percentageFormat = NumberFormat.getPercentInstance();
 
@@ -79,13 +82,13 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 			AmstradGraphicsContext graphicsContext) {
 		if (lines.isEmpty())
 			return;
-		display.setFont(graphicsContext.getSystemFont().deriveFont(8f));
+		display.setFont(getFont(graphicsContext));
 		FontMetrics fm = display.getFontMetrics();
 		// Box
 		int lineHeight = fm.getHeight();
 		int boxHeight = lines.size() * lineHeight;
 		int boxWidth = computeBoxWidth(lines, fm);
-		int xcenter = displayBounds.x + displayBounds.width / 2;
+		int xcenter = displayBounds.width / 2;
 		int ytop = monitorInsets.top;
 		display.setColor(BOX_COLOR);
 		display.fillRect(xcenter - boxWidth / 2, ytop - 4, boxWidth, boxHeight + 6);
@@ -119,6 +122,13 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 
 	private double getCpuLoad() {
 		return Math.max(0, osBean.getSystemCpuLoad());
+	}
+
+	private Font getFont(AmstradGraphicsContext graphicsContext) {
+		if (font == null) {
+			font = graphicsContext.getSystemFont().deriveFont(8f);
+		}
+		return font;
 	}
 
 }

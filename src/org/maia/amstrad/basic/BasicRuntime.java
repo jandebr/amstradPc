@@ -17,9 +17,16 @@ public abstract class BasicRuntime {
 	/**
 	 * Tells whether Basic is operating in "direct modus" and ready to accept instructions from the keyboard
 	 * 
-	 * @return <code>true</code> when in direct modus, <code>false</code> otherwise
+	 * @return <code>true</code> when in direct modus and ready for typing, <code>false</code> otherwise
 	 */
 	public abstract boolean isReady();
+
+	/**
+	 * Tells whether Basic is operating in "direct modus"
+	 * 
+	 * @return <code>true</code> when in direct modus, <code>false</code> otherwise
+	 */
+	public abstract boolean isDirectModus();
 
 	public void waitUntilReady() {
 		while (!isReady()) {
