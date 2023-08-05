@@ -1,10 +1,13 @@
 package org.maia.amstrad.gui.terminate;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradEmulatedDisplaySource;
 
 public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySource {
+
+	private static final String SETTING_MESSAGE = "quit.animate.message";
 
 	private static String DEFAULT_MESSAGE = "Goodbye";
 
@@ -23,7 +26,8 @@ public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySourc
 	private boolean forceQuit;
 
 	public AmstradTerminationDisplaySource(AmstradPc amstradPc) {
-		this(amstradPc, DEFAULT_MESSAGE);
+		this(amstradPc, AmstradFactory.getInstance().getAmstradContext().getUserSettings().get(SETTING_MESSAGE,
+				DEFAULT_MESSAGE));
 	}
 
 	public AmstradTerminationDisplaySource(AmstradPc amstradPc, String message) {
