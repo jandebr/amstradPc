@@ -14,6 +14,7 @@ import org.maia.amstrad.gui.browser.components.ProgramImageGallery;
 import org.maia.amstrad.gui.browser.components.ProgramInfoSheet;
 import org.maia.amstrad.gui.browser.components.ProgramMenu;
 import org.maia.amstrad.gui.browser.components.ProgramMenuItem;
+import org.maia.amstrad.gui.browser.components.ProgramRunMenuItem;
 import org.maia.amstrad.gui.browser.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.components.StackedFolderItemList;
 import org.maia.amstrad.pc.AmstradPc;
@@ -431,11 +432,9 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (keyCode == KeyEvent.VK_F5) {
 			home();
 		} else if (keyCode == KeyEvent.VK_F1) {
-			AmstradProgram program = getCurrentProgram();
-			if (program != null && program.hasDescriptiveInfo()) {
-				setProgramInfoShortcutActive(true);
-				openProgramInfoModalWindow(program);
-			}
+			openCurrentProgramInfoAsShortcut();
+		} else if (keyCode == KeyEvent.VK_SPACE) {
+			runCurrentProgramAsShortcut();
 		}
 	}
 
@@ -526,6 +525,30 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		setProgramFileReferencesSheet(new ProgramFileReferencesSheet(program, getAmstradPc(), 18, 30,
 				getTheme().getModalWindowBackgroundInk()));
 		setCurrentWindow(Window.PROGRAM_FILE_REFERENCES_MODAL);
+	}
+
+	public void openCurrentProgramInfoAsShortcut() {
+		if (!isStandaloneInfo() && !isModalWindowOpen()) {
+			AmstradProgram program = getCurrentProgram();
+			if (program != null && program.hasDescriptiveInfo()) {
+				setProgramInfoShortcutActive(true);
+				openProgramInfoModalWindow(program);
+			}
+		}
+	}
+
+	public void runCurrentProgramAsShortcut() {
+		if (!isStandaloneInfo() && !isModalWindowOpen()) {
+			AmstradProgram program = getCurrentProgram();
+			if (program != null) {
+				ProgramMenu programMenu = createProgramMenu(program, 7);
+				ProgramRunMenuItem runItem = programMenu.getItemTyped(ProgramRunMenuItem.class);
+				if (runItem != null && runItem.isEnabled()) {
+					close();
+					runItem.execute();
+				}
+			}
+		}
 	}
 
 	public void addListener(ProgramBrowserListener listener) {

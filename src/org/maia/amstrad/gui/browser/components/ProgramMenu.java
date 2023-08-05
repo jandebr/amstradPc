@@ -42,16 +42,9 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 	}
 
 	public void addReturnMenuItem() {
-		int insertionIndex = -1;
-		for (int i = 0; i < size(); i++) {
-			ProgramMenuItem item = getItem(i);
-			if (ProgramRunMenuItem.class.isAssignableFrom(item.getClass())) {
-				insertionIndex = i; // insert right before Run
-			} else if (ProgramReturnMenuItem.class.isAssignableFrom(item.getClass())) {
-				insertionIndex = -1; // already in the menu
-				break;
-			}
-		}
+		if (getItemTyped(ProgramReturnMenuItem.class) != null)
+			return; // already in the menu
+		int insertionIndex = getMenuItems().indexOf(getItemTyped(ProgramRunMenuItem.class));
 		if (insertionIndex >= 0) {
 			getMenuItems().add(insertionIndex, new ProgramReturnMenuItem(this));
 			browseTo(insertionIndex); // make it the selected item
@@ -66,6 +59,19 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 	@Override
 	public ProgramMenuItem getItem(int index) {
 		return getMenuItems().get(index);
+	}
+
+	public <T extends ProgramMenuItem> T getItemTyped(Class<T> type) {
+		T item = null;
+		int i = 0;
+		while (item == null && i < size()) {
+			if (type.isAssignableFrom(getItem(i).getClass())) {
+				item = type.cast(getItem(i));
+			} else {
+				i++;
+			}
+		}
+		return item;
 	}
 
 	public ProgramBrowserDisplaySource getBrowser() {
