@@ -297,13 +297,17 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		@Override
 		public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 			if (event.isKeyPressed() && event.getKeyCode() == getTriggerKeyCode()) {
-				if (isPopupMenuEnabled()) {
+				if (isPopupMenuEnabled() && !isTerminating()) {
 					JPopupMenu popupMenu = getPopupMenu();
 					Dimension dim = popupMenu.getPreferredSize();
 					JComponent comp = getAmstradPc().getMonitor().getDisplayComponent();
 					popupMenu.show(comp, (comp.getWidth() - dim.width) / 2, (comp.getHeight() - dim.height) / 2);
 				}
 			}
+		}
+
+		private boolean isTerminating() {
+			return AmstradFactory.getInstance().getAmstradContext().isTerminationShowing(getAmstradPc());
 		}
 
 		public int getTriggerKeyCode() {

@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.monitor.display.overlay;
+package org.maia.amstrad.gui.overlay;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -15,6 +15,8 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 	private static final String SETTING_SHOW_CONTROLKEYS = "show_controlkeys";
+
+	private static final String SETTING_AUTOHIDE_CONTROLKEYS = "show_controlkeys.autohide";
 
 	private static long FADEOUT_TIME_MILLIS = 8000L;
 
@@ -53,9 +55,18 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	private void populateControlKeys() {
-		getControlKeys().add(new SystemMenuControlKey());
+		getControlKeys().add(new PopupMenuControlKey());
+		getControlKeys().add(new ProgramMenuControlKey());
 		getControlKeys().add(new ProgramInfoControlKey());
 		getControlKeys().add(new ProgramRunControlKey());
+	}
+
+	private boolean isShowControlKeysEnabled() {
+		return getAmstradContext().getUserSettings().getBool(SETTING_SHOW_CONTROLKEYS, true);
+	}
+
+	private boolean isAutohideControlKeysEnabled() {
+		return getAmstradContext().getUserSettings().getBool(SETTING_AUTOHIDE_CONTROLKEYS, true);
 	}
 
 	@Override
@@ -63,12 +74,17 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		if (offscreenImage)
 			return;
-		if (!getAmstradContext().getUserSettings().getBool(SETTING_SHOW_CONTROLKEYS, true))
+		if (!isShowControlKeysEnabled())
 			return;
-		long now = System.currentTimeMillis();
-		if (getAmstracPc().getBasicRuntime().isDirectModus())
-			setLastTimeBasicDirectModus(now);
-		double r = (now - getLastTimeBasicDirectModus()) / (double) FADEOUT_TIME_MILLIS;
+		if (getAmstradContext().isTerminationShowing(getAmstracPc()))
+			return;
+		double r = 0;
+		if (isAutohideControlKeysEnabled()) {
+			long now = System.currentTimeMillis();
+			if (getAmstracPc().getBasicRuntime().isDirectModus())
+				setLastTimeBasicDirectModus(now);
+			r = (now - getLastTimeBasicDirectModus()) / (double) FADEOUT_TIME_MILLIS;
+		}
 		if (r <= 1.0) {
 			double fadeout = r <= 0.4 ? 0.0 : Math.sqrt((r - 0.4) / 0.6);
 			updateColors(fadeout);
@@ -235,9 +251,9 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 	}
 
-	private class SystemMenuControlKey extends ControlKey {
+	private class PopupMenuControlKey extends ControlKey {
 
-		public SystemMenuControlKey() {
+		public PopupMenuControlKey() {
 			super("F2", "Options");
 		}
 
@@ -265,6 +281,19 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 		public ProgramRunControlKey() {
 			super("SPACE", "Run");
+		}
+
+		@Override
+		public boolean isAvailable() {
+			return isProgramBrowserShowing();
+		}
+
+	}
+
+	private class ProgramMenuControlKey extends ControlKey {
+
+		public ProgramMenuControlKey() {
+			super("ENTER", "Menu");
 		}
 
 		@Override

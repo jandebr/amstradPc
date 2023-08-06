@@ -82,7 +82,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	 * 
 	 * @return <code>true</code> iff the original menu is to be shown
 	 */
-	protected abstract boolean isUsingOriginalMenu();
+	public abstract boolean isUsingOriginalMenu();
 
 	/**
 	 * Tells whether visual indications for tape activity are to be shown
@@ -142,7 +142,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		}
 
 		@Override
-		protected boolean isUsingOriginalMenu() {
+		public boolean isUsingOriginalMenu() {
 			return false;
 		}
 
@@ -188,7 +188,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		}
 
 		@Override
-		protected boolean isUsingOriginalMenu() {
+		public boolean isUsingOriginalMenu() {
 			return false;
 		}
 
@@ -230,7 +230,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		}
 
 		@Override
-		protected boolean isUsingOriginalMenu() {
+		public boolean isUsingOriginalMenu() {
 			return true;
 		}
 

@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.monitor.display.overlay;
+package org.maia.amstrad.gui.overlay;
 
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class StackedDisplayOverlay implements AmstradDisplayOverlay {

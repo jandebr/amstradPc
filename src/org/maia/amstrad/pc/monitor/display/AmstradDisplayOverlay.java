@@ -1,12 +1,10 @@
-package org.maia.amstrad.pc.monitor.display.overlay;
+package org.maia.amstrad.pc.monitor.display;
 
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 
 import javax.swing.JComponent;
-
-import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public interface AmstradDisplayOverlay {
 

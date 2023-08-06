@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.monitor.display.overlay;
+package org.maia.amstrad.gui.overlay;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -12,6 +12,7 @@ import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {

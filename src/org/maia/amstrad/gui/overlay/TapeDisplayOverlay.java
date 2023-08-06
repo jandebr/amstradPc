@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.monitor.display.overlay;
+package org.maia.amstrad.gui.overlay;
 
 import java.awt.Color;
 import java.awt.Font;
