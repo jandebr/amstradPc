@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 
 public class AmstradSystemColorsDisplaySource extends AmstradWindowDisplaySource {
@@ -61,6 +62,11 @@ public class AmstradSystemColorsDisplaySource extends AmstradWindowDisplaySource
 		int y = (cellSize.height + labelSize.height) / 2;
 		canvas.pen(0).move(x + 2, y - 2).drawStrMonospaced(label);
 		canvas.pen(26).move(x, y).drawStrMonospaced(label);
+	}
+
+	@Override
+	public AmstradAlternativeDisplaySourceType getType() {
+		return AmstradAlternativeDisplaySourceType.OTHER;
 	}
 
 }

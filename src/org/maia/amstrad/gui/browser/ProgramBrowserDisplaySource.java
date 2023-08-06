@@ -20,6 +20,7 @@ import org.maia.amstrad.gui.browser.components.StackedFolderItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramImage;
@@ -420,9 +421,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_NUMPAD4) {
 			stack.browseBack();
 		} else if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_NUMPAD5) {
-			if (stack.canBrowseIntoSelectedItem()) {
-				stack.browseIntoSelectedItem();
-			} else if (stack.canCreateProgramMenu()) {
+			if (stack.canCreateProgramMenu()) {
 				AmstradProgram program = stack.getSelectedItem().asProgram().getProgram();
 				setProgramMenu(createProgramMenu(program));
 				setCurrentWindow(Window.PROGRAM_MENU_MODAL);
@@ -641,6 +640,14 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			}
 		}
 		return program;
+	}
+
+	@Override
+	public AmstradAlternativeDisplaySourceType getType() {
+		if (isStandaloneInfo())
+			return AmstradAlternativeDisplaySourceType.PROGRAM_STANDALONE_INFO;
+		else
+			return AmstradAlternativeDisplaySourceType.PROGRAM_BROWSER;
 	}
 
 	public AmstradProgramRepository getProgramRepository() {

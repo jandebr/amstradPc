@@ -28,6 +28,7 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 import org.maia.amstrad.util.StringUtils;
 
@@ -214,6 +215,11 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 
 		});
 		return list;
+	}
+
+	@Override
+	public AmstradAlternativeDisplaySourceType getType() {
+		return AmstradAlternativeDisplaySourceType.OTHER;
 	}
 
 	private MemoryOutline getMemoryOutline() {

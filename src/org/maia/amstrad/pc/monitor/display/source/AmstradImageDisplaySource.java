@@ -10,16 +10,16 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
-public class AmstradCoverImageDisplaySource implements AmstradAlternativeDisplaySource {
+public class AmstradImageDisplaySource implements AmstradAlternativeDisplaySource {
 
-	private Image coverImage;
+	private Image image;
 
-	public AmstradCoverImageDisplaySource(Image coverImage) {
-		setCoverImage(coverImage);
+	public AmstradImageDisplaySource(Image image) {
+		setImage(image);
 	}
 
-	public static AmstradCoverImageDisplaySource createFreezeFrame(AmstradMonitor monitor) {
-		return new AmstradCoverImageDisplaySource(monitor.makeScreenshot(false));
+	public static AmstradImageDisplaySource createFreezeFrame(AmstradMonitor monitor) {
+		return new AmstradImageDisplaySource(monitor.makeScreenshot(false));
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class AmstradCoverImageDisplaySource implements AmstradAlternativeDisplay
 
 	@Override
 	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
-		display.drawImage(getCoverImage(), displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height,
+		display.drawImage(getImage(), displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height,
 				null);
 	}
 
@@ -44,12 +44,17 @@ public class AmstradCoverImageDisplaySource implements AmstradAlternativeDisplay
 		return false;
 	}
 
-	public Image getCoverImage() {
-		return coverImage;
+	@Override
+	public AmstradAlternativeDisplaySourceType getType() {
+		return AmstradAlternativeDisplaySourceType.IMAGE;
 	}
 
-	public void setCoverImage(Image coverImage) {
-		this.coverImage = coverImage;
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
 	}
 
 }

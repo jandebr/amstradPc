@@ -3,12 +3,12 @@ package org.maia.amstrad;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.terminate.AmstradTerminationDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 
@@ -66,19 +66,27 @@ public abstract class AmstradContext {
 	public abstract void showProgramBrowser(AmstradPc amstradPc);
 
 	public boolean isProgramBrowserShowing(AmstradPc amstradPc) {
-		AmstradAlternativeDisplaySource altDisplaySource = amstradPc.getMonitor().getCurrentAlternativeDisplaySource();
-		if (altDisplaySource == null)
-			return false;
-		if (!(altDisplaySource instanceof ProgramBrowserDisplaySource))
-			return false;
-		return !((ProgramBrowserDisplaySource) altDisplaySource).isStandaloneInfo();
+		return isTypedAlternativeDisplaySourceShowing(amstradPc, AmstradAlternativeDisplaySourceType.PROGRAM_BROWSER);
+	}
+
+	public boolean isProgramStandaloneInfoShowing(AmstradPc amstradPc) {
+		return isTypedAlternativeDisplaySourceShowing(amstradPc, AmstradAlternativeDisplaySourceType.PROGRAM_STANDALONE_INFO);
+	}
+
+	public boolean isImageShowing(AmstradPc amstradPc) {
+		return isTypedAlternativeDisplaySourceShowing(amstradPc, AmstradAlternativeDisplaySourceType.IMAGE);
 	}
 
 	public boolean isTerminationShowing(AmstradPc amstradPc) {
+		return isTypedAlternativeDisplaySourceShowing(amstradPc, AmstradAlternativeDisplaySourceType.TERMINATION);
+	}
+
+	private boolean isTypedAlternativeDisplaySourceShowing(AmstradPc amstradPc,
+			AmstradAlternativeDisplaySourceType type) {
 		AmstradAlternativeDisplaySource altDisplaySource = amstradPc.getMonitor().getCurrentAlternativeDisplaySource();
 		if (altDisplaySource == null)
 			return false;
-		return altDisplaySource instanceof AmstradTerminationDisplaySource;
+		return type.equals(altDisplaySource.getType());
 	}
 
 	public boolean isLowPerformance() {

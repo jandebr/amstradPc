@@ -19,4 +19,6 @@ public interface AmstradAlternativeDisplaySource {
 
 	boolean isRestoreMonitorSettingsOnDispose();
 
+	AmstradAlternativeDisplaySourceType getType();
+
 }

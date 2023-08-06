@@ -10,7 +10,6 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 
 public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowserListener {
@@ -135,13 +134,7 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	}
 
 	public boolean isProgramInfoShowing() {
-		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getMonitor()
-				.getCurrentAlternativeDisplaySource();
-		if (altDisplaySource == null)
-			return false;
-		if (!(altDisplaySource instanceof ProgramBrowserDisplaySource))
-			return false;
-		return ((ProgramBrowserDisplaySource) altDisplaySource).isStandaloneInfo();
+		return getAmstradContext().isProgramStandaloneInfoShowing(getAmstradPc());
 	}
 
 	public AmstradProgram getProgram() {

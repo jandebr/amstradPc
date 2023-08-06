@@ -3,6 +3,7 @@ package org.maia.amstrad.gui.terminate;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradEmulatedDisplaySource;
 
 public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySource {
@@ -69,6 +70,11 @@ public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySourc
 		if (m < n || etime < getElapsedTimePrintCompleted() + 1000L) {
 			canvas.printChr(143); // cursor
 		}
+	}
+
+	@Override
+	public AmstradAlternativeDisplaySourceType getType() {
+		return AmstradAlternativeDisplaySourceType.TERMINATION;
 	}
 
 	public void forceQuit() {

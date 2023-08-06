@@ -11,7 +11,7 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
-import org.maia.amstrad.pc.monitor.display.source.AmstradCoverImageDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradImageDisplaySource;
 import org.maia.amstrad.util.AmstradListenerList;
 
 public abstract class AmstradMonitor extends AmstradDevice {
@@ -81,13 +81,12 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	public void freezeFrame() {
 		if (isPrimaryDisplaySourceShowing()) {
-			swapDisplaySource(AmstradCoverImageDisplaySource.createFreezeFrame(this));
+			swapDisplaySource(AmstradImageDisplaySource.createFreezeFrame(this));
 		}
 	}
 
 	public void unfreezeFrame() {
-		if (isAlternativeDisplaySourceShowing()
-				&& getCurrentAlternativeDisplaySource() instanceof AmstradCoverImageDisplaySource) {
+		if (AmstradFactory.getInstance().getAmstradContext().isImageShowing(getAmstradPc())) {
 			resetDisplaySource();
 		}
 	}
