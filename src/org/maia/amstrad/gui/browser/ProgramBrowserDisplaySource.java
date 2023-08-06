@@ -397,7 +397,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	@Override
 	protected void keyboardKeyPressed(KeyEvent e) {
 		resetItemListCursorBlinkOffsetTime();
-		if (!isModalWindowOpen()) {
+		handleShortcutKey(e);
+		if (Window.MAIN.equals(getCurrentWindow())) {
 			handleKeyboardKeyInMainWindow(e);
 		} else if (Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow())) {
 			handleKeyboardKeyInProgramMenu(e);
@@ -408,7 +409,6 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (Window.PROGRAM_FILE_REFERENCES_MODAL.equals(getCurrentWindow())) {
 			handleKeyboardKeyInProgramFileReferencesSheet(e);
 		}
-		handleShortcutKey(e); // must come last
 	}
 
 	private void handleKeyboardKeyInMainWindow(KeyEvent e) {
