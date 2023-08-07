@@ -85,10 +85,26 @@ public abstract class AmstradPc {
 
 	public abstract void reboot(boolean waitUntilReady, boolean silent);
 
+	/**
+	 * Eventually pauses this Amstrad PC (non-blocking call)
+	 * 
+	 * @see #resume()
+	 */
 	public abstract void pause();
-	
+
+	/**
+	 * Immediately pauses this Amstrad PC
+	 * <p>
+	 * Unlike {@link #pause()}, this method blocks the caller until the PC is in pause state
+	 * </p>
+	 */
 	public abstract void pauseImmediately();
 
+	/**
+	 * Eventually resumes this Amstrad PC (non-blocking call)
+	 * 
+	 * @see #pause()
+	 */
 	public abstract void resume();
 
 	public abstract void terminate();

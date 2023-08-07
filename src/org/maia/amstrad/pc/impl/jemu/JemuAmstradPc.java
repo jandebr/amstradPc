@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradFileType;
@@ -180,10 +181,28 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		checkStarted();
 		checkNotTerminated();
 		if (!isPaused()) {
-			getJemuInstance().pauseToggle(); // will be notified as PauseListener
+			// Disconnect from the AWT event dispatch thread, as this may lead to deadlock!
+			runOutsideAwtEventDispatchThread(new Runnable() {
+
+				@Override
+				public void run() {
+					getJemuInstance().pauseToggle(); // will be notified as PauseListener
+				}
+			});
 		}
 	}
 
+	/**
+	 * Immediately pauses this Amstrad PC
+	 * <p>
+	 * Unlike {@link #pause()}, this method blocks the caller until the PC is in pause state
+	 * </p>
+	 * <p>
+	 * This method MUST NOT be called from the <em>AWT Event Dispatch thread</em> as this may lead to deadlock!
+	 * </p>
+	 * 
+	 * @see SwingUtilities#isEventDispatchThread()
+	 */
 	@Override
 	public synchronized void pauseImmediately() {
 		checkStarted();
@@ -199,7 +218,14 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		checkStarted();
 		checkNotTerminated();
 		if (isPaused()) {
-			getJemuInstance().pauseToggle(); // will be notified as PauseListener
+			// Disconnect from the AWT event dispatch thread, as this may lead to deadlock!
+			runOutsideAwtEventDispatchThread(new Runnable() {
+
+				@Override
+				public void run() {
+					getJemuInstance().pauseToggle(); // will be notified as PauseListener
+				}
+			});
 		}
 	}
 
@@ -316,6 +342,14 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 				getAutonomousDisplayRenderer().stopRendering();
 				setAutonomousDisplayRenderer(null);
 			}
+		}
+	}
+
+	private void runOutsideAwtEventDispatchThread(Runnable task) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			new Thread(task).start();
+		} else {
+			task.run();
 		}
 	}
 

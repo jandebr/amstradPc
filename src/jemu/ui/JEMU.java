@@ -83,6 +83,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import jemu.core.Util;
@@ -1528,7 +1529,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		autoLoad();
 		if (pausetimer != 0) {
 			pausetimer = 0;
-			pauseComputer();
+			pauseComputerOutsideAwtEventDispatchThread();
 		}
 
 		if (autobooter != 0) {
@@ -1652,7 +1653,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			alt = true;
 		}
 		// Keyboard mapping
-		// System.out.println("KEY PRESSED  " + formatKeyEvent(e));
+		// System.out.println("KEY PRESSED " + formatKeyEvent(e));
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;
 		virtualUnshiftKey = false;
@@ -2332,6 +2333,20 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		computer.stop();
 		setPaused(1);
 		System.out.println("System halted");
+	}
+
+	private void pauseComputerOutsideAwtEventDispatchThread() {
+		if (SwingUtilities.isEventDispatchThread()) {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					pauseComputer();
+				}
+			}).start();
+		} else {
+			pauseComputer();
+		}
 	}
 
 	public void fsoundcheck() {

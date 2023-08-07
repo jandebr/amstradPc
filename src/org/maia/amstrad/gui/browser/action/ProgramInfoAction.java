@@ -52,9 +52,9 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 			setDisplaySource(AmstradFactory.getInstance().createProgramInfo(getAmstradPc(), program));
 			setEnabled(true);
 		} else {
+			setEnabled(false);
 			setProgram(null);
 			setDisplaySource(null);
-			setEnabled(false);
 		}
 	}
 
@@ -118,11 +118,11 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	@Override
 	public void amstradPcRebooting(AmstradPc amstradPc) {
 		super.amstradPcRebooting(amstradPc);
+		updateProgram(null);
 		if (isProgramInfoShowing()) {
 			resumeAfterInfoMode = false;
 			hideProgramInfo();
 		}
-		updateProgram(null);
 	}
 
 	private void updateName() {
