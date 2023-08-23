@@ -276,14 +276,15 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		while (i < menu.size() && ty < ty0 + menu.getMaxItemsShowing()) {
 			ProgramMenuItem item = menu.getItem(i);
 			String label = StringUtils.fitWidth(item.getLabel(), LABEL_WIDTH);
+			boolean enabled = item.isEnabled();
 			if (menu.getIndexOfSelectedItem() == i) {
 				if (isItemListCursorBlinkOn()) {
-					canvas.pen(item.isEnabled() ? getTheme().getEntryCursorInk() : getTheme().getDisabledMenuItemInk())
+					canvas.pen(enabled ? getTheme().getEntryCursorInk() : getTheme().getDisabledMenuItemInk())
 							.locate(tx0 - 1, ty).printChr(133); // cursor
 				}
 				canvas.paper(item.getFocusBackgroundColor());
 			}
-			if (item.isEnabled()) {
+			if (enabled) {
 				canvas.pen(item.getLabelColor());
 			} else {
 				canvas.pen(getTheme().getDisabledMenuItemInk()).paper(getTheme().getModalWindowBackgroundInk());

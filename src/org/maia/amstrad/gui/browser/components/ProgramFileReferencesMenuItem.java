@@ -9,12 +9,31 @@ import org.maia.amstrad.program.AmstradProgramException;
 
 public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 
+	private Collection<DiscoveredFileReference> references;
+
 	private boolean failed;
 
 	private boolean attention;
 
 	public ProgramFileReferencesMenuItem(ProgramMenu menu) {
 		super(menu, "File refs");
+		init();
+	}
+
+	private void init() {
+		AmstradProgram program = getProgram();
+		try {
+			references = new FileReferenceDiscoveryService(getAmstradPc()).discover(program);
+			for (DiscoveredFileReference ref : references) {
+				if (program.lookupFileReference(ref.getSourceFilenameWithoutFlags()) == null) {
+					attention = true;
+					break;
+				}
+			}
+		} catch (AmstradProgramException e) {
+			System.err.println(e);
+			failed = true;
+		}
 	}
 
 	@Override
@@ -26,25 +45,10 @@ public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 
 	@Override
 	public boolean isEnabled() {
-		if (!failed) {
-			AmstradProgram program = getProgram();
-			try {
-				Collection<DiscoveredFileReference> refs = new FileReferenceDiscoveryService(getAmstradPc())
-						.discover(program);
-				attention = false;
-				for (DiscoveredFileReference ref : refs) {
-					if (program.lookupFileReference(ref.getSourceFilenameWithoutFlags()) == null) {
-						attention = true;
-						break;
-					}
-				}
-				return !refs.isEmpty();
-			} catch (AmstradProgramException e) {
-				System.err.println(e);
-				failed = true;
-			}
-		}
-		return false;
+		if (failed)
+			return false;
+		else
+			return !references.isEmpty();
 	}
 
 	@Override
