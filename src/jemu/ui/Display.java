@@ -379,8 +379,8 @@ public class Display extends JComponent {
 					insets.top + (clientHeight - scaleHeight) / 2, scaleWidth, scaleHeight);
 		} else {
 			imageRect = new Rectangle(insets.left, insets.top, clientWidth, clientHeight);
-			sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
 		}
+		sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
 	}
 
 	public int[] getPixels() {
