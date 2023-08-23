@@ -89,6 +89,7 @@ import javax.swing.border.BevelBorder;
 import jemu.core.Util;
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerKeyboardListener;
+import jemu.core.device.ComputerPerformanceListener;
 import jemu.core.device.FileDescriptor;
 import jemu.core.device.floppy.DiscImage;
 import jemu.core.device.floppy.Drive;
@@ -1299,6 +1300,14 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void removeComputerKeyboardListener(ComputerKeyboardListener listener) {
 		computer.removeKeyboardListener(listener);
+	}
+
+	public void addComputerPerformanceListener(ComputerPerformanceListener listener) {
+		computer.addPerformanceListener(listener);
+	}
+
+	public void removeComputerPerformanceListener(ComputerPerformanceListener listener) {
+		computer.removePerformanceListener(listener);
 	}
 
 	public void addMemoryWriteObserver(MemoryWriteObserver observer) {
@@ -2578,6 +2587,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					for (ComputerKeyboardListener listener : computer.getKeyboardListeners()) {
 						computer.removeKeyboardListener(listener);
 						newComputer.addKeyboardListener(listener);
+					}
+					for (ComputerPerformanceListener listener : computer.getPerformanceListeners()) {
+						computer.removePerformanceListener(listener);
+						newComputer.addPerformanceListener(listener);
 					}
 					for (MemoryWriteObserver observer : computer.getMemoryWriteObservers()) {
 						computer.removeMemoryWriteObserver(observer);

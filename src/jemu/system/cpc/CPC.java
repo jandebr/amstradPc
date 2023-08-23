@@ -269,6 +269,11 @@ public class CPC extends Computer {
 	boolean[] shifter;
 	public static boolean shift;
 
+	// Performance observation
+	private long displayMonitoringStartTime = -1L;
+	private int displayFramesPainted;
+	private int displayFramesSkipped;
+
 	// Port mappings
 	protected static final int PSG_PORT_A = -1;
 	protected static final int PPI_PORT_B = -2;
@@ -616,6 +621,12 @@ public class CPC extends Computer {
 		z80.reset();
 		gateArray.init();
 		start();
+	}
+
+	@Override
+	public synchronized void stop() {
+		super.stop();
+		displayMonitoringStartTime = -1L;
 	}
 
 	public void setInks() {
@@ -1319,8 +1330,21 @@ public class CPC extends Computer {
 			if (Switches.turbo >= 2)
 				Switches.turbo++;
 		}
-		if (frameSkip == 0)
+		if (frameSkip == 0) {
 			display.updateImage(true);
+			displayFramesPainted++;
+		} else {
+			displayFramesSkipped++;
+		}
+		long now = System.currentTimeMillis();
+		if (displayMonitoringStartTime < 0L || now >= displayMonitoringStartTime + 1000L) {
+			if (displayMonitoringStartTime >= 0L)
+				fireDisplayPerformanceUpdate(now - displayMonitoringStartTime, displayFramesPainted,
+						displayFramesSkipped);
+			displayMonitoringStartTime = now;
+			displayFramesPainted = 0;
+			displayFramesSkipped = 0;
+		}
 		syncProcessor(psg.getSoundPlayer());
 		if (!YM_Play) {
 			typeAuto();

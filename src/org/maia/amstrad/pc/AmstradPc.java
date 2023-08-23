@@ -26,9 +26,12 @@ public abstract class AmstradPc {
 
 	private AmstradListenerList<AmstradPcStateListener> stateListeners;
 
+	private AmstradListenerList<AmstradPcPerformanceListener> performanceListeners;
+
 	protected AmstradPc() {
 		this.actions = new AmstradPcActions(this);
 		this.stateListeners = new AmstradListenerList<AmstradPcStateListener>();
+		this.performanceListeners = new AmstradListenerList<AmstradPcPerformanceListener>();
 	}
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
@@ -144,6 +147,14 @@ public abstract class AmstradPc {
 		getStateListeners().removeListener(listener);
 	}
 
+	public void addPerformanceListener(AmstradPcPerformanceListener listener) {
+		getPerformanceListeners().addListener(listener);
+	}
+
+	public void removePerformanceListener(AmstradPcPerformanceListener listener) {
+		getPerformanceListeners().removeListener(listener);
+	}
+
 	protected void fireStartedEvent() {
 		for (AmstradPcStateListener listener : getStateListeners())
 			listener.amstradPcStarted(this);
@@ -174,6 +185,17 @@ public abstract class AmstradPc {
 			listener.amstradPcProgramLoaded(this);
 	}
 
+	protected void fireDisplayPerformanceUpdate(long timeIntervalMillis, int framesPainted, int framesSkipped) {
+		for (AmstradPcPerformanceListener listener : getPerformanceListeners())
+			listener.displayPerformanceUpdate(this, timeIntervalMillis, framesPainted, framesSkipped);
+	}
+
+	protected void fireProcessorPerformanceUpdate(long timeIntervalMillis, int timerSyncs, int laggingSyncs,
+			int throttledSyncs) {
+		for (AmstradPcPerformanceListener listener : getPerformanceListeners())
+			listener.processorPerformanceUpdate(this, timeIntervalMillis, timerSyncs, laggingSyncs, throttledSyncs);
+	}
+
 	public AmstradPcFrame getFrame() {
 		return frame;
 	}
@@ -188,6 +210,10 @@ public abstract class AmstradPc {
 
 	protected AmstradListenerList<AmstradPcStateListener> getStateListeners() {
 		return stateListeners;
+	}
+
+	protected AmstradListenerList<AmstradPcPerformanceListener> getPerformanceListeners() {
+		return performanceListeners;
 	}
 
 }

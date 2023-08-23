@@ -13,17 +13,20 @@ import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcPerformanceListener;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 import com.sun.management.OperatingSystemMXBean;
 
-public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
+public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements AmstradPcPerformanceListener {
 
 	private int fps;
 
-	private int fpsCurrentCounter;
+	private int fpsSkipped;
 
-	private long fpsCurrentSecondEpoch;
+	private double cpuLaggingRatio;
+
+	private double cpuThrottlingRatio;
 
 	private List<String> lines;
 
@@ -37,8 +40,9 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 
 	private static Color LINE_COLOR = Color.WHITE;
 
-	public SystemStatsDisplayOverlay(AmstradPc amstracPc) {
-		super(amstracPc);
+	public SystemStatsDisplayOverlay(AmstradPc amstradPc) {
+		super(amstradPc);
+		amstradPc.addPerformanceListener(this);
 		this.lines = new Vector<String>();
 		this.osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	}
@@ -46,35 +50,8 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 	@Override
 	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
-		updateFps();
-		if (!getAmstracPc().getMonitor().isShowSystemStats() || offscreenImage)
-			return;
-		drawStatLines(produceStatLines(), display, displayBounds, monitorInsets, graphicsContext);
-	}
-
-	private List<String> produceStatLines() {
-		Runtime jrt = Runtime.getRuntime();
-		long jTotal = jrt.totalMemory();
-		long jUsed = jTotal - jrt.freeMemory();
-		long jMax = jrt.maxMemory();
-		BasicRuntime brt = getAmstracPc().getBasicRuntime();
-		long bTotal = brt.getTotalMemory();
-		long bUsed = brt.getUsedMemory();
-		lines.clear();
-		lines.add("FPS: " + fps + "  CPU: " + percentageFormat.format(getCpuLoad()));
-		lines.add("MEM Java: " + formatMemorySize(jUsed) + " used of " + formatMemorySize(jTotal)
-				+ (jMax < Long.MAX_VALUE ? " (max " + formatMemorySize(jMax) + ")" : ""));
-		lines.add("MEM Basic: " + formatMemorySize(bUsed) + " used of " + formatMemorySize(bTotal));
-		return lines;
-	}
-
-	private String formatMemorySize(long bytes) {
-		if (bytes < 1024L) {
-			return String.valueOf(bytes) + "B";
-		} else if (bytes < 1024L * 1024L) {
-			return String.valueOf(bytes / 1024L) + "K";
-		} else {
-			return String.valueOf(bytes / (1024L * 1024L)) + "M";
+		if (getAmstracPc().getMonitor().isShowSystemStats() && !offscreenImage) {
+			drawStatLines(produceStatLines(), display, displayBounds, monitorInsets, graphicsContext);
 		}
 	}
 
@@ -89,7 +66,7 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 		int boxHeight = lines.size() * lineHeight;
 		int boxWidth = computeBoxWidth(lines, fm);
 		int xcenter = displayBounds.width / 2;
-		int ytop = monitorInsets.top;
+		int ytop = Math.min(monitorInsets.top, displayBounds.height / 17);
 		display.setColor(BOX_COLOR);
 		display.fillRect(xcenter - boxWidth / 2, ytop - 4, boxWidth, boxHeight + 6);
 		// Lines
@@ -110,14 +87,47 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay {
 		return (width / 16 + 2) * 16;
 	}
 
-	private void updateFps() {
-		long sec = System.currentTimeMillis() / 1000L;
-		if (sec != fpsCurrentSecondEpoch) {
-			fps = fpsCurrentCounter;
-			fpsCurrentCounter = 0;
-			fpsCurrentSecondEpoch = sec;
+	private List<String> produceStatLines() {
+		Runtime jrt = Runtime.getRuntime();
+		long jTotal = jrt.totalMemory();
+		long jUsed = jTotal - jrt.freeMemory();
+		long jMax = jrt.maxMemory();
+		BasicRuntime brt = getAmstracPc().getBasicRuntime();
+		long bTotal = brt.getTotalMemory();
+		long bUsed = brt.getUsedMemory();
+		lines.clear();
+		lines.add("MEM Basic: " + formatMemorySize(bUsed) + " used of " + formatMemorySize(bTotal));
+		lines.add("MEM Java: " + formatMemorySize(jUsed) + " used of " + formatMemorySize(jTotal)
+				+ (jMax < Long.MAX_VALUE ? " (max " + formatMemorySize(jMax) + ")" : ""));
+		lines.add("CPU: " + percentageFormat.format(getCpuLoad()) + " lag " + percentageFormat.format(cpuLaggingRatio)
+				+ " throttle " + percentageFormat.format(cpuThrottlingRatio));
+		lines.add("FPS: " + fps + " with " + fpsSkipped + " skipped");
+		return lines;
+	}
+
+	private String formatMemorySize(long bytes) {
+		if (bytes < 1024L) {
+			return String.valueOf(bytes) + "B";
+		} else if (bytes < 1024L * 1024L) {
+			return String.valueOf(bytes / 1024L) + "K";
+		} else {
+			return String.valueOf(bytes / (1024L * 1024L)) + "M";
 		}
-		fpsCurrentCounter++;
+	}
+
+	@Override
+	public void displayPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int framesPainted,
+			int framesSkipped) {
+		double tu = 1000.0 / (double) timeIntervalMillis;
+		fps = (int) Math.round(framesPainted * tu);
+		fpsSkipped = (int) Math.round(framesSkipped * tu);
+	}
+
+	@Override
+	public void processorPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int timerSyncs,
+			int laggingSyncs, int throttledSyncs) {
+		cpuLaggingRatio = laggingSyncs / (double) timerSyncs;
+		cpuThrottlingRatio = throttledSyncs / (double) timerSyncs;
 	}
 
 	private double getCpuLoad() {

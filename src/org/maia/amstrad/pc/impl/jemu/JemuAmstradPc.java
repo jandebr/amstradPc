@@ -60,6 +60,7 @@ import org.maia.swing.dialog.ActionableDialogListener;
 import jemu.core.device.BasicKeyboardPromptModus;
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerKeyboardListener;
+import jemu.core.device.ComputerPerformanceListener;
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
@@ -73,7 +74,8 @@ import jemu.ui.MonitorMask;
 import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
 
-public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDisplaySourceListener {
+public class JemuAmstradPc extends AmstradPc
+		implements PauseListener, PrimaryDisplaySourceListener, ComputerPerformanceListener {
 
 	private JEMU jemuInstance;
 
@@ -145,6 +147,7 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			jemu.init();
 			jemu.start();
 			jemu.addPauseListener(this);
+			jemu.addComputerPerformanceListener(this);
 			jemu.getDisplay().addPrimaryDisplaySourceListener(this);
 			getGraphicsContext().setPrimaryDisplaySourceResolution(
 					new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
@@ -237,6 +240,18 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 		} else {
 			fireResumingEvent();
 		}
+	}
+
+	@Override
+	public void displayPerformanceUpdate(Computer computer, long timeIntervalMillis, int framesPainted,
+			int framesSkipped) {
+		fireDisplayPerformanceUpdate(timeIntervalMillis, framesPainted, framesSkipped);
+	}
+
+	@Override
+	public void processorPerformanceUpdate(Computer computer, long timeIntervalMillis, int timerSyncs, int laggingSyncs,
+			int throttledSyncs) {
+		fireProcessorPerformanceUpdate(timeIntervalMillis, timerSyncs, laggingSyncs, throttledSyncs);
 	}
 
 	@Override
@@ -1424,6 +1439,10 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 
 		private boolean stop;
 
+		// Performance observation
+		private long displayMonitoringStartTime = -1L;
+		private int displayFramesPainted;
+
 		public AutonomousDisplayRenderer() {
 			super("AutonomousDisplayRenderer");
 			setDaemon(true);
@@ -1435,8 +1454,20 @@ public class JemuAmstradPc extends AmstradPc implements PauseListener, PrimaryDi
 			final Display display = getJemuInstance().getDisplay();
 			while (!isStopped()) {
 				display.updateImage(true);
+				displayFramesPainted++;
+				updatePerformanceMonitoring();
 			}
 			System.out.println("Autonomous render thread stopped");
+		}
+
+		private void updatePerformanceMonitoring() {
+			long now = System.currentTimeMillis();
+			if (displayMonitoringStartTime < 0L || now >= displayMonitoringStartTime + 1000L) {
+				if (displayMonitoringStartTime >= 0L)
+					fireDisplayPerformanceUpdate(now - displayMonitoringStartTime, displayFramesPainted, 0);
+				displayMonitoringStartTime = now;
+				displayFramesPainted = 0;
+			}
 		}
 
 		public void stopRendering() {

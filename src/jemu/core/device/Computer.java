@@ -128,6 +128,13 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	private KeyEvent escapeKeyEventPressed;
 	private KeyEvent escapeKeyEventReleased;
 
+	// Performance observation
+	private List<ComputerPerformanceListener> performanceListeners;
+	private long processorMonitoringStartTime = -1L;
+	private int processorTimerSyncs;
+	private int processorLaggingSyncs;
+	private int processorThrottledSyncs;
+
 	@SuppressWarnings("unchecked")
 	public static Computer createComputer(Applet applet, String name) throws Exception {
 		for (int index = 0; index < COMPUTERS.length; index++) {
@@ -145,6 +152,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		this.applet = applet;
 		this.name = name;
 		this.keyboardListeners = new Vector<ComputerKeyboardListener>();
+		this.performanceListeners = new Vector<ComputerPerformanceListener>();
 		this.escapeKeyEventPressed = new KeyEvent(applet, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_ESCAPE,
 				KeyEvent.CHAR_UNDEFINED);
 		this.escapeKeyEventReleased = new KeyEvent(applet, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_ESCAPE,
@@ -637,6 +645,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				}
 			}
 		}
+		processorMonitoringStartTime = -1L;
 	}
 
 	public synchronized void step() {
@@ -815,6 +824,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	protected void syncProcessor(ComputerTimer timer, long count, long deviation) {
+		processorTimerSyncs++;
 		startTime += count;
 		startCycles = getProcessor().getCycles();
 		long time = timer != null ? timer.getCount() : System.currentTimeMillis();
@@ -823,6 +833,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			setFrameSkip(0);
 			startTime = time;
 		} else if (time > startTime) {
+			processorLaggingSyncs++;
 			if (frameSkip == MAX_FRAME_SKIP) {
 				setFrameSkip(0);
 				if (timer != null)
@@ -836,6 +847,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		} else {
 			try {
 				setFrameSkip(0);
+				boolean throttled = false;
 				long start = System.currentTimeMillis();
 				while ((time = timer != null ? timer.getCount() : System.currentTimeMillis()) < startTime) {
 					if (timer != null && System.currentTimeMillis() - start > maxResync) {
@@ -845,11 +857,23 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 						break;
 					}
 					Thread.sleep(1);
+					throttled = true;
 				}
+				if (throttled)
+					processorThrottledSyncs++;
 			} catch (Exception e) {
 				e.printStackTrace();
-				return;
 			}
+		}
+		long now = System.currentTimeMillis();
+		if (processorMonitoringStartTime < 0L || now >= processorMonitoringStartTime + 1000L) {
+			if (processorMonitoringStartTime >= 0L)
+				fireProcessorPerformanceUpdate(now - processorMonitoringStartTime, processorTimerSyncs,
+						processorLaggingSyncs, processorThrottledSyncs);
+			processorMonitoringStartTime = now;
+			processorTimerSyncs = 0;
+			processorLaggingSyncs = 0;
+			processorThrottledSyncs = 0;
 		}
 	}
 
@@ -935,6 +959,29 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	protected void fireExitBasicKeyboardPrompt(BasicKeyboardPromptModus modus) {
 		for (ComputerKeyboardListener listener : getKeyboardListeners())
 			listener.computerExitBasicKeyboardPrompt(this, modus);
+	}
+
+	public void addPerformanceListener(ComputerPerformanceListener listener) {
+		getPerformanceListeners().add(listener);
+	}
+
+	public void removePerformanceListener(ComputerPerformanceListener listener) {
+		getPerformanceListeners().remove(listener);
+	}
+
+	public List<ComputerPerformanceListener> getPerformanceListeners() {
+		return performanceListeners;
+	}
+
+	protected void fireDisplayPerformanceUpdate(long timeIntervalMillis, int framesPainted, int framesSkipped) {
+		for (ComputerPerformanceListener listener : getPerformanceListeners())
+			listener.displayPerformanceUpdate(this, timeIntervalMillis, framesPainted, framesSkipped);
+	}
+
+	protected void fireProcessorPerformanceUpdate(long timeIntervalMillis, int timerSyncs, int laggingSyncs,
+			int throttledSyncs) {
+		for (ComputerPerformanceListener listener : getPerformanceListeners())
+			listener.processorPerformanceUpdate(this, timeIntervalMillis, timerSyncs, laggingSyncs, throttledSyncs);
 	}
 
 }
