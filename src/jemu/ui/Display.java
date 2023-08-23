@@ -718,8 +718,18 @@ public class Display extends JComponent {
 	}
 
 	public void waitPainted() {
-		while (!painted && isShowing())
-			Thread.yield();
+		long timeoutTime = System.currentTimeMillis() + 500L;
+		boolean timeout = false;
+		while (!painted && isShowing() && !timeout) {
+			try {
+				Thread.sleep(1L);
+			} catch (InterruptedException e) {
+			}
+			timeout = System.currentTimeMillis() > timeoutTime;
+		}
+		if (timeout) {
+			System.out.println("Timeout for Display paint");
+		}
 	}
 
 	@Override
