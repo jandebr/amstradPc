@@ -46,7 +46,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -118,16 +117,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	private FrameAdapter frameAdapter;
 	private List<PauseListener> pauseListeners;
 
-	private boolean virtualShiftKey = false;
-	private boolean virtualUnshiftKey = false;
-	private boolean deferredShift = false;
-	private boolean skipUnshift = false;
-	private KeyEvent virtualShiftKeyEventPressed = new KeyEvent(this, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_SHIFT,
-			KeyEvent.CHAR_UNDEFINED);
-	private KeyEvent virtualShiftKeyEventReleased = new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_SHIFT,
-			KeyEvent.CHAR_UNDEFINED);
-
-	private boolean controlKeysEnabled = true;
 	private boolean mouseClickActionsEnabled = true;
 
 	protected boolean isbackground;
@@ -209,7 +198,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	int ypos;
 	int xoldpos;
 	int yoldpos;
-	protected boolean ctrl, shift, alt = false;
 
 	public static int screenshottimer = 0;
 	public static int screentimer = 0;
@@ -254,6 +242,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	private static int winy1 = 402; // 672
 
 	protected Display display = new Display();
+	private JemuKeyDispatcher keyDispatcher = new JemuKeyDispatcher(display);
 	protected int dtimer = 1;
 	protected JLabel jlComputer = new JLabel("System  ");
 	protected JLabel jlDrive = new JLabel("Disc drive ");
@@ -796,15 +785,14 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			this.add(intern, BorderLayout.CENTER);
 			display.setBorder(null);
 			display.setBackground(Color.BLACK);
-			display.addKeyListener(this);
+			// display.addKeyListener(this); // replaced by keyDispatcher
 			display.addMouseListener(this);
 			display.addFocusListener(this);
 			display.addMouseMotionListener(this);
-			// display.setDoubleBuffered(true);
-			intern.addKeyListener(this);
-			intern.addMouseListener(this);
-			intern.addFocusListener(this);
-			intern.addMouseMotionListener(this);
+			// intern.addKeyListener(this);
+			// intern.addMouseListener(this);
+			// intern.addFocusListener(this);
+			// intern.addMouseMotionListener(this);
 
 			dropTargetList = new ArrayList<DropTarget>();
 			DropListener myListener = new DropListener();
@@ -1649,450 +1637,23 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void keyTyped(KeyEvent e) {
+		keyDispatcher.keyTyped(e);
 	}
 
 	public void keyPressed(KeyEvent e) {
-		// Remember modifiers
-		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_CONTROL) {
-			ctrl = true;
-		} else if (keyCode == KeyEvent.VK_SHIFT) {
-			shift = true;
-		} else if (keyCode == KeyEvent.VK_ALT) {
-			alt = true;
-		}
-		// Keyboard mapping
-		// System.out.println("KEY PRESSED " + formatKeyEvent(e));
-		e = cloneKeyEvent(e);
-		virtualShiftKey = false;
-		virtualUnshiftKey = false;
-		applyKeyboardMapping(e, true);
-		keyCode = e.getKeyCode();
-		// Control keys
-		if (isControlKeysEnabled()) {
-			if (ctrl) {
-				if (keyCode == KeyEvent.VK_F1) {
-					ctrl = false;
-					loadtitle = "Load DSK file to DF0";
-					computer.setCurrentDrive(0);
-					Switches.askDrive = false;
-					loaddata();
-					computer.setCurrentDrive(0);
-					loadtitle = "Load emulator file";
-					return;
-				} else if (keyCode == KeyEvent.VK_F2) {
-					ctrl = false;
-					loadtitle = "Load DSK file to DF1";
-					computer.setCurrentDrive(1);
-					Switches.askDrive = false;
-					loaddata();
-					computer.setCurrentDrive(0);
-					loadtitle = "Load emulator file";
-					return;
-				} else if (keyCode == KeyEvent.VK_F3) {
-					ctrl = false;
-					loadTape(false);
-					return;
-				} else if (keyCode == KeyEvent.VK_F4) {
-					if (shift) {
-						ctrl = false;
-						shift = false;
-						turboCheck();
-						return;
-					} else {
-						ctrl = false;
-						loadTape(true);
-						return;
-					}
-				} else if (keyCode == KeyEvent.VK_F5) {
-					if (alt) {
-						ctrl = false;
-						alt = false;
-						new EditIni();
-						return;
-					} else if (!shift) {
-						if (!jemu.system.cpc.CPC.tapedeck) {
-							jemu.system.cpc.CPC.TapeDrive.setVisible(true);
-							jemu.system.cpc.CPC.tapedeck = true;
-						} else {
-							jemu.system.cpc.CPC.TapeDrive.setVisible(false);
-							jemu.system.cpc.CPC.tapedeck = false;
-						}
-						ctrl = false;
-						return;
-					}
-				} else if (keyCode == KeyEvent.VK_F6) {
-					ctrl = false;
-					chooseSNA();
-					return;
-				} else if (keyCode == KeyEvent.VK_F9) {
-					ctrl = false;
-					reset();
-					return;
-				} else if (keyCode == KeyEvent.VK_F10) {
-					ctrl = false;
-					optionPanel.OptionPanel();
-					return;
-				} else if (keyCode == KeyEvent.VK_F11) {
-					ctrl = false;
-					screenshot();
-					return;
-				} else if (keyCode == KeyEvent.VK_F12) {
-					ctrl = false;
-					MenuCheck();
-					return;
-				}
-			} else {
-				if (keyCode == KeyEvent.VK_F11) {
-					Autotype.PasteText();
-					return;
-				}
-			}
-			// Key recording
-			if (KeyRec && ctrl) {
-				if (keyCode == KeyEvent.VK_NUMPAD1) {
-					ctrl = false;
-					System.out.println("keyboard input recording...");
-					computer.stopKeys();
-					computer.recordKeys();
-					return;
-				} else if (keyCode == KeyEvent.VK_NUMPAD2) {
-					ctrl = false;
-					System.out.println("keyboard input stopped...");
-					computer.stopKeys();
-					return;
-				} else if (keyCode == KeyEvent.VK_NUMPAD3) {
-					ctrl = false;
-					System.out.println("keyboard input playing...");
-					computer.stopKeys();
-					computer.playKeys();
-					return;
-				}
-			}
-			// Misc
-			if (keyCode == KeyEvent.VK_ENTER && alt && executable) {
-				alt = false;
-				FullSize();
-				return;
-			} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
-				for (int i = 0; i < 4; i++) {
-					computer.setCurrentDrive(i);
-					mediumeject();
-				}
-				computer.setCurrentDrive(0);
-			} else if (keyCode == KeyEvent.VK_PAGE_UP) {
-				Switches.askDrive = true;
-				loaddata();
-			} else if (keyCode == KeyEvent.VK_SCROLL_LOCK) {
-				autosavecheck();
-			} else if (keyCode == KeyEvent.VK_PAUSE) {
-				pauseToggle();
-			} else if (keyCode == KeyEvent.VK_HOME) {
-				romsetter.setRoms();
-			} else if (keyCode == KeyEvent.VK_ESCAPE) {
-				if (dialogsnap) {
-					snaChooser.dispose();
-					computer.start();
-					computer.reSync();
-					dialogsnap = false;
-					return;
-				}
-			} else if (keyCode == KeyEvent.VK_ADD) {
-				applyAlwaysOnTop(false);
-				saveDsk();
-				applyAlwaysOnTop(onTop);
-			}
-		}
-		// Pass key pressed to the computer
-		if (keyToProcessByComputer(e)) {
-			if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-				deferredShift = true;
-			} else {
-				if ((deferredShift || virtualShiftKey) && !virtualUnshiftKey) {
-					computer.processKeyEvent(virtualShiftKeyEventPressed);
-				} else if (deferredShift) {
-					skipUnshift = true;
-				}
-				deferredShift = false;
-				computer.processKeyEvent(e);
-			}
-		}
+		keyDispatcher.keyPressed(e);
 	}
 
 	public void keyReleased(KeyEvent e) {
-		// Keyboard mapping
-		// System.out.println("KEY RELEASED " + formatKeyEvent(e));
-		e = cloneKeyEvent(e);
-		virtualShiftKey = false;
-		virtualUnshiftKey = false;
-		applyKeyboardMapping(e, false);
-		// Pass key released to the computer
-		if (keyToProcessByComputer(e)) {
-			if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-				if (!deferredShift && !skipUnshift) {
-					computer.processKeyEvent(e);
-				} else {
-					deferredShift = false;
-					skipUnshift = false;
-				}
-			} else {
-				computer.processKeyEvent(e);
-				if (virtualShiftKey) {
-					computer.processKeyEvent(virtualShiftKeyEventReleased);
-				}
-			}
-		}
-		// Update modifiers
-		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_CONTROL) {
-			ctrl = false;
-		} else if (keyCode == KeyEvent.VK_SHIFT) {
-			shift = false;
-		} else if (keyCode == KeyEvent.VK_ALT) {
-			alt = false;
-		}
+		keyDispatcher.keyReleased(e);
 	}
 
 	public void resetKeyModifiers() {
-		char cUnd = KeyEvent.CHAR_UNDEFINED;
-		keyReleased(new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_CONTROL, cUnd));
-		keyReleased(new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_SHIFT, cUnd));
-		keyReleased(new KeyEvent(this, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_ALT, cUnd));
+		keyDispatcher.resetKeyModifiers();
 	}
 
 	public void breakEscape() {
-		if (isRunning()) {
-			computer.breakEscape();
-		}
-	}
-
-	private KeyEvent cloneKeyEvent(KeyEvent e) {
-		return new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiersEx(), e.getKeyCode(),
-				e.getKeyChar(), e.getKeyLocation());
-	}
-
-	private static String formatKeyEvent(KeyEvent e) {
-		StringBuilder sb = new StringBuilder(64);
-		sb.append("KeyEvent");
-		sb.append(" code:").append(e.getKeyCode());
-		sb.append(" char:").append(e.getKeyChar());
-		sb.append(" charNr:").append((int) e.getKeyChar());
-		sb.append(" mod:").append(InputEvent.getModifiersExText(e.getModifiersEx()));
-		sb.append(" ctrl:").append(e.isControlDown());
-		sb.append(" shift:").append(e.isShiftDown());
-		sb.append(" alt:").append(e.isAltDown());
-		return sb.toString();
-	}
-
-	private boolean keyToProcessByComputer(KeyEvent e) {
-		if (Switches.blockKeyboard)
-			return false;
-		if (isFunctionKey(e) && !e.isShiftDown())
-			return false;
-		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_UNDEFINED)
-			return false;
-		if (keyCode == KeyEvent.VK_CONTROL)
-			return false;
-		if (keyCode == KeyEvent.VK_ALT)
-			return false;
-		if (isAlphabeticKey(e) && (ctrl || alt))
-			return false;
-		return true;
-	}
-
-	private boolean isAlphabeticKey(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		return keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z;
-	}
-
-	private boolean isFunctionKey(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		return keyCode >= KeyEvent.VK_F1 && keyCode <= KeyEvent.VK_F12;
-	}
-
-	private void applyKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
-		if (localkeys.equals("DE_DE")) {
-			applyGermanKeyboardMapping(e, updateKeyboardLabel);
-		} else if (localkeys.equals("ES_ES")) {
-			applySpanishKeyboardMapping(e, updateKeyboardLabel);
-		} else {
-			applyEnglishKeyboardMapping(e, updateKeyboardLabel);
-		}
-	}
-
-	private void applyGermanKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
-		if (updateKeyboardLabel && !keys.equals("German keyboard  ")) {
-			keys = "German keyboard  ";
-			Keys.setLabel(keys);
-		}
-		int keyChar = e.getKeyChar();
-		if (keyChar == '\u00FC' || keyChar == '\u00DC') {
-			e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
-		} else if (keyChar == '\u00E4' || keyChar == '\u00C4') {
-			e.setKeyCode(KeyEvent.VK_QUOTE);
-		} else if (keyChar == '\u00F6' || keyChar == '\u00D6') {
-			e.setKeyCode(KeyEvent.VK_SEMICOLON);
-		} else if (keyChar == '\u00DF' || keyChar == '\u003F') {
-			e.setKeyCode(KeyEvent.VK_MINUS);
-		}
-		int keyCode = e.getKeyCode();
-		if (keyCode == 0x2d) { // - content to /
-			e.setKeyCode(KeyEvent.VK_SLASH);
-		} else if (keyCode == 0x81) { // ï¿½ content to ^
-			e.setKeyCode(KeyEvent.VK_EQUALS);
-		} else if (keyCode == 0x99) { // <> content to [
-			e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
-		} else if (keyCode == 0x82) { // ^ content to TAB
-			e.setKeyCode(KeyEvent.VK_TAB);
-		} else if (keyCode == 0x208) { // # content to \
-			e.setKeyCode(KeyEvent.VK_BACK_SLASH);
-		} else if (keyCode == 0x209) { // + content to ]
-			e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
-		} else if (keyCode == KeyEvent.VK_Z) { // change Z to Y
-			e.setKeyCode(KeyEvent.VK_Y);
-		} else if (keyCode == KeyEvent.VK_Y) { // and Y to Z
-			e.setKeyCode(KeyEvent.VK_Z);
-		}
-	}
-
-	private void applySpanishKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
-		if (updateKeyboardLabel && !keys.equals("Spanish keyboard  ")) {
-			keys = "Spanish keyboard  ";
-			Keys.setLabel(keys);
-		}
-		int keyChar = e.getKeyChar();
-		if (keyChar == '\u00BA' || keyChar == '\u00B2') {
-			e.setKeyCode(KeyEvent.VK_TAB);
-		} else if (keyChar == '\u00E7' || keyChar == '\u00C7') {
-			e.setKeyCode(KeyEvent.VK_BACK_SLASH);
-		} else if (keyChar == '\u00D1' || keyChar == '\u00F1') {
-			e.setKeyCode(KeyEvent.VK_SEMICOLON);
-		}
-		int keyCode = e.getKeyCode();
-		if (keyCode == 0xde) {
-			e.setKeyCode(KeyEvent.VK_MINUS);
-		} else if (keyCode == 0x2d) { // - content to /
-			e.setKeyCode(KeyEvent.VK_SLASH);
-		} else if (keyCode == 0x81) {
-			e.setKeyCode(KeyEvent.VK_QUOTE);
-		} else if (keyCode == 0x209) { // + content to ]
-			e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
-		} else if (keyCode == 0x206) {
-			e.setKeyCode(KeyEvent.VK_EQUALS);
-		} else if (keyCode == 0x99) {
-			e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
-		} else if (keyCode == 0x80) {
-			e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
-		}
-	}
-
-	private void applyEnglishKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
-		if (updateKeyboardLabel && !keys.equals("English keyboard  ")) {
-			keys = "English keyboard  ";
-			Keys.setLabel(keys);
-		}
-		char keyChar = e.getKeyChar();
-		int keyCode = e.getKeyCode();
-		if (keyCode == 65406 || "²³°é§èçàùµ~¨".indexOf(keyChar) >= 0) {
-			e.setKeyCode(KeyEvent.VK_UNDEFINED);
-		} else if (keyChar == '0' && e.isShiftDown()) {
-			e.setKeyCode(123); // 0
-		} else if (keyChar >= '1' && keyChar <= '9' && e.isShiftDown()) {
-			e.setKeyCode(112 + (keyChar - '1')); // 1,2,...,9
-		} else if (keyCode == 106) {
-			virtualShiftKey = true;
-			e.setKeyCode(59); // numpad '*'
-		} else if (keyCode == 107) {
-			virtualShiftKey = true;
-			e.setKeyCode(222); // numpad '+'
-		} else if (keyCode == 109) {
-			e.setKeyCode(45); // numpad '-'
-		} else if (keyCode == 111) {
-			e.setKeyCode(47); // numpad '/'
-		} else if (keyChar == '&') {
-			virtualShiftKey = true;
-			e.setKeyCode(54);
-		} else if (keyChar == '|') {
-			virtualShiftKey = true;
-			e.setKeyCode(91);
-		} else if (keyChar == '"') {
-			virtualShiftKey = true;
-			e.setKeyCode(50);
-		} else if (keyChar == '#') {
-			virtualShiftKey = true;
-			e.setKeyCode(51);
-		} else if (keyChar == '\'') {
-			virtualShiftKey = true;
-			e.setKeyCode(55);
-		} else if (keyChar == '(') {
-			virtualShiftKey = true;
-			e.setKeyCode(56);
-		} else if (keyChar == '!') {
-			virtualShiftKey = true;
-			e.setKeyCode(49);
-		} else if (keyChar == '{') {
-			virtualShiftKey = true;
-			e.setKeyCode(65406);
-		} else if (keyChar == '}') {
-			virtualShiftKey = true;
-			e.setKeyCode(93);
-		} else if (keyChar == ')') {
-			virtualShiftKey = true;
-			e.setKeyCode(57);
-		} else if (keyChar == '$') {
-			virtualShiftKey = true;
-			e.setKeyCode(52);
-		} else if (keyChar == '´') {
-			virtualShiftKey = true;
-			e.setKeyCode(55);
-		} else if (keyChar == '`') {
-			virtualShiftKey = true;
-			e.setKeyCode(92);
-		} else if (keyChar == '<') {
-			virtualShiftKey = true;
-			e.setKeyCode(44);
-		} else if (keyChar == '=') {
-			virtualShiftKey = true;
-			e.setKeyCode(45);
-		} else if (keyChar == '@') {
-			e.setKeyCode(91);
-		} else if (keyChar == '-') {
-			e.setKeyCode(45);
-		} else if (keyChar == '^') {
-			e.setKeyCode(61);
-		} else if (keyCode == 130) {
-			e.setKeyCode(65406); // [
-		} else if (keyChar == ']') {
-			e.setKeyCode(93);
-		} else if (keyChar == '\\') {
-			e.setKeyCode(92);
-		} else if (keyChar == ',') {
-			e.setKeyCode(44);
-		} else if (keyChar == ';') {
-			e.setKeyCode(222);
-		} else if (keyChar == ':') {
-			e.setKeyCode(59);
-		} else if (keyChar == '/') {
-			virtualUnshiftKey = true;
-			e.setKeyCode(47);
-		} else if (keyChar == '_') {
-			e.setKeyCode(48);
-		} else if (keyChar == '*') {
-			e.setKeyCode(59);
-		} else if (keyChar == '%') {
-			e.setKeyCode(53);
-		} else if (keyChar == '£') {
-			e.setKeyCode(61);
-		} else if (keyChar == '>') {
-			e.setKeyCode(46);
-		} else if (keyChar == '?') {
-			e.setKeyCode(47);
-		} else if (keyChar == '.') {
-			e.setKeyCode(110);
-		} else if (keyChar == '+') {
-			e.setKeyCode(222);
-		}
+		keyDispatcher.breakEscape();
 	}
 
 	public void MenuCheck() {
@@ -2605,6 +2166,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					System.out.println("Computer Disposed");
 				}
 				computer = newComputer;
+				keyDispatcher.changeDestination(newComputer);
 				Settings.set(Settings.SYSTEM, name);
 				setFullSize(large);
 				computer.start();
@@ -5551,20 +5113,16 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		return computer.isRunning();
 	}
 
-	public boolean isControlKeysEnabled() {
-		return controlKeysEnabled;
-	}
-
-	public void setControlKeysEnabled(boolean controlKeysEnabled) {
-		this.controlKeysEnabled = controlKeysEnabled;
-	}
-
 	public boolean isMouseClickActionsEnabled() {
 		return mouseClickActionsEnabled;
 	}
 
 	public void setMouseClickActionsEnabled(boolean mouseClickActionsEnabled) {
 		this.mouseClickActionsEnabled = mouseClickActionsEnabled;
+	}
+
+	public void setControlKeysEnabled(boolean controlKeysEnabled) {
+		keyDispatcher.setControlKeysEnabled(controlKeysEnabled);
 	}
 
 	public void addPauseListener(PauseListener listener) {
@@ -5582,6 +5140,256 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public static interface PauseListener {
 
 		void pauseStateChanged(JEMU jemu, boolean paused);
+
+	}
+
+	private class JemuKeyDispatcher extends KeyDispatcher {
+
+		private boolean controlKeysEnabled = true;
+
+		public JemuKeyDispatcher(Display display) {
+			super(display);
+		}
+
+		@Override
+		protected void applyKeyboardMapping(KeyEvent e) {
+			boolean updateKeyboardLabel = e.getID() == KeyEvent.KEY_PRESSED;
+			applyKeyboardMapping(e, updateKeyboardLabel);
+		}
+
+		private void applyKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+			if (localkeys.equals("DE_DE")) {
+				applyGermanKeyboardMapping(e, updateKeyboardLabel);
+			} else if (localkeys.equals("ES_ES")) {
+				applySpanishKeyboardMapping(e, updateKeyboardLabel);
+			} else {
+				applyEnglishKeyboardMapping(e, updateKeyboardLabel);
+			}
+		}
+
+		private void applyGermanKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+			if (updateKeyboardLabel && !keys.equals("German keyboard  ")) {
+				keys = "German keyboard  ";
+				Keys.setLabel(keys);
+			}
+			int keyChar = e.getKeyChar();
+			if (keyChar == '\u00FC' || keyChar == '\u00DC') {
+				e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
+			} else if (keyChar == '\u00E4' || keyChar == '\u00C4') {
+				e.setKeyCode(KeyEvent.VK_QUOTE);
+			} else if (keyChar == '\u00F6' || keyChar == '\u00D6') {
+				e.setKeyCode(KeyEvent.VK_SEMICOLON);
+			} else if (keyChar == '\u00DF' || keyChar == '\u003F') {
+				e.setKeyCode(KeyEvent.VK_MINUS);
+			}
+			int keyCode = e.getKeyCode();
+			if (keyCode == 0x2d) { // - content to /
+				e.setKeyCode(KeyEvent.VK_SLASH);
+			} else if (keyCode == 0x81) { // ï¿½ content to ^
+				e.setKeyCode(KeyEvent.VK_EQUALS);
+			} else if (keyCode == 0x99) { // <> content to [
+				e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
+			} else if (keyCode == 0x82) { // ^ content to TAB
+				e.setKeyCode(KeyEvent.VK_TAB);
+			} else if (keyCode == 0x208) { // # content to \
+				e.setKeyCode(KeyEvent.VK_BACK_SLASH);
+			} else if (keyCode == 0x209) { // + content to ]
+				e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
+			} else if (keyCode == KeyEvent.VK_Z) { // change Z to Y
+				e.setKeyCode(KeyEvent.VK_Y);
+			} else if (keyCode == KeyEvent.VK_Y) { // and Y to Z
+				e.setKeyCode(KeyEvent.VK_Z);
+			}
+		}
+
+		private void applySpanishKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+			if (updateKeyboardLabel && !keys.equals("Spanish keyboard  ")) {
+				keys = "Spanish keyboard  ";
+				Keys.setLabel(keys);
+			}
+			int keyChar = e.getKeyChar();
+			if (keyChar == '\u00BA' || keyChar == '\u00B2') {
+				e.setKeyCode(KeyEvent.VK_TAB);
+			} else if (keyChar == '\u00E7' || keyChar == '\u00C7') {
+				e.setKeyCode(KeyEvent.VK_BACK_SLASH);
+			} else if (keyChar == '\u00D1' || keyChar == '\u00F1') {
+				e.setKeyCode(KeyEvent.VK_SEMICOLON);
+			}
+			int keyCode = e.getKeyCode();
+			if (keyCode == 0xde) {
+				e.setKeyCode(KeyEvent.VK_MINUS);
+			} else if (keyCode == 0x2d) { // - content to /
+				e.setKeyCode(KeyEvent.VK_SLASH);
+			} else if (keyCode == 0x81) {
+				e.setKeyCode(KeyEvent.VK_QUOTE);
+			} else if (keyCode == 0x209) { // + content to ]
+				e.setKeyCode(KeyEvent.VK_CLOSE_BRACKET);
+			} else if (keyCode == 0x206) {
+				e.setKeyCode(KeyEvent.VK_EQUALS);
+			} else if (keyCode == 0x99) {
+				e.setKeyCode(KeyEvent.VK_ALT_GRAPH);
+			} else if (keyCode == 0x80) {
+				e.setKeyCode(KeyEvent.VK_OPEN_BRACKET);
+			}
+		}
+
+		private void applyEnglishKeyboardMapping(KeyEvent e, boolean updateKeyboardLabel) {
+			if (updateKeyboardLabel && !keys.equals("English keyboard  ")) {
+				keys = "English keyboard  ";
+				Keys.setLabel(keys);
+			}
+			applyDefaultKeyboardMapping(e);
+		}
+
+		@Override
+		protected void handleMappedKeyPress(KeyEvent e) {
+			int keyCode = e.getKeyCode();
+			// Control keys
+			if (isControlKeysEnabled()) {
+				if (isCtrlDown()) {
+					if (keyCode == KeyEvent.VK_F1) {
+						setCtrlDown(false);
+						loadtitle = "Load DSK file to DF0";
+						computer.setCurrentDrive(0);
+						Switches.askDrive = false;
+						loaddata();
+						computer.setCurrentDrive(0);
+						loadtitle = "Load emulator file";
+						return;
+					} else if (keyCode == KeyEvent.VK_F2) {
+						setCtrlDown(false);
+						loadtitle = "Load DSK file to DF1";
+						computer.setCurrentDrive(1);
+						Switches.askDrive = false;
+						loaddata();
+						computer.setCurrentDrive(0);
+						loadtitle = "Load emulator file";
+						return;
+					} else if (keyCode == KeyEvent.VK_F3) {
+						setCtrlDown(false);
+						loadTape(false);
+						return;
+					} else if (keyCode == KeyEvent.VK_F4) {
+						if (isShiftDown()) {
+							setCtrlDown(false);
+							setShiftDown(false);
+							turboCheck();
+							return;
+						} else {
+							setCtrlDown(false);
+							loadTape(true);
+							return;
+						}
+					} else if (keyCode == KeyEvent.VK_F5) {
+						if (isAltDown()) {
+							setCtrlDown(false);
+							setAltDown(false);
+							new EditIni();
+							return;
+						} else if (!isShiftDown()) {
+							if (!jemu.system.cpc.CPC.tapedeck) {
+								jemu.system.cpc.CPC.TapeDrive.setVisible(true);
+								jemu.system.cpc.CPC.tapedeck = true;
+							} else {
+								jemu.system.cpc.CPC.TapeDrive.setVisible(false);
+								jemu.system.cpc.CPC.tapedeck = false;
+							}
+							setCtrlDown(false);
+							return;
+						}
+					} else if (keyCode == KeyEvent.VK_F6) {
+						setCtrlDown(false);
+						chooseSNA();
+						return;
+					} else if (keyCode == KeyEvent.VK_F9) {
+						setCtrlDown(false);
+						reset();
+						return;
+					} else if (keyCode == KeyEvent.VK_F10) {
+						setCtrlDown(false);
+						optionPanel.OptionPanel();
+						return;
+					} else if (keyCode == KeyEvent.VK_F11) {
+						setCtrlDown(false);
+						screenshot();
+						return;
+					} else if (keyCode == KeyEvent.VK_F12) {
+						setCtrlDown(false);
+						MenuCheck();
+						return;
+					}
+				} else {
+					if (keyCode == KeyEvent.VK_F11) {
+						Autotype.PasteText();
+						return;
+					}
+				}
+				// Key recording
+				if (KeyRec && isCtrlDown()) {
+					if (keyCode == KeyEvent.VK_NUMPAD1) {
+						setCtrlDown(false);
+						System.out.println("keyboard input recording...");
+						computer.stopKeys();
+						computer.recordKeys();
+						return;
+					} else if (keyCode == KeyEvent.VK_NUMPAD2) {
+						setCtrlDown(false);
+						System.out.println("keyboard input stopped...");
+						computer.stopKeys();
+						return;
+					} else if (keyCode == KeyEvent.VK_NUMPAD3) {
+						setCtrlDown(false);
+						System.out.println("keyboard input playing...");
+						computer.stopKeys();
+						computer.playKeys();
+						return;
+					}
+				}
+				// Misc
+				if (keyCode == KeyEvent.VK_ENTER && isAltDown() && executable) {
+					setAltDown(false);
+					FullSize();
+					return;
+				} else if (keyCode == KeyEvent.VK_PAGE_DOWN) {
+					for (int i = 0; i < 4; i++) {
+						computer.setCurrentDrive(i);
+						mediumeject();
+					}
+					computer.setCurrentDrive(0);
+				} else if (keyCode == KeyEvent.VK_PAGE_UP) {
+					Switches.askDrive = true;
+					loaddata();
+				} else if (keyCode == KeyEvent.VK_SCROLL_LOCK) {
+					autosavecheck();
+				} else if (keyCode == KeyEvent.VK_PAUSE) {
+					pauseToggle();
+				} else if (keyCode == KeyEvent.VK_HOME) {
+					romsetter.setRoms();
+				} else if (keyCode == KeyEvent.VK_ESCAPE) {
+					if (dialogsnap) {
+						snaChooser.dispose();
+						computer.start();
+						computer.reSync();
+						dialogsnap = false;
+						return;
+					}
+				} else if (keyCode == KeyEvent.VK_ADD) {
+					applyAlwaysOnTop(false);
+					saveDsk();
+					applyAlwaysOnTop(onTop);
+				}
+			}
+			// Default key handling
+			super.handleMappedKeyPress(e);
+		}
+
+		public boolean isControlKeysEnabled() {
+			return controlKeysEnabled;
+		}
+
+		public void setControlKeysEnabled(boolean controlKeysEnabled) {
+			this.controlKeysEnabled = controlKeysEnabled;
+		}
 
 	}
 
