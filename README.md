@@ -14,7 +14,7 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 
 ## Copyright
 
-*Amstrad PC* is a modified work based on [JavaCPC][1], by Markus Hohmann
+*Amstrad PC* is a modified work of [JavaCPC][1], by Markus Hohmann
 
 *JavaCPC* is based on the original [JEMU][2], by Richard Wilson
  
