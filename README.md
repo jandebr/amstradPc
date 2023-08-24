@@ -1,6 +1,6 @@
 # Amstrad PC
 
-*Amstrad PC* -- A fork of the *JavaCPC* emulator, primarily designed for managing and playing a collection of Basic program files
+*Amstrad PC* -- A fork of the *JavaCPC* emulator with enhancements for managing and playing a collection of Basic program files
 
 This software was created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
 
