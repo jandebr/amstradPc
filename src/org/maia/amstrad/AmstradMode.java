@@ -19,15 +19,15 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	public static final AmstradMode KIOSK = new KioskAmstradMode();
 
-	public static final AmstradMode ORIGINAL = new OriginalAmstradMode();
+	public static final AmstradMode LEGACY = new LegacyAmstradMode();
 
 	public static AmstradMode forName(String name) {
 		if (DEFAULT.getName().equalsIgnoreCase(name)) {
 			return DEFAULT;
 		} else if (KIOSK.getName().equalsIgnoreCase(name)) {
 			return KIOSK;
-		} else if (ORIGINAL.getName().equalsIgnoreCase(name)) {
-			return ORIGINAL;
+		} else if (LEGACY.getName().equalsIgnoreCase(name)) {
+			return LEGACY;
 		} else {
 			return null;
 		}
@@ -49,7 +49,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		getUserSettings().setBool(Settings.FULLSCREEN, false); // implementations can toggle to fullscreen at a later
 																// point in time, but this is a safer setting to prevent
 																// initial 'black screens'
-		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalMenu());
+		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalJemuMenu());
 	}
 
 	protected abstract void doLaunch(String[] args) throws Exception;
@@ -78,11 +78,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	public abstract boolean isFullscreenToggleEnabled();
 
 	/**
-	 * Tells whether the original (Jemu) menu is to be shown
+	 * Tells whether the original Jemu menu is to be shown
 	 * 
-	 * @return <code>true</code> iff the original menu is to be shown
+	 * @return <code>true</code> iff the original Jemu menu is to be shown
 	 */
-	public abstract boolean isUsingOriginalMenu();
+	public abstract boolean isUsingOriginalJemuMenu();
 
 	/**
 	 * Tells whether visual indications for tape activity are to be shown
@@ -142,7 +142,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		}
 
 		@Override
-		public boolean isUsingOriginalMenu() {
+		public boolean isUsingOriginalJemuMenu() {
 			return false;
 		}
 
@@ -188,7 +188,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		}
 
 		@Override
-		public boolean isUsingOriginalMenu() {
+		public boolean isUsingOriginalJemuMenu() {
 			return false;
 		}
 
@@ -199,10 +199,10 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	}
 
-	private static class OriginalAmstradMode extends AmstradMode {
+	private static class LegacyAmstradMode extends AmstradMode {
 
-		public OriginalAmstradMode() {
-			super("ORIGINAL");
+		public LegacyAmstradMode() {
+			super("LEGACY");
 		}
 
 		@Override
@@ -230,7 +230,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		}
 
 		@Override
-		public boolean isUsingOriginalMenu() {
+		public boolean isUsingOriginalJemuMenu() {
 			return true;
 		}
 
