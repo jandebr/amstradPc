@@ -43,7 +43,7 @@ public class ScreenshotAction extends FileChooserAction {
 
 	private void makeScreenshot() {
 		BufferedImage image = getAmstradPc().getMonitor().makeScreenshot(includeMonitorEffect());
-		int returnValue = getFileChooser().showSaveDialog(getDisplayPane());
+		int returnValue = getFileChooser().showSaveDialog(getDisplayComponent());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
 			File file = getSelectedFileWithExtension(".png");

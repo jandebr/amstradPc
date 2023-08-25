@@ -16,7 +16,7 @@ import org.maia.amstrad.gui.overlay.SystemStatsDisplayOverlay;
 import org.maia.amstrad.gui.overlay.TapeDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
-import org.maia.amstrad.pc.impl.jemu.JemuAmstradPc;
+import org.maia.amstrad.pc.impl.jemu.JemuFacadeAmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
@@ -54,7 +54,7 @@ public class AmstradFactory {
 	}
 
 	public AmstradPc createAmstradPc() {
-		JemuAmstradPc amstradPc = new JemuAmstradPc();
+		JemuFacadeAmstradPc amstradPc = new JemuFacadeAmstradPc();
 		amstradPc.getMonitor().setCustomDisplayOverlay(createDisplayOverlay(amstradPc));
 		if (getAmstradContext().isLowPerformance())
 			getAmstradContext().activateLowPerformance(amstradPc);

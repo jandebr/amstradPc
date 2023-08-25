@@ -1,9 +1,9 @@
 package org.maia.amstrad.pc;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -27,9 +27,9 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
-import org.maia.amstrad.util.AmstradUtils;
 
-public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, WindowListener, WindowStateListener {
+public abstract class AmstradPcFrame extends JFrame
+		implements AmstradPcStateListener, WindowListener, WindowStateListener {
 
 	private AmstradPc amstradPc;
 
@@ -37,11 +37,7 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	private boolean closing;
 
-	public AmstradPcFrame(AmstradPc amstradPc, boolean exitOnClose) {
-		this(amstradPc, "JavaCPC - Amstrad CPC Emulator", exitOnClose);
-	}
-
-	public AmstradPcFrame(AmstradPc amstradPc, String title, boolean exitOnClose) {
+	protected AmstradPcFrame(AmstradPc amstradPc, String title, boolean exitOnClose) {
 		super(title);
 		this.amstradPc = amstradPc;
 		amstradPc.addStateListener(this);
@@ -50,12 +46,10 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		setFocusable(false);
 		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
 		setIconImage(UIResources.cpcIcon.getImage());
-		buildUI();
+		getContentPane().add(getContentComponent(), BorderLayout.CENTER);
 	}
 
-	protected void buildUI() {
-		getContentPane().add(getAmstradPc().getMonitor().getDisplayPane(), BorderLayout.CENTER);
-	}
+	protected abstract Component getContentComponent();
 
 	public void installMenuBar() {
 		AmstradPcMenuMaker menuMaker = new AmstradPcMenuMaker(getAmstradPc().getActions(),
@@ -111,13 +105,6 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		setLocation((screen.width - size.width) / 2, (screen.height - size.height) / 2);
 	}
 
-	private boolean extendsOutsideScreen() {
-		Dimension screen = getScreenSize();
-		Dimension size = getSize();
-		Point loc = getLocationOnScreen();
-		return loc.x < 0 || loc.y < 0 || loc.x + size.width > screen.width || loc.y + size.height > screen.height;
-	}
-
 	public boolean isFullscreen() {
 		return getAmstradPc().getMonitor().isWindowFullscreen();
 	}
@@ -129,16 +116,6 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
 		setVisible(true);
-		AmstradMonitor monitor = amstradPc.getMonitor();
-		if (monitor.isWindowFullscreen()) {
-			// Force full screen as it is not consistently working
-			if (monitor.getDisplayPane().getLocationOnScreen().getX() != 0) {
-				System.out.println("Force center display on screen");
-				monitor.toggleWindowFullscreen();
-				monitor.toggleWindowFullscreen();
-			}
-		}
-		new MonitorDisplayUltimateCenterer().start(); // final check and attempts
 	}
 
 	@Override
@@ -216,8 +193,8 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 		}
 	}
 
-	private void refreshUI() {
-		getAmstradPc().getMonitor().getDisplayPane().revalidate();
+	protected void refreshUI() {
+		getContentComponent().revalidate();
 	}
 
 	public AmstradPc getAmstradPc() {
@@ -238,36 +215,6 @@ public class AmstradPcFrame extends JFrame implements AmstradPcStateListener, Wi
 
 	private void setClosing(boolean closing) {
 		this.closing = closing;
-	}
-
-	private class MonitorDisplayUltimateCenterer extends Thread {
-
-		public MonitorDisplayUltimateCenterer() {
-			super("MonitorDisplayUltimateCenterer");
-			setDaemon(true);
-		}
-
-		@Override
-		public void run() {
-			AmstradUtils.sleep(1000L);
-			AmstradMonitor monitor = getAmstradPc().getMonitor();
-			if (monitor.isWindowFullscreen()) {
-				JComponent displayComp = monitor.getDisplayComponent();
-				int expectedX = (getScreenSize().width - displayComp.getWidth()) / 2;
-				int attempts = 0;
-				while (Math.abs(displayComp.getLocationOnScreen().x - expectedX) > 2 && ++attempts <= 3) {
-					System.out.println("Ultimate center display on screen");
-					monitor.toggleWindowFullscreen();
-					monitor.toggleWindowFullscreen();
-					AmstradUtils.sleep(500L);
-				}
-				System.out.println("Display is centered fullscreen");
-			} else if (extendsOutsideScreen()) {
-				centerOnScreen();
-				System.out.println("Display is centered on screen");
-			}
-		}
-
 	}
 
 	private class PopupMenuFullscreenActivator extends AmstradMonitorAdapter {

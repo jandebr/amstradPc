@@ -36,13 +36,15 @@ public abstract class AmstradPc {
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
 		checkNotTerminated();
-		AmstradPcFrame frame = new AmstradPcFrame(this, exitOnClose);
+		AmstradPcFrame frame = createFrame(exitOnClose);
 		setFrame(frame);
 		if (isStarted()) {
 			frame.amstradPcStarted(this);
 		}
 		return frame;
 	}
+
+	protected abstract AmstradPcFrame createFrame(boolean exitOnClose);
 
 	public void showActionableDialog(ActionableDialog dialog) {
 		dialog.setVisible(true);
@@ -71,6 +73,10 @@ public abstract class AmstradPc {
 	public abstract void save(AmstradPcSnapshotFile snapshotFile) throws IOException;
 
 	public abstract boolean isStarted();
+
+	public boolean isRunning() {
+		return isStarted() && !isTerminated() && !isPaused();
+	}
 
 	public abstract boolean isPaused();
 
@@ -139,6 +145,11 @@ public abstract class AmstradPc {
 			throw new IllegalStateException("This Amstrad PC was terminated");
 	}
 
+	protected void checkStartedNotTerminated() {
+		checkStarted();
+		checkNotTerminated();
+	}
+
 	public void addStateListener(AmstradPcStateListener listener) {
 		getStateListeners().addListener(listener);
 	}
@@ -185,7 +196,7 @@ public abstract class AmstradPc {
 			listener.amstradPcProgramLoaded(this);
 	}
 
-	protected void fireDisplayPerformanceUpdate(long timeIntervalMillis, int framesPainted, int framesSkipped) {
+	public void fireDisplayPerformanceUpdate(long timeIntervalMillis, int framesPainted, int framesSkipped) {
 		for (AmstradPcPerformanceListener listener : getPerformanceListeners())
 			listener.displayPerformanceUpdate(this, timeIntervalMillis, framesPainted, framesSkipped);
 	}

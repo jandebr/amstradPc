@@ -21,7 +21,7 @@ public class AutoTypeFileAction extends FileChooserAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		int returnValue = getFileChooser().showOpenDialog(getDisplayPane());
+		int returnValue = getFileChooser().showOpenDialog(getDisplayComponent());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
 			runInSeparateThread(new Runnable() {

@@ -216,11 +216,14 @@ public class Display extends JComponent {
 	private DisplayOverlay customDisplayOverlay;
 	private DisplayOverlay systemDisplayOverlay; // draws above custom
 
+	private List<DisplayPaintListener> displayPaintListeners;
 	private List<PrimaryDisplaySourceListener> primaryDisplaySourceListeners;
+
 	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
 
 	public Display() {
 		setupDisplayOverlays();
+		displayPaintListeners = new Vector<DisplayPaintListener>();
 		primaryDisplaySourceListeners = new Vector<PrimaryDisplaySourceListener>();
 		InputStream in = getClass().getResourceAsStream("amstrad.ttf");
 		try {
@@ -271,6 +274,7 @@ public class Display extends JComponent {
 		if (displaySource != null) {
 			displaySource.init(this);
 			setSecondaryDisplaySource(displaySource);
+			updateImage(false);
 		}
 	}
 
@@ -279,6 +283,7 @@ public class Display extends JComponent {
 		if (displaySource != null) {
 			setSecondaryDisplaySource(null);
 			displaySource.dispose(this);
+			updateImage(false);
 		}
 	}
 
@@ -663,7 +668,7 @@ public class Display extends JComponent {
 			paintImage(g, false, monitorEffect);
 		}
 		painted = true;
-		JEMU.doupdate.setSelected(true);
+		notifyDisplayGotPainted();
 	}
 
 	public BufferedImage getImage(boolean monitorEffect) {
@@ -792,6 +797,24 @@ public class Display extends JComponent {
 		secondaryDisplaySource = displaySource;
 	}
 
+	public void addDisplayPaintListener(DisplayPaintListener listener) {
+		getDisplayPaintListeners().add(listener);
+	}
+
+	public void removeDisplayPaintListener(DisplayPaintListener listener) {
+		getDisplayPaintListeners().remove(listener);
+	}
+
+	private List<DisplayPaintListener> getDisplayPaintListeners() {
+		return displayPaintListeners;
+	}
+
+	private void notifyDisplayGotPainted() {
+		for (DisplayPaintListener listener : getDisplayPaintListeners()) {
+			listener.displayGotPainted(this);
+		}
+	}
+
 	public void addPrimaryDisplaySourceListener(PrimaryDisplaySourceListener listener) {
 		getPrimaryDisplaySourceListeners().add(listener);
 	}
@@ -808,6 +831,12 @@ public class Display extends JComponent {
 		for (PrimaryDisplaySourceListener listener : getPrimaryDisplaySourceListeners()) {
 			listener.primaryDisplaySourceResolutionChanged(this, resolution);
 		}
+	}
+
+	public static interface DisplayPaintListener {
+
+		void displayGotPainted(Display display);
+
 	}
 
 	public static interface PrimaryDisplaySourceListener {

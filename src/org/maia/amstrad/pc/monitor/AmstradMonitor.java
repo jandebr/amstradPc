@@ -1,6 +1,5 @@
 package org.maia.amstrad.pc.monitor;
 
-import java.awt.Component;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
@@ -26,8 +25,6 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	}
 
 	public abstract AmstradGraphicsContext getGraphicsContext();
-
-	public abstract Component getDisplayPane();
 
 	public abstract JComponent getDisplayComponent();
 

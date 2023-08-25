@@ -20,7 +20,7 @@ public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		int returnValue = getFileChooser().showSaveDialog(getDisplayPane());
+		int returnValue = getFileChooser().showSaveDialog(getDisplayComponent());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			if (checkFileOutputDestination(getSelectedFile())) {
 				updateCurrentDirectoryFromSelectedFile();

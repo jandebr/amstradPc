@@ -102,11 +102,12 @@ import jemu.settings.Settings;
 import jemu.system.cpc.CPCPrinter;
 import jemu.system.cpc.GateArray;
 import jemu.system.cpc.RomSetter;
+import jemu.ui.Display.DisplayPaintListener;
 import jemu.ui.gfx.AnimatedGifEncoder;
 import jemu.util.hexeditor.HexEditor;
 
 public class JEMU extends Applet implements KeyListener, MouseListener, ItemListener, ActionListener, FocusListener,
-		Runnable, DriveListener, MouseMotionListener {
+		Runnable, DriveListener, MouseMotionListener, DisplayPaintListener {
 
 	public static String version = "6.6";
 	protected boolean useConsole = true;
@@ -122,7 +123,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	protected boolean isbackground;
 	JInternalFrame intern = new JInternalFrame(null);
 	int updateP = 0;
-	public static JCheckBox doupdate = new JCheckBox("update");
 	public static JCheckBox debugthis = new JCheckBox("update");
 	protected static int screenXstored, screenYstored;
 	protected int flasher;
@@ -1252,8 +1252,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			intern.setMaximum(true);
 		} catch (Exception m) {
 		}
-		doupdate.addItemListener(this);
-
+		display.addDisplayPaintListener(this);
 	}
 
 	public boolean isStarted() {
@@ -1854,10 +1853,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void writeByteToUnmappedMemory(int memoryAddress, byte value) {
 		computer.writeByteToUnmappedMemory(memoryAddress, value);
-	}
-
-	public void writeBytesToUnmappedMemory(int memoryOffset, byte[] data) {
-		writeBytesToUnmappedMemory(memoryOffset, data, 0, data.length);
 	}
 
 	public void writeBytesToUnmappedMemory(int memoryOffset, byte[] data, int dataOffset, int dataLength) {
@@ -2813,14 +2808,15 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		LoadFiles();
 	}
 
+	@Override
+	public void displayGotPainted(Display display) {
+		update();
+	}
+
 	public void itemStateChanged(final ItemEvent e) {
 		if (e.getSource() == debugthis) {
 			debugthis.setSelected(false);
 			showDebugger();
-		}
-		if (e.getSource() == doupdate) {
-			update();
-			doupdate.setSelected(false);
 		}
 		if (e.getSource() == autocheck) {
 			Settings.setBoolean(Settings.AUTOCHECK, autocheck.getState());
@@ -3599,7 +3595,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			togglesize = true;
 			fullscreen = false;
 			Settings.setBoolean(Settings.FULLSCREEN, false);
-
 		}
 		getFrameAdapter().setVisible(true);
 		setOutputSize();

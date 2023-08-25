@@ -30,11 +30,11 @@ public abstract class AmstradPcAction extends AbstractAction
 	}
 
 	protected void showInfoMessageDialog(String dialogMessage) {
-		JOptionPane.showMessageDialog(getDisplayPane(), dialogMessage);
+		JOptionPane.showMessageDialog(getDisplayComponent(), dialogMessage);
 	}
 
 	protected void showErrorMessageDialog(String dialogTitle, String dialogMessage) {
-		JOptionPane.showMessageDialog(getDisplayPane(), dialogMessage, dialogTitle, JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(getDisplayComponent(), dialogMessage, dialogTitle, JOptionPane.ERROR_MESSAGE);
 	}
 
 	protected void showErrorMessageDialog(String dialogTitle, String dialogMessage, Exception error) {
@@ -65,8 +65,8 @@ public abstract class AmstradPcAction extends AbstractAction
 		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
-	protected Component getDisplayPane() {
-		return getAmstradPc().getMonitor().getDisplayPane();
+	protected Component getDisplayComponent() {
+		return getAmstradPc().getMonitor().getDisplayComponent();
 	}
 
 	public AmstradPc getAmstradPc() {
