@@ -43,14 +43,21 @@ public class WindowFullscreenAction extends AmstradPcAction {
 	@Override
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
-		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F11) {
-			toggleFullscreen();
+		if (!isTriggeredByMenuKeyBindings()) {
+			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F11) {
+				toggleFullscreen();
+			}
 		}
 	}
 
 	private void toggleFullscreen() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().toggleWindowFullscreen();
+			runInSeparateThread(new Runnable() {
+				@Override
+				public void run() {
+					getAmstradPc().getMonitor().toggleWindowFullscreen();
+				}
+			});
 		}
 	}
 

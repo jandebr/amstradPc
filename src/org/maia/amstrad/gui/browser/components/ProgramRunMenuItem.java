@@ -2,14 +2,14 @@ package org.maia.amstrad.gui.browser.components;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
-import org.maia.amstrad.load.AmstradProgramLoader;
-import org.maia.amstrad.load.AmstradProgramLoaderFactory;
-import org.maia.amstrad.load.AmstradProgramRuntime;
-import org.maia.amstrad.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
 import org.maia.amstrad.program.AmstradProgramType;
+import org.maia.amstrad.program.load.AmstradProgramLoader;
+import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
+import org.maia.amstrad.program.load.AmstradProgramRuntime;
+import org.maia.amstrad.program.load.basic.staged.EndingBasicAction;
 
 public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 

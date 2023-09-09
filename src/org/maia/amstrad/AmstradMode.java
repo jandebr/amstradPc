@@ -48,7 +48,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	protected void overrideSettingsBeforeLaunch() {
 		getUserSettings().setBool(Settings.FULLSCREEN, false); // implementations can toggle to fullscreen at a later
 																// point in time, but this is a safer setting to prevent
-																// initial 'black screens'
+																// initial 'black screens' with JEMU
 		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalJemuMenu());
 	}
 
@@ -119,8 +119,8 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		protected void doLaunch(String[] args) throws AmstradProgramException {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
-			frame.installMenuBar();
-			frame.installPopupMenu(true);
+			frame.installAndEnableMenuBar();
+			frame.installAndEnablePopupMenu(true);
 			if (args.length == 0) {
 				amstradPc.start();
 			} else if (args.length == 1) {
@@ -165,9 +165,9 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			AmstradMonitor monitor = amstradPc.getMonitor();
 			monitor.setMonitorMode(AmstradMonitorMode.COLOR);
 			monitor.setWindowAlwaysOnTop(true);
-			amstradPc.addStateListener(this);
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
-			frame.installPopupMenu(false);
+			frame.installAndEnablePopupMenu(false);
+			amstradPc.addStateListener(this);
 			amstradPc.start();
 		}
 
@@ -207,7 +207,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		protected void doLaunch(String[] args) throws AmstradProgramException {
-			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
+			AmstradPc amstradPc = getAmstradFactory().createJemuLegacyAmstradPc();
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			if (args.length == 0) {
 				amstradPc.start();

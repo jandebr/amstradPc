@@ -25,9 +25,11 @@ public class RebootAction extends AmstradPcAction {
 	@Override
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
-		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_R && event.isControlDown()
-				&& event.isShiftDown()) {
-			reboot();
+		if (!isTriggeredByMenuKeyBindings()) {
+			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_R && event.isControlDown()
+					&& event.isShiftDown()) {
+				reboot();
+			}
 		}
 	}
 

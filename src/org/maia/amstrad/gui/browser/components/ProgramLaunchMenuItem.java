@@ -1,11 +1,11 @@
 package org.maia.amstrad.gui.browser.components;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.load.AmstradProgramLoader;
-import org.maia.amstrad.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
+import org.maia.amstrad.program.load.AmstradProgramLoader;
+import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
 
 public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 

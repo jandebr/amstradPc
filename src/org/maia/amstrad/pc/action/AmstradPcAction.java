@@ -69,6 +69,10 @@ public abstract class AmstradPcAction extends AbstractAction
 		return getAmstradPc().getMonitor().getDisplayComponent();
 	}
 
+	protected boolean isTriggeredByMenuKeyBindings() {
+		return getAmstradPc().getFrame() != null && getAmstradPc().getFrame().isMenuKeyBindingsEnabled();
+	}
+
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}

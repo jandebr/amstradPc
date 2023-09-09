@@ -65,8 +65,8 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 		int lineHeight = fm.getHeight();
 		int boxHeight = lines.size() * lineHeight;
 		int boxWidth = computeBoxWidth(lines, fm);
-		int xcenter = displayBounds.width / 2;
-		int ytop = Math.min(monitorInsets.top, displayBounds.height / 17);
+		int xcenter = displayBounds.x + displayBounds.width / 2;
+		int ytop = displayBounds.y + Math.min(monitorInsets.top, displayBounds.height / 17);
 		display.setColor(BOX_COLOR);
 		display.fillRect(xcenter - boxWidth / 2, ytop - 4, boxWidth, boxHeight + 6);
 		// Lines

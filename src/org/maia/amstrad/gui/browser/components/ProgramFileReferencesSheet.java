@@ -8,11 +8,11 @@ import java.util.Vector;
 
 import org.maia.amstrad.gui.components.ColoredTextLine;
 import org.maia.amstrad.gui.components.ColoredTextSpan;
-import org.maia.amstrad.load.basic.staged.file.DiscoveredFileReference;
-import org.maia.amstrad.load.basic.staged.file.FileReferenceDiscoveryService;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
+import org.maia.amstrad.program.load.basic.staged.file.DiscoveredFileReference;
+import org.maia.amstrad.program.load.basic.staged.file.FileReferenceDiscoveryService;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.util.StringUtils;
 

@@ -39,8 +39,10 @@ public class PauseResumeAction extends AmstradPcAction {
 	@Override
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
-		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_PAUSE) {
-			togglePauseResume();
+		if (!isTriggeredByMenuKeyBindings()) {
+			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_PAUSE) {
+				togglePauseResume();
+			}
 		}
 	}
 

@@ -704,7 +704,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	@Override
 	public void start() {
-
 		debugthis.addItemListener(this);
 		useURL = false;
 		useURL = Util.getBoolean(getParameter("URL", "false"));
@@ -2047,10 +2046,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 	}
 
-	public void alwaysOnTopCheck() {
-		applyAlwaysOnTop(onTop);
-	}
-
 	public void setAlwaysOnTop(boolean alwaysOnTop) {
 		if (executable && onTop != alwaysOnTop) {
 			onTop = alwaysOnTop;
@@ -2131,71 +2126,70 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 		try {
 			// if (computer == null || !name.equalsIgnoreCase(computer.getName())) {
-			{
-				compsys = name;
-				Computer newComputer = Computer.createComputer(this, name);
-				if (computer != null) {
-					Drive[] floppies = computer.getFloppyDrives();
-					if (floppies != null)
-						for (int i = 0; i < floppies.length; i++)
-							if (floppies[i] != null)
-								floppies[i].setActiveListener(null);
-					for (ComputerKeyboardListener listener : computer.getKeyboardListeners()) {
-						computer.removeKeyboardListener(listener);
-						newComputer.addKeyboardListener(listener);
-					}
-					for (ComputerPerformanceListener listener : computer.getPerformanceListeners()) {
-						computer.removePerformanceListener(listener);
-						newComputer.addPerformanceListener(listener);
-					}
-					for (MemoryWriteObserver observer : computer.getMemoryWriteObservers()) {
-						computer.removeMemoryWriteObserver(observer);
-						newComputer.addMemoryWriteObserver(observer);
-					}
-					computer.dispose();
-					computer = null;
-					Runtime runtime = Runtime.getRuntime();
-					runtime.gc();
-					runtime.runFinalization();
-					runtime.gc();
-					System.out.println("Computer Disposed");
-				}
-				computer = newComputer;
-				keyDispatcher.changeDestination(newComputer);
-				Settings.set(Settings.SYSTEM, name);
-				setFullSize(large);
-				computer.start();
-				computer.initialise();
+			compsys = name;
+			Computer newComputer = Computer.createComputer(this, name);
+			if (computer != null) {
 				Drive[] floppies = computer.getFloppyDrives();
 				if (floppies != null)
 					for (int i = 0; i < floppies.length; i++)
 						if (floppies[i] != null)
-							floppies[i].setActiveListener(this);
-				// this.jcbImage.removeAllItems();
-				// this.jcbDrive.removeAllItems();
-				gotGames = false;
-				// try {
-				// Vector files = computer.getFiles();
-				/*
-				 * for (int i = 0; i < files.size(); i++) { this.jcbImage.addItem(files.elementAt(i)); }
-				 * this.jcbImage.setSelectedIndex(-1);
-				 */
-				// } finally {
-				// gotGames = true;
-				// }
-
-				/*
-				 * final Vector floppydrives = getDrives(); for (int i = 0; i < floppydrives.size(); i++) {
-				 * this.jcbDrive.addItem(floppydrives.elementAt(i)); } if (Switches.computersys == 0) {
-				 * this.jcbDrive.setSelectedIndex(-1); } else { this.jcbDrive.setSelectedIndex(0); }
-				 */
-				if (debugger != null)
-					debugger.setComputer(computer);
-				if (start)
-					computer.start();
+							floppies[i].setActiveListener(null);
+				for (ComputerKeyboardListener listener : computer.getKeyboardListeners()) {
+					computer.removeKeyboardListener(listener);
+					newComputer.addKeyboardListener(listener);
+				}
+				for (ComputerPerformanceListener listener : computer.getPerformanceListeners()) {
+					computer.removePerformanceListener(listener);
+					newComputer.addPerformanceListener(listener);
+				}
+				for (MemoryWriteObserver observer : computer.getMemoryWriteObservers()) {
+					computer.removeMemoryWriteObserver(observer);
+					newComputer.addMemoryWriteObserver(observer);
+				}
+				computer.dispose();
+				computer = null;
+				Runtime runtime = Runtime.getRuntime();
+				runtime.gc();
+				runtime.runFinalization();
+				runtime.gc();
+				System.out.println("Computer Disposed");
 			}
-			showDevices();
+			computer = newComputer;
+			keyDispatcher.changeDestination(newComputer);
+			Settings.set(Settings.SYSTEM, name);
+			setFullSize(large);
+			computer.start();
+			computer.initialise();
+			Drive[] floppies = computer.getFloppyDrives();
+			if (floppies != null)
+				for (int i = 0; i < floppies.length; i++)
+					if (floppies[i] != null)
+						floppies[i].setActiveListener(this);
+			// this.jcbImage.removeAllItems();
+			// this.jcbDrive.removeAllItems();
+			gotGames = false;
+			// try {
+			// Vector files = computer.getFiles();
+			/*
+			 * for (int i = 0; i < files.size(); i++) { this.jcbImage.addItem(files.elementAt(i)); }
+			 * this.jcbImage.setSelectedIndex(-1);
+			 */
+			// } finally {
+			// gotGames = true;
+			// }
+
+			/*
+			 * final Vector floppydrives = getDrives(); for (int i = 0; i < floppydrives.size(); i++) {
+			 * this.jcbDrive.addItem(floppydrives.elementAt(i)); } if (Switches.computersys == 0) {
+			 * this.jcbDrive.setSelectedIndex(-1); } else { this.jcbDrive.setSelectedIndex(0); }
+			 */
+			if (debugger != null)
+				debugger.setComputer(computer);
+			if (start)
+				computer.start();
+			computer.showDevices();
 		} catch (Exception p) {
+			p.printStackTrace();
 		}
 	}
 
@@ -4944,15 +4938,6 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				computer.start();
 				computer.reSync();
 			}
-		}
-	}
-
-	public void showDevices() {
-		final Vector devices = computer.getDevices();
-		final int n = devices.size();
-		for (int i = 0; i < n; i++) {
-			final Object device = devices.get(i);
-			System.out.println("Device connected: " + device);
 		}
 	}
 

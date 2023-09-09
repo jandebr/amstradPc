@@ -2,10 +2,10 @@ package org.maia.amstrad.gui.browser.components;
 
 import java.util.Collection;
 
-import org.maia.amstrad.load.basic.staged.file.DiscoveredFileReference;
-import org.maia.amstrad.load.basic.staged.file.FileReferenceDiscoveryService;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.load.basic.staged.file.DiscoveredFileReference;
+import org.maia.amstrad.program.load.basic.staged.file.FileReferenceDiscoveryService;
 
 public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 

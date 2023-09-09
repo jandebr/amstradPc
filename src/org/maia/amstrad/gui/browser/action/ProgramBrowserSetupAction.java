@@ -25,9 +25,11 @@ public class ProgramBrowserSetupAction extends ActionableDialogAction {
 	@Override
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
-		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_B && event.isControlDown()
-				&& event.isShiftDown()) {
-			openDialog();
+		if (!isTriggeredByMenuKeyBindings()) {
+			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_B && event.isControlDown()
+					&& event.isShiftDown()) {
+				openDialog();
+			}
 		}
 	}
 

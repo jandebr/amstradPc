@@ -9,7 +9,7 @@ public class MonitorMask {
 	/**
 	 * The image can be of any size and will be scaled accordingly.
 	 * <p>
-	 * A typical base image size is 704x544 pixels
+	 * A typical base image size is 768x544 pixels
 	 * </p>
 	 */
 	private Image image;

@@ -104,8 +104,9 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		Font font = getFont(graphicsContext);
 		int barWidth = displayBounds.width - monitorInsets.left - monitorInsets.right;
 		int barHeight = display.getFontMetrics(font).getHeight() * 3;
-		int barTop = displayBounds.height - Math.min(monitorInsets.bottom, displayBounds.height / 17) - barHeight;
-		Graphics2D g2 = (Graphics2D) display.create(monitorInsets.left, barTop, barWidth, barHeight);
+		int barTop = displayBounds.y + displayBounds.height - Math.min(monitorInsets.bottom, displayBounds.height / 17)
+				- barHeight;
+		Graphics2D g2 = (Graphics2D) display.create(displayBounds.x + monitorInsets.left, barTop, barWidth, barHeight);
 		g2.setFont(font);
 		renderControlKeysBar(g2, barWidth, barHeight);
 		g2.dispose();

@@ -22,12 +22,10 @@ import org.maia.amstrad.util.AmstradUtils;
 
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
-import jemu.ui.Autotype;
 import jemu.ui.Display;
 import jemu.ui.FrameAdapter;
 import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
-import jemu.ui.Switches;
 
 public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener {
 
@@ -69,52 +67,33 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
 		AmstradPcFrame frame = super.displayInFrame(exitOnClose);
 		getFrameBridge().setFrame(frame);
-		getJemuInstance().alwaysOnTopCheck();
 		return frame;
 	}
 
 	@Override
-	public void start(boolean waitUntilReady, boolean silent) {
-		boolean floppySound = false;
-		synchronized (this) {
-			checkNoInstanceRunning();
-			checkNotStarted();
-			checkNotTerminated();
-			floppySound = Switches.FloppySound;
-			if (silent)
-				Switches.FloppySound = false;
-			JEMU jemu = getJemuInstance();
-			jemu.init();
-			jemu.start();
-			jemu.addPauseListener(this);
-			jemu.addComputerPerformanceListener(this);
-			jemu.getDisplay().addPrimaryDisplaySourceListener(this);
-			getGraphicsContext().setPrimaryDisplaySourceResolution(
-					new Dimension(jemu.getDisplay().getImageWidth(), jemu.getDisplay().getImageHeight()));
-			getFrameBridge().pack();
-			getMemoryTrapProcessor().start();
-			setStarted(true);
-			JemuAmstradPc.setInstanceRunning(true);
-			fireStartedEvent();
-		}
-		if (waitUntilReady)
-			waitUntilBasicRuntimeReady();
-		if (silent)
-			Switches.FloppySound = floppySound;
+	protected void doStart() {
+		System.out.println("Starting Jemu FACADE pc");
+		JEMU jemu = getJemuInstance();
+		jemu.init();
+		jemu.start();
+		jemu.addPauseListener(this);
+		jemu.addComputerPerformanceListener(this);
+		Display display = jemu.getDisplay();
+		display.addPrimaryDisplaySourceListener(this);
+		primaryDisplaySourceResolutionChanged(display,
+				new Dimension(display.getImageWidth(), display.getImageHeight()));
+		getFrameBridge().pack();
+		System.out.println("Started Jemu FACADE pc");
 	}
 
 	@Override
-	public synchronized void reboot(boolean waitUntilReady, boolean silent) {
-		checkStartedNotTerminated();
-		boolean floppySound = Switches.FloppySound;
-		if (silent)
-			Switches.FloppySound = false;
+	protected void doReboot() {
 		getJemuInstance().reBoot();
-		fireRebootingEvent();
-		if (waitUntilReady)
-			waitUntilBasicRuntimeReady();
-		if (silent)
-			Switches.FloppySound = floppySound;
+	}
+
+	@Override
+	protected void doTerminate() {
+		getJemuInstance().quit();
 	}
 
 	@Override
@@ -145,23 +124,6 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 			firePausingEvent();
 		} else {
 			fireResumingEvent();
-		}
-	}
-
-	@Override
-	public synchronized void terminate() {
-		if (!isTerminated()) {
-			if (isStarted()) {
-				Autotype.clearText();
-				getJemuInstance().quit();
-				getMemoryTrapProcessor().stopProcessing();
-				if (getMonitor().isAlternativeDisplaySourceShowing()) {
-					getMonitor().resetDisplaySource();
-				}
-			}
-			setTerminated(true);
-			setInstanceRunning(false);
-			fireTerminatedEvent();
 		}
 	}
 
@@ -202,6 +164,12 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 				}
 			}
 			new MonitorDisplayUltimateCenterer().start(); // final check and attempts
+		}
+
+		@Override
+		public final boolean isMenuKeyBindingsEnabled() {
+			// Key bindings on menu items are not enabled through JEMU instance
+			return false;
 		}
 
 		@Override
@@ -511,27 +479,27 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 		}
 
 		@Override
-		protected void changeMonitorModeToColour() {
+		protected void applyMonitorModeColour() {
 			getJemuInstance().changeMonitorModeToColour();
 		}
 
 		@Override
-		protected void changeMonitorModeToGreen() {
+		protected void applyMonitorModeGreen() {
 			getJemuInstance().changeMonitorModeToGreen();
 		}
 
 		@Override
-		protected void changeMonitorModeToGray() {
+		protected void applyMonitorModeGray() {
 			getJemuInstance().changeMonitorModeToGray();
 		}
 
 		@Override
-		protected void toggleToFullscreen() {
+		protected void applyFullscreen() {
 			getJemuInstance().FullSize();
 		}
 
 		@Override
-		protected void toggleToWindowed() {
+		protected void applyWindowed() {
 			getJemuInstance().FullSize();
 		}
 

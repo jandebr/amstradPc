@@ -40,9 +40,11 @@ public class AudioAction extends AmstradPcAction {
 	@Override
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
-		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_A && event.isControlDown()
-				&& !event.isShiftDown()) {
-			toggleAudio();
+		if (!isTriggeredByMenuKeyBindings()) {
+			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_A && event.isControlDown()
+					&& !event.isShiftDown()) {
+				toggleAudio();
+			}
 		}
 	}
 

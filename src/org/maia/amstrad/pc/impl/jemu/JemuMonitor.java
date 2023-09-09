@@ -41,22 +41,26 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	public final void setMonitorMode(AmstradMonitorMode mode) {
 		checkNotTerminated();
 		if (mode != null && !mode.equals(getMonitorMode())) {
-			if (AmstradMonitorMode.COLOR.equals(mode)) {
-				changeMonitorModeToColour();
-			} else if (AmstradMonitorMode.GREEN.equals(mode)) {
-				changeMonitorModeToGreen();
-			} else if (AmstradMonitorMode.GRAY.equals(mode)) {
-				changeMonitorModeToGray();
-			}
+			applyMonitorMode(mode);
 			fireMonitorModeChangedEvent();
 		}
 	}
 
-	protected abstract void changeMonitorModeToColour();
+	protected void applyMonitorMode(AmstradMonitorMode mode) {
+		if (AmstradMonitorMode.COLOR.equals(mode)) {
+			applyMonitorModeColour();
+		} else if (AmstradMonitorMode.GREEN.equals(mode)) {
+			applyMonitorModeGreen();
+		} else if (AmstradMonitorMode.GRAY.equals(mode)) {
+			applyMonitorModeGray();
+		}
+	}
 
-	protected abstract void changeMonitorModeToGreen();
+	protected abstract void applyMonitorModeColour();
 
-	protected abstract void changeMonitorModeToGray();
+	protected abstract void applyMonitorModeGreen();
+
+	protected abstract void applyMonitorModeGray();
 
 	@Override
 	public boolean isMonitorEffectOn() {
@@ -113,16 +117,16 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 		checkStarted();
 		checkNotTerminated();
 		if (isWindowFullscreen()) {
-			toggleToWindowed();
+			applyWindowed();
 		} else {
-			toggleToFullscreen();
+			applyFullscreen();
 		}
 		fireWindowFullscreenChangedEvent();
 	}
 
-	protected abstract void toggleToFullscreen();
+	protected abstract void applyFullscreen();
 
-	protected abstract void toggleToWindowed();
+	protected abstract void applyWindowed();
 
 	@Override
 	public boolean isWindowAlwaysOnTop() {

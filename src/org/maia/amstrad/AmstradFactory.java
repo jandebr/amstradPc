@@ -16,6 +16,7 @@ import org.maia.amstrad.gui.overlay.SystemStatsDisplayOverlay;
 import org.maia.amstrad.gui.overlay.TapeDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
+import org.maia.amstrad.pc.impl.jemu.JemuDirectAmstradPc;
 import org.maia.amstrad.pc.impl.jemu.JemuFacadeAmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
@@ -30,7 +31,10 @@ import org.maia.amstrad.program.repo.file.BasicProgramFileRepository;
 import org.maia.amstrad.program.repo.rename.RenamingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.search.SearchingAmstradProgramRepository;
 
+import jemu.core.device.Computer;
+import jemu.settings.Settings;
 import jemu.ui.Console;
+import jemu.ui.Display;
 
 public class AmstradFactory {
 
@@ -54,14 +58,43 @@ public class AmstradFactory {
 	}
 
 	public AmstradPc createAmstradPc() {
-		JemuFacadeAmstradPc amstradPc = new JemuFacadeAmstradPc();
-		amstradPc.getMonitor().setCustomDisplayOverlay(createDisplayOverlay(amstradPc));
+		return createJemuAmstradPc();
+	}
+
+	public AmstradPc createJemuAmstradPc() {
+		Computer computer = createJemuComputer();
+		Display display = createJemuDisplay();
+		return customizeAmstradPc(new JemuDirectAmstradPc(computer, display));
+	}
+
+	public AmstradPc createJemuLegacyAmstradPc() {
+		return customizeAmstradPc(new JemuFacadeAmstradPc());
+	}
+
+	private Computer createJemuComputer() {
+		Computer computer = null;
+		String computerSystem = Settings.get(Settings.SYSTEM, "CPC464");
+		try {
+			computer = Computer.createComputer(null, computerSystem);
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+		return computer;
+	}
+
+	private Display createJemuDisplay() {
+		boolean doubleBuffered = true;
+		return new Display(doubleBuffered);
+	}
+
+	private AmstradPc customizeAmstradPc(AmstradPc amstradPc) {
+		amstradPc.getMonitor().setCustomDisplayOverlay(createCustomDisplayOverlay(amstradPc));
 		if (getAmstradContext().isLowPerformance())
 			getAmstradContext().activateLowPerformance(amstradPc);
 		return amstradPc;
 	}
 
-	private AmstradDisplayOverlay createDisplayOverlay(AmstradPc amstradPc) {
+	private AmstradDisplayOverlay createCustomDisplayOverlay(AmstradPc amstradPc) {
 		StackedDisplayOverlay overlay = new StackedDisplayOverlay();
 		overlay.addOverlay(new PauseDisplayOverlay(amstradPc), 1);
 		overlay.addOverlay(new AutotypeDisplayOverlay(amstradPc), 1);

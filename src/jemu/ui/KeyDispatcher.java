@@ -276,9 +276,18 @@ public class KeyDispatcher implements KeyListener {
 				e.getKeyChar(), e.getKeyLocation());
 	}
 
-	private String formatKeyEvent(KeyEvent e) {
+	public static String formatKeyEvent(KeyEvent e) {
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("KeyEvent");
+		if (e.getID() == KeyEvent.KEY_PRESSED) {
+			sb.append(" pressed");
+		} else if (e.getID() == KeyEvent.KEY_RELEASED) {
+			sb.append(" released");
+		} else if (e.getID() == KeyEvent.KEY_TYPED) {
+			sb.append(" typed");
+		} else {
+			sb.append(" ?id=" + e.getID());
+		}
 		sb.append(" code:").append(e.getKeyCode());
 		sb.append(" char:").append(e.getKeyChar());
 		sb.append(" charNr:").append((int) e.getKeyChar());

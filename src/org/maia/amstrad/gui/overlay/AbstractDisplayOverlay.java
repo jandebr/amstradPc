@@ -37,12 +37,6 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
-			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
-		// Subclasses to override
-	}
-
-	@Override
 	public void dispose(JComponent displayComponent) {
 		// Subclasses to override
 	}
@@ -58,8 +52,8 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
 	protected Rectangle drawIconTopLeft(ImageIcon icon, Graphics2D display, Rectangle displayBounds,
 			Insets monitorInsets) {
-		int x = computeLeftMarginForIcon(icon, monitorInsets);
-		int y = computeTopMarginForIcon(icon, monitorInsets);
+		int x = displayBounds.x + computeLeftMarginForIcon(icon, monitorInsets);
+		int y = displayBounds.y + computeTopMarginForIcon(icon, monitorInsets);
 		drawIcon(icon, x, y, display);
 		iconBounds.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
 		return iconBounds;
@@ -67,8 +61,9 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
 	protected Rectangle drawIconTopRight(ImageIcon icon, Graphics2D display, Rectangle displayBounds,
 			Insets monitorInsets) {
-		int x = displayBounds.width - computeRightMarginForIcon(icon, monitorInsets) - icon.getIconWidth();
-		int y = computeTopMarginForIcon(icon, monitorInsets);
+		int x = displayBounds.x + displayBounds.width - computeRightMarginForIcon(icon, monitorInsets)
+				- icon.getIconWidth();
+		int y = displayBounds.y + computeTopMarginForIcon(icon, monitorInsets);
 		drawIcon(icon, x, y, display);
 		iconBounds.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
 		return iconBounds;

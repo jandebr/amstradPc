@@ -4,17 +4,17 @@ import java.io.File;
 import java.util.Collection;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.load.AmstradProgramLoader;
-import org.maia.amstrad.load.AmstradProgramLoaderFactory;
-import org.maia.amstrad.load.AmstradProgramRuntime;
-import org.maia.amstrad.load.basic.staged.EndingBasicAction;
-import org.maia.amstrad.load.basic.staged.EndingBasicCodeDisclosure;
-import org.maia.amstrad.load.basic.staged.file.DiscoveredFileReference;
-import org.maia.amstrad.load.basic.staged.file.FileReferenceDiscoveryService;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.load.AmstradProgramLoader;
+import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
+import org.maia.amstrad.program.load.AmstradProgramRuntime;
+import org.maia.amstrad.program.load.basic.staged.EndingBasicAction;
+import org.maia.amstrad.program.load.basic.staged.EndingBasicCodeDisclosure;
+import org.maia.amstrad.program.load.basic.staged.file.DiscoveredFileReference;
+import org.maia.amstrad.program.load.basic.staged.file.FileReferenceDiscoveryService;
 
 public class BasicStagingTest {
 

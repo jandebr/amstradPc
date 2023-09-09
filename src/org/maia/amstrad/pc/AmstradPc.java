@@ -3,9 +3,6 @@ package org.maia.amstrad.pc;
 import java.io.IOException;
 
 import org.maia.amstrad.basic.BasicRuntime;
-import org.maia.amstrad.load.AmstradProgramLoader;
-import org.maia.amstrad.load.AmstradProgramLoaderFactory;
-import org.maia.amstrad.load.AmstradProgramRuntime;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.audio.AmstradAudio;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
@@ -15,6 +12,9 @@ import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.load.AmstradProgramLoader;
+import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
+import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.amstrad.util.AmstradListenerList;
 import org.maia.swing.dialog.ActionableDialog;
 
@@ -205,6 +205,10 @@ public abstract class AmstradPc {
 			int throttledSyncs) {
 		for (AmstradPcPerformanceListener listener : getPerformanceListeners())
 			listener.processorPerformanceUpdate(this, timeIntervalMillis, timerSyncs, laggingSyncs, throttledSyncs);
+	}
+
+	public boolean hasFrame() {
+		return getFrame() != null;
 	}
 
 	public AmstradPcFrame getFrame() {

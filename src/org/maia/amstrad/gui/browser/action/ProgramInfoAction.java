@@ -66,8 +66,10 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	@Override
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
-		if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F1) {
-			toggleProgramInfo();
+		if (!isTriggeredByMenuKeyBindings()) {
+			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F1) {
+				toggleProgramInfo();
+			}
 		}
 	}
 

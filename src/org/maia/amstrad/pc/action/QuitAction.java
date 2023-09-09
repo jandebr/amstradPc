@@ -34,9 +34,12 @@ public class QuitAction extends AmstradPcAction {
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
 		if (event.isKeyPressed()) {
-			if (event.getKeyCode() == KeyEvent.VK_Q && event.isControlDown() && event.isShiftDown()) {
-				quit();
-			} else if (event.getKeyCode() == KeyEvent.VK_ESCAPE && isQuitting()) {
+			if (!isTriggeredByMenuKeyBindings()) {
+				if (event.getKeyCode() == KeyEvent.VK_Q && event.isControlDown() && event.isShiftDown()) {
+					quit();
+				}
+			}
+			if (event.getKeyCode() == KeyEvent.VK_ESCAPE && isQuitting()) {
 				setCancelCommand(event.isShiftDown());
 				if (getTerminationDisplaySource() != null)
 					getTerminationDisplaySource().forceQuit();

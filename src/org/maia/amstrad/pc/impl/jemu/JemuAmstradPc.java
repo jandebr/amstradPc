@@ -30,6 +30,7 @@ import jemu.core.device.Computer;
 import jemu.core.device.ComputerPerformanceListener;
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
+import jemu.ui.Autotype;
 import jemu.ui.Display;
 import jemu.ui.Display.PrimaryDisplaySourceListener;
 import jemu.ui.Switches;
@@ -99,12 +100,65 @@ public abstract class JemuAmstradPc extends AmstradPc
 	}
 
 	@Override
-	public void showActionableDialog(ActionableDialog dialog) {
-		dialog.addListener(new ActionableDialogHandler());
-		super.showActionableDialog(dialog);
+	public final void start(boolean waitUntilReady, boolean silent) {
+		boolean floppySound = false;
+		synchronized (this) {
+			checkNoInstanceRunning();
+			checkNotStarted();
+			checkNotTerminated();
+			floppySound = Switches.FloppySound;
+			if (silent)
+				Switches.FloppySound = false;
+			doStart();
+			getMemoryTrapProcessor().start();
+			setStarted(true);
+			JemuAmstradPc.setInstanceRunning(true);
+			fireStartedEvent();
+		}
+		if (waitUntilReady)
+			waitUntilBasicRuntimeReady();
+		if (silent)
+			Switches.FloppySound = floppySound;
 	}
 
-	protected void waitUntilBasicRuntimeReady() {
+	protected abstract void doStart();
+
+	@Override
+	public synchronized final void reboot(boolean waitUntilReady, boolean silent) {
+		checkStartedNotTerminated();
+		boolean floppySound = Switches.FloppySound;
+		if (silent)
+			Switches.FloppySound = false;
+		doReboot();
+		fireRebootingEvent();
+		if (waitUntilReady)
+			waitUntilBasicRuntimeReady();
+		if (silent)
+			Switches.FloppySound = floppySound;
+	}
+
+	protected abstract void doReboot();
+
+	@Override
+	public synchronized final void terminate() {
+		if (!isTerminated()) {
+			if (isStarted()) {
+				Autotype.clearText();
+				doTerminate();
+				getMemoryTrapProcessor().stopProcessing();
+				if (getMonitor().isAlternativeDisplaySourceShowing()) {
+					getMonitor().resetDisplaySource();
+				}
+			}
+			setTerminated(true);
+			setInstanceRunning(false);
+			fireTerminatedEvent();
+		}
+	}
+
+	protected abstract void doTerminate();
+
+	private void waitUntilBasicRuntimeReady() {
 		System.out.println("Waiting until Basic runtime is Ready");
 		AmstradUtils.sleep(1000L); // making sure "ready" turns false first
 		getBasicRuntime().waitUntilReady(8000L);
@@ -112,10 +166,17 @@ public abstract class JemuAmstradPc extends AmstradPc
 	}
 
 	@Override
+	public void showActionableDialog(ActionableDialog dialog) {
+		dialog.addListener(new ActionableDialogHandler());
+		super.showActionableDialog(dialog);
+	}
+
+	@Override
 	public synchronized final void pause() {
 		checkStartedNotTerminated();
 		if (!isPaused()) {
 			setPaused(true);
+			getMonitor().getDisplayComponent().repaint(); // making sure pause overlay is shown
 			// Disconnect from the AWT event dispatch thread, as this may lead to deadlock!
 			runOutsideAwtEventDispatchThread(new Runnable() {
 
@@ -216,17 +277,25 @@ public abstract class JemuAmstradPc extends AmstradPc
 		fireProcessorPerformanceUpdate(timeIntervalMillis, timerSyncs, laggingSyncs, throttledSyncs);
 	}
 
-	protected static void checkNoInstanceRunning() {
-		if (isInstanceRunning())
-			throw new IllegalStateException("There can only be a single JEMU Amstrad PC running");
-	}
-
-	private void runOutsideAwtEventDispatchThread(Runnable task) {
+	private static void runOutsideAwtEventDispatchThread(Runnable task) {
 		if (SwingUtilities.isEventDispatchThread()) {
 			new Thread(task).start();
 		} else {
 			task.run();
 		}
+	}
+
+	protected static void checkNoInstanceRunning() {
+		if (isInstanceRunning())
+			throw new IllegalStateException("There can only be a single JEMU Amstrad PC running");
+	}
+
+	protected static boolean isInstanceRunning() {
+		return JemuAmstradPc.instanceRunning;
+	}
+
+	protected static void setInstanceRunning(boolean instanceRunning) {
+		JemuAmstradPc.instanceRunning = instanceRunning;
 	}
 
 	@Override
@@ -254,14 +323,6 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 	protected void setTerminated(boolean terminated) {
 		this.terminated = terminated;
-	}
-
-	protected static boolean isInstanceRunning() {
-		return JemuAmstradPc.instanceRunning;
-	}
-
-	protected static void setInstanceRunning(boolean instanceRunning) {
-		JemuAmstradPc.instanceRunning = instanceRunning;
 	}
 
 	@Override

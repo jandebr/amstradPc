@@ -13,6 +13,7 @@ import java.awt.event.WindowStateListener;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 import javax.swing.event.MenuEvent;
@@ -33,7 +34,9 @@ public abstract class AmstradPcFrame extends JFrame
 
 	private AmstradPc amstradPc;
 
-	private JPopupMenu popupMenu;
+	private JMenuBar installedMenuBar;
+
+	private JPopupMenu installedPopupMenu;
 
 	private boolean closing;
 
@@ -44,27 +47,28 @@ public abstract class AmstradPcFrame extends JFrame
 		addWindowListener(this);
 		addWindowStateListener(this);
 		setFocusable(false);
+		setAlwaysOnTop(amstradPc.getMonitor().isWindowAlwaysOnTop());
 		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
 		setIconImage(UIResources.cpcIcon.getImage());
 		getContentPane().add(getContentComponent(), BorderLayout.CENTER);
 	}
 
-	protected abstract Component getContentComponent();
-
-	public void installMenuBar() {
+	public void installAndEnableMenuBar() {
 		AmstradPcMenuMaker menuMaker = new AmstradPcMenuMaker(getAmstradPc().getActions(),
 				AmstradPcMenuMaker.LookAndFeel.JAVA);
-		setJMenuBar(menuMaker.createMenuBar());
+		JMenuBar menuBar = menuMaker.createMenuBar();
+		setInstalledMenuBar(menuBar);
+		enableMenuBar();
 	}
 
-	public void installPopupMenu(boolean enableOnlyInFullscreen) {
+	public void installAndEnablePopupMenu(boolean enableOnlyInFullscreen) {
 		AmstradPcMenuMaker menuMaker = new AmstradPcMenuMaker(getAmstradPc().getActions(),
 				AmstradPcMenuMaker.LookAndFeel.EMULATOR);
 		JPopupMenu popupMenu = menuMaker.createStandardPopupMenu();
 		popupMenu.addPopupMenuListener(new PopupMenuController());
 		installControllerOnMenus(popupMenu, new MenuController());
 		getAmstradPc().getKeyboard().addKeyboardListener(new PopupMenuTriggerByKeyPress(KeyEvent.VK_F2));
-		setPopupMenu(popupMenu);
+		setInstalledPopupMenu(popupMenu);
 		if (enableOnlyInFullscreen) {
 			getAmstradPc().getMonitor().addMonitorListener(new PopupMenuFullscreenActivator());
 		}
@@ -82,27 +86,43 @@ public abstract class AmstradPcFrame extends JFrame
 		}
 	}
 
-	private void enablePopupMenu() {
-		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(getPopupMenu());
+	public void enableMenuBar() {
+		setJMenuBar(getInstalledMenuBar());
 	}
 
-	private void disablePopupMenu() {
+	public void disableMenuBar() {
+		setJMenuBar(null);
+	}
+
+	public boolean isMenuBarEnabled() {
+		return getJMenuBar() != null;
+	}
+
+	public void enablePopupMenu() {
+		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(getInstalledPopupMenu());
+	}
+
+	public void disablePopupMenu() {
 		getAmstradPc().getMonitor().getDisplayComponent().setComponentPopupMenu(null);
 	}
 
 	public boolean isPopupMenuEnabled() {
-		return getPopupMenu() != null
-				&& getPopupMenu().equals(getAmstradPc().getMonitor().getDisplayComponent().getComponentPopupMenu());
+		return getInstalledPopupMenu() != null && getInstalledPopupMenu()
+				.equals(getAmstradPc().getMonitor().getDisplayComponent().getComponentPopupMenu());
 	}
 
-	public static Dimension getScreenSize() {
-		return Toolkit.getDefaultToolkit().getScreenSize();
+	public boolean isMenuKeyBindingsEnabled() {
+		return isMenuBarEnabled() || (isPopupMenuEnabled() && getInstalledPopupMenu().isShowing());
 	}
 
 	public void centerOnScreen() {
 		Dimension screen = getScreenSize();
 		Dimension size = getSize();
 		setLocation((screen.width - size.width) / 2, (screen.height - size.height) / 2);
+	}
+
+	public static Dimension getScreenSize() {
+		return Toolkit.getDefaultToolkit().getScreenSize();
 	}
 
 	public boolean isFullscreen() {
@@ -197,16 +217,26 @@ public abstract class AmstradPcFrame extends JFrame
 		getContentComponent().revalidate();
 	}
 
+	protected abstract Component getContentComponent();
+
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}
 
-	private JPopupMenu getPopupMenu() {
-		return popupMenu;
+	private JMenuBar getInstalledMenuBar() {
+		return installedMenuBar;
 	}
 
-	private void setPopupMenu(JPopupMenu popupMenu) {
-		this.popupMenu = popupMenu;
+	private void setInstalledMenuBar(JMenuBar menuBar) {
+		this.installedMenuBar = menuBar;
+	}
+
+	private JPopupMenu getInstalledPopupMenu() {
+		return installedPopupMenu;
+	}
+
+	private void setInstalledPopupMenu(JPopupMenu popupMenu) {
+		this.installedPopupMenu = popupMenu;
 	}
 
 	private boolean isClosing() {
@@ -245,7 +275,7 @@ public abstract class AmstradPcFrame extends JFrame
 		public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 			if (event.isKeyPressed() && event.getKeyCode() == getTriggerKeyCode()) {
 				if (isPopupMenuEnabled() && !isTerminating()) {
-					JPopupMenu popupMenu = getPopupMenu();
+					JPopupMenu popupMenu = getInstalledPopupMenu();
 					Dimension dim = popupMenu.getPreferredSize();
 					JComponent comp = getAmstradPc().getMonitor().getDisplayComponent();
 					popupMenu.show(comp, (comp.getWidth() - dim.width) / 2, (comp.getHeight() - dim.height) / 2);

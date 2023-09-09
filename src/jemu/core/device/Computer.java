@@ -153,10 +153,6 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		this.name = name;
 		this.keyboardListeners = new Vector<ComputerKeyboardListener>();
 		this.performanceListeners = new Vector<ComputerPerformanceListener>();
-		this.escapeKeyEventPressed = new KeyEvent(applet, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_ESCAPE,
-				KeyEvent.CHAR_UNDEFINED);
-		this.escapeKeyEventReleased = new KeyEvent(applet, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_ESCAPE,
-				KeyEvent.CHAR_UNDEFINED);
 		thread.setPriority(Thread.MAX_PRIORITY);
 		thread.start();
 	}
@@ -415,6 +411,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 
 	public void setDisplay(Display value) {
 		display = value;
+		escapeKeyEventPressed = new KeyEvent(display, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_ESCAPE,
+				KeyEvent.CHAR_UNDEFINED);
+		escapeKeyEventReleased = new KeyEvent(display, KeyEvent.KEY_RELEASED, 0L, 0, KeyEvent.VK_ESCAPE,
+				KeyEvent.CHAR_UNDEFINED);
 		displaySet();
 	}
 
@@ -763,6 +763,15 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public void eject() {
+	}
+
+	public void showDevices() {
+		final Vector devices = getDevices();
+		final int n = devices.size();
+		for (int i = 0; i < n; i++) {
+			final Object device = devices.get(i);
+			System.out.println("Device connected: " + device);
+		}
 	}
 
 	public Vector<FileDescriptor> getFiles() {

@@ -222,6 +222,10 @@ public class Display extends JComponent {
 	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
 
 	public Display() {
+		this(true);
+	}
+
+	public Display(boolean doubleBuffered) {
 		setupDisplayOverlays();
 		displayPaintListeners = new Vector<DisplayPaintListener>();
 		primaryDisplaySourceListeners = new Vector<PrimaryDisplaySourceListener>();
@@ -239,7 +243,7 @@ public class Display extends JComponent {
 		enableEvents(AWTEvent.FOCUS_EVENT_MASK);
 		setFocusTraversalKeysEnabled(true);
 		setRequestFocusEnabled(true);
-		setDoubleBuffered(true);
+		setDoubleBuffered(doubleBuffered);
 	}
 
 	private void setupDisplayOverlays() {
@@ -322,21 +326,16 @@ public class Display extends JComponent {
 	}
 
 	protected void checkDouble() {
-		if (Switches.doublesize == true) {
+		if (Switches.doublesize) {
 			scaleWidth = scaleW * 2;
 			scaleHeight = scaleH * 2;
-		}
-		if (Switches.triplesize == true) {
+		} else if (Switches.triplesize) {
 			scaleWidth = scaleW * 3;
 			scaleHeight = scaleH * 3;
+		} else {
+			scaleWidth = scaleW;
+			scaleHeight = scaleH;
 		}
-		if (Switches.triplesize == false) {
-			if (Switches.doublesize == false) {
-				scaleWidth = scaleW;
-				scaleHeight = scaleH;
-			}
-		}
-
 	}
 
 	public void setCursor() {
@@ -347,7 +346,6 @@ public class Display extends JComponent {
 	}
 
 	public void changePerformance() {
-
 		if (lowperformance) {
 			LED = new Color(0xff, 0x00, 0x00);
 			GREEN = new Color(0x00, 0xff, 0x00);
@@ -370,7 +368,6 @@ public class Display extends JComponent {
 			} else
 				SCAN = new Color(0x00, 0x00, 0x00, 0x90);
 		}
-
 	}
 
 	protected void checkSize() {
@@ -710,6 +707,14 @@ public class Display extends JComponent {
 		return imageHeight;
 	}
 
+	public int getScaledWidth() {
+		return scaleWidth;
+	}
+
+	public int getScaledHeight() {
+		return scaleHeight;
+	}
+
 	private boolean isLargeDisplay() {
 		return imageRect.height >= 540;
 	}
@@ -723,18 +728,26 @@ public class Display extends JComponent {
 	}
 
 	public void waitPainted() {
-		long timeoutTime = System.currentTimeMillis() + 500L;
-		boolean timeout = false;
-		while (!painted && isShowing() && !timeout) {
-			try {
-				Thread.sleep(1L);
-			} catch (InterruptedException e) {
+		if (isDisplayShowing()) {
+			long timeoutTime = System.currentTimeMillis() + 500L;
+			boolean timeout = false;
+			while (!painted && !timeout) {
+				try {
+					Thread.sleep(1L);
+				} catch (InterruptedException e) {
+				}
+				timeout = System.currentTimeMillis() > timeoutTime;
 			}
-			timeout = System.currentTimeMillis() > timeoutTime;
 		}
-		if (timeout) {
-			System.out.println("Timeout for Display paint");
-		}
+	}
+
+	private boolean isDisplayShowing() {
+		if (!isShowing())
+			return false;
+		Point p = getLocationOnScreen();
+		if (p.x + getWidth() < 0 || p.y + getHeight() < 0)
+			return false;
+		return true;
 	}
 
 	@Override

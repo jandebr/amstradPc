@@ -31,8 +31,10 @@ public class ScreenshotAction extends FileChooserAction {
 	@Override
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
-		if (invokeOn(event)) {
-			makeScreenshot();
+		if (!isTriggeredByMenuKeyBindings()) {
+			if (invokeOn(event)) {
+				makeScreenshot();
+			}
 		}
 	}
 
