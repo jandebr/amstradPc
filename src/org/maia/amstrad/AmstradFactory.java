@@ -83,7 +83,7 @@ public class AmstradFactory {
 	}
 
 	private Display createJemuDisplay() {
-		boolean doubleBuffered = true;
+		boolean doubleBuffered = false;
 		return new Display(doubleBuffered);
 	}
 
