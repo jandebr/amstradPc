@@ -100,7 +100,7 @@ public class AmstradPcMenuMaker {
 		popup.add(createScreenshotWithMonitorEffectMenuItem());
 		popup.add(createMonitorModeMenu());
 		popup.add(createMonitorEffectsMenu());
-		popup.add(createWindowFullscreenMenuItem());
+		popup.add(createMonitorFullscreenMenuItem());
 		popup.add(new JSeparator());
 		popup.add(createQuitMenuItem());
 		return updatePopupMenuLookAndFeel(popup);
@@ -234,6 +234,10 @@ public class AmstradPcMenuMaker {
 		menu.add(createMonitorModeMenu());
 		menu.add(createMonitorEffectsMenu());
 		menu.add(new JSeparator());
+		menu.add(createMonitorSizeMenu());
+		menu.add(createMonitorFullscreenMenuItem());
+		menu.add(new MonitorGateArrayMenuHelper(createMonitorGateArrayMenuItem(), getMonitor()).getCheckbox());
+		menu.add(new JSeparator());
 		menu.add(createScreenshotMenuItem());
 		menu.add(createScreenshotWithMonitorEffectMenuItem());
 		return updateMenuLookAndFeel(menu);
@@ -310,15 +314,56 @@ public class AmstradPcMenuMaker {
 		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
+	private JCheckBoxMenuItem createMonitorGateArrayMenuItem() {
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorGateArrayAction());
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+	}
+
 	private JCheckBoxMenuItem createMonitorShowSystemStatsMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorShowSystemStatsAction());
 		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
+	private JMenu createMonitorSizeMenu() {
+		JMenu menu = new JMenu("Monitor size");
+		JRadioButtonMenuItem singleSize = createMonitorSingleSizeMenuItem();
+		JRadioButtonMenuItem doubleSize = createMonitorDoubleSizeMenuItem();
+		JRadioButtonMenuItem tripleSize = createMonitorTripleSizeMenuItem();
+		menu.add(singleSize);
+		menu.add(doubleSize);
+		menu.add(tripleSize);
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(singleSize);
+		buttonGroup.add(doubleSize);
+		buttonGroup.add(tripleSize);
+		MonitorSizeMenuHelper helper = new MonitorSizeMenuHelper(buttonGroup, getMonitor());
+		return updateMenuLookAndFeel(menu, UIResources.windowedIcon);
+	}
+
+	private JRadioButtonMenuItem createMonitorSingleSizeMenuItem() {
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(getActions().getMonitorSingleSizeAction());
+		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
+	}
+
+	private JRadioButtonMenuItem createMonitorDoubleSizeMenuItem() {
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(getActions().getMonitorDoubleSizeAction());
+		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
+	}
+
+	private JRadioButtonMenuItem createMonitorTripleSizeMenuItem() {
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(getActions().getMonitorTripleSizeAction());
+		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
+	}
+
+	private JMenuItem createMonitorFullscreenMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getMonitorFullscreenAction());
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
+		return updateMenuItemLookAndFeel(item, UIResources.windowIcon);
+	}
+
 	private JMenu createWindowMenu() {
 		JMenu menu = new JMenu("Window");
 		menu.add(new WindowAlwaysOnTopMenuHelper(createWindowAlwaysOnTopMenuItem(), getMonitor()).getCheckbox());
-		menu.add(createWindowFullscreenMenuItem());
 		menu.add(createWindowCenterOnScreenMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createAboutMenuItem());
@@ -328,12 +373,6 @@ public class AmstradPcMenuMaker {
 	private JCheckBoxMenuItem createWindowAlwaysOnTopMenuItem() {
 		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(
 				new JCheckBoxMenuItem(getActions().getWindowAlwaysOnTopAction()));
-	}
-
-	private JMenuItem createWindowFullscreenMenuItem() {
-		JMenuItem item = new JMenuItem(getActions().getWindowFullscreenAction());
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
-		return updateMenuItemLookAndFeel(item, UIResources.windowIcon);
 	}
 
 	private JMenuItem createWindowCenterOnScreenMenuItem() {
@@ -452,10 +491,46 @@ public class AmstradPcMenuMaker {
 
 		@Override
 		protected void syncMenu(AmstradMonitor monitor) {
-			AmstradMonitorMode monitorMode = monitor.getMonitorMode();
+			AmstradMonitorMode monitorMode = monitor.getMode();
 			for (Enumeration<AbstractButton> en = getButtonGroup().getElements(); en.hasMoreElements();) {
 				AbstractButton button = en.nextElement();
 				if (((MonitorModeAction) button.getAction()).getMode().equals(monitorMode)) {
+					button.setSelected(true);
+				}
+			}
+		}
+
+		private ButtonGroup getButtonGroup() {
+			return buttonGroup;
+		}
+
+	}
+
+	private static class MonitorSizeMenuHelper extends MonitorMenuHelper {
+
+		private ButtonGroup buttonGroup;
+
+		public MonitorSizeMenuHelper(ButtonGroup buttonGroup, AmstradMonitor monitor) {
+			this.buttonGroup = buttonGroup;
+			syncMenu(monitor);
+			monitor.addMonitorListener(this);
+		}
+
+		@Override
+		public void amstradMonitorSizeChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
+		}
+
+		@Override
+		protected void syncMenu(AmstradMonitor monitor) {
+			for (Enumeration<AbstractButton> en = getButtonGroup().getElements(); en.hasMoreElements();) {
+				AbstractButton button = en.nextElement();
+				int sizeFactor = ((MonitorSizeAction) button.getAction()).getSizeFactor();
+				if (sizeFactor == 1 && monitor.isSingleSize()) {
+					button.setSelected(true);
+				} else if (sizeFactor == 2 && monitor.isDoubleSize()) {
+					button.setSelected(true);
+				} else if (sizeFactor == 3 && monitor.isTripleSize()) {
 					button.setSelected(true);
 				}
 			}
@@ -521,7 +596,7 @@ public class AmstradPcMenuMaker {
 
 		@Override
 		protected boolean getState(AmstradMonitor monitor) {
-			return monitor.isMonitorScanLinesEffectOn();
+			return monitor.isScanLinesEffectOn();
 		}
 
 	}
@@ -539,7 +614,25 @@ public class AmstradPcMenuMaker {
 
 		@Override
 		protected boolean getState(AmstradMonitor monitor) {
-			return monitor.isMonitorBilinearEffectOn();
+			return monitor.isBilinearEffectOn();
+		}
+
+	}
+
+	private static class MonitorGateArrayMenuHelper extends MonitorCheckboxMenuHelper {
+
+		public MonitorGateArrayMenuHelper(JCheckBoxMenuItem checkbox, AmstradMonitor monitor) {
+			super(checkbox, monitor);
+		}
+
+		@Override
+		public void amstradMonitorGateArraySizeChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
+		}
+
+		@Override
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isFullGateArray();
 		}
 
 	}

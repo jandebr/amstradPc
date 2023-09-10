@@ -12,7 +12,11 @@ public interface AmstradMonitorListener extends AmstradListener {
 
 	void amstradMonitorBilinearEffectChanged(AmstradMonitor monitor);
 
-	void amstradWindowFullscreenChanged(AmstradMonitor monitor);
+	void amstradMonitorGateArraySizeChanged(AmstradMonitor monitor);
+
+	void amstradMonitorSizeChanged(AmstradMonitor monitor);
+
+	void amstradMonitorFullscreenChanged(AmstradMonitor monitor);
 
 	void amstradWindowAlwaysOnTopChanged(AmstradMonitor monitor);
 

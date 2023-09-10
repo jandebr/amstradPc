@@ -17,12 +17,14 @@ import javax.swing.Box;
 
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
+import org.maia.amstrad.util.AmstradUtils;
 
 import jemu.core.device.Computer;
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
 import jemu.system.cpc.CPC;
 import jemu.system.cpc.CPCPrinter;
+import jemu.system.cpc.GateArray;
 import jemu.system.cpc.RomSetter;
 import jemu.ui.Autotype;
 import jemu.ui.Console;
@@ -120,7 +122,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		Switches.computername = Integer.parseInt(Settings.get(Settings.COMPUTERNAME, "7"), 16);
 		Switches.osddisplay = Settings.getBoolean(Settings.OSD, false);
 		Display.model = "System: " + getComputer().getName();
-		getMonitor().applyMonitorMode(getMonitor().getMonitorMode());
+		getMonitor().applyMonitorMode(getMonitor().getMode());
 		Switches.audioenabler = getAudio().isMuted() ? 0 : 1;
 		Switches.FloppySound = Settings.getBoolean(Settings.FLOPPYSOUND, true);
 		Switches.notebook = Settings.getBoolean(Settings.NOTEBOOK, false);
@@ -268,7 +270,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		@Override
 		public void componentMoved(ComponentEvent e) {
-			if (!getMonitor().isWindowFullscreen()) {
+			if (!getMonitor().isFullscreen()) {
 				Settings.set(Settings.FRAMEX, String.valueOf(getX()));
 				Settings.set(Settings.FRAMEY, String.valueOf(getY()));
 			}
@@ -400,12 +402,26 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		public JemuMonitorImpl() {
 		}
 
-		void update() {
-			if (isWindowFullscreen()) {
+		synchronized void update() {
+			GateArray.doRender = false;
+			boolean running = getComputer().isRunning();
+			if (running)
+				doPauseImmediately();
+			if (isFullscreen()) {
 				applyFullscreen();
 			} else {
 				applyWindowed();
 			}
+			if (running)
+				doResume();
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					AmstradUtils.sleep(500L);
+					GateArray.doRender = true;
+				}
+			}).start();
 		}
 
 		@Override
@@ -448,7 +464,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		}
 
 		protected void updateDisplaySize() {
-			boolean fullSizeGateArray = Settings.getBoolean(Settings.LARGE, true);
+			boolean fullSizeGateArray = isFullGateArray();
 			Computer computer = getComputer();
 			computer.setLarge(fullSizeGateArray);
 			Display display = getDisplay();
@@ -457,7 +473,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 			computer.setDisplay(display); // must come after setImageSize() as it links the raster pixels
 			int width = display.getScaledWidth();
 			int height = display.getScaledHeight();
-			if (isWindowFullscreen()) {
+			if (isFullscreen()) {
 				Dimension screenSize = AmstradPcFrame.getScreenSize();
 				double scaleX = screenSize.getWidth() / width;
 				double scaleY = screenSize.getHeight() / height;
@@ -467,6 +483,66 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 			}
 			display.setSize(width, height);
 			System.out.println("Display size " + width + "x" + height);
+		}
+
+		@Override
+		protected void doSetFullGateArray(boolean full) {
+			boolean sizeChange = false;
+			if (full) {
+				if (!isSingleSize()) {
+					doSetSingleSizeWithoutUpdate();
+					sizeChange = true;
+				}
+			} else {
+				if (!isDoubleSize()) {
+					doSetDoubleSizeWithoutUpdate();
+					sizeChange = true;
+				}
+			}
+			Settings.setBoolean(Settings.LARGE, full);
+			update();
+			if (sizeChange) {
+				fireMonitorSizeChangedEvent();
+			}
+		}
+
+		@Override
+		protected void doSetSingleSize() {
+			doSetSingleSizeWithoutUpdate();
+			update();
+		}
+
+		private void doSetSingleSizeWithoutUpdate() {
+			Settings.setBoolean(Settings.DOUBLE, false);
+			Settings.setBoolean(Settings.TRIPLE, false);
+			Switches.doublesize = false;
+			Switches.triplesize = false;
+		}
+
+		@Override
+		protected void doSetDoubleSize() {
+			doSetDoubleSizeWithoutUpdate();
+			update();
+		}
+
+		private void doSetDoubleSizeWithoutUpdate() {
+			Settings.setBoolean(Settings.DOUBLE, true);
+			Settings.setBoolean(Settings.TRIPLE, false);
+			Switches.doublesize = true;
+			Switches.triplesize = false;
+		}
+
+		@Override
+		protected void doSetTripleSize() {
+			doSetTripleSizeWithoutUpdate();
+			update();
+		}
+
+		private void doSetTripleSizeWithoutUpdate() {
+			Settings.setBoolean(Settings.DOUBLE, false);
+			Settings.setBoolean(Settings.TRIPLE, true);
+			Switches.doublesize = false;
+			Switches.triplesize = true;
 		}
 
 		@Override

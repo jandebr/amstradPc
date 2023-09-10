@@ -15,7 +15,7 @@ import javax.swing.JMenuItem;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.AudioAction;
 import org.maia.amstrad.pc.action.PauseResumeAction;
-import org.maia.amstrad.pc.action.WindowFullscreenAction;
+import org.maia.amstrad.pc.action.MonitorFullscreenAction;
 
 public class UIResources {
 
@@ -58,6 +58,8 @@ public class UIResources {
 	public static ImageIcon monitorModeIcon = loadIcon("monitor-mode32.png");
 
 	public static ImageIcon monitorEffectIcon = loadIcon("monitor-effect32.png");
+
+	public static ImageIcon monitorSizeIcon = loadIcon("windowed32.png");
 
 	public static ImageIcon menuArrowIcon = loadIcon("menu-arrowh-right12x22.png");
 
@@ -178,7 +180,7 @@ public class UIResources {
 		@Override
 		protected boolean isSelected(Component c) {
 			Action a = ((JMenuItem) c).getAction();
-			return ((WindowFullscreenAction) a).isFullscreen();
+			return ((MonitorFullscreenAction) a).isFullscreen();
 		}
 
 	}

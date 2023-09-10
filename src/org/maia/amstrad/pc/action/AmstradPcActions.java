@@ -68,6 +68,16 @@ public class AmstradPcActions {
 
 	private MonitorBilinearEffectAction monitorBilinearEffectAction;
 
+	private MonitorGateArrayAction monitorGateArrayAction;
+
+	private MonitorSingleSizeAction monitorSingleSizeAction;
+
+	private MonitorDoubleSizeAction monitorDoubleSizeAction;
+
+	private MonitorTripleSizeAction monitorTripleSizeAction;
+
+	private MonitorFullscreenAction monitorFullscreenAction;
+
 	private MonitorShowSystemStatsAction monitorShowSystemStatsAction;
 
 	/* Window actions */
@@ -75,8 +85,6 @@ public class AmstradPcActions {
 	private ShowJavaConsoleAction showJavaConsoleAction;
 
 	private WindowAlwaysOnTopAction windowAlwaysOnTopAction;
-
-	private WindowFullscreenAction windowFullscreenAction;
 
 	private WindowCenterOnScreenAction windowCenterOnScreenAction;
 
@@ -263,6 +271,41 @@ public class AmstradPcActions {
 		return monitorBilinearEffectAction;
 	}
 
+	public MonitorGateArrayAction getMonitorGateArrayAction() {
+		if (monitorGateArrayAction == null) {
+			monitorGateArrayAction = new MonitorGateArrayAction(getAmstradPc());
+		}
+		return monitorGateArrayAction;
+	}
+
+	public MonitorSingleSizeAction getMonitorSingleSizeAction() {
+		if (monitorSingleSizeAction == null) {
+			monitorSingleSizeAction = new MonitorSingleSizeAction(getAmstradPc());
+		}
+		return monitorSingleSizeAction;
+	}
+
+	public MonitorDoubleSizeAction getMonitorDoubleSizeAction() {
+		if (monitorDoubleSizeAction == null) {
+			monitorDoubleSizeAction = new MonitorDoubleSizeAction(getAmstradPc());
+		}
+		return monitorDoubleSizeAction;
+	}
+
+	public MonitorTripleSizeAction getMonitorTripleSizeAction() {
+		if (monitorTripleSizeAction == null) {
+			monitorTripleSizeAction = new MonitorTripleSizeAction(getAmstradPc());
+		}
+		return monitorTripleSizeAction;
+	}
+
+	public MonitorFullscreenAction getMonitorFullscreenAction() {
+		if (monitorFullscreenAction == null) {
+			monitorFullscreenAction = new MonitorFullscreenAction(getAmstradPc());
+		}
+		return monitorFullscreenAction;
+	}
+
 	public MonitorShowSystemStatsAction getMonitorShowSystemStatsAction() {
 		if (monitorShowSystemStatsAction == null) {
 			monitorShowSystemStatsAction = new MonitorShowSystemStatsAction(getAmstradPc());
@@ -282,13 +325,6 @@ public class AmstradPcActions {
 			windowAlwaysOnTopAction = new WindowAlwaysOnTopAction(getAmstradPc());
 		}
 		return windowAlwaysOnTopAction;
-	}
-
-	public WindowFullscreenAction getWindowFullscreenAction() {
-		if (windowFullscreenAction == null) {
-			windowFullscreenAction = new WindowFullscreenAction(getAmstradPc());
-		}
-		return windowFullscreenAction;
 	}
 
 	public WindowCenterOnScreenAction getWindowCenterOnScreenAction() {

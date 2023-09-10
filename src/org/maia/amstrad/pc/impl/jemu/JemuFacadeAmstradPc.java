@@ -155,12 +155,12 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 		public void amstradPcStarted(AmstradPc amstradPc) {
 			super.amstradPcStarted(amstradPc);
 			AmstradMonitor monitor = amstradPc.getMonitor();
-			if (monitor.isWindowFullscreen()) {
+			if (monitor.isFullscreen()) {
 				// Force full screen as it is not consistently working
 				if (getContentComponent().getLocationOnScreen().getX() != 0) {
 					System.out.println("Force center display on screen");
-					monitor.toggleWindowFullscreen();
-					monitor.toggleWindowFullscreen();
+					monitor.toggleFullscreen();
+					monitor.toggleFullscreen();
 				}
 			}
 			new MonitorDisplayUltimateCenterer().start(); // final check and attempts
@@ -188,14 +188,14 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 			public void run() {
 				AmstradUtils.sleep(1000L);
 				AmstradMonitor monitor = getAmstradPc().getMonitor();
-				if (monitor.isWindowFullscreen()) {
+				if (monitor.isFullscreen()) {
 					JComponent displayComp = monitor.getDisplayComponent();
 					int expectedX = (getScreenSize().width - displayComp.getWidth()) / 2;
 					int attempts = 0;
 					while (Math.abs(displayComp.getLocationOnScreen().x - expectedX) > 2 && ++attempts <= 3) {
 						System.out.println("Ultimate center display on screen");
-						monitor.toggleWindowFullscreen();
-						monitor.toggleWindowFullscreen();
+						monitor.toggleFullscreen();
+						monitor.toggleFullscreen();
 						AmstradUtils.sleep(500L);
 					}
 					System.out.println("Display is centered fullscreen");
@@ -242,7 +242,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 				if (Settings.getBoolean(Settings.SHOWMENU, true)) {
 					getFrame().setMenuBar(menuBar);
 				} else {
-					if (getFrame().getJMenuBar() != null && !getAmstradPc().getMonitor().isWindowFullscreen()) {
+					if (getFrame().getJMenuBar() != null && !getAmstradPc().getMonitor().isFullscreen()) {
 						getFrame().getJMenuBar().setVisible(true);
 					}
 				}
@@ -489,6 +489,26 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 		@Override
 		protected void applyMonitorModeGray() {
 			getJemuInstance().changeMonitorModeToGray();
+		}
+
+		@Override
+		protected void doSetFullGateArray(boolean full) {
+			getJemuInstance().setFullSized(full);
+		}
+
+		@Override
+		protected void doSetSingleSize() {
+			getJemuInstance().setSimpleSized();
+		}
+
+		@Override
+		protected void doSetDoubleSize() {
+			getJemuInstance().setDoubleSized(true);
+		}
+
+		@Override
+		protected void doSetTripleSize() {
+			getJemuInstance().setTripleSized(true);
 		}
 
 		@Override

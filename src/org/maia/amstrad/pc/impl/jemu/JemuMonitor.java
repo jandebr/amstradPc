@@ -38,9 +38,9 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	protected abstract Display getJemuDisplay();
 
 	@Override
-	public final void setMonitorMode(AmstradMonitorMode mode) {
+	public final void setMode(AmstradMonitorMode mode) {
 		checkNotTerminated();
-		if (mode != null && !mode.equals(getMonitorMode())) {
+		if (mode != null && !mode.equals(getMode())) {
 			applyMonitorMode(mode);
 			fireMonitorModeChangedEvent();
 		}
@@ -78,14 +78,14 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	}
 
 	@Override
-	public boolean isMonitorScanLinesEffectOn() {
+	public boolean isScanLinesEffectOn() {
 		return Settings.getBoolean(Settings.SCANLINES, false);
 	}
 
 	@Override
-	public void setMonitorScanLinesEffect(boolean scanLinesEffect) {
+	public void setScanLinesEffect(boolean scanLinesEffect) {
 		checkNotTerminated();
-		if (scanLinesEffect != isMonitorScanLinesEffectOn()) {
+		if (scanLinesEffect != isScanLinesEffectOn()) {
 			Settings.setBoolean(Settings.SCANLINES, scanLinesEffect);
 			Switches.ScanLines = scanLinesEffect;
 			fireMonitorScanLinesEffectChangedEvent();
@@ -93,14 +93,14 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	}
 
 	@Override
-	public boolean isMonitorBilinearEffectOn() {
+	public boolean isBilinearEffectOn() {
 		return Settings.getBoolean(Settings.BILINEAR, true);
 	}
 
 	@Override
-	public void setMonitorBilinearEffect(boolean bilinearEffect) {
+	public void setBilinearEffect(boolean bilinearEffect) {
 		checkNotTerminated();
-		if (bilinearEffect != isMonitorBilinearEffectOn()) {
+		if (bilinearEffect != isBilinearEffectOn()) {
 			Settings.setBoolean(Settings.BILINEAR, bilinearEffect);
 			Switches.bilinear = bilinearEffect;
 			fireMonitorBilinearEffectChangedEvent();
@@ -108,20 +108,93 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	}
 
 	@Override
-	public boolean isWindowFullscreen() {
+	public boolean isFullGateArray() {
+		return Settings.getBoolean(Settings.LARGE, false);
+	}
+
+	@Override
+	public final void setFullGateArray(boolean full) {
+		checkNotTerminated();
+		if (full != isFullGateArray()) {
+			doSetFullGateArray(full);
+			centerFrameOnScreen();
+			fireMonitorGateArraySizeChangedEvent();
+		}
+	}
+
+	protected abstract void doSetFullGateArray(boolean full);
+
+	@Override
+	public boolean isSingleSize() {
+		return !isDoubleSize() && !isTripleSize();
+	}
+
+	@Override
+	public final void setSingleSize() {
+		checkNotTerminated();
+		if (!isSingleSize()) {
+			doSetSingleSize();
+			centerFrameOnScreen();
+			fireMonitorSizeChangedEvent();
+		}
+	}
+
+	protected abstract void doSetSingleSize();
+
+	@Override
+	public boolean isDoubleSize() {
+		return Settings.getBoolean(Settings.DOUBLE, true);
+	}
+
+	@Override
+	public final void setDoubleSize() {
+		checkNotTerminated();
+		if (!isDoubleSize()) {
+			doSetDoubleSize();
+			centerFrameOnScreen();
+			fireMonitorSizeChangedEvent();
+		}
+	}
+
+	protected abstract void doSetDoubleSize();
+
+	@Override
+	public boolean isTripleSize() {
+		return Settings.getBoolean(Settings.TRIPLE, true);
+	}
+
+	@Override
+	public final void setTripleSize() {
+		checkNotTerminated();
+		if (!isTripleSize()) {
+			doSetTripleSize();
+			centerFrameOnScreen();
+			fireMonitorSizeChangedEvent();
+		}
+	}
+
+	protected abstract void doSetTripleSize();
+
+	protected void centerFrameOnScreen() {
+		if (getAmstradPc().hasFrame())
+			getAmstradPc().getFrame().centerOnScreen();
+	}
+
+	@Override
+	public boolean isFullscreen() {
 		return Settings.getBoolean(Settings.FULLSCREEN, false);
 	}
 
 	@Override
-	public final void toggleWindowFullscreen() {
+	public final void toggleFullscreen() {
 		checkStarted();
 		checkNotTerminated();
-		if (isWindowFullscreen()) {
+		if (isFullscreen()) {
 			applyWindowed();
 		} else {
 			applyFullscreen();
 		}
-		fireWindowFullscreenChangedEvent();
+		fireMonitorFullscreenChangedEvent();
 	}
 
 	protected abstract void applyFullscreen();
@@ -337,10 +410,10 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 		@Override
 		public void init(JComponent displayComponent) {
 			AmstradMonitor monitor = JemuMonitor.this;
-			rememberedMonitorMode = monitor.getMonitorMode();
+			rememberedMonitorMode = monitor.getMode();
 			rememberedMonitorEffect = monitor.isMonitorEffectOn();
-			rememberedMonitorScanLinesEffect = monitor.isMonitorScanLinesEffectOn();
-			rememberedMonitorBilinearEffect = monitor.isMonitorBilinearEffectOn();
+			rememberedMonitorScanLinesEffect = monitor.isScanLinesEffectOn();
+			rememberedMonitorBilinearEffect = monitor.isBilinearEffectOn();
 			getSource().init(displayComponent, getGraphicsContext(), getAmstradPc().getKeyboard().getController());
 		}
 
@@ -360,10 +433,10 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 		private void restoreMonitorSettings() {
 			AmstradMonitor monitor = JemuMonitor.this;
-			monitor.setMonitorMode(rememberedMonitorMode);
+			monitor.setMode(rememberedMonitorMode);
 			monitor.setMonitorEffect(rememberedMonitorEffect);
-			monitor.setMonitorScanLinesEffect(rememberedMonitorScanLinesEffect);
-			monitor.setMonitorBilinearEffect(rememberedMonitorBilinearEffect);
+			monitor.setScanLinesEffect(rememberedMonitorScanLinesEffect);
+			monitor.setBilinearEffect(rememberedMonitorBilinearEffect);
 		}
 
 		private AmstradAlternativeDisplaySource getSource() {

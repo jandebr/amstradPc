@@ -34,7 +34,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 						// browser.closeModalWindow();
 						browser.close();
 						if (mode != null) {
-							browser.getAmstradPc().getMonitor().setMonitorMode(mode);
+							browser.getAmstradPc().getMonitor().setMode(mode);
 						}
 					} catch (AmstradProgramException exc) {
 						exc.printStackTrace();

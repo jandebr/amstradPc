@@ -88,7 +88,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
 		if (!isStandaloneInfo()) {
-			getAmstradPc().getMonitor().setMonitorMode(AmstradMonitorMode.COLOR);
+			getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		}
 		canvas.border(getTheme().getMainWindowBorderInk()).paper(getTheme().getMainWindowBackgroundInk());
 		canvas.symbol(SYMBOL_CODE_MONITOR, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon

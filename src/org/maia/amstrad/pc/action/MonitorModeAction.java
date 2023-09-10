@@ -16,7 +16,7 @@ public class MonitorModeAction extends AmstradPcAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		getAmstradPc().getMonitor().setMonitorMode(getMode());
+		getAmstradPc().getMonitor().setMode(getMode());
 	}
 
 	public AmstradMonitorMode getMode() {

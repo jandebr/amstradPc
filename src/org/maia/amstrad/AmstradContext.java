@@ -103,9 +103,9 @@ public abstract class AmstradContext {
 		if (!allowMonitor)
 			monitor.setMonitorEffect(false);
 		if (!allowBilinear)
-			monitor.setMonitorBilinearEffect(false);
+			monitor.setBilinearEffect(false);
 		if (!allowScanlines)
-			monitor.setMonitorScanLinesEffect(false);
+			monitor.setScanLinesEffect(false);
 		// Disable monitor options
 		AmstradPcActions actions = amstradPc.getActions();
 		actions.getMonitorEffectAction().setEnabled(allowMonitor);

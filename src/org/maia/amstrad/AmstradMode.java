@@ -163,7 +163,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		protected void doLaunch(String[] args) {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradMonitor monitor = amstradPc.getMonitor();
-			monitor.setMonitorMode(AmstradMonitorMode.COLOR);
+			monitor.setMode(AmstradMonitorMode.COLOR);
 			monitor.setWindowAlwaysOnTop(true);
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			frame.installAndEnablePopupMenu(false);
@@ -174,7 +174,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		@Override
 		public void amstradPcStarted(AmstradPc amstradPc) {
 			getAmstradContext().showProgramBrowser(amstradPc);
-			amstradPc.getMonitor().makeWindowFullscreen();
+			amstradPc.getMonitor().makeFullscreen();
 		}
 
 		@Override

@@ -126,11 +126,11 @@ public abstract class AmstradPcFrame extends JFrame
 	}
 
 	public boolean isFullscreen() {
-		return getAmstradPc().getMonitor().isWindowFullscreen();
+		return getAmstradPc().getMonitor().isFullscreen();
 	}
 
 	public void toggleFullscreen() {
-		getAmstradPc().getMonitor().toggleWindowFullscreen();
+		getAmstradPc().getMonitor().toggleFullscreen();
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public abstract class AmstradPcFrame extends JFrame
 	@Override
 	public void windowStateChanged(WindowEvent event) {
 		if ((event.getNewState() & Frame.MAXIMIZED_BOTH) != 0) {
-			getAmstradPc().getMonitor().makeWindowFullscreen();
+			getAmstradPc().getMonitor().makeFullscreen();
 		}
 	}
 
@@ -253,8 +253,8 @@ public abstract class AmstradPcFrame extends JFrame
 		}
 
 		@Override
-		public void amstradWindowFullscreenChanged(AmstradMonitor monitor) {
-			if (monitor.isWindowFullscreen()) {
+		public void amstradMonitorFullscreenChanged(AmstradMonitor monitor) {
+			if (monitor.isFullscreen()) {
 				enablePopupMenu();
 			} else {
 				disablePopupMenu();

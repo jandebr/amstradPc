@@ -6,20 +6,20 @@ import javax.swing.JCheckBoxMenuItem;
 
 import org.maia.amstrad.pc.AmstradPc;
 
-public class MonitorBilinearEffectAction extends AmstradPcAction {
+public class MonitorGateArrayAction extends AmstradPcAction {
 
-	public MonitorBilinearEffectAction(AmstradPc amstradPc) {
-		this(amstradPc, "Bilinear display filter");
+	public MonitorGateArrayAction(AmstradPc amstradPc) {
+		this(amstradPc, "Full gate array");
 	}
 
-	public MonitorBilinearEffectAction(AmstradPc amstradPc, String name) {
+	public MonitorGateArrayAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		boolean state = ((JCheckBoxMenuItem) event.getSource()).getState();
-		getAmstradPc().getMonitor().setBilinearEffect(state);
+		getAmstradPc().getMonitor().setFullGateArray(state);
 	}
 
 }

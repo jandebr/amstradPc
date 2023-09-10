@@ -128,7 +128,17 @@ public abstract class AmstradPcAction extends AbstractAction
 	}
 
 	@Override
-	public void amstradWindowFullscreenChanged(AmstradMonitor monitor) {
+	public void amstradMonitorGateArraySizeChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
+	}
+
+	@Override
+	public void amstradMonitorSizeChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
+	}
+
+	@Override
+	public void amstradMonitorFullscreenChanged(AmstradMonitor monitor) {
 		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}
 

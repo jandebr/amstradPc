@@ -28,32 +28,48 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	public abstract JComponent getDisplayComponent();
 
-	public AmstradMonitorMode getMonitorMode() {
+	public AmstradMonitorMode getMode() {
 		return AmstradFactory.getInstance().getAmstradContext().getUserSettings().getMonitorMode();
 	}
 
-	public abstract void setMonitorMode(AmstradMonitorMode mode);
+	public abstract void setMode(AmstradMonitorMode mode);
 
 	public abstract boolean isMonitorEffectOn();
 
 	public abstract void setMonitorEffect(boolean monitorEffect);
 
-	public abstract boolean isMonitorScanLinesEffectOn();
+	public abstract boolean isScanLinesEffectOn();
 
-	public abstract void setMonitorScanLinesEffect(boolean scanLinesEffect);
+	public abstract void setScanLinesEffect(boolean scanLinesEffect);
 
-	public abstract boolean isMonitorBilinearEffectOn();
+	public abstract boolean isBilinearEffectOn();
 
-	public abstract void setMonitorBilinearEffect(boolean bilinearEffect);
+	public abstract void setBilinearEffect(boolean bilinearEffect);
 
-	public void makeWindowFullscreen() {
-		if (!isWindowFullscreen())
-			toggleWindowFullscreen();
+	public abstract boolean isFullGateArray();
+
+	public abstract void setFullGateArray(boolean full);
+
+	public abstract boolean isSingleSize();
+
+	public abstract void setSingleSize();
+
+	public abstract boolean isDoubleSize();
+
+	public abstract void setDoubleSize();
+
+	public abstract boolean isTripleSize();
+
+	public abstract void setTripleSize();
+
+	public abstract boolean isFullscreen();
+
+	public abstract void toggleFullscreen();
+
+	public void makeFullscreen() {
+		if (!isFullscreen())
+			toggleFullscreen();
 	}
-
-	public abstract boolean isWindowFullscreen();
-
-	public abstract void toggleWindowFullscreen();
 
 	public abstract boolean isWindowAlwaysOnTop();
 
@@ -128,9 +144,19 @@ public abstract class AmstradMonitor extends AmstradDevice {
 			listener.amstradMonitorBilinearEffectChanged(this);
 	}
 
-	protected void fireWindowFullscreenChangedEvent() {
+	protected void fireMonitorGateArraySizeChangedEvent() {
 		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradWindowFullscreenChanged(this);
+			listener.amstradMonitorGateArraySizeChanged(this);
+	}
+
+	protected void fireMonitorSizeChangedEvent() {
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradMonitorSizeChanged(this);
+	}
+
+	protected void fireMonitorFullscreenChangedEvent() {
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradMonitorFullscreenChanged(this);
 	}
 
 	protected void fireWindowAlwaysOnTopChangedEvent() {

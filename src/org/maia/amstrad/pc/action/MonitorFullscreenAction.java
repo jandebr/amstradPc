@@ -7,13 +7,13 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
-public class WindowFullscreenAction extends AmstradPcAction {
+public class MonitorFullscreenAction extends AmstradPcAction {
 
 	private static String NAME_FULLSCREEN = "Show fullscreen";
 
 	private static String NAME_WINDOWED = "Show windowed";
 
-	public WindowFullscreenAction(AmstradPc amstradPc) {
+	public MonitorFullscreenAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		updateName();
 		amstradPc.getMonitor().addMonitorListener(this);
@@ -27,8 +27,8 @@ public class WindowFullscreenAction extends AmstradPcAction {
 	}
 
 	@Override
-	public void amstradWindowFullscreenChanged(AmstradMonitor monitor) {
-		super.amstradWindowFullscreenChanged(monitor);
+	public void amstradMonitorFullscreenChanged(AmstradMonitor monitor) {
+		super.amstradMonitorFullscreenChanged(monitor);
 		updateName();
 	}
 
@@ -55,14 +55,14 @@ public class WindowFullscreenAction extends AmstradPcAction {
 			runInSeparateThread(new Runnable() {
 				@Override
 				public void run() {
-					getAmstradPc().getMonitor().toggleWindowFullscreen();
+					getAmstradPc().getMonitor().toggleFullscreen();
 				}
 			});
 		}
 	}
 
 	public boolean isFullscreen() {
-		return getAmstradPc().getMonitor().isWindowFullscreen();
+		return getAmstradPc().getMonitor().isFullscreen();
 	}
 
 }

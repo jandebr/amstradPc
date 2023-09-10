@@ -465,7 +465,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 		@Override
 		public AmstradMonitorMode getMonitorMode() {
-			return getMonitor().getMonitorMode();
+			return getMonitor().getMode();
 		}
 
 		@Override
