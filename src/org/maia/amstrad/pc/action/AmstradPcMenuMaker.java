@@ -317,19 +317,12 @@ public class AmstradPcMenuMaker {
 
 	private JMenu createWindowMenu() {
 		JMenu menu = new JMenu("Window");
-		menu.add(new WindowTitleAutoUpdateMenuHelper(createWindowDynamicTitleMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new WindowAlwaysOnTopMenuHelper(createWindowAlwaysOnTopMenuItem(), getMonitor()).getCheckbox());
-		menu.add(new JSeparator());
 		menu.add(createWindowFullscreenMenuItem());
 		menu.add(createWindowCenterOnScreenMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createAboutMenuItem());
 		return updateMenuLookAndFeel(menu);
-	}
-
-	private JCheckBoxMenuItem createWindowDynamicTitleMenuItem() {
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(
-				new JCheckBoxMenuItem(getActions().getWindowDynamicTitleAction()));
 	}
 
 	private JCheckBoxMenuItem createWindowAlwaysOnTopMenuItem() {
@@ -565,24 +558,6 @@ public class AmstradPcMenuMaker {
 		@Override
 		protected boolean getState(AmstradMonitor monitor) {
 			return monitor.isShowSystemStats();
-		}
-
-	}
-
-	private static class WindowTitleAutoUpdateMenuHelper extends MonitorCheckboxMenuHelper {
-
-		public WindowTitleAutoUpdateMenuHelper(JCheckBoxMenuItem checkbox, AmstradMonitor monitor) {
-			super(checkbox, monitor);
-		}
-
-		@Override
-		public void amstradWindowTitleDynamicChanged(AmstradMonitor monitor) {
-			syncMenu(monitor);
-		}
-
-		@Override
-		protected boolean getState(AmstradMonitor monitor) {
-			return monitor.isWindowTitleDynamic();
 		}
 
 	}

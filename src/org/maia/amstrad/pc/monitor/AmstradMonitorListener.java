@@ -16,8 +16,6 @@ public interface AmstradMonitorListener extends AmstradListener {
 
 	void amstradWindowAlwaysOnTopChanged(AmstradMonitor monitor);
 
-	void amstradWindowTitleDynamicChanged(AmstradMonitor monitor);
-
 	void amstradShowSystemStatsChanged(AmstradMonitor monitor);
 
 	void amstradDisplaySourceChanged(AmstradMonitor monitor);

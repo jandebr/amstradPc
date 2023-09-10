@@ -138,11 +138,6 @@ public abstract class AmstradPcAction extends AbstractAction
 	}
 
 	@Override
-	public void amstradWindowTitleDynamicChanged(AmstradMonitor monitor) {
-		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
-	}
-
-	@Override
 	public void amstradShowSystemStatsChanged(AmstradMonitor monitor) {
 		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}

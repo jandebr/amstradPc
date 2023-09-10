@@ -59,10 +59,6 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	public abstract void setWindowAlwaysOnTop(boolean alwaysOnTop);
 
-	public abstract boolean isWindowTitleDynamic();
-
-	public abstract void setWindowTitleDynamic(boolean dynamicTitle);
-
 	public boolean isShowSystemStats() {
 		return showSystemStats;
 	}
@@ -140,11 +136,6 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	protected void fireWindowAlwaysOnTopChangedEvent() {
 		for (AmstradMonitorListener listener : getMonitorListeners())
 			listener.amstradWindowAlwaysOnTopChanged(this);
-	}
-
-	protected void fireWindowTitleDynamicChangedEvent() {
-		for (AmstradMonitorListener listener : getMonitorListeners())
-			listener.amstradWindowTitleDynamicChanged(this);
 	}
 
 	protected void fireShowSystemStatsChangedEvent() {

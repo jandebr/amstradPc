@@ -232,9 +232,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 		@Override
 		public void setTitle(String title) {
 			if (!isFrameLess()) {
-				if (Settings.getBoolean(Settings.UPDATETITLE, true)) {
-					getFrame().setTitle(title);
-				}
+				getFrame().setTitle(title);
 			}
 		}
 

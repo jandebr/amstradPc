@@ -36,11 +36,6 @@ public abstract class AmstradMonitorAdapter implements AmstradMonitorListener {
 	}
 
 	@Override
-	public void amstradWindowTitleDynamicChanged(AmstradMonitor monitor) {
-		// Subclasses can override this
-	}
-
-	@Override
 	public void amstradShowSystemStatsChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}

@@ -145,20 +145,6 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	protected abstract void doSetWindowAlwaysOnTop(boolean alwaysOnTop);
 
 	@Override
-	public boolean isWindowTitleDynamic() {
-		return Settings.getBoolean(Settings.UPDATETITLE, true);
-	}
-
-	@Override
-	public void setWindowTitleDynamic(boolean dynamicTitle) {
-		checkNotTerminated();
-		if (dynamicTitle != isWindowTitleDynamic()) {
-			Settings.setBoolean(Settings.UPDATETITLE, dynamicTitle);
-			fireWindowTitleDynamicChangedEvent();
-		}
-	}
-
-	@Override
 	public BufferedImage makeScreenshot(boolean monitorEffect) {
 		BufferedImage image = null;
 		synchronized (getAmstradPc()) {

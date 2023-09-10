@@ -130,7 +130,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	}
 
 	private void initMonitor() {
-		((JemuMonitorImpl) getMonitor()).init();
+		((JemuMonitorImpl) getMonitor()).update();
 	}
 
 	@Override
@@ -400,7 +400,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		public JemuMonitorImpl() {
 		}
 
-		void init() {
+		void update() {
 			if (isWindowFullscreen()) {
 				applyFullscreen();
 			} else {
