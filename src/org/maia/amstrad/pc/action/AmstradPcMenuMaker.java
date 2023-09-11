@@ -236,7 +236,6 @@ public class AmstradPcMenuMaker {
 		menu.add(new JSeparator());
 		menu.add(createMonitorSizeMenu());
 		menu.add(createMonitorFullscreenMenuItem());
-		menu.add(new MonitorGateArrayMenuHelper(createMonitorGateArrayMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new JSeparator());
 		menu.add(createScreenshotMenuItem());
 		menu.add(createScreenshotWithMonitorEffectMenuItem());
@@ -296,6 +295,7 @@ public class AmstradPcMenuMaker {
 				.getCheckbox());
 		menu.add(
 				new MonitorBilinearEffectMenuHelper(createMonitorBilinearEffectMenuItem(), getMonitor()).getCheckbox());
+		menu.add(new MonitorGateArrayMenuHelper(createMonitorGateArrayMenuItem(), getMonitor()).getCheckbox());
 		return updateMenuLookAndFeel(menu, UIResources.monitorEffectIcon);
 	}
 

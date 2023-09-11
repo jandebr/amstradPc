@@ -9,9 +9,9 @@ import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
 public class MonitorFullscreenAction extends AmstradPcAction {
 
-	private static String NAME_FULLSCREEN = "Show fullscreen";
+	private static String NAME_FULLSCREEN = "Fullscreen";
 
-	private static String NAME_WINDOWED = "Show windowed";
+	private static String NAME_WINDOWED = "Windowed";
 
 	public MonitorFullscreenAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
