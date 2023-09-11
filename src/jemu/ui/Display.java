@@ -221,6 +221,9 @@ public class Display extends JComponent {
 
 	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
 
+	private BufferedImage stagedGraphicsImage;
+	private static final Dimension stagedGraphicsImageSize = new Dimension(768, 544);
+
 	public Display() {
 		this(true);
 	}
@@ -425,31 +428,45 @@ public class Display extends JComponent {
 
 	@SuppressWarnings("unused")
 	protected void paintImage(Graphics g, boolean offscreenImage, boolean monitorEffect) {
+		Graphics2D g2 = (Graphics2D) g;
+		Rectangle targetImageRect = imageRect;
+		boolean targetSameSize = sameSize;
+		boolean bilinear = Switches.bilinear && (!lowperformance || allowBilinearWhenLowPerformance());
+		boolean staged = useStagedGraphicsImage();
+		if (staged) {
+			System.out.println("Staged paintImage");
+			BufferedImage stagedImage = getStagedGraphicsImage();
+			g2 = stagedImage.createGraphics();
+			targetImageRect = new Rectangle(imageRect);
+			imageRect.x = 0;
+			imageRect.y = 0;
+			imageRect.width = stagedImage.getWidth();
+			imageRect.height = stagedImage.getHeight();
+			sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
+		}
+		if (bilinear) {
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		}
 		if (showfps >= 1)
 			doTouchFPS();
 		if (showfps <= -1 && debug) {
 			showfps++;
 			doTouchFPS();
 		}
-		boolean bilinear = Switches.bilinear && (!lowperformance || allowBilinearWhenLowPerformance());
-		if (bilinear) {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		}
 		if (!jemu.system.cpc.CPC.YM_Play) {
-			paintDisplayImage(g);
+			paintDisplayImage(g2);
 		} else {
 			if (skin == 1)
-				g.drawImage(YMmode, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+				g2.drawImage(YMmode, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
 			else {
-				g.drawImage(YMmode2, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+				g2.drawImage(YMmode2, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
 			}
 			if (!lowperformance)
-				paintBalls(g);
+				paintBalls(g2);
 		}
 		if (fader >= 24 || fader <= -24) {
-			g.setColor(FADE);
-			g.fillRect(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
+			g2.setColor(FADE);
+			g2.fillRect(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
 		}
 		if (imageRect.height >= 640) {
 			zoom = 3;
@@ -480,16 +497,18 @@ public class Display extends JComponent {
 			floppyturbo = false;
 			turbotimer--;
 		}
-		g.setFont(displayFont);
-		g.setColor(Color.BLACK);
-		paintScanLines(g);
-		paintYM(g);
-		paintKeys(g);
-		if (bilinear) {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		g2.setFont(displayFont);
+		g2.setColor(Color.BLACK);
+		paintScanLines(g2);
+		paintYM(g2);
+		paintKeys(g2);
+		paintDisplayOverlays(g2, monitorEffect ? getMonitorMask() : null, offscreenImage);
+		if (staged) {
+			g2.dispose();
+			imageRect = targetImageRect;
+			sameSize = targetSameSize;
+			g.drawImage(getStagedGraphicsImage(), imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
 		}
-		paintDisplayOverlays(g, monitorEffect ? getMonitorMask() : null, offscreenImage);
 	}
 
 	private void doTouchFPS() {
@@ -790,6 +809,20 @@ public class Display extends JComponent {
 			mask = factory.getDefaultMonitorMask();
 		}
 		return mask;
+	}
+
+	private boolean useStagedGraphicsImage() {
+		return Switches.stagedDisplay && getWidth() > stagedGraphicsImageSize.width
+				&& getHeight() > stagedGraphicsImageSize.height; // TODO replace switch with lowperformance
+	}
+
+	private BufferedImage getStagedGraphicsImage() {
+		if (stagedGraphicsImage == null) {
+			stagedGraphicsImage = new BufferedImage(stagedGraphicsImageSize.width, stagedGraphicsImageSize.height,
+					BufferedImage.TYPE_INT_RGB);
+			stagedGraphicsImage.setAccelerationPriority(1);
+		}
+		return stagedGraphicsImage;
 	}
 
 	public DisplayOverlay getCustomDisplayOverlay() {
