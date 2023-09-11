@@ -272,7 +272,7 @@ public class Display extends JComponent {
 	}
 
 	public void installSecondaryDisplaySource(SecondaryDisplaySource displaySource) {
-		if (getSecondaryDisplaySource() != null) {
+		if (hasSecondaryDisplaySource()) {
 			uninstallSecondaryDisplaySource();
 		}
 		if (displaySource != null) {
@@ -289,6 +289,10 @@ public class Display extends JComponent {
 			displaySource.dispose(this);
 			updateImage(false);
 		}
+	}
+
+	public boolean hasSecondaryDisplaySource() {
+		return getSecondaryDisplaySource() != null;
 	}
 
 	public void setImageSize(Dimension size, Dimension scale) {
@@ -396,7 +400,9 @@ public class Display extends JComponent {
 	public void updateImage(boolean wait) {
 		painted = false;
 		if (imageRect.width != 0 && imageRect.height != 0 && isShowing()) {
-			raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
+			if (!hasSecondaryDisplaySource()) {
+				raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
+			}
 			repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
 			if (wait)
 				waitPainted();
@@ -497,7 +503,7 @@ public class Display extends JComponent {
 	}
 
 	private void paintDisplayImage(Graphics g) {
-		if (getSecondaryDisplaySource() != null) {
+		if (hasSecondaryDisplaySource()) {
 			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
 		} else {
 			if (sourceRect != null) {
