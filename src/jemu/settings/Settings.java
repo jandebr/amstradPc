@@ -1,7 +1,5 @@
 package jemu.settings;
 
-import java.io.File;
-
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 
@@ -13,8 +11,8 @@ import org.maia.amstrad.AmstradSettings;
 public class Settings {
 
 	/** the settings instance. */
-	private static final Settings instance = new Settings(AmstradFactory.getInstance().getAmstradContext()
-			.getUserSettings());
+	private static final Settings instance = new Settings(
+			AmstradFactory.getInstance().getAmstradContext().getUserSettings());
 
 	public static final String FLOPPYX = "floppy_xpos";
 	public static final String FLOPPYY = "floppy_ypos";
@@ -109,6 +107,10 @@ public class Settings {
 	public static final String ALLOW_SCANLINES_LOWPERFORMANCE = "lowperformance.allow_scanlines";
 	public static final String ALLOW_SCANEFFECT_LOWPERFORMANCE = "lowperformance.allow_display_effect";
 	public static final String ALLOW_BILINEAR_LOWPERFORMANCE = "lowperformance.allow_bilinear";
+
+	public static final String DISPLAY_RENDER_STAGED = "display.render.staged";
+	public static final String DISPLAY_RENDER_AUTONOMOUS = "display.render.autonomous";
+	public static final String DISPLAY_RENDER_AUTONOMOUS_MAXFPS = "display.render.autonomous.maxfps";
 
 	// Enum values for "MONITOR" setting
 	public static final String MONITOR_COLOUR = "COLOUR";

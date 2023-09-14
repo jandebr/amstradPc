@@ -26,8 +26,6 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 
-import jemu.ui.Switches;
-
 public class AmstradPcMenuMaker {
 
 	private AmstradPcActions actions;
@@ -290,8 +288,6 @@ public class AmstradPcMenuMaker {
 
 	private JMenu createMonitorEffectsMenu() {
 		JMenu menu = new JMenu("Monitor effects");
-		menu.add(new MonitorShowSystemStatsMenuHelper(createMonitorShowSystemStatsMenuItem(), getMonitor())
-				.getCheckbox());
 		menu.add(new MonitorEffectMenuHelper(createMonitorEffectMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new MonitorScanLinesEffectMenuHelper(createMonitorScanLinesEffectMenuItem(), getMonitor())
 				.getCheckbox());
@@ -299,7 +295,8 @@ public class AmstradPcMenuMaker {
 				new MonitorBilinearEffectMenuHelper(createMonitorBilinearEffectMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new MonitorGateArrayMenuHelper(createMonitorGateArrayMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new JSeparator());
-		menu.add(new MonitorStagedDisplayMenuHelper(createMonitorStagedDisplayMenuItem(), getMonitor()).getCheckbox());
+		menu.add(new MonitorShowSystemStatsMenuHelper(createMonitorShowSystemStatsMenuItem(), getMonitor())
+				.getCheckbox());
 		return updateMenuLookAndFeel(menu, UIResources.monitorEffectIcon);
 	}
 
@@ -320,11 +317,6 @@ public class AmstradPcMenuMaker {
 
 	private JCheckBoxMenuItem createMonitorGateArrayMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorGateArrayAction());
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
-	}
-
-	private JCheckBoxMenuItem createMonitorStagedDisplayMenuItem() {
-		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorStagedDisplayAction());
 		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
@@ -642,19 +634,6 @@ public class AmstradPcMenuMaker {
 		@Override
 		protected boolean getState(AmstradMonitor monitor) {
 			return monitor.isFullGateArray();
-		}
-
-	}
-
-	private static class MonitorStagedDisplayMenuHelper extends MonitorCheckboxMenuHelper {
-
-		public MonitorStagedDisplayMenuHelper(JCheckBoxMenuItem checkbox, AmstradMonitor monitor) {
-			super(checkbox, monitor);
-		}
-
-		@Override
-		protected boolean getState(AmstradMonitor monitor) {
-			return Switches.stagedDisplay;
 		}
 
 	}

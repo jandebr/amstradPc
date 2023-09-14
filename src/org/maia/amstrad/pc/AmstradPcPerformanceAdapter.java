@@ -7,7 +7,7 @@ public abstract class AmstradPcPerformanceAdapter implements AmstradPcPerformanc
 
 	@Override
 	public void displayPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int framesPainted,
-			int framesSkipped) {
+			int imagesUpdated) {
 		// Subclasses can override this
 	}
 

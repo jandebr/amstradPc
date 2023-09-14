@@ -982,11 +982,6 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		return performanceListeners;
 	}
 
-	protected void fireDisplayPerformanceUpdate(long timeIntervalMillis, int framesPainted, int framesSkipped) {
-		for (ComputerPerformanceListener listener : getPerformanceListeners())
-			listener.displayPerformanceUpdate(this, timeIntervalMillis, framesPainted, framesSkipped);
-	}
-
 	protected void fireProcessorPerformanceUpdate(long timeIntervalMillis, int timerSyncs, int laggingSyncs,
 			int throttledSyncs) {
 		for (ComputerPerformanceListener listener : getPerformanceListeners())

@@ -20,9 +20,9 @@ import com.sun.management.OperatingSystemMXBean;
 
 public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements AmstradPcPerformanceListener {
 
-	private int fps;
+	private int fps; // frames painted per second
 
-	private int fpsSkipped;
+	private int ips; // image updates per second
 
 	private double cpuLaggingRatio;
 
@@ -101,7 +101,7 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 				+ (jMax < Long.MAX_VALUE ? " (max " + formatMemorySize(jMax) + ")" : ""));
 		lines.add("CPU: " + percentageFormat.format(getCpuLoad()) + " lag " + percentageFormat.format(cpuLaggingRatio)
 				+ " throttle " + percentageFormat.format(cpuThrottlingRatio));
-		lines.add("FPS: " + fps + " with " + fpsSkipped + " skipped");
+		lines.add("FPS: " + fps + " IPS: " + ips);
 		return lines;
 	}
 
@@ -117,10 +117,10 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 
 	@Override
 	public void displayPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int framesPainted,
-			int framesSkipped) {
+			int imagesUpdated) {
 		double tu = 1000.0 / (double) timeIntervalMillis;
 		fps = (int) Math.round(framesPainted * tu);
-		fpsSkipped = (int) Math.round(framesSkipped * tu);
+		ips = (int) Math.round(imagesUpdated * tu);
 	}
 
 	@Override

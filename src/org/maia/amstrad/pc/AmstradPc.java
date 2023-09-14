@@ -196,9 +196,9 @@ public abstract class AmstradPc {
 			listener.amstradPcProgramLoaded(this);
 	}
 
-	public void fireDisplayPerformanceUpdate(long timeIntervalMillis, int framesPainted, int framesSkipped) {
+	public void fireDisplayPerformanceUpdate(long timeIntervalMillis, int framesPainted, int imagesUpdated) {
 		for (AmstradPcPerformanceListener listener : getPerformanceListeners())
-			listener.displayPerformanceUpdate(this, timeIntervalMillis, framesPainted, framesSkipped);
+			listener.displayPerformanceUpdate(this, timeIntervalMillis, framesPainted, imagesUpdated);
 	}
 
 	protected void fireProcessorPerformanceUpdate(long timeIntervalMillis, int timerSyncs, int laggingSyncs,

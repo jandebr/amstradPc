@@ -9,7 +9,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class MonitorBilinearEffectAction extends AmstradPcAction {
 
 	public MonitorBilinearEffectAction(AmstradPc amstradPc) {
-		this(amstradPc, "Bilinear display filter");
+		this(amstradPc, "CRT effect");
 	}
 
 	public MonitorBilinearEffectAction(AmstradPc amstradPc, String name) {

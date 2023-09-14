@@ -70,8 +70,6 @@ public class AmstradPcActions {
 
 	private MonitorGateArrayAction monitorGateArrayAction;
 
-	private MonitorStagedDisplayAction monitorStagedDisplayAction;
-
 	private MonitorSingleSizeAction monitorSingleSizeAction;
 
 	private MonitorDoubleSizeAction monitorDoubleSizeAction;
@@ -278,13 +276,6 @@ public class AmstradPcActions {
 			monitorGateArrayAction = new MonitorGateArrayAction(getAmstradPc());
 		}
 		return monitorGateArrayAction;
-	}
-
-	public MonitorStagedDisplayAction getMonitorStagedDisplayAction() {
-		if (monitorStagedDisplayAction == null) {
-			monitorStagedDisplayAction = new MonitorStagedDisplayAction(getAmstradPc());
-		}
-		return monitorStagedDisplayAction;
 	}
 
 	public MonitorSingleSizeAction getMonitorSingleSizeAction() {

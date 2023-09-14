@@ -1321,6 +1321,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		Autotype.save();
 		jemu.system.cpc.CPC.checkSaveOnExit();
 		computer.dispose();
+		display.dispose();
 	}
 
 	public void osdCheck() {

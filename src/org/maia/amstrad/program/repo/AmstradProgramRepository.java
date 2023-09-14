@@ -29,7 +29,7 @@ public abstract class AmstradProgramRepository {
 			// use default
 		}
 		System.out.println("Init program repository cache, capacity=" + capacity);
-		programCache = new AmstradProgramCache(capacity);
+		programCache = new AmstradProgramCache(capacity * 2); // considering renaming programs
 	}
 
 	protected AmstradProgramRepository() {

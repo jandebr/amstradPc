@@ -9,7 +9,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class MonitorScanLinesEffectAction extends AmstradPcAction {
 
 	public MonitorScanLinesEffectAction(AmstradPc amstradPc) {
-		this(amstradPc, "Show scan lines");
+		this(amstradPc, "Scan lines");
 	}
 
 	public MonitorScanLinesEffectAction(AmstradPc amstradPc, String name) {

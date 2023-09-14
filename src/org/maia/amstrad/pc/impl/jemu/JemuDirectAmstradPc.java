@@ -46,6 +46,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		this.computer = computer;
 		this.display = display;
 		this.keyDispatcher = new KeyDispatcher(display, computer);
+		Switches.FloppySound = Settings.getBoolean(Settings.FLOPPYSOUND, true);
 	}
 
 	@Override
@@ -75,11 +76,13 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		initMonitor();
 		Computer computer = getComputer();
 		computer.addPerformanceListener(this);
+		computer.start(); // Prevents loud beep sound during initialise()
 		computer.initialise();
 		computer.start();
 		computer.reSync();
 		Display display = getDisplay();
 		display.changePerformance();
+		display.addPerformanceListener(this);
 		display.addPrimaryDisplaySourceListener(this);
 		primaryDisplaySourceResolutionChanged(display,
 				new Dimension(display.getImageWidth(), display.getImageHeight()));
@@ -88,6 +91,8 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	}
 
 	private void initJemu() {
+		Switches.autonomousDisplayRendering = Settings.getBoolean(Settings.DISPLAY_RENDER_AUTONOMOUS, true);
+		Switches.stagedDisplayRendering = Settings.getBoolean(Settings.DISPLAY_RENDER_STAGED, false);
 		// from JEMU.init()
 		Switches.executable = true;
 		Switches.stretch = false;
@@ -124,7 +129,6 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		Display.model = "System: " + getComputer().getName();
 		getMonitor().applyMonitorMode(getMonitor().getMode());
 		Switches.audioenabler = getAudio().isMuted() ? 0 : 1;
-		Switches.FloppySound = Settings.getBoolean(Settings.FLOPPYSOUND, true);
 		Switches.notebook = Settings.getBoolean(Settings.NOTEBOOK, false);
 		Switches.joystick = Settings.getBoolean(Settings.JOYSTICK, true) ? 1 : 0;
 		Switches.volume = Integer.parseInt(Settings.get(Settings.VOLUME, "1000")) / 1000.0;
@@ -149,6 +153,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	protected void doTerminate() {
 		Autotype.save();
 		getComputer().dispose();
+		getDisplay().dispose();
 	}
 
 	@Override

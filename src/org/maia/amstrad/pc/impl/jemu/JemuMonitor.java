@@ -109,7 +109,7 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 	@Override
 	public boolean isFullGateArray() {
-		return Settings.getBoolean(Settings.LARGE, false);
+		return Settings.getBoolean(Settings.LARGE, true);
 	}
 
 	@Override
@@ -319,8 +319,10 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 	private void handleAutonomousDisplayRendering() {
 		synchronized (getAmstradPc()) {
-			if (isAlternativeDisplaySourceShowing() && getAmstradPc().isPaused()) {
-				// When computer is paused, there is no vSync and we need to render ourselves
+			if (!Switches.autonomousDisplayRendering && getAmstradPc().isPaused()
+					&& isAlternativeDisplaySourceShowing()) {
+				// When computer is paused, there is no vSync. When vSync ignites the rendering process, it means we
+				// need to take over the rendering (until the computer resumes for example)
 				if (getAutonomousDisplayRenderer() == null || getAutonomousDisplayRenderer().isStopped()) {
 					AutonomousDisplayRenderer renderer = new AutonomousDisplayRenderer();
 					setAutonomousDisplayRenderer(renderer);
@@ -348,10 +350,6 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 		private boolean stop;
 
-		// Performance observation
-		private long displayMonitoringStartTime = -1L;
-		private int displayFramesPainted;
-
 		public AutonomousDisplayRenderer() {
 			super("AutonomousDisplayRenderer");
 			setDaemon(true);
@@ -359,26 +357,12 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 		@Override
 		public void run() {
-			System.out.println("Autonomous render thread started");
+			System.out.println("Autonomous display render thread started");
 			final Display display = getJemuDisplay();
 			while (!isStopped()) {
 				display.updateImage(true);
-				displayFramesPainted++;
-				updatePerformanceMonitoring();
 			}
-			System.out.println("Autonomous render thread stopped");
-		}
-
-		private void updatePerformanceMonitoring() {
-			long now = System.currentTimeMillis();
-			if (displayMonitoringStartTime < 0L || now >= displayMonitoringStartTime + 1000L) {
-				if (displayMonitoringStartTime >= 0L) {
-					getAmstradPc().fireDisplayPerformanceUpdate(now - displayMonitoringStartTime, displayFramesPainted,
-							0);
-				}
-				displayMonitoringStartTime = now;
-				displayFramesPainted = 0;
-			}
+			System.out.println("Autonomous display render thread stopped");
 		}
 
 		public void stopRendering() {

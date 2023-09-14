@@ -33,10 +33,11 @@ import jemu.settings.Settings;
 import jemu.ui.Autotype;
 import jemu.ui.Display;
 import jemu.ui.Display.PrimaryDisplaySourceListener;
+import jemu.ui.DisplayPerformanceListener;
 import jemu.ui.Switches;
 
 public abstract class JemuAmstradPc extends AmstradPc
-		implements PrimaryDisplaySourceListener, ComputerPerformanceListener {
+		implements PrimaryDisplaySourceListener, ComputerPerformanceListener, DisplayPerformanceListener {
 
 	private boolean started;
 
@@ -266,9 +267,8 @@ public abstract class JemuAmstradPc extends AmstradPc
 	}
 
 	@Override
-	public void displayPerformanceUpdate(Computer computer, long timeIntervalMillis, int framesPainted,
-			int framesSkipped) {
-		fireDisplayPerformanceUpdate(timeIntervalMillis, framesPainted, framesSkipped);
+	public void displayPerformanceUpdate(Display display, long timeIntervalMillis, int framesPainted, int imagesUpdated) {
+		fireDisplayPerformanceUpdate(timeIntervalMillis, framesPainted, imagesUpdated);
 	}
 
 	@Override

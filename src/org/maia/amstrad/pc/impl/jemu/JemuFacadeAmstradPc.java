@@ -79,6 +79,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 		jemu.addPauseListener(this);
 		jemu.addComputerPerformanceListener(this);
 		Display display = jemu.getDisplay();
+		display.addPerformanceListener(this);
 		display.addPrimaryDisplaySourceListener(this);
 		primaryDisplaySourceResolutionChanged(display,
 				new Dimension(display.getImageWidth(), display.getImageHeight()));

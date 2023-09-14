@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.IllegalComponentStateException;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
@@ -213,16 +214,23 @@ public class Display extends JComponent {
 	protected boolean sameSize;
 	protected boolean painted = false;
 
+	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
 	private DisplayOverlay customDisplayOverlay;
 	private DisplayOverlay systemDisplayOverlay; // draws above custom
 
 	private List<DisplayPaintListener> displayPaintListeners;
 	private List<PrimaryDisplaySourceListener> primaryDisplaySourceListeners;
 
-	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
-
+	// Rendering
 	private BufferedImage stagedGraphicsImage;
 	private static final Dimension stagedGraphicsImageSize = new Dimension(768, 544);
+	private AutonomousDisplayRenderer autonomousDisplayRenderer;
+
+	// Performance observation
+	private long performanceMonitoringStartTime = -1L;
+	private int framesPainted;
+	private int imagesUpdated;
+	private List<DisplayPerformanceListener> performanceListeners;
 
 	public Display() {
 		this(true);
@@ -232,6 +240,7 @@ public class Display extends JComponent {
 		setupDisplayOverlays();
 		displayPaintListeners = new Vector<DisplayPaintListener>();
 		primaryDisplaySourceListeners = new Vector<PrimaryDisplaySourceListener>();
+		performanceListeners = new Vector<DisplayPerformanceListener>();
 		InputStream in = getClass().getResourceAsStream("amstrad.ttf");
 		try {
 			displayFont = Font.createFont(Font.TRUETYPE_FONT, in).deriveFont(0, 8);
@@ -324,6 +333,23 @@ public class Display extends JComponent {
 			paint(g);
 			g.dispose();
 		}
+		if (Switches.autonomousDisplayRendering) {
+			activateAutonomousDisplayRendering();
+		}
+	}
+
+	private synchronized void activateAutonomousDisplayRendering() {
+		if (autonomousDisplayRenderer == null) {
+			int maximumFps = Integer.parseInt(Settings.get(Settings.DISPLAY_RENDER_AUTONOMOUS_MAXFPS, "50"));
+			autonomousDisplayRenderer = new AutonomousDisplayRenderer(maximumFps);
+			autonomousDisplayRenderer.start();
+		}
+	}
+
+	public void dispose() {
+		if (autonomousDisplayRenderer != null) {
+			autonomousDisplayRenderer.stopRendering();
+		}
 	}
 
 	@Override
@@ -401,14 +427,22 @@ public class Display extends JComponent {
 	}
 
 	public void updateImage(boolean wait) {
-		painted = false;
-		if (imageRect.width != 0 && imageRect.height != 0 && isShowing()) {
-			if (!hasSecondaryDisplaySource()) {
+		if (imageWidth > 0 && imageHeight > 0) {
+			synchronized (raster) {
 				raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
+				imagesUpdated++;
 			}
-			repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
+		}
+		if (!Switches.autonomousDisplayRendering) {
+			if (isDisplayShowing()) {
+				painted = false;
+				repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
+				if (wait)
+					waitPainted();
+			}
+		} else {
 			if (wait)
-				waitPainted();
+				Thread.yield();
 		}
 	}
 
@@ -434,7 +468,6 @@ public class Display extends JComponent {
 		boolean bilinear = Switches.bilinear && (!lowperformance || allowBilinearWhenLowPerformance());
 		boolean staged = useStagedGraphicsImage();
 		if (staged) {
-			System.out.println("Staged paintImage");
 			BufferedImage stagedImage = getStagedGraphicsImage();
 			g2 = stagedImage.createGraphics();
 			targetImageRect = new Rectangle(imageRect);
@@ -525,14 +558,16 @@ public class Display extends JComponent {
 		if (hasSecondaryDisplaySource()) {
 			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
 		} else {
-			if (sourceRect != null) {
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width,
-						imageRect.y + imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width,
-						sourceRect.y + sourceRect.height, null);
-			} else if (sameSize) {
-				g.drawImage(image, imageRect.x, imageRect.y, null);
-			} else {
-				g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+			synchronized (raster) {
+				if (sourceRect != null) {
+					g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width,
+							imageRect.y + imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width,
+							sourceRect.y + sourceRect.height, null);
+				} else if (sameSize) {
+					g.drawImage(image, imageRect.x, imageRect.y, null);
+				} else {
+					g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
+				}
 			}
 		}
 	}
@@ -690,7 +725,9 @@ public class Display extends JComponent {
 			paintImage(g, false, monitorEffect);
 		}
 		painted = true;
+		framesPainted++;
 		notifyDisplayGotPainted();
+		updatePerformanceMonitoring();
 	}
 
 	public BufferedImage getImage(boolean monitorEffect) {
@@ -752,7 +789,7 @@ public class Display extends JComponent {
 		painted = value;
 	}
 
-	public void waitPainted() {
+	private void waitPainted() {
 		if (isDisplayShowing()) {
 			long timeoutTime = System.currentTimeMillis() + 500L;
 			boolean timeout = false;
@@ -766,12 +803,31 @@ public class Display extends JComponent {
 		}
 	}
 
+	private void updatePerformanceMonitoring() {
+		long now = System.currentTimeMillis();
+		if (performanceMonitoringStartTime < 0L || now >= performanceMonitoringStartTime + 1000L) {
+			if (performanceMonitoringStartTime >= 0L) {
+				notifyPerformanceUpdate(now - performanceMonitoringStartTime, framesPainted, imagesUpdated);
+			}
+			performanceMonitoringStartTime = now;
+			framesPainted = 0;
+			imagesUpdated = 0;
+		}
+	}
+
 	private boolean isDisplayShowing() {
+		if (imageRect.width == 0 || imageRect.height == 0)
+			return false;
 		if (!isShowing())
 			return false;
-		Point p = getLocationOnScreen();
-		if (p.x + getWidth() < 0 || p.y + getHeight() < 0)
+		try {
+			Point p = getLocationOnScreen();
+			if (p.x + getWidth() < 0 || p.y + getHeight() < 0)
+				return false;
+		} catch (IllegalComponentStateException e) {
+			// not showing on screen
 			return false;
+		}
 		return true;
 	}
 
@@ -812,8 +868,8 @@ public class Display extends JComponent {
 	}
 
 	private boolean useStagedGraphicsImage() {
-		return Switches.stagedDisplay && getWidth() > stagedGraphicsImageSize.width
-				&& getHeight() > stagedGraphicsImageSize.height; // TODO replace switch with lowperformance
+		return Switches.stagedDisplayRendering && imageRect.width > stagedGraphicsImageSize.width
+				&& imageRect.height > stagedGraphicsImageSize.height;
 	}
 
 	private BufferedImage getStagedGraphicsImage() {
@@ -885,6 +941,23 @@ public class Display extends JComponent {
 		}
 	}
 
+	public void addPerformanceListener(DisplayPerformanceListener listener) {
+		getPerformanceListeners().add(listener);
+	}
+
+	public void removePerformanceListener(DisplayPerformanceListener listener) {
+		getPerformanceListeners().remove(listener);
+	}
+
+	public List<DisplayPerformanceListener> getPerformanceListeners() {
+		return performanceListeners;
+	}
+
+	private void notifyPerformanceUpdate(long timeIntervalMillis, int framesPainted, int imagesUpdated) {
+		for (DisplayPerformanceListener listener : getPerformanceListeners())
+			listener.displayPerformanceUpdate(this, timeIntervalMillis, framesPainted, imagesUpdated);
+	}
+
 	public static interface DisplayPaintListener {
 
 		void displayGotPainted(Display display);
@@ -894,6 +967,53 @@ public class Display extends JComponent {
 	public static interface PrimaryDisplaySourceListener {
 
 		void primaryDisplaySourceResolutionChanged(Display display, Dimension resolution);
+
+	}
+
+	private class AutonomousDisplayRenderer extends Thread {
+
+		private boolean stop;
+
+		private int maximumFps;
+
+		public AutonomousDisplayRenderer(int maximumFps) {
+			super("AutonomousDisplayRenderer");
+			setDaemon(true);
+			this.maximumFps = maximumFps;
+		}
+
+		@Override
+		public void run() {
+			System.out.println("Autonomous display render thread started");
+			long frameTimeMs = 1000L / getMaximumFps();
+			while (!isStopped()) {
+				long sleepTimeMs = 20L;
+				if (isDisplayShowing()) {
+					long t0 = System.currentTimeMillis();
+					painted = false;
+					repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
+					waitPainted();
+					sleepTimeMs = Math.max(frameTimeMs - (System.currentTimeMillis() - t0), 0);
+				}
+				try {
+					Thread.sleep(sleepTimeMs);
+				} catch (InterruptedException e) {
+				}
+			}
+			System.out.println("Autonomous display render thread stopped");
+		}
+
+		public void stopRendering() {
+			stop = true;
+		}
+
+		public boolean isStopped() {
+			return stop;
+		}
+
+		public int getMaximumFps() {
+			return maximumFps;
+		}
 
 	}
 

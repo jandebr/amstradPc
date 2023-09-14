@@ -120,7 +120,6 @@ public class Switches {
         public static boolean stretch           = true;
         public static boolean doublesize        = false;
         public static boolean triplesize        = false;
-        public static boolean stagedDisplay     = false;
         public static int     booter            = 0;
         public static int     top               = 0;
         public static int     turbo             = 1;
@@ -143,4 +142,7 @@ public class Switches {
         public static int luminance             = 255;
         public static int vhold                 = 45;
         public static int diagnose                 = 0;
+
+        public static boolean stagedDisplayRendering = false;
+        public static boolean autonomousDisplayRendering = true;
 }
