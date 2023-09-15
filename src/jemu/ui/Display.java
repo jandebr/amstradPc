@@ -440,9 +440,6 @@ public class Display extends JComponent {
 				if (wait)
 					waitPainted();
 			}
-		} else {
-			if (wait)
-				Thread.yield();
 		}
 	}
 
