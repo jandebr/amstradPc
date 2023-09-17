@@ -144,5 +144,5 @@ public class Switches {
         public static int diagnose                 = 0;
 
         public static boolean stagedDisplayRendering = false;
-        public static boolean autonomousDisplayRendering = true;
+        public static boolean autonomousDisplayRendering = false;
 }
