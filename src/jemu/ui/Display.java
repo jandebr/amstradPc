@@ -987,9 +987,7 @@ public class Display extends JComponent {
 				long sleepTimeMs = 20L;
 				if (isDisplayShowing()) {
 					long t0 = System.currentTimeMillis();
-					painted = false;
-					repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
-					waitPainted();
+					paintImmediately(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
 					sleepTimeMs = Math.max(frameTimeMs - (System.currentTimeMillis() - t0), 0);
 				}
 				try {
