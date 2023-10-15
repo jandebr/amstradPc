@@ -37,7 +37,7 @@ code = amstradPc.jar
 class = org.maia.amstrad.AmstradMain
 
 # JVM arguments
-jvmarg = -splash:images/splash.png
+jvmarg = -splash:images/splash-loading.png
 jvmarg = -Xmx512m
 jvmarg = -Djavacpc-version=%AMSTRADPC_VERSION%
 jvmarg = -Djavacpc-ini-read=javacpc.ini
