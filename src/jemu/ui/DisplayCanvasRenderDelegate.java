@@ -69,8 +69,6 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 
 	private long scheduledFullCanvasUpdateTimestamp; // after this time there should be a full canvas repaint
 
-	private static long FULL_CANVAS_UPDATE_EVERY_MILLIS = 4000L; // every 4 seconds
-
 	private static int GRID_CELL_MIN_SIZE_BITS = 3; // size 8 by 8
 
 	private static int GRID_CELL_MAX_SIZE_BITS = 6; // size 64 by 64
@@ -173,7 +171,9 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 	private void startRenderThread() {
 		if (getRenderThread() == null) {
 			int maximumFps = Integer.parseInt(Settings.get(Settings.DISPLAY_RENDER_CANVAS_MAXFPS, "50"));
-			RenderThread rt = new RenderThread(maximumFps);
+			int fullCanvasUpdateSecondInterval = Integer
+					.parseInt(Settings.get(Settings.DISPLAY_RENDER_CANVAS_KEYFRAME_INTERVAL, "0"));
+			RenderThread rt = new RenderThread(maximumFps, fullCanvasUpdateSecondInterval);
 			setRenderThread(rt);
 			rt.start();
 		}
@@ -301,9 +301,12 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 
 		private int maximumFps;
 
-		public RenderThread(int maximumFps) {
+		private int fullCanvasUpdateSecondInterval; // disabled when <= 0
+
+		public RenderThread(int maximumFps, int fullCanvasUpdateSecondInterval) {
 			super("DisplayRenderThread");
 			this.maximumFps = maximumFps;
+			this.fullCanvasUpdateSecondInterval = fullCanvasUpdateSecondInterval;
 			setDaemon(true);
 		}
 
@@ -357,8 +360,9 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 				synchronized (paintSemaphore) {
 					boolean fullUpdate = shouldUpdateFullCanvas();
 					if (fullUpdate) {
-						setScheduledFullCanvasUpdateTimestamp(FULL_CANVAS_UPDATE_EVERY_MILLIS > 0L
-								? System.currentTimeMillis() + FULL_CANVAS_UPDATE_EVERY_MILLIS
+						int fullUpdateSecondInterval = getFullCanvasUpdateSecondInterval();
+						setScheduledFullCanvasUpdateTimestamp(fullUpdateSecondInterval > 0
+								? System.currentTimeMillis() + fullUpdateSecondInterval * 1000L
 								: Long.MAX_VALUE);
 						log("Full canvas update");
 					}
@@ -390,6 +394,10 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 
 		public int getMaximumFps() {
 			return maximumFps;
+		}
+
+		public int getFullCanvasUpdateSecondInterval() {
+			return fullCanvasUpdateSecondInterval;
 		}
 
 	}
