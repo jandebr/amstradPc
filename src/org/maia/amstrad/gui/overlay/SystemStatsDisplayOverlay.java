@@ -14,6 +14,7 @@ import java.util.Vector;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcPerformanceListener;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 import com.sun.management.OperatingSystemMXBean;
@@ -48,41 +49,56 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		if (getAmstracPc().getMonitor().isShowSystemStats() && !offscreenImage) {
-			drawStatLines(produceStatLines(), display, displayBounds, monitorInsets, graphicsContext);
+			synchronized (lines) {
+				drawStatLines(produceStatLines(), displayView, displayBounds, monitorInsets, graphicsContext);
+			}
 		}
 	}
 
-	private void drawStatLines(List<String> lines, Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
-			AmstradGraphicsContext graphicsContext) {
+	private void drawStatLines(List<String> lines, AmstradDisplayView displayView, Rectangle displayBounds,
+			Insets monitorInsets, AmstradGraphicsContext graphicsContext) {
 		if (lines.isEmpty())
 			return;
-		display.setFont(getFont(graphicsContext));
-		FontMetrics fm = display.getFontMetrics();
 		// Box
+		Font font = getFont(graphicsContext);
+		FontMetrics fm = displayView.getFontMetrics(font);
+		int[] lineWidths = computeLineWidths(lines, fm);
+		int boxWidth = computeBoxWidth(lineWidths);
 		int lineHeight = fm.getHeight();
-		int boxHeight = lines.size() * lineHeight;
-		int boxWidth = computeBoxWidth(lines, fm);
+		int boxHeight = lines.size() * lineHeight + 10;
 		int xcenter = displayBounds.x + displayBounds.width / 2;
-		int ytop = displayBounds.y + Math.min(monitorInsets.top, displayBounds.height / 17);
-		display.setColor(BOX_COLOR);
-		display.fillRect(xcenter - boxWidth / 2, ytop - 4, boxWidth, boxHeight + 6);
+		int xleft = xcenter - boxWidth / 2;
+		int ytop = displayBounds.y + Math.min(monitorInsets.top, displayBounds.height / 17) - 4;
+		Graphics2D g = displayView.createDisplayViewport(xleft, ytop, boxWidth, boxHeight);
+		g.setFont(font);
+		g.setColor(BOX_COLOR);
+		g.fillRect(0, 0, boxWidth, boxHeight);
 		// Lines
-		display.setColor(LINE_COLOR);
+		g.setColor(LINE_COLOR);
+		int y = 5 + fm.getAscent();
 		for (int i = 0; i < lines.size(); i++) {
-			String line = lines.get(i);
-			int xleft = xcenter - fm.stringWidth(line) / 2;
-			int ybase = ytop + fm.getAscent() + i * lineHeight;
-			display.drawString(line, xleft, ybase);
+			int x = (boxWidth - lineWidths[i]) / 2;
+			g.drawString(lines.get(i), x, y);
+			y += lineHeight;
 		}
+		g.dispose();
 	}
 
-	private int computeBoxWidth(List<String> lines, FontMetrics fm) {
+	private int[] computeLineWidths(List<String> lines, FontMetrics fm) {
+		int[] widths = new int[lines.size()];
+		for (int i = 0; i < lines.size(); i++) {
+			widths[i] = fm.stringWidth(lines.get(i));
+		}
+		return widths;
+	}
+
+	private int computeBoxWidth(int[] lineWidths) {
 		int width = 0;
-		for (String line : lines) {
-			width = Math.max(width, fm.stringWidth(line));
+		for (int i = 0; i < lineWidths.length; i++) {
+			width = Math.max(width, lineWidths[i]);
 		}
 		return (width / 16 + 2) * 16;
 	}

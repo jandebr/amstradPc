@@ -10,18 +10,15 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.IllegalComponentStateException;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.awt.image.MemoryImageSource;
-import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
@@ -44,17 +41,7 @@ import jemu.settings.Settings;
 public class Display extends JComponent {
 
 	public boolean showDrive = false;
-	protected int flashkey = 0;
 	public static int noisecount = 200;
-	public float co;
-	public float cn;
-	public float cm;
-	public float cl;
-	public int ck;
-	public int cj;
-	public int ci;
-	public int ch = 50;
-	public int zoom = 1;
 	public static boolean lowperformance;
 	public int mouseX;
 	public int mouseY;
@@ -71,7 +58,7 @@ public class Display extends JComponent {
 	final URL cursorim = getClass().getResource("image/crosshair.gif");
 	final Image lightGun = getToolkit().getImage(cursorim);
 	final Image imagec;
-	final boolean debug = false;
+	private boolean debug = false;
 	final URL floppyicon = getClass().getResource("image/read_small.png");
 	final Image floppy = getToolkit().getImage(floppyicon);
 	final URL floppyicon2 = getClass().getResource("image/read.png");
@@ -141,14 +128,7 @@ public class Display extends JComponent {
 	long mLastFPSTime;
 	int mNextFPS;
 	int mCurrFPS;
-	// scaneffect masks
 
-	final URL Mask1 = getClass().getResource("image/ctm644.png");
-	final Image mask1 = getToolkit().getImage(Mask1);
-	final URL Mask3 = Mask1; // getClass().getResource("image/FinalTele5.png");
-	final Image mask3 = getToolkit().getImage(Mask3);
-
-	Image mask = mask1;
 	public static boolean scaneffect = false;
 	public static boolean horizontal = true;
 
@@ -168,7 +148,6 @@ public class Display extends JComponent {
 	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	GraphicsDevice gs = ge.getDefaultScreenDevice();
 	GraphicsConfiguration gc = gs.getDefaultConfiguration();
-	public boolean scanlines, drawlines;
 	public static String monmessage = "Colour monitor"; // Message which monitor (CPC)
 	public static String automessage = "Autosave is OFF";
 	public static int showmon = 250;
@@ -202,17 +181,14 @@ public class Display extends JComponent {
 	public static final Dimension SCALE_2 = new Dimension(2, 2);
 	public static final Dimension SCALE_1x2 = new Dimension(1, 2);
 
-	protected BufferedImage image;
-	protected WritableRaster raster;
+	// Rendering
+	protected DisplayRenderDelegate renderDelegate;
 	protected int[] pixels;
 	protected int imageWidth, imageHeight;
 	protected int scaleWidth, scaleHeight, scaleW, scaleH;
 	public static Rectangle imageRect = new Rectangle();
-	public static Rectangle sourceRect = null; // Source rectangle in image
 	public static int ztext = 0 - 20;
 	public static int ytext = ztext;
-	protected boolean sameSize;
-	protected boolean painted = false;
 
 	private SecondaryDisplaySource secondaryDisplaySource; // when set, takes precedence over 'image'
 	private DisplayOverlay customDisplayOverlay;
@@ -221,11 +197,6 @@ public class Display extends JComponent {
 	private List<DisplayPaintListener> displayPaintListeners;
 	private List<PrimaryDisplaySourceListener> primaryDisplaySourceListeners;
 
-	// Rendering
-	private BufferedImage stagedGraphicsImage;
-	private static final Dimension stagedGraphicsImageSize = new Dimension(768, 544);
-	private AutonomousDisplayRenderer autonomousDisplayRenderer;
-
 	// Performance observation
 	private long performanceMonitoringStartTime = -1L;
 	private int framesPainted;
@@ -233,10 +204,12 @@ public class Display extends JComponent {
 	private List<DisplayPerformanceListener> performanceListeners;
 
 	public Display() {
-		this(true);
+		this(new DisplayClassicRenderDelegate());
 	}
 
-	public Display(boolean doubleBuffered) {
+	public Display(DisplayRenderDelegate renderDelegate) {
+		this.renderDelegate = renderDelegate;
+		setDoubleBuffered(renderDelegate.isDoubleBufferingEnabled());
 		setupDisplayOverlays();
 		displayPaintListeners = new Vector<DisplayPaintListener>();
 		primaryDisplaySourceListeners = new Vector<PrimaryDisplaySourceListener>();
@@ -255,7 +228,7 @@ public class Display extends JComponent {
 		enableEvents(AWTEvent.FOCUS_EVENT_MASK);
 		setFocusTraversalKeysEnabled(true);
 		setRequestFocusEnabled(true);
-		setDoubleBuffered(doubleBuffered);
+		renderDelegate.init(this);
 	}
 
 	private void setupDisplayOverlays() {
@@ -290,7 +263,7 @@ public class Display extends JComponent {
 		if (displaySource != null) {
 			displaySource.init(this);
 			setSecondaryDisplaySource(displaySource);
-			updateImage(false);
+			getRenderDelegate().refreshDisplay();
 		}
 	}
 
@@ -299,7 +272,7 @@ public class Display extends JComponent {
 		if (displaySource != null) {
 			setSecondaryDisplaySource(null);
 			displaySource.dispose(this);
-			updateImage(false);
+			getRenderDelegate().refreshDisplay();
 		}
 	}
 
@@ -310,15 +283,12 @@ public class Display extends JComponent {
 	public void setImageSize(Dimension size, Dimension scale) {
 		imageWidth = size.width;
 		imageHeight = size.height;
-		image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
-		image.setAccelerationPriority(1);
-		raster = image.getRaster();
 		pixels = new int[imageWidth * imageHeight];
 		Arrays.fill(pixels, 0xff000000);
 		if (scale == null)
 			scale = SCALE_1;
-		System.out.println("Display image size " + size.width + "x" + size.height + " with scale " + scale.width + "x"
-				+ scale.height);
+		// System.out.println("Display image size " + size.width + "x" + size.height + " with scale " + scale.width +
+		// "x"+ scale.height);
 		scaleWidth = imageWidth * scale.width;
 		scaleHeight = imageHeight * scale.height;
 		scaleW = scaleWidth;
@@ -333,29 +303,21 @@ public class Display extends JComponent {
 			paint(g);
 			g.dispose();
 		}
-		if (Switches.autonomousDisplayRendering) {
-			activateAutonomousDisplayRendering();
-		}
-	}
-
-	private synchronized void activateAutonomousDisplayRendering() {
-		if (autonomousDisplayRenderer == null) {
-			int maximumFps = Integer.parseInt(Settings.get(Settings.DISPLAY_RENDER_AUTONOMOUS_MAXFPS, "50"));
-			autonomousDisplayRenderer = new AutonomousDisplayRenderer(maximumFps);
-			autonomousDisplayRenderer.start();
-		}
+		getRenderDelegate().displayImageChangedSize(imageWidth, imageHeight);
 	}
 
 	public void dispose() {
-		if (autonomousDisplayRenderer != null) {
-			autonomousDisplayRenderer.stopRendering();
-		}
+		getRenderDelegate().dispose();
 	}
 
 	@Override
-	public void setBounds(int x, int y, int width, int height) {
+	public synchronized void setBounds(int x, int y, int width, int height) {
+		boolean changedSize = width != getWidth() || height != getHeight();
 		super.setBounds(x, y, width, height);
 		checkSize();
+		if (changedSize) {
+			getRenderDelegate().displayChangedSize(width, height);
+		}
 	}
 
 	protected void checkDouble() {
@@ -394,9 +356,7 @@ public class Display extends JComponent {
 			LED_BORDER = new Color(0x90, 0x00, 0x00, 0x40);
 			TRANS = new Color(0xff, 0xff, 0xff, 0xb0);
 			TRANSBLACK = new Color(0x00, 0x00, 0x00, 0x40);
-			mask = mask3;
 			if (Switches.monitormode == 0 || Switches.monitormode == 1) {
-				mask = mask1;
 				SCAN = new Color(0x00, 0x00, 0x00, 0x30);
 			} else
 				SCAN = new Color(0x00, 0x00, 0x00, 0x90);
@@ -415,130 +375,37 @@ public class Display extends JComponent {
 		} else {
 			imageRect = new Rectangle(insets.left, insets.top, clientWidth, clientHeight);
 		}
-		sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
 	}
 
 	public int[] getPixels() {
 		return pixels;
 	}
 
-	public void setSourceRect(Rectangle value) {
-		sourceRect = value;
-	}
-
 	public void updateImage(boolean wait) {
 		if (imageWidth > 0 && imageHeight > 0) {
-			synchronized (raster) {
-				raster.setDataElements(0, 0, imageWidth, imageHeight, pixels);
-				imagesUpdated++;
-			}
-		}
-		if (!Switches.autonomousDisplayRendering) {
-			if (isDisplayShowing()) {
-				painted = false;
-				repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
-				if (wait)
-					waitPainted();
-			}
+			getRenderDelegate().displayPixelsReadyForPainting();
+			imagesUpdated++;
 		}
 	}
 
 	public boolean processGun() {
-		System.out.println("Colour is:" + Util.hex(image.getRGB(mouseX, mouseY)));
-		if (image.getRGB(mouseX, mouseY) == 0xFFFFFFFF)
+		int rgb = getRGB(mouseX, mouseY);
+		System.out.println("Colour is:" + Util.hex(rgb));
+		if (rgb == 0xFFFFFFFF)
 			return true;
 		return false;
 	}
 
 	public int getColor() {
-		int value = 0x00;
-		if (image != null)
-			value = image.getRGB(1, 1);
-		return value;
+		return getRGB(1, 1);
 	}
 
-	@SuppressWarnings("unused")
-	protected void paintImage(Graphics g, boolean offscreenImage, boolean monitorEffect) {
-		Graphics2D g2 = (Graphics2D) g;
-		Rectangle targetImageRect = imageRect;
-		boolean targetSameSize = sameSize;
-		boolean bilinear = Switches.bilinear && (!lowperformance || allowBilinearWhenLowPerformance());
-		boolean staged = useStagedGraphicsImage();
-		if (staged) {
-			BufferedImage stagedImage = getStagedGraphicsImage();
-			g2 = stagedImage.createGraphics();
-			targetImageRect = new Rectangle(imageRect);
-			imageRect.x = 0;
-			imageRect.y = 0;
-			imageRect.width = stagedImage.getWidth();
-			imageRect.height = stagedImage.getHeight();
-			sameSize = imageRect.width == imageWidth && imageRect.height == imageHeight;
+	private int getRGB(int imageX, int imageY) {
+		int rgb = 0;
+		if (imageX >= 0 && imageX < imageWidth && imageY >= 0 && imageY < imageHeight) {
+			rgb = pixels[imageY * imageWidth + imageX];
 		}
-		if (bilinear) {
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		}
-		if (showfps >= 1)
-			doTouchFPS();
-		if (showfps <= -1 && debug) {
-			showfps++;
-			doTouchFPS();
-		}
-		if (!jemu.system.cpc.CPC.YM_Play) {
-			paintDisplayImage(g2);
-		} else {
-			if (skin == 1)
-				g2.drawImage(YMmode, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
-			else {
-				g2.drawImage(YMmode2, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
-			}
-			if (!lowperformance)
-				paintBalls(g2);
-		}
-		if (fader >= 24 || fader <= -24) {
-			g2.setColor(FADE);
-			g2.fillRect(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
-		}
-		if (imageRect.height >= 640) {
-			zoom = 3;
-		} else if (isLargeDisplay()) {
-			zoom = 2;
-		} else {
-			zoom = 1;
-		}
-		scanlines = Switches.ScanLines;
-		if (scanlines && (!lowperformance || allowScanLinesWhenLowPerformance())) {
-			if (imageRect.height >= 544) {
-				drawlines = true;
-			} else {
-				drawlines = false;
-			}
-		}
-		if (turbotimer == 10) {
-			if (!floppyturbo) {
-				Switches.turbo = 3;
-				floppyturbo = true;
-			}
-		}
-		if (turbotimer >= 2) {
-			turbotimer--;
-		}
-		if (turbotimer == 1) {
-			Switches.turbo = 1;
-			floppyturbo = false;
-			turbotimer--;
-		}
-		g2.setFont(displayFont);
-		g2.setColor(Color.BLACK);
-		paintScanLines(g2);
-		paintYM(g2);
-		paintKeys(g2);
-		paintDisplayOverlays(g2, monitorEffect ? getMonitorMask() : null, offscreenImage);
-		if (staged) {
-			g2.dispose();
-			imageRect = targetImageRect;
-			sameSize = targetSameSize;
-			g.drawImage(getStagedGraphicsImage(), imageRect.x, imageRect.y, imageRect.width, imageRect.height, this);
-		}
+		return rgb;
 	}
 
 	private void doTouchFPS() {
@@ -551,178 +418,37 @@ public class Display extends JComponent {
 		}
 	}
 
-	private void paintDisplayImage(Graphics g) {
-		if (hasSecondaryDisplaySource()) {
-			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
-		} else {
-			synchronized (raster) {
-				if (sourceRect != null) {
-					g.drawImage(image, imageRect.x, imageRect.y, imageRect.x + imageRect.width,
-							imageRect.y + imageRect.height, sourceRect.x, sourceRect.y, sourceRect.x + sourceRect.width,
-							sourceRect.y + sourceRect.height, null);
-				} else if (sameSize) {
-					g.drawImage(image, imageRect.x, imageRect.y, null);
-				} else {
-					g.drawImage(image, imageRect.x, imageRect.y, imageRect.width, imageRect.height, null);
-				}
-			}
-		}
-	}
-
-	private void paintBalls(Graphics g) {
-		for (ck = 0; ck < ch; ck++) {
-			cj = ((((int) ((Math.cos((double) co + (double) ((float) ck / 50F) * 12.566370964050293D) * Math.sin(cl)
-					* 20D + Math.cos((double) (2.0F * cn) / 2D - (double) (((float) ck / 50F) * 6.28F)) * 40D)
-					- Math.sin((double) (cn / 2.0F + cm) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 60D)
-					+ 160) - 7) + 40) * zoom;
-			ci = (((int) ((Math.cos((double) (cn * 1.5F) + (double) ((float) ck / 50F) * 6.2831850051879883D)
-					* Math.sin(cm) * 20D
-					- Math.sin((double) (4F * co) / 3D + (double) (((float) ck / 50F) * 6.28F * 2.0F)) * 40D)
-					+ Math.sin((double) (co / 2.0F + cl) + (double) ((float) ck / 50F) * 6.2831850051879883D) * 30D)
-					+ 100) - 7) * zoom;
-			if (zoom >= 3)
-				g.drawImage(ballbb, cj, ci, null);
-			else if (zoom >= 2)
-				g.drawImage(ballb, cj, ci, null);
-			else
-				g.drawImage(ball, cj, ci, null);
-		}
-
-		co += 0.029999999329447746D;
-		cn += 0.021900000050663948D;
-		cm += 0.027300000190734863D;
-		cl += 0.030899999663233757D;
-	}
-
-	private void paintScanLines(Graphics g) {
-		if (scanlines && (!lowperformance || allowScanLinesWhenLowPerformance())) {
-			if (Switches.bilinear)
-				drawlines = true;
-			if (drawlines && (!lowperformance || allowScanLinesWhenLowPerformance())) {
-				mask = mask3;
-				if (Switches.bilinear && (Switches.monitormode == 0 || Switches.monitormode == 1)) {
-					mask = mask1;
-					g.setColor(SCAN);
-					for (int i = 0; i < imageRect.width; i = i + 2)
-						g.drawLine(imageRect.x + i, imageRect.y, imageRect.x + i, imageRect.height);
-				} else
-					for (int i = 0; i < imageRect.height; i = i + 2)
-						g.drawLine(imageRect.x, imageRect.y + i, imageRect.width, imageRect.y + i);
-			}
-		}
-	}
-
-	private void paintYM(Graphics g) {
-		if (jemu.system.cpc.CPC.YM_Play) {
-			g.drawImage(ymplay, 10, 12, this);
-			if (title.length() != 1) {
-				if (!lowperformance) {
-					g.setColor(TRANSBLACK);
-					g.drawString("Title: " + title, 36, 20);
-					g.drawString("Autor: " + author, 36, 34);
-					g.drawString("Creator: " + creator, 36, 48);
-				}
-				g.setColor(TRANS);
-				g.drawString("Title: " + title, 34, 18);
-				g.drawString("Autor: " + author, 34, 32);
-				g.drawString("Creator: " + creator, 34, 46);
-			}
-			g.setColor(TRANSBLACK);
-			if (jemu.system.cpc.CPC.atari_st_mode && !jemu.system.cpc.CPC.oldYM) {
-				if (!lowperformance)
-					g.drawString("playing 2 MHz Atari ST file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing 2 MHz Atari ST file...", 34, 60);
-			} else if (jemu.system.cpc.CPC.spectrum_mode && !jemu.system.cpc.CPC.oldYM) {
-				if (!lowperformance)
-					g.drawString("playing 1,77 MHz ZX Spectrum file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing 1,77 MHz ZX Spectrum file...", 34, 60);
-			} else if (jemu.system.cpc.CPC.atari_st_mode && jemu.system.cpc.CPC.oldYM) {
-				if (!lowperformance)
-					g.drawString("playing old YM3 file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing old YM3 file...", 34, 60);
-			} else {
-				if (!lowperformance)
-					g.drawString("playing 1 MHz Amstrad CPC file...", 36, 62);
-				g.setColor(TRANS);
-				g.drawString("playing 1 MHz Amstrad CPC file...", 34, 60);
-			}
-			g.setFont(displayFont);
-			if (!lowperformance) {
-				g.setColor(TRANSBLACK);
-				g.drawString(jemu.core.device.sound.YMControl.Monitor, 18, 114);
-			}
-			g.setColor(TRANS);
-			g.drawString(jemu.core.device.sound.YMControl.Monitor, 14, 110);
-			if (left != 0)
-				for (int i = 0; i < left / 2; i++) {
-					if (!lowperformance) {
-						g.setColor(LED_BORDER);
-						g.fillRect(2 + (i * 13), 121, 16, 16);
-					}
-					g.setColor(LED);
-					g.fillRect(4 + (i * 13), 123, 12, 12);
-				}
-			if (right != 0)
-				for (int i = 0; i < right / 2; i++) {
-					if (!lowperformance) {
-						g.setColor(GREEN_BORDER);
-						g.fillRect(2 + (i * 13), 138, 16, 16);
-					}
-					g.setColor(GREEN);
-					g.fillRect(4 + (i * 13), 140, 12, 12);
-				}
-		}
-		if (jemu.system.cpc.CPC.YM_Rec && !lowperformance) {
-			g.drawImage(ymrec, 10, 12, this);
-		}
-	}
-
-	private void paintKeys(Graphics g) {
-		if (jemu.system.cpc.CPC.recordKeys && !lowperformance) {
-			flashkey++;
-			if (flashkey > 25)
-				if (isLargeDisplay())
-					g.drawImage(recb, 10, 12, this);
-				else
-					g.drawImage(recs, 10, 12, this);
-			if (flashkey == 50)
-				flashkey = 0;
-		}
-		if (jemu.system.cpc.CPC.playKeys && !lowperformance) {
-			flashkey++;
-			if (flashkey > 25)
-				if (isLargeDisplay())
-					g.drawImage(playb, 10, 12, this);
-				else
-					g.drawImage(plays, 10, 12, this);
-			if (flashkey == 50)
-				flashkey = 0;
-		}
-	}
-
-	private void paintDisplayOverlays(Graphics g, MonitorMask monitorMask, boolean offscreenImage) {
-		Graphics2D g2 = (Graphics2D) g;
-		if (getCustomDisplayOverlay() != null) {
-			getCustomDisplayOverlay().renderOntoDisplay(g2, imageRect, monitorMask, offscreenImage);
-		}
-		getSystemDisplayOverlay().renderOntoDisplay(g2, imageRect, monitorMask, offscreenImage);
-	}
-
 	@Override
 	public void setBackground(Color bg) {
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
-		if (image != null) {
-			boolean monitorEffect = scaneffect && (!lowperformance || allowScanEffectWhenLowPerformance());
-			paintImage(g, false, monitorEffect);
+		if (imageWidth > 0 && imageHeight > 0) {
+			if (showfps >= 1)
+				doTouchFPS();
+			if (showfps <= -1 && debug) {
+				showfps++;
+				doTouchFPS();
+			}
+			if (turbotimer == 10) {
+				if (!floppyturbo) {
+					Switches.turbo = 3;
+					floppyturbo = true;
+				}
+			}
+			if (turbotimer >= 2) {
+				turbotimer--;
+			}
+			if (turbotimer == 1) {
+				Switches.turbo = 1;
+				floppyturbo = false;
+				turbotimer--;
+			}
+			getRenderDelegate().paintDisplayOnscreen(g, isMonitorEffectEnabled());
+			framesPainted++;
 		}
-		painted = true;
-		framesPainted++;
+		setPainted(true);
 		notifyDisplayGotPainted();
 		updatePerformanceMonitoring();
 	}
@@ -730,7 +456,7 @@ public class Display extends JComponent {
 	public BufferedImage getImage(boolean monitorEffect) {
 		BufferedImage off_Image = new BufferedImage(imageRect.width, imageRect.height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = off_Image.createGraphics();
-		paintImage(g, true, monitorEffect);
+		getRenderDelegate().paintDisplayOffscreen(g, monitorEffect);
 		g.dispose();
 		return off_Image;
 	}
@@ -744,7 +470,6 @@ public class Display extends JComponent {
 			else
 				FADE = new Color(0x00, 0xff, 0x00, 0x00 - fade);
 		fader = fade;
-
 	}
 
 	@Override
@@ -774,30 +499,12 @@ public class Display extends JComponent {
 		return scaleHeight;
 	}
 
-	private boolean isLargeDisplay() {
+	public boolean isLargeDisplay() {
 		return imageRect.height >= 540;
 	}
 
-	public boolean isPainted() {
-		return painted;
-	}
-
 	public void setPainted(boolean value) {
-		painted = value;
-	}
-
-	private void waitPainted() {
-		if (isDisplayShowing()) {
-			long timeoutTime = System.currentTimeMillis() + 500L;
-			boolean timeout = false;
-			while (!painted && !timeout) {
-				try {
-					Thread.sleep(1L);
-				} catch (InterruptedException e) {
-				}
-				timeout = System.currentTimeMillis() > timeoutTime;
-			}
-		}
+		getRenderDelegate().setPainted(value);
 	}
 
 	private void updatePerformanceMonitoring() {
@@ -812,22 +519,6 @@ public class Display extends JComponent {
 		}
 	}
 
-	private boolean isDisplayShowing() {
-		if (imageRect.width == 0 || imageRect.height == 0)
-			return false;
-		if (!isShowing())
-			return false;
-		try {
-			Point p = getLocationOnScreen();
-			if (p.x + getWidth() < 0 || p.y + getHeight() < 0)
-				return false;
-		} catch (IllegalComponentStateException e) {
-			// not showing on screen
-			return false;
-		}
-		return true;
-	}
-
 	@Override
 	protected void processFocusEvent(FocusEvent e) {
 		super.processFocusEvent(e);
@@ -836,6 +527,18 @@ public class Display extends JComponent {
 		} else {
 			// System.out.println("Display Lost Focus");
 		}
+	}
+
+	public boolean isScanLinesEnabled() {
+		return Switches.ScanLines && (!lowperformance || allowScanLinesWhenLowPerformance());
+	}
+
+	public boolean isBilinearEnabled() {
+		return Switches.bilinear && (!lowperformance || allowBilinearWhenLowPerformance());
+	}
+
+	public boolean isMonitorEffectEnabled() {
+		return scaneffect && (!lowperformance || allowScanEffectWhenLowPerformance());
 	}
 
 	private boolean allowScanLinesWhenLowPerformance() {
@@ -864,20 +567,6 @@ public class Display extends JComponent {
 		return mask;
 	}
 
-	private boolean useStagedGraphicsImage() {
-		return Switches.stagedDisplayRendering && imageRect.width > stagedGraphicsImageSize.width
-				&& imageRect.height > stagedGraphicsImageSize.height;
-	}
-
-	private BufferedImage getStagedGraphicsImage() {
-		if (stagedGraphicsImage == null) {
-			stagedGraphicsImage = new BufferedImage(stagedGraphicsImageSize.width, stagedGraphicsImageSize.height,
-					BufferedImage.TYPE_INT_RGB);
-			stagedGraphicsImage.setAccelerationPriority(1);
-		}
-		return stagedGraphicsImage;
-	}
-
 	public DisplayOverlay getCustomDisplayOverlay() {
 		return customDisplayOverlay;
 	}
@@ -886,7 +575,7 @@ public class Display extends JComponent {
 		this.customDisplayOverlay = customDisplayOverlay;
 	}
 
-	private DisplayOverlay getSystemDisplayOverlay() {
+	public DisplayOverlay getSystemDisplayOverlay() {
 		return systemDisplayOverlay;
 	}
 
@@ -900,6 +589,10 @@ public class Display extends JComponent {
 
 	private void setSecondaryDisplaySource(SecondaryDisplaySource displaySource) {
 		secondaryDisplaySource = displaySource;
+	}
+
+	public DisplayRenderDelegate getRenderDelegate() {
+		return renderDelegate;
 	}
 
 	public void addDisplayPaintListener(DisplayPaintListener listener) {
@@ -967,53 +660,6 @@ public class Display extends JComponent {
 
 	}
 
-	private class AutonomousDisplayRenderer extends Thread {
-
-		private boolean stop;
-
-		private int maximumFps;
-
-		public AutonomousDisplayRenderer(int maximumFps) {
-			super("AutonomousDisplayRenderer");
-			setDaemon(true);
-			this.maximumFps = maximumFps;
-		}
-
-		@Override
-		public void run() {
-			System.out.println("Autonomous display render thread started");
-			long frameTimeMs = 1000L / getMaximumFps();
-			while (!isStopped()) {
-				long sleepTimeMs = 20L;
-				if (isDisplayShowing()) {
-					long t0 = System.currentTimeMillis();
-					painted = false;
-					repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
-					waitPainted();
-					sleepTimeMs = Math.max(frameTimeMs - (System.currentTimeMillis() - t0), 0);
-				}
-				try {
-					Thread.sleep(sleepTimeMs);
-				} catch (InterruptedException e) {
-				}
-			}
-			System.out.println("Autonomous display render thread stopped");
-		}
-
-		public void stopRendering() {
-			stop = true;
-		}
-
-		public boolean isStopped() {
-			return stop;
-		}
-
-		public int getMaximumFps() {
-			return maximumFps;
-		}
-
-	}
-
 	private class JemuDisplayOverlay implements DisplayOverlay {
 
 		public JemuDisplayOverlay() {
@@ -1025,10 +671,12 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, MonitorMask monitorMask,
+		public void renderOntoDisplay(DisplayView displayView, Rectangle displayBounds, MonitorMask monitorMask,
 				boolean offscreenImage) {
 			if (offscreenImage)
 				return;
+			Graphics2D g = displayView.createDisplayViewport(displayBounds.x, displayBounds.y, displayBounds.width,
+					displayBounds.height);
 			ImageObserver imageObserver = Display.this;
 			boolean largeDisplay = isLargeDisplay();
 			// Floppy
@@ -1219,6 +867,7 @@ public class Display extends JComponent {
 				g.drawString(" AUTOLOAD IN PROGRESS ", imageRect.width / 2 - 70, imageRect.height / 2);
 				g.drawString(" AUTOLOAD IN PROGRESS ", imageRect.width / 2 - 71, imageRect.height / 2);
 			}
+			g.dispose();
 		}
 
 		@Override
@@ -1239,11 +888,13 @@ public class Display extends JComponent {
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D g, Rectangle displayBounds, MonitorMask monitorMask,
+		public void renderOntoDisplay(DisplayView displayView, Rectangle displayBounds, MonitorMask monitorMask,
 				boolean offscreenImage) {
 			if (monitorMask != null) {
-				g.drawImage(monitorMask.getImage(), imageRect.x, imageRect.y, imageRect.width, imageRect.height,
-						Display.this);
+				Graphics2D g = displayView.createDisplayViewport(displayBounds.x, displayBounds.y, displayBounds.width,
+						displayBounds.height);
+				g.drawImage(monitorMask.getImage(), 0, 0, displayBounds.width, displayBounds.height, Display.this);
+				g.dispose();
 			}
 		}
 

@@ -108,9 +108,9 @@ public class Settings {
 	public static final String ALLOW_SCANEFFECT_LOWPERFORMANCE = "lowperformance.allow_display_effect";
 	public static final String ALLOW_BILINEAR_LOWPERFORMANCE = "lowperformance.allow_bilinear";
 
-	public static final String DISPLAY_RENDER_STAGED = "display.render.staged";
-	public static final String DISPLAY_RENDER_AUTONOMOUS = "display.render.autonomous";
-	public static final String DISPLAY_RENDER_AUTONOMOUS_MAXFPS = "display.render.autonomous.maxfps";
+	public static final String DISPLAY_RENDER_DELEGATE = "display.render.delegate";
+	public static final String DISPLAY_RENDER_CANVAS_MAXFPS = "display.render.canvas.maxfps";
+	public static final String DISPLAY_RENDER_CANVAS_LOG = "display.render.canvas.log";
 
 	// Enum values for "MONITOR" setting
 	public static final String MONITOR_COLOUR = "COLOUR";

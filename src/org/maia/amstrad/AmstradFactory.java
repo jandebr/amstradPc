@@ -35,6 +35,10 @@ import jemu.core.device.Computer;
 import jemu.settings.Settings;
 import jemu.ui.Console;
 import jemu.ui.Display;
+import jemu.ui.DisplayCanvasRenderDelegate;
+import jemu.ui.DisplayClassicRenderDelegate;
+import jemu.ui.DisplayRenderDelegate;
+import jemu.ui.DisplayStagedRenderDelegate;
 
 public class AmstradFactory {
 
@@ -67,10 +71,6 @@ public class AmstradFactory {
 		return customizeAmstradPc(new JemuDirectAmstradPc(computer, display));
 	}
 
-	public AmstradPc createJemuLegacyAmstradPc() {
-		return customizeAmstradPc(new JemuFacadeAmstradPc());
-	}
-
 	private Computer createJemuComputer() {
 		Computer computer = null;
 		String computerSystem = Settings.get(Settings.SYSTEM, "CPC464");
@@ -83,8 +83,27 @@ public class AmstradFactory {
 	}
 
 	private Display createJemuDisplay() {
-		boolean doubleBuffered = false;
-		return new Display(doubleBuffered);
+		return new Display(createDisplayRenderDelegate());
+	}
+
+	private DisplayRenderDelegate createDisplayRenderDelegate() {
+		DisplayRenderDelegate delegate = null;
+		String name = Settings.get(Settings.DISPLAY_RENDER_DELEGATE, DisplayClassicRenderDelegate.NAME).trim();
+		if (DisplayClassicRenderDelegate.NAME.equalsIgnoreCase(name)) {
+			delegate = new DisplayClassicRenderDelegate();
+		} else if (DisplayStagedRenderDelegate.NAME.equalsIgnoreCase(name)) {
+			delegate = new DisplayStagedRenderDelegate();
+		} else if (DisplayCanvasRenderDelegate.NAME.equalsIgnoreCase(name)) {
+			delegate = new DisplayCanvasRenderDelegate();
+		} else {
+			delegate = new DisplayClassicRenderDelegate();
+		}
+		System.out.println("Display render delegate " + delegate.getName());
+		return delegate;
+	}
+
+	public AmstradPc createJemuClassicAmstradPc() {
+		return customizeAmstradPc(new JemuFacadeAmstradPc());
 	}
 
 	private AmstradPc customizeAmstradPc(AmstradPc amstradPc) {

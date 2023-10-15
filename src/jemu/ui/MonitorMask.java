@@ -6,6 +6,8 @@ import java.awt.Insets;
 
 public class MonitorMask {
 
+	private String name;
+
 	/**
 	 * The image can be of any size and will be scaled accordingly.
 	 * <p>
@@ -18,14 +20,19 @@ public class MonitorMask {
 
 	private Color ambientBackgroundColor;
 
-	public MonitorMask(Image image, Insets insetsToInnerArea) {
-		this(image, insetsToInnerArea, Color.BLACK);
+	public MonitorMask(String name, Image image, Insets insetsToInnerArea) {
+		this(name, image, insetsToInnerArea, Color.BLACK);
 	}
 
-	public MonitorMask(Image image, Insets insetsToInnerArea, Color ambientBackgroundColor) {
+	public MonitorMask(String name, Image image, Insets insetsToInnerArea, Color ambientBackgroundColor) {
+		this.name = name;
 		this.image = image;
 		this.insetsToInnerArea = insetsToInnerArea;
 		this.ambientBackgroundColor = ambientBackgroundColor;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public Image getImage() {

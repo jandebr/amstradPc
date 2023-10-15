@@ -1,6 +1,5 @@
 package jemu.ui;
 
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import javax.swing.JComponent;
@@ -9,7 +8,7 @@ public interface DisplayOverlay {
 
 	void init(JComponent displayComponent);
 
-	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, MonitorMask monitorMask,
+	void renderOntoDisplay(DisplayView displayView, Rectangle displayBounds, MonitorMask monitorMask,
 			boolean offscreenImage);
 
 	void dispose(JComponent displayComponent);

@@ -47,5 +47,5 @@ default.jvmarg = -Djavacpc.mode=DEFAULT
 default.jvmarg = -Djavacpc.quit.animate=false
 kiosk.jvmarg = -Djavacpc.mode=KIOSK
 kiosk.jvmarg = -Djavacpc.quit.animate=true
-legacy.jvmarg = -Djavacpc.mode=LEGACY
-legacy.jvmarg = -Djavacpc.quit.animate=false
+classic.jvmarg = -Djavacpc.mode=CLASSIC
+classic.jvmarg = -Djavacpc.quit.animate=false

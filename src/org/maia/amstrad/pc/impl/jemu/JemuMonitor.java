@@ -1,5 +1,7 @@
 package org.maia.amstrad.pc.impl.jemu;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -12,11 +14,13 @@ import org.maia.amstrad.pc.AmstradPcStateListener;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 
 import jemu.settings.Settings;
 import jemu.ui.Display;
 import jemu.ui.DisplayOverlay;
+import jemu.ui.DisplayView;
 import jemu.ui.MonitorMask;
 import jemu.ui.SecondaryDisplaySource;
 import jemu.ui.Switches;
@@ -445,10 +449,11 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 		}
 
 		@Override
-		public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, MonitorMask monitorMask,
+		public void renderOntoDisplay(DisplayView displayView, Rectangle displayBounds, MonitorMask monitorMask,
 				boolean offscreenImage) {
 			Insets monitorInsets = computeMonitorInsets(monitorMask, displayBounds);
-			getSource().renderOntoDisplay(display, displayBounds, monitorInsets, offscreenImage, getGraphicsContext());
+			AmstradDisplayView view = new JemuDisplayViewBridge(displayView);
+			getSource().renderOntoDisplay(view, displayBounds, monitorInsets, offscreenImage, getGraphicsContext());
 		}
 
 		private Insets computeMonitorInsets(MonitorMask monitorMask, Rectangle displayBounds) {
@@ -474,6 +479,30 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 		private AmstradDisplayOverlay getSource() {
 			return source;
+		}
+
+	}
+
+	private static class JemuDisplayViewBridge implements AmstradDisplayView {
+
+		private DisplayView sourceView;
+
+		public JemuDisplayViewBridge(DisplayView sourceView) {
+			this.sourceView = sourceView;
+		}
+
+		@Override
+		public Graphics2D createDisplayViewport(int x, int y, int width, int height) {
+			return getSourceView().createDisplayViewport(x, y, width, height);
+		}
+
+		@Override
+		public FontMetrics getFontMetrics(Font font) {
+			return getSourceView().getFontMetrics(font);
+		}
+
+		private DisplayView getSourceView() {
+			return sourceView;
 		}
 
 	}

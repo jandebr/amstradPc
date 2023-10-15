@@ -91,8 +91,6 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	}
 
 	private void initJemu() {
-		Switches.autonomousDisplayRendering = Settings.getBoolean(Settings.DISPLAY_RENDER_AUTONOMOUS, true);
-		Switches.stagedDisplayRendering = Settings.getBoolean(Settings.DISPLAY_RENDER_STAGED, false);
 		// from JEMU.init()
 		Switches.executable = true;
 		Switches.stretch = false;
@@ -487,7 +485,6 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 				height = (int) Math.ceil(scale * height);
 			}
 			display.setSize(width, height);
-			System.out.println("Display size " + width + "x" + height);
 		}
 
 		@Override

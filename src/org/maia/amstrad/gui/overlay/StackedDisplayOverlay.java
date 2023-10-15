@@ -1,6 +1,5 @@
 package org.maia.amstrad.gui.overlay;
 
-import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class StackedDisplayOverlay implements AmstradDisplayOverlay {
@@ -58,10 +58,10 @@ public class StackedDisplayOverlay implements AmstradDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		for (AmstradDisplayOverlay overlay : getOverlays()) {
-			overlay.renderOntoDisplay(display, displayBounds, monitorInsets, offscreenImage, graphicsContext);
+			overlay.renderOntoDisplay(displayView, displayBounds, monitorInsets, offscreenImage, graphicsContext);
 		}
 	}
 

@@ -19,15 +19,15 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	public static final AmstradMode KIOSK = new KioskAmstradMode();
 
-	public static final AmstradMode LEGACY = new LegacyAmstradMode();
+	public static final AmstradMode CLASSIC = new ClassicAmstradMode();
 
 	public static AmstradMode forName(String name) {
 		if (DEFAULT.getName().equalsIgnoreCase(name)) {
 			return DEFAULT;
 		} else if (KIOSK.getName().equalsIgnoreCase(name)) {
 			return KIOSK;
-		} else if (LEGACY.getName().equalsIgnoreCase(name)) {
-			return LEGACY;
+		} else if (CLASSIC.getName().equalsIgnoreCase(name)) {
+			return CLASSIC;
 		} else {
 			return null;
 		}
@@ -199,15 +199,15 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 	}
 
-	private static class LegacyAmstradMode extends AmstradMode {
+	private static class ClassicAmstradMode extends AmstradMode {
 
-		public LegacyAmstradMode() {
-			super("LEGACY");
+		public ClassicAmstradMode() {
+			super("CLASSIC");
 		}
 
 		@Override
 		protected void doLaunch(String[] args) throws AmstradProgramException {
-			AmstradPc amstradPc = getAmstradFactory().createJemuLegacyAmstradPc();
+			AmstradPc amstradPc = getAmstradFactory().createJemuClassicAmstradPc();
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			if (args.length == 0) {
 				amstradPc.start();

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
@@ -70,7 +71,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		if (offscreenImage)
 			return;
@@ -88,7 +89,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		if (r <= 1.0) {
 			double fadeout = r <= 0.4 ? 0.0 : Math.sqrt((r - 0.4) / 0.6);
 			updateColors(fadeout);
-			renderControlKeysBar(display, displayBounds, monitorInsets, graphicsContext);
+			renderControlKeysBar(displayView, displayBounds, monitorInsets, graphicsContext);
 		}
 	}
 
@@ -99,42 +100,45 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		setLabelColor(makeColorMoreTransparent(LABEL_COLOR, fadeout));
 	}
 
-	private void renderControlKeysBar(Graphics2D display, Rectangle displayBounds, Insets monitorInsets,
+	private void renderControlKeysBar(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			AmstradGraphicsContext graphicsContext) {
-		Font font = getFont(graphicsContext);
-		int barWidth = displayBounds.width - monitorInsets.left - monitorInsets.right;
-		int barHeight = display.getFontMetrics(font).getHeight() * 3;
+		FontMetrics fm = displayView.getFontMetrics(getFont(graphicsContext));
+		int barHeight = fm.getHeight() * 3;
 		int barTop = displayBounds.y + displayBounds.height - Math.min(monitorInsets.bottom, displayBounds.height / 17)
 				- barHeight;
-		Graphics2D g2 = (Graphics2D) display.create(displayBounds.x + monitorInsets.left, barTop, barWidth, barHeight);
-		g2.setFont(font);
-		renderControlKeysBar(g2, barWidth, barHeight);
-		g2.dispose();
+		int extremeBarWidth = displayBounds.width - monitorInsets.left - monitorInsets.right;
+		int extremeBarLeft = displayBounds.x + monitorInsets.left;
+		renderControlKeysBar(displayView, fm, extremeBarLeft, barTop, extremeBarWidth, barHeight);
 	}
 
-	private void renderControlKeysBar(Graphics2D g2, int barWidth, int barHeight) {
-		FontMetrics fm = g2.getFontMetrics();
-		int totalWidth = computeVisibleControlKeysWidth(g2);
-		if (totalWidth > 0) {
+	private void renderControlKeysBar(AmstradDisplayView displayView, FontMetrics fm, int extremeBarLeft, int barTop,
+			int extremeBarWidth, int barHeight) {
+		int spanWidth = computeVisibleControlKeysWidth(fm);
+		if (spanWidth > 0) {
 			// Box
+			int barLeft = extremeBarLeft + (extremeBarWidth - spanWidth) / 2 - BOX_HOR_PADDING;
+			int barWidth = spanWidth + 2 * BOX_HOR_PADDING;
+			Graphics2D g2 = displayView.createDisplayViewport(barLeft, barTop, barWidth, barHeight);
 			g2.setColor(getBoxColor());
-			g2.fillRect((barWidth - totalWidth) / 2 - BOX_HOR_PADDING, 0, totalWidth + 2 * BOX_HOR_PADDING, barHeight);
+			g2.fillRect(0, 0, barWidth, barHeight);
 			// Controls
-			int xLeft = (barWidth - totalWidth) / 2;
-			int yBaseline = (barHeight + fm.getMaxAscent()) / 2;
+			g2.setFont(fm.getFont());
+			int xLeft = BOX_HOR_PADDING;
+			int yBaseline = (barHeight + fm.getAscent() - fm.getDescent()) / 2 + 1;
 			for (ControlKey controlKey : getControlKeys()) {
 				if (controlKey.isVisible()) {
-					renderControlKey(controlKey, g2, fm, xLeft, yBaseline);
+					renderControlKey(controlKey, fm, g2, xLeft, yBaseline);
 					xLeft += computeControlKeyWidth(controlKey, fm);
 					xLeft += HOR_SEPARATION;
 				}
 			}
+			g2.dispose();
 		}
 	}
 
-	private void renderControlKey(ControlKey controlKey, Graphics2D g2, FontMetrics fm, int xLeft, int yBaseline) {
+	private void renderControlKey(ControlKey controlKey, FontMetrics fm, Graphics2D g2, int xLeft, int yBaseline) {
 		int kw = fm.stringWidth(controlKey.getKey());
-		int kh = fm.getMaxAscent();
+		int kh = fm.getHeight();
 		int kp = KEY_PADDING;
 		g2.setColor(getBoxColor());
 		g2.fillRoundRect(xLeft - kp, yBaseline - kh - kp, kw + 2 * kp - 1, kh + 2 * kp, kp, kp);
@@ -146,10 +150,9 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		g2.drawString(controlKey.getKey(), xLeft, yBaseline);
 	}
 
-	private int computeVisibleControlKeysWidth(Graphics2D g2) {
+	private int computeVisibleControlKeysWidth(FontMetrics fm) {
 		int width = 0;
 		int visible = 0;
-		FontMetrics fm = g2.getFontMetrics();
 		for (ControlKey controlKey : getControlKeys()) {
 			if (controlKey.isVisible()) {
 				width += computeControlKeyWidth(controlKey, fm);

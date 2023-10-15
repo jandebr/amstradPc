@@ -13,6 +13,7 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
@@ -50,27 +51,34 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 		return new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), newAlpha);
 	}
 
-	protected Rectangle drawIconTopLeft(ImageIcon icon, Graphics2D display, Rectangle displayBounds,
+	protected Rectangle drawIconTopLeft(ImageIcon icon, AmstradDisplayView displayView, Rectangle displayBounds,
 			Insets monitorInsets) {
+		int width = icon.getIconWidth();
+		int height = icon.getIconHeight();
 		int x = displayBounds.x + computeLeftMarginForIcon(icon, monitorInsets);
 		int y = displayBounds.y + computeTopMarginForIcon(icon, monitorInsets);
-		drawIcon(icon, x, y, display);
-		iconBounds.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
+		Graphics2D g = displayView.createDisplayViewport(x, y, width, height);
+		drawIcon(icon, 0, 0, g);
+		g.dispose();
+		iconBounds.setBounds(x, y, width, height);
 		return iconBounds;
 	}
 
-	protected Rectangle drawIconTopRight(ImageIcon icon, Graphics2D display, Rectangle displayBounds,
+	protected Rectangle drawIconTopRight(ImageIcon icon, AmstradDisplayView displayView, Rectangle displayBounds,
 			Insets monitorInsets) {
-		int x = displayBounds.x + displayBounds.width - computeRightMarginForIcon(icon, monitorInsets)
-				- icon.getIconWidth();
+		int width = icon.getIconWidth();
+		int height = icon.getIconHeight();
+		int x = displayBounds.x + displayBounds.width - computeRightMarginForIcon(icon, monitorInsets) - width;
 		int y = displayBounds.y + computeTopMarginForIcon(icon, monitorInsets);
-		drawIcon(icon, x, y, display);
-		iconBounds.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
+		Graphics2D g = displayView.createDisplayViewport(x, y, width, height);
+		drawIcon(icon, 0, 0, g);
+		g.dispose();
+		iconBounds.setBounds(x, y, width, height);
 		return iconBounds;
 	}
 
-	protected void drawIcon(ImageIcon icon, int x, int y, Graphics2D display) {
-		display.drawImage(icon.getImage(), x, y, null);
+	protected void drawIcon(ImageIcon icon, int x, int y, Graphics2D g) {
+		g.drawImage(icon.getImage(), x, y, null);
 	}
 
 	private int computeLeftMarginForIcon(ImageIcon icon, Insets monitorInsets) {

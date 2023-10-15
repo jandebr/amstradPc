@@ -4315,7 +4315,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void screencapture() {
 		images = new BufferedImage(display.getWidth(), display.getHeight(), BufferedImage.SCALE_SMOOTH);
-		images.getGraphics().drawImage(display.image, 0, 0, display.getWidth(), display.getHeight(), null);
+		images.getGraphics().drawImage(display.getImage(false), 0, 0, display.getWidth(), display.getHeight(), null);
 		screenControl();
 	}
 

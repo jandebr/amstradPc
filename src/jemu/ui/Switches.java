@@ -143,6 +143,5 @@ public class Switches {
         public static int vhold                 = 45;
         public static int diagnose                 = 0;
 
-        public static boolean stagedDisplayRendering = false;
         public static boolean autonomousDisplayRendering = false;
 }

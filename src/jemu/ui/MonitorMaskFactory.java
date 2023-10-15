@@ -40,7 +40,7 @@ public class MonitorMaskFactory {
 			} catch (IOException e) {
 				System.err.println(e);
 			}
-			CTM644 = new MonitorMask(image, new Insets(24, 25, 24, 25));
+			CTM644 = new MonitorMask("CTM644", image, new Insets(24, 25, 24, 25));
 		}
 		return CTM644;
 	}
@@ -53,7 +53,7 @@ public class MonitorMaskFactory {
 			} catch (IOException e) {
 				System.err.println(e);
 			}
-			GT65 = new MonitorMask(image, new Insets(40, 48, 64, 48));
+			GT65 = new MonitorMask("GT65", image, new Insets(40, 48, 64, 48));
 		}
 		return GT65;
 	}
@@ -66,7 +66,7 @@ public class MonitorMaskFactory {
 			} catch (IOException e) {
 				System.err.println(e);
 			}
-			MINIMAL = new MonitorMask(image, new Insets(16, 15, 12, 15));
+			MINIMAL = new MonitorMask("MINIMAL", image, new Insets(16, 15, 12, 15));
 		}
 		return MINIMAL;
 	}
