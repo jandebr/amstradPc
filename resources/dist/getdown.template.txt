@@ -3,7 +3,7 @@ appbase = %AMSTRADPC_APPBASE%
 
 # UI Configuration
 ui.name = AmstradPc %AMSTRADPC_VERSION%
-ui.hide_decorations = false
+ui.hide_decorations = true
 ui.background = 000000
 ui.background_image = images/launcher-background.png
 ui.error_background = images/launcher-error.png
