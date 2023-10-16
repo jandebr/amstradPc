@@ -267,7 +267,8 @@ public abstract class JemuAmstradPc extends AmstradPc
 	}
 
 	@Override
-	public void displayPerformanceUpdate(Display display, long timeIntervalMillis, int framesPainted, int imagesUpdated) {
+	public void displayPerformanceUpdate(Display display, long timeIntervalMillis, int framesPainted,
+			int imagesUpdated) {
 		fireDisplayPerformanceUpdate(timeIntervalMillis, framesPainted, imagesUpdated);
 	}
 

@@ -10,7 +10,9 @@ public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySourc
 
 	private static final String SETTING_MESSAGE = "quit.animate.message";
 
-	private static String DEFAULT_MESSAGE = "Goodbye";
+	private static final char MESSAGE_SEPARATOR = '|';
+
+	public static String DEFAULT_MESSAGE = "Goodbye";
 
 	private String message;
 
@@ -26,9 +28,18 @@ public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySourc
 
 	private boolean forceQuit;
 
+	private static String selectMessage() {
+		String message = AmstradFactory.getInstance().getAmstradContext().getUserSettings().get(SETTING_MESSAGE,
+				DEFAULT_MESSAGE);
+		if (message.indexOf(MESSAGE_SEPARATOR) > 0) {
+			String[] messages = message.split("\\" + MESSAGE_SEPARATOR);
+			message = messages[(int) Math.floor(messages.length * Math.random())];
+		}
+		return message;
+	}
+
 	public AmstradTerminationDisplaySource(AmstradPc amstradPc) {
-		this(amstradPc, AmstradFactory.getInstance().getAmstradContext().getUserSettings().get(SETTING_MESSAGE,
-				DEFAULT_MESSAGE));
+		this(amstradPc, selectMessage());
 	}
 
 	public AmstradTerminationDisplaySource(AmstradPc amstradPc, String message) {
