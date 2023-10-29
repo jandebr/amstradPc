@@ -10,5 +10,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/maiaSwing.jar" sourcepath="/MaiaSwing/src"/>
+	<classpathentry kind="lib" path="lib/maiaUtils.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

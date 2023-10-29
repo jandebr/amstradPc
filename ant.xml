@@ -20,6 +20,7 @@
 				<attribute name="Class-Path" value="." />
 			</manifest>
 			<zipfileset src="lib/maiaSwing.jar" />
+			<zipfileset src="lib/maiaUtils.jar" />
 			<fileset dir="bin" />
 		</jar>
 	</target>
