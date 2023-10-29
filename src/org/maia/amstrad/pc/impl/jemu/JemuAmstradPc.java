@@ -21,9 +21,9 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
-import org.maia.amstrad.util.AmstradUtils;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
+import org.maia.util.SystemUtils;
 import org.maia.swing.dialog.ActionableDialogListener;
 
 import jemu.core.device.Computer;
@@ -161,7 +161,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 	private void waitUntilBasicRuntimeReady() {
 		System.out.println("Waiting until Basic runtime is Ready");
-		AmstradUtils.sleep(1000L); // making sure "ready" turns false first
+		SystemUtils.sleep(1000L); // making sure "ready" turns false first
 		getBasicRuntime().waitUntilReady(8000L);
 		System.out.println("Basic runtime is Ready");
 	}

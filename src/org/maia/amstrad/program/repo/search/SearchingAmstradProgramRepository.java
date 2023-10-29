@@ -6,7 +6,7 @@ import java.util.Vector;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.cover.CoverImage;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 

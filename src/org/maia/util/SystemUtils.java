@@ -1,8 +1,8 @@
-package org.maia.amstrad.util;
+package org.maia.util;
 
-public class AmstradUtils {
+public class SystemUtils {
 
-	private AmstradUtils() {
+	private SystemUtils() {
 	}
 
 	public static void sleep(long milliseconds) {

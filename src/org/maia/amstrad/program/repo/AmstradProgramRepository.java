@@ -10,7 +10,7 @@ import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.cover.CoverImage;
 import org.maia.amstrad.program.repo.cover.CoverImageImpl;
-import org.maia.amstrad.util.KeyedCacheLRU;
+import org.maia.util.KeyedCacheLRU;
 
 public abstract class AmstradProgramRepository {
 

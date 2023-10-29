@@ -1,9 +1,9 @@
 package org.maia.amstrad.gui.browser;
 
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.util.AmstradListener;
+import org.maia.util.GenericListener;
 
-public interface ProgramBrowserListener extends AmstradListener {
+public interface ProgramBrowserListener extends GenericListener {
 
 	void programLoadedFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program);
 

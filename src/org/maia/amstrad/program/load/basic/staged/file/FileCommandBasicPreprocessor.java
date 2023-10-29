@@ -17,7 +17,7 @@ import org.maia.amstrad.program.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.program.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
-import org.maia.amstrad.util.AmstradUtils;
+import org.maia.util.SystemUtils;
 
 public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocessor
 		implements ErrorOutCodes, FileCommandDelays {
@@ -89,12 +89,12 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 	protected void delayFileOperation(long delayMillis) {
 		AmstradSettings settings = AmstradFactory.getInstance().getAmstradContext().getUserSettings();
 		if (settings.getBool(SETTING_DELAYS, true)) {
-			AmstradUtils.sleep(delayMillis);
+			SystemUtils.sleep(delayMillis);
 		}
 	}
 
 	protected void waitUntilBasicInterpreterInWaitLoop() {
-		AmstradUtils.sleep(DELAYMILLIS_ENTER_MACRO_WAIT_LOOP);
+		SystemUtils.sleep(DELAYMILLIS_ENTER_MACRO_WAIT_LOOP);
 	}
 
 	protected void endWithError(int errorCode, BasicSourceCode sourceCode, FileCommandMacro macro,

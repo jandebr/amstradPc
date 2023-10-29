@@ -20,7 +20,7 @@ import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public class LocomotiveBasicSourceCode extends BasicSourceCode {
 

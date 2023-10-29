@@ -13,7 +13,7 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
-import org.maia.amstrad.util.AmstradUtils;
+import org.maia.util.SystemUtils;
 
 public class QuitAction extends AmstradPcAction {
 
@@ -80,7 +80,7 @@ public class QuitAction extends AmstradPcAction {
 		getAmstradPc().getMonitor().swapDisplaySource(ds);
 		getAmstradPc().getMonitor().setCustomDisplayOverlay(new VoidDisplayOverlay());
 		while (!ds.isAnimationCompleted()) {
-			AmstradUtils.sleep(50L);
+			SystemUtils.sleep(50L);
 		}
 	}
 

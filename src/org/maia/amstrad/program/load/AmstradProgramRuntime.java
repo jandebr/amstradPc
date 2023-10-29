@@ -3,7 +3,7 @@ package org.maia.amstrad.program.load;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.util.AmstradListenerList;
+import org.maia.util.GenericListenerList;
 
 public abstract class AmstradProgramRuntime {
 
@@ -17,12 +17,12 @@ public abstract class AmstradProgramRuntime {
 
 	private int exitCode;
 
-	private AmstradListenerList<AmstradProgramRuntimeListener> listeners;
+	private GenericListenerList<AmstradProgramRuntimeListener> listeners;
 
 	protected AmstradProgramRuntime(AmstradProgram program, AmstradPc amstradPc) {
 		this.program = program;
 		this.amstradPc = amstradPc;
-		this.listeners = new AmstradListenerList<AmstradProgramRuntimeListener>();
+		this.listeners = new GenericListenerList<AmstradProgramRuntimeListener>();
 	}
 
 	public void addListener(AmstradProgramRuntimeListener listener) {
@@ -94,7 +94,7 @@ public abstract class AmstradProgramRuntime {
 		this.exitCode = exitCode;
 	}
 
-	protected AmstradListenerList<AmstradProgramRuntimeListener> getListeners() {
+	protected GenericListenerList<AmstradProgramRuntimeListener> getListeners() {
 		return listeners;
 	}
 

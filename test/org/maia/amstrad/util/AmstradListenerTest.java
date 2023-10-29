@@ -1,15 +1,18 @@
 package org.maia.amstrad.util;
 
+import org.maia.util.GenericListener;
+import org.maia.util.GenericListenerList;
+
 public class AmstradListenerTest {
 
-	private AmstradListenerList<MyListener> listeners;
+	private GenericListenerList<MyListener> listeners;
 
 	public static void main(String[] args) {
 		new AmstradListenerTest().startTest();
 	}
 
 	public AmstradListenerTest() {
-		this.listeners = new AmstradListenerList<MyListener>();
+		this.listeners = new GenericListenerList<MyListener>();
 		this.listeners.setIncludeAdditionsWhileIterating(true);
 	}
 
@@ -41,7 +44,7 @@ public class AmstradListenerTest {
 		}
 	}
 
-	private AmstradListenerList<MyListener> getListeners() {
+	private GenericListenerList<MyListener> getListeners() {
 		return listeners;
 	}
 
@@ -71,7 +74,7 @@ public class AmstradListenerTest {
 
 	}
 
-	private static interface MyListener extends AmstradListener {
+	private static interface MyListener extends GenericListener {
 
 		void notifyMe();
 

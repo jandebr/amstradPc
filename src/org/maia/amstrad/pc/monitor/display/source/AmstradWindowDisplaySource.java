@@ -11,7 +11,7 @@ import org.maia.amstrad.gui.components.ColoredTextSpan;
 import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplaySource {
 

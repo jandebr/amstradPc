@@ -1,8 +1,8 @@
 package org.maia.amstrad.pc.audio;
 
-import org.maia.amstrad.util.AmstradListener;
+import org.maia.util.GenericListener;
 
-public interface AmstradAudioListener extends AmstradListener {
+public interface AmstradAudioListener extends GenericListener {
 
 	void amstradAudioMuted(AmstradAudio audio);
 

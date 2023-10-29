@@ -13,8 +13,8 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.basic.staged.file.DiscoveredFileReference;
 import org.maia.amstrad.program.load.basic.staged.file.FileReferenceDiscoveryService;
+import org.maia.util.StringUtils;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.util.StringUtils;
 
 public class ProgramFileReferencesSheet extends ProgramSheet {
 

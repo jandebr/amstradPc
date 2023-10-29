@@ -7,7 +7,7 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.tape.AmstradTape;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.io.util.IOUtils;
 
 public class JemuTape extends AmstradTape {
 
@@ -17,12 +17,12 @@ public class JemuTape extends AmstradTape {
 
 	@Override
 	public LocomotiveBasicSourceCode readSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
-		return new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(sourceCodeFile));
+		return new LocomotiveBasicSourceCode(IOUtils.readTextFileContents(sourceCodeFile));
 	}
 
 	@Override
 	public LocomotiveBasicByteCode readByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
-		return new LocomotiveBasicByteCode(AmstradIO.readBinaryFileContents(byteCodeFile));
+		return new LocomotiveBasicByteCode(IOUtils.readBinaryFileContents(byteCodeFile));
 	}
 
 }

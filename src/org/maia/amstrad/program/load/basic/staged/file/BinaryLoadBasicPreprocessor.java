@@ -20,7 +20,7 @@ import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.program.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.io.util.IOUtils;
 
 public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor implements LocomotiveBasicMemoryMap {
 
@@ -132,7 +132,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 		int programEndedAddr = session.getEndingMacro().getMemoryTrapAddress();
 		BasicRuntime rt = session.getBasicRuntime();
 		int addr = command.getMemoryOffset();
-		byte[] data = AmstradIO.readBinaryFileContents(fileReference.getTargetFile());
+		byte[] data = IOUtils.readBinaryFileContents(fileReference.getTargetFile());
 		for (int i = 0; i < data.length; i++) {
 			if (rt.peek(programEndedAddr) > 0)
 				break;
@@ -150,7 +150,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 			StagedBasicProgramLoaderSession session) throws IOException {
 		int programEndedAddr = session.getEndingMacro().getMemoryTrapAddress();
 		BasicRuntime rt = session.getBasicRuntime();
-		byte[] data = AmstradIO.readBinaryFileContents(fileReference.getTargetFile());
+		byte[] data = IOUtils.readBinaryFileContents(fileReference.getTargetFile());
 		if (data.length > 0) {
 			int blocks = 1 + (data.length - 1) / BLOCK_BYTESIZE;
 			for (int bi = 0; bi < blocks; bi++) {

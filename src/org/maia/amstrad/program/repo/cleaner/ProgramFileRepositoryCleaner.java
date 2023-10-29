@@ -1,4 +1,4 @@
-package org.maia.amstrad.util;
+package org.maia.amstrad.program.repo.cleaner;
 
 import java.io.File;
 import java.util.List;

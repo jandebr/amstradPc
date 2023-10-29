@@ -1,8 +1,6 @@
-package org.maia.amstrad.util.getdown;
+package org.maia.amstrad.program.repo.cleaner;
 
 import java.io.File;
-
-import org.maia.amstrad.util.ProgramFileRepositoryCleaner;
 
 public class GetdownProgramFileRepositoryCleaner extends ProgramFileRepositoryCleaner {
 

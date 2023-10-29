@@ -5,16 +5,16 @@ import java.io.IOException;
 
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.util.AmstradIO;
-import org.maia.amstrad.util.AmstradListenerList;
+import org.maia.io.util.IOUtils;
+import org.maia.util.GenericListenerList;
 
 public abstract class AmstradKeyboard extends AmstradDevice {
 
-	private AmstradListenerList<AmstradKeyboardListener> keyboardListeners;
+	private GenericListenerList<AmstradKeyboardListener> keyboardListeners;
 
 	protected AmstradKeyboard(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.keyboardListeners = new AmstradListenerList<AmstradKeyboardListener>();
+		this.keyboardListeners = new GenericListenerList<AmstradKeyboardListener>();
 	}
 
 	public abstract boolean isTyping();
@@ -28,7 +28,7 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 	}
 
 	public void typeFileContents(File textFile, boolean waitUntilTyped) throws IOException {
-		type(AmstradIO.readTextFileContents(textFile), waitUntilTyped);
+		type(IOUtils.readTextFileContents(textFile), waitUntilTyped);
 	}
 
 	public void typeFileContents(File textFile) throws IOException {
@@ -77,7 +77,7 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 		}
 	}
 
-	protected AmstradListenerList<AmstradKeyboardListener> getKeyboardListeners() {
+	protected GenericListenerList<AmstradKeyboardListener> getKeyboardListeners() {
 		return keyboardListeners;
 	}
 

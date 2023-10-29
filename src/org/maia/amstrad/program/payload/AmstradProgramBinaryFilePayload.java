@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.io.util.IOUtils;
 
 public class AmstradProgramBinaryFilePayload extends AmstradProgramBinaryPayload {
 
@@ -21,7 +21,7 @@ public class AmstradProgramBinaryFilePayload extends AmstradProgramBinaryPayload
 	@Override
 	public byte[] getBytes() throws AmstradProgramException {
 		try {
-			return AmstradIO.readBinaryFileContents(getPayloadFile());
+			return IOUtils.readBinaryFileContents(getPayloadFile());
 		} catch (IOException e) {
 			throw new AmstradProgramException(getProgram(),
 					"Could not load binary payload from file " + getPayloadFile().getAbsolutePath(), e);

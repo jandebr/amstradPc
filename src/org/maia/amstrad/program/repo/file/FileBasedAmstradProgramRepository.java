@@ -12,7 +12,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.cover.CoverImage;
 import org.maia.amstrad.program.repo.cover.CoverImageImpl;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.io.util.IOUtils;
 
 public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 
@@ -117,7 +117,7 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 	}
 
 	private boolean equalFilenamesButExtension(File one, File other) {
-		return AmstradIO.stripExtension(one).equals(AmstradIO.stripExtension(other));
+		return IOUtils.stripExtension(one).equals(IOUtils.stripExtension(other));
 	}
 
 	protected abstract boolean isProgramFile(File file);

@@ -1,6 +1,6 @@
 package org.maia.amstrad.basic;
 
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public abstract class BasicSourceToken {
 

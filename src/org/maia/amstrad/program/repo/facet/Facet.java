@@ -3,7 +3,7 @@ package org.maia.amstrad.program.repo.facet;
 import javax.swing.Icon;
 
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public abstract class Facet {
 

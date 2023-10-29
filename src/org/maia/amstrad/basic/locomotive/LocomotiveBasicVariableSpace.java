@@ -15,7 +15,7 @@ import org.maia.amstrad.basic.locomotive.token.TypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 

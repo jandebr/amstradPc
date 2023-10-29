@@ -1,4 +1,4 @@
-package org.maia.amstrad.util;
+package org.maia.util;
 
 import java.util.List;
 import java.util.Vector;

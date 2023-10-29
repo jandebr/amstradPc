@@ -8,7 +8,7 @@ import org.maia.amstrad.gui.components.ColoredTextSpan;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public class ProgramInfoSheet extends ProgramSheet {
 

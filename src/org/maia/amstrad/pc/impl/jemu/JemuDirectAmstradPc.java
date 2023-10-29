@@ -17,7 +17,7 @@ import javax.swing.Box;
 
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
-import org.maia.amstrad.util.AmstradUtils;
+import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
 import jemu.core.device.memory.MemoryWriteObserver;
@@ -421,7 +421,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 				@Override
 				public void run() {
-					AmstradUtils.sleep(500L);
+					SystemUtils.sleep(500L);
 					GateArray.doRender = true;
 				}
 			}).start();

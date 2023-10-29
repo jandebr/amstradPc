@@ -12,12 +12,12 @@ import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.util.AmstradIO;
-import org.maia.amstrad.util.AmstradListenerList;
+import org.maia.io.util.IOUtils;
+import org.maia.util.GenericListenerList;
 
 public abstract class AmstradTape extends AmstradDevice {
 
-	private AmstradListenerList<AmstradTapeListener> tapeListeners;
+	private GenericListenerList<AmstradTapeListener> tapeListeners;
 
 	private boolean reading;
 
@@ -29,7 +29,7 @@ public abstract class AmstradTape extends AmstradDevice {
 
 	protected AmstradTape(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.tapeListeners = new AmstradListenerList<AmstradTapeListener>();
+		this.tapeListeners = new GenericListenerList<AmstradTapeListener>();
 	}
 
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
@@ -66,11 +66,11 @@ public abstract class AmstradTape extends AmstradDevice {
 	}
 
 	public void loadBinaryFile(File binaryFile, int memoryStartAddress) throws IOException {
-		getBasicRuntime().loadBinaryData(AmstradIO.readBinaryFileContents(binaryFile), memoryStartAddress);
+		getBasicRuntime().loadBinaryData(IOUtils.readBinaryFileContents(binaryFile), memoryStartAddress);
 	}
 
 	public void saveBinaryFile(File binaryFile, int memoryStartAddress, int memoryLength) throws IOException {
-		AmstradIO.writeBinaryFileContents(binaryFile,
+		IOUtils.writeBinaryFileContents(binaryFile,
 				getBasicRuntime().exportBinaryData(memoryStartAddress, memoryLength));
 	}
 
@@ -132,7 +132,7 @@ public abstract class AmstradTape extends AmstradDevice {
 			listener.amstradTapeStoppedWriting(this);
 	}
 
-	protected AmstradListenerList<AmstradTapeListener> getTapeListeners() {
+	protected GenericListenerList<AmstradTapeListener> getTapeListeners() {
 		return tapeListeners;
 	}
 

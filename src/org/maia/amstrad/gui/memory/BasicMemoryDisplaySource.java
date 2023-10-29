@@ -30,7 +30,7 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 

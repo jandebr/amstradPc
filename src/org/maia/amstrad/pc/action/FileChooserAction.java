@@ -5,7 +5,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.io.util.IOUtils;
 
 public abstract class FileChooserAction extends AmstradPcAction {
 
@@ -65,7 +65,7 @@ public abstract class FileChooserAction extends AmstradPcAction {
 	protected boolean isFileInsideManagedFolder(File file) {
 		File managedFolder = getAmstradContext().getManagedProgramRepositoryRootFolder();
 		if (managedFolder != null) {
-			return AmstradIO.isFileInsideFolder(file, managedFolder);
+			return IOUtils.isFileInsideFolder(file, managedFolder);
 		} else {
 			return false;
 		}

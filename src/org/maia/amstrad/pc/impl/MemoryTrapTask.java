@@ -2,7 +2,7 @@ package org.maia.amstrad.pc.impl;
 
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrapHandler;
-import org.maia.amstrad.util.AsyncSerialTaskWorker.AsyncTask;
+import org.maia.util.AsyncSerialTaskWorker.AsyncTask;
 
 public class MemoryTrapTask implements AsyncTask {
 

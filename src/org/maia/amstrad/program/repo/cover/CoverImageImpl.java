@@ -4,7 +4,7 @@ import java.awt.Image;
 
 import org.maia.amstrad.gui.ImageProxy;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.amstrad.util.AsyncSerialTaskWorker.AsyncTask;
+import org.maia.util.AsyncSerialTaskWorker.AsyncTask;
 
 public class CoverImageImpl implements CoverImage {
 

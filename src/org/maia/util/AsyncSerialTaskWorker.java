@@ -1,9 +1,9 @@
-package org.maia.amstrad.util;
+package org.maia.util;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.maia.amstrad.util.AsyncSerialTaskWorker.AsyncTask;
+import org.maia.util.AsyncSerialTaskWorker.AsyncTask;
 
 public class AsyncSerialTaskWorker<T extends AsyncTask> extends Thread {
 

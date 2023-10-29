@@ -1,10 +1,8 @@
-package org.maia.amstrad.util;
+package org.maia.util;
 
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 
 public class StringUtils {
 
@@ -174,17 +172,6 @@ public class StringUtils {
 			try {
 				result = Integer.parseInt(str);
 			} catch (NumberFormatException e) {
-			}
-		}
-		return result;
-	}
-
-	public static AmstradMonitorMode toMonitorMode(String str, AmstradMonitorMode defaultMode) {
-		AmstradMonitorMode result = defaultMode;
-		if (!isEmpty(str)) {
-			try {
-				result = AmstradMonitorMode.valueOf(str);
-			} catch (IllegalArgumentException e) {
 			}
 		}
 		return result;

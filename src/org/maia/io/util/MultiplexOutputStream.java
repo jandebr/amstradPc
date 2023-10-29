@@ -1,4 +1,4 @@
-package org.maia.amstrad.util;
+package org.maia.io.util;
 
 import java.io.IOException;
 import java.io.OutputStream;

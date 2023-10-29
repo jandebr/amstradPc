@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
-import org.maia.amstrad.util.AmstradUtils;
+import org.maia.util.SystemUtils;
 
 public abstract class BasicRuntime {
 
@@ -30,14 +30,14 @@ public abstract class BasicRuntime {
 
 	public void waitUntilReady() {
 		while (!isReady()) {
-			AmstradUtils.sleep(100L);
+			SystemUtils.sleep(100L);
 		}
 	}
 
 	public void waitUntilReady(long maximumWaitTimeMillis) {
 		long timeout = System.currentTimeMillis() + maximumWaitTimeMillis;
 		while (!isReady() && System.currentTimeMillis() < timeout) {
-			AmstradUtils.sleep(100L);
+			SystemUtils.sleep(100L);
 		}
 	}
 

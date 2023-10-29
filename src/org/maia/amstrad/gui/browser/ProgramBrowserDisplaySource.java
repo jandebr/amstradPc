@@ -26,8 +26,8 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.amstrad.util.AmstradListenerList;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.GenericListenerList;
+import org.maia.util.StringUtils;
 
 public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
@@ -45,7 +45,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private ProgramFileReferencesSheet programFileReferencesSheet;
 
-	private AmstradListenerList<ProgramBrowserListener> browserListeners;
+	private GenericListenerList<ProgramBrowserListener> browserListeners;
 
 	private ProgramBrowserTheme theme;
 
@@ -64,7 +64,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	private ProgramBrowserDisplaySource(AmstradPc amstradPc, String windowTitle, Window initialWindow) {
 		super(amstradPc, windowTitle);
 		this.currentWindow = initialWindow;
-		this.browserListeners = new AmstradListenerList<ProgramBrowserListener>();
+		this.browserListeners = new GenericListenerList<ProgramBrowserListener>();
 		setTheme(new ProgramBrowserThemeFromSettings());
 		setRestoreMonitorSettingsOnDispose(!isStandaloneInfo()); // as this source may switch to COLOR
 	}
@@ -719,7 +719,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return AmstradFactory.getInstance().getAmstradContext().getUserSettings();
 	}
 
-	private AmstradListenerList<ProgramBrowserListener> getBrowserListeners() {
+	private GenericListenerList<ProgramBrowserListener> getBrowserListeners() {
 		return browserListeners;
 	}
 

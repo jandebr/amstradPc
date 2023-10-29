@@ -1,4 +1,4 @@
-package org.maia.amstrad.util;
+package org.maia.io.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,9 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class AmstradIO {
+public class IOUtils {
 
-	private AmstradIO() {
+	private IOUtils() {
 	}
 
 	public static CharSequence readTextFileContents(File file) throws IOException {

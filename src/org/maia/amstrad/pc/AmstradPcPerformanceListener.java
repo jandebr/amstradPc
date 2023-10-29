@@ -1,8 +1,8 @@
 package org.maia.amstrad.pc;
 
-import org.maia.amstrad.util.AmstradListener;
+import org.maia.util.GenericListener;
 
-public interface AmstradPcPerformanceListener extends AmstradListener {
+public interface AmstradPcPerformanceListener extends GenericListener {
 
 	void displayPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int framesPainted, int imagesUpdated);
 

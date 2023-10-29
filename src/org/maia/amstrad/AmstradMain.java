@@ -3,7 +3,7 @@ package org.maia.amstrad;
 import java.io.File;
 import java.util.Properties;
 
-import org.maia.amstrad.util.getdown.GetdownProgramFileRepositoryCleaner;
+import org.maia.amstrad.program.repo.cleaner.GetdownProgramFileRepositoryCleaner;
 
 public class AmstradMain {
 

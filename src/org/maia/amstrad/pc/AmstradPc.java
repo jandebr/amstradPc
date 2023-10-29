@@ -15,8 +15,8 @@ import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.AmstradProgramLoader;
 import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
-import org.maia.amstrad.util.AmstradListenerList;
 import org.maia.swing.dialog.ActionableDialog;
+import org.maia.util.GenericListenerList;
 
 public abstract class AmstradPc {
 
@@ -24,14 +24,14 @@ public abstract class AmstradPc {
 
 	private AmstradPcActions actions;
 
-	private AmstradListenerList<AmstradPcStateListener> stateListeners;
+	private GenericListenerList<AmstradPcStateListener> stateListeners;
 
-	private AmstradListenerList<AmstradPcPerformanceListener> performanceListeners;
+	private GenericListenerList<AmstradPcPerformanceListener> performanceListeners;
 
 	protected AmstradPc() {
 		this.actions = new AmstradPcActions(this);
-		this.stateListeners = new AmstradListenerList<AmstradPcStateListener>();
-		this.performanceListeners = new AmstradListenerList<AmstradPcPerformanceListener>();
+		this.stateListeners = new GenericListenerList<AmstradPcStateListener>();
+		this.performanceListeners = new GenericListenerList<AmstradPcPerformanceListener>();
 	}
 
 	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
@@ -223,11 +223,11 @@ public abstract class AmstradPc {
 		return actions;
 	}
 
-	protected AmstradListenerList<AmstradPcStateListener> getStateListeners() {
+	protected GenericListenerList<AmstradPcStateListener> getStateListeners() {
 		return stateListeners;
 	}
 
-	protected AmstradListenerList<AmstradPcPerformanceListener> getPerformanceListeners() {
+	protected GenericListenerList<AmstradPcPerformanceListener> getPerformanceListeners() {
 		return performanceListeners;
 	}
 

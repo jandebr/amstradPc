@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.io.util.IOUtils;
 
 public class AmstradProgramTextFilePayload extends AmstradProgramTextPayload {
 
@@ -21,7 +21,7 @@ public class AmstradProgramTextFilePayload extends AmstradProgramTextPayload {
 	@Override
 	public CharSequence getText() throws AmstradProgramException {
 		try {
-			return AmstradIO.readTextFileContents(getPayloadFile());
+			return IOUtils.readTextFileContents(getPayloadFile());
 		} catch (IOException e) {
 			throw new AmstradProgramException(getProgram(),
 					"Could not load text payload from file " + getPayloadFile().getAbsolutePath(), e);

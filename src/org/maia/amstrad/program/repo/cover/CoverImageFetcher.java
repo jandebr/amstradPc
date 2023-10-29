@@ -3,7 +3,7 @@ package org.maia.amstrad.program.repo.cover;
 import java.util.Queue;
 
 import org.maia.amstrad.program.repo.cover.CoverImageImpl.FetchTask;
-import org.maia.amstrad.util.AsyncSerialTaskWorker;
+import org.maia.util.AsyncSerialTaskWorker;
 
 public class CoverImageFetcher extends AsyncSerialTaskWorker<FetchTask> {
 

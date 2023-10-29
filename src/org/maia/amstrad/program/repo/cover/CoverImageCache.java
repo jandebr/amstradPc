@@ -3,7 +3,7 @@ package org.maia.amstrad.program.repo.cover;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.ImageProxy;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.amstrad.util.KeyedCacheLRU;
+import org.maia.util.KeyedCacheLRU;
 
 public class CoverImageCache extends KeyedCacheLRU<Node, ImageProxy> {
 

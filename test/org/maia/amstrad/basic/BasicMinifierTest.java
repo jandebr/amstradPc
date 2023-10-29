@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.minify.LocomotiveBasicMinifierFactory;
-import org.maia.amstrad.util.AmstradIO;
+import org.maia.io.util.IOUtils;
 
 public class BasicMinifierTest {
 
@@ -19,11 +19,11 @@ public class BasicMinifierTest {
 	}
 
 	public void run(File input, File output) throws BasicException, IOException {
-		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(input));
+		BasicSourceCode sourceCode = new LocomotiveBasicSourceCode(IOUtils.readTextFileContents(input));
 		BasicMinifier minifier = LocomotiveBasicMinifierFactory.getInstance()
 				.createMinifier(LocomotiveBasicMinifierFactory.LEVEL_ULTRA);
 		minifier.minify(sourceCode);
-		AmstradIO.writeTextFileContents(output, sourceCode.getText());
+		IOUtils.writeTextFileContents(output, sourceCode.getText());
 	}
 
 }

@@ -14,8 +14,8 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
-import org.maia.amstrad.util.AmstradIO;
-import org.maia.amstrad.util.AmstradUtils;
+import org.maia.io.util.IOUtils;
+import org.maia.util.SystemUtils;
 
 public class BasicCompilerTest {
 
@@ -55,7 +55,7 @@ public class BasicCompilerTest {
 		LocomotiveBasicByteCode referenceByteCode = (LocomotiveBasicByteCode) amstradPc.getBasicRuntime()
 				.exportByteCode();
 		LocomotiveBasicByteCode compiledByteCode = compiler
-				.compile(new LocomotiveBasicSourceCode(AmstradIO.readTextFileContents(basicFile)));
+				.compile(new LocomotiveBasicSourceCode(IOUtils.readTextFileContents(basicFile)));
 		outputByteCodeComparison(referenceByteCode, compiledByteCode, out);
 		out.println();
 		out.flush();
@@ -67,7 +67,7 @@ public class BasicCompilerTest {
 		} else {
 			amstradPc.start(true, true);
 		}
-		AmstradUtils.sleep(100);
+		SystemUtils.sleep(100);
 		amstradPc.getKeyboard().typeFileContents(basicFile);
 	}
 

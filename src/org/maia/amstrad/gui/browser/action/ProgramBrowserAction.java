@@ -12,17 +12,17 @@ import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.util.AmstradListenerList;
+import org.maia.util.GenericListenerList;
 
 public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrowserListener {
 
 	private ProgramBrowserDisplaySource displaySource;
 
-	private AmstradListenerList<ProgramBrowserListener> browserListeners;
+	private GenericListenerList<ProgramBrowserListener> browserListeners;
 
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
-		this.browserListeners = new AmstradListenerList<ProgramBrowserListener>();
+		this.browserListeners = new GenericListenerList<ProgramBrowserListener>();
 		updateName();
 		amstradPc.getMonitor().addMonitorListener(this);
 		amstradPc.getKeyboard().addKeyboardListener(this);
@@ -141,7 +141,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		return displaySource;
 	}
 
-	private AmstradListenerList<ProgramBrowserListener> getBrowserListeners() {
+	private GenericListenerList<ProgramBrowserListener> getBrowserListeners() {
 		return browserListeners;
 	}
 

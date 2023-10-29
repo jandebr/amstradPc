@@ -7,7 +7,7 @@ import java.util.Vector;
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.payload.AmstradProgramPayload;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public abstract class AmstradProgram implements Cloneable {
 

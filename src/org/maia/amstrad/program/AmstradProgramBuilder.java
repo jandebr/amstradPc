@@ -14,7 +14,7 @@ import org.maia.amstrad.gui.FileBasedImageProxy;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
-import org.maia.amstrad.util.StringUtils;
+import org.maia.util.StringUtils;
 
 public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 
@@ -139,7 +139,7 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			withProductionYear(StringUtils.toInt(props.getProperty(AMD_YEAR), 0));
 			withNameOfTape(props.getProperty(AMD_TAPE));
 			withBlocksOnTape(StringUtils.toInt(props.getProperty(AMD_BLOCKS), 0));
-			withPreferredMonitorMode(StringUtils.toMonitorMode(props.getProperty(AMD_MONITOR), null));
+			withPreferredMonitorMode(AmstradMonitorMode.toMonitorMode(props.getProperty(AMD_MONITOR), null));
 			withProgramDescription(props.getProperty(AMD_DESCRIPTION));
 			withAuthoringInformation(props.getProperty(AMD_AUTHORING));
 			withUserControls(extractUserControlsFromMetaData(props));

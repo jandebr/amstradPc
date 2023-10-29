@@ -1,8 +1,8 @@
 package org.maia.amstrad.pc.keyboard;
 
-import org.maia.amstrad.util.AmstradListener;
+import org.maia.util.GenericListener;
 
-public interface AmstradKeyboardListener extends AmstradListener {
+public interface AmstradKeyboardListener extends GenericListener {
 
 	void amstradKeyboardEventDispatched(AmstradKeyboardEvent event);
 

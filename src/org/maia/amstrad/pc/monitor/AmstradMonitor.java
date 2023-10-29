@@ -11,17 +11,17 @@ import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradImageDisplaySource;
-import org.maia.amstrad.util.AmstradListenerList;
+import org.maia.util.GenericListenerList;
 
 public abstract class AmstradMonitor extends AmstradDevice {
 
-	private AmstradListenerList<AmstradMonitorListener> monitorListeners;
+	private GenericListenerList<AmstradMonitorListener> monitorListeners;
 
 	private boolean showSystemStats;
 
 	protected AmstradMonitor(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.monitorListeners = new AmstradListenerList<AmstradMonitorListener>();
+		this.monitorListeners = new GenericListenerList<AmstradMonitorListener>();
 	}
 
 	public abstract AmstradGraphicsContext getGraphicsContext();
@@ -174,7 +174,7 @@ public abstract class AmstradMonitor extends AmstradDevice {
 			listener.amstradDisplaySourceChanged(this);
 	}
 
-	protected AmstradListenerList<AmstradMonitorListener> getMonitorListeners() {
+	protected GenericListenerList<AmstradMonitorListener> getMonitorListeners() {
 		return monitorListeners;
 	}
 

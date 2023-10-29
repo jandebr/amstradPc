@@ -2,15 +2,15 @@ package org.maia.amstrad.pc.audio;
 
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.util.AmstradListenerList;
+import org.maia.util.GenericListenerList;
 
 public abstract class AmstradAudio extends AmstradDevice {
 
-	private AmstradListenerList<AmstradAudioListener> audioListeners;
+	private GenericListenerList<AmstradAudioListener> audioListeners;
 
 	public AmstradAudio(AmstradPc amstradPc) {
 		super(amstradPc);
-		this.audioListeners = new AmstradListenerList<AmstradAudioListener>();
+		this.audioListeners = new GenericListenerList<AmstradAudioListener>();
 	}
 
 	public abstract void mute();
@@ -37,7 +37,7 @@ public abstract class AmstradAudio extends AmstradDevice {
 			listener.amstradAudioUnmuted(this);
 	}
 
-	protected AmstradListenerList<AmstradAudioListener> getAudioListeners() {
+	protected GenericListenerList<AmstradAudioListener> getAudioListeners() {
 		return audioListeners;
 	}
 

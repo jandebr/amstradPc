@@ -18,7 +18,7 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.util.AmstradUtils;
+import org.maia.util.SystemUtils;
 
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
@@ -187,7 +187,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 
 			@Override
 			public void run() {
-				AmstradUtils.sleep(1000L);
+				SystemUtils.sleep(1000L);
 				AmstradMonitor monitor = getAmstradPc().getMonitor();
 				if (monitor.isFullscreen()) {
 					JComponent displayComp = monitor.getDisplayComponent();
@@ -197,7 +197,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 						System.out.println("Ultimate center display on screen");
 						monitor.toggleFullscreen();
 						monitor.toggleFullscreen();
-						AmstradUtils.sleep(500L);
+						SystemUtils.sleep(500L);
 					}
 					System.out.println("Display is centered fullscreen");
 				} else if (extendsOutsideScreen()) {

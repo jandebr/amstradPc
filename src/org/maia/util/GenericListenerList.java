@@ -1,4 +1,4 @@
-package org.maia.amstrad.util;
+package org.maia.util;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * An iterable list of <code>AmstradListener</code> or any of its sub-interfaces. The primary use case is to provide a
+ * An iterable list of <code>GenericListener</code> or any of its sub-interfaces. The primary use case is to provide a
  * consistent and reusable implementation for the <em>Observer</em> design pattern
  * 
  * <p>
  * Iteration can be performed using the traditional code idiom:
  * 
  * <pre>{@code
- * AmstradListenerList<MyListener> listeners = new AmstradListenerList<MyListener>();
+ * GenericListenerList<MyListener> listeners = new GenericListenerList<MyListener>();
  * listeners.addListener(new MyListenerImpl());
  * ...
  * for (MyListener listener : listeners)
@@ -22,19 +22,19 @@ import java.util.NoSuchElementException;
  * 
  * Iteration follows the order in which listeners were added
  * <p>
- * A listener can only participate once in an <code>AmstradListenerList</code>. This is checked when adding listeners
+ * A listener can only participate once in an <code>GenericListenerList</code>. This is checked when adding listeners
  * <p>
  * Unlike traditional {@link List} implementations for storing listeners, this implementation is robust against
  * concurrent modifications while iterating (by the same thread or by other threads). In particular, an
- * <code>AmstradListenerList</code> will never throw any {@link ConcurrentModificationException}. The modification
+ * <code>GenericListenerList</code> will never throw any {@link ConcurrentModificationException}. The modification
  * behavior is defined as follows:
  * <ul>
- * <li>Listeners added by {@link #addListener(AmstradListener)} are not returned by open iterators. It requires a new
+ * <li>Listeners added by {@link #addListener(GenericListener)} are not returned by open iterators. It requires a new
  * iterator to include the added listener. This is the default behavior but it can be altered by
  * {@link #setIncludeAdditionsWhileIterating(boolean)} passing the value <code>true</code>. This has immediate effect on
  * both newly created iterators and open iterators with one exception. When all listeners ahead of an iterator have been
  * removed as well as its last returned listener, additions will no longer be visible to that (exhausted) iterator</li>
- * <li>Listeners removed by {@link #removeListener(AmstradListener)} will no longer be returned by any iterator (unless
+ * <li>Listeners removed by {@link #removeListener(GenericListener)} will no longer be returned by any iterator (unless
  * they are added again, see previous point)</li>
  * <li>Removing all listeners at once by {@link #removeAllListeners()} or {@link #clear()} will instantly exhaust all
  * open iterators</li>
@@ -44,11 +44,11 @@ import java.util.NoSuchElementException;
  * </p>
  * 
  * @param <T>
- *            The type of listener contained in this list, a sub-interface of <code>AmstradListener</code>
+ *            The type of listener contained in this list, a sub-interface of <code>GenericListener</code>
  * 
- * @see AmstradListener
+ * @see GenericListener
  */
-public class AmstradListenerList<T extends AmstradListener> implements Iterable<T> {
+public class GenericListenerList<T extends GenericListener> implements Iterable<T> {
 
 	private ListenerElement headElement; // starting point for new iterators
 
@@ -60,7 +60,7 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 
 	private EmptyListenerIterator emptyListenerIterator;
 
-	public AmstradListenerList() {
+	public GenericListenerList() {
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 	 *            The listener to add
 	 * @return <code>true</code> if this list changed as a result of the call, <code>false</code> if the listener was
 	 *         already in this list
-	 * @see #containsListener(AmstradListener)
+	 * @see #containsListener(GenericListener)
 	 */
 	public synchronized boolean addListener(T listener) {
 		if (!containsListener(listener)) {
@@ -114,7 +114,7 @@ public class AmstradListenerList<T extends AmstradListener> implements Iterable<
 	 *            The listener to remove
 	 * @return <code>true</code> if this list changed as a result of the call, <code>false</code> if the listener was
 	 *         not in this list
-	 * @see #containsListener(AmstradListener)
+	 * @see #containsListener(GenericListener)
 	 */
 	public synchronized boolean removeListener(T listener) {
 		boolean removed = false;
