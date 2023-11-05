@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.swing.dialog.ActionableDialog;
-import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
 import org.maia.swing.dialog.ActionableDialogListener;
+import org.maia.swing.dialog.ActionableDialogOption;
 
 public abstract class ActionableDialogAction extends AmstradPcAction implements ActionableDialogListener {
 
@@ -30,7 +30,7 @@ public abstract class ActionableDialogAction extends AmstradPcAction implements 
 	protected abstract ActionableDialog createDialog();
 
 	@Override
-	public void dialogButtonClicked(ActionableDialog dialog, ActionableDialogButton button) {
+	public void dialogButtonClicked(ActionableDialog dialog, ActionableDialogOption dialogOption) {
 		// Subclasses may override
 	}
 

@@ -22,9 +22,9 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.swing.dialog.ActionableDialog;
-import org.maia.swing.dialog.ActionableDialog.ActionableDialogButton;
-import org.maia.util.SystemUtils;
 import org.maia.swing.dialog.ActionableDialogListener;
+import org.maia.swing.dialog.ActionableDialogOption;
+import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerPerformanceListener;
@@ -527,8 +527,8 @@ public abstract class JemuAmstradPc extends AmstradPc
 		}
 
 		@Override
-		public void dialogButtonClicked(ActionableDialog dialog, ActionableDialogButton button) {
-			if (button.isClosingDialog()) {
+		public void dialogButtonClicked(ActionableDialog dialog, ActionableDialogOption dialogOption) {
+			if (dialogOption.isClosingDialog()) {
 				resetKeyModifiers();
 			}
 		}
