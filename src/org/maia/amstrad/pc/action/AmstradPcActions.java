@@ -1,18 +1,22 @@
 package org.maia.amstrad.pc.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserSetupAction;
 import org.maia.amstrad.gui.browser.action.ProgramInfoAction;
 import org.maia.amstrad.gui.colors.AmstradSystemColorsDisplayAction;
 import org.maia.amstrad.gui.memory.BasicMemoryDisplayAction;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 
 public class AmstradPcActions {
 
-	/* File actions */
-
 	private AmstradPc amstradPc;
+
+	/* File actions */
 
 	private ProgramBrowserAction programBrowserAction;
 
@@ -36,7 +40,19 @@ public class AmstradPcActions {
 
 	/* Emulator actions */
 
+	private AmstradSystemColorsDisplayAction amstradSystemColorsDisplayAction;
+
+	private BasicMemoryDisplayAction basicMemoryDisplayAction;
+
+	private ShowJavaConsoleAction showJavaConsoleAction;
+
+	private Map<AmstradJoystickID, JoystickSetupAction> joystickSetupActions;
+
+	private Map<AmstradJoystickID, JoystickActivationAction> joystickActivationActions;
+
 	private AutoTypeFileAction autoTypeFileAction;
+
+	private BreakEscapeAction breakEscapeAction;
 
 	private AudioAction audioAction;
 
@@ -44,13 +60,7 @@ public class AmstradPcActions {
 
 	private RebootAction rebootAction;
 
-	private BasicMemoryDisplayAction basicMemoryDisplayAction;
-
-	private BreakEscapeAction breakEscapeAction;
-
 	/* Monitor actions */
-
-	private AmstradSystemColorsDisplayAction amstradSystemColorsDisplayAction;
 
 	private ScreenshotAction screenshotAction;
 
@@ -82,8 +92,6 @@ public class AmstradPcActions {
 
 	/* Window actions */
 
-	private ShowJavaConsoleAction showJavaConsoleAction;
-
 	private WindowAlwaysOnTopAction windowAlwaysOnTopAction;
 
 	private WindowCenterOnScreenAction windowCenterOnScreenAction;
@@ -92,6 +100,8 @@ public class AmstradPcActions {
 
 	public AmstradPcActions(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
+		this.joystickSetupActions = new HashMap<AmstradJoystickID, JoystickSetupAction>();
+		this.joystickActivationActions = new HashMap<AmstradJoystickID, JoystickActivationAction>();
 	}
 
 	public ProgramBrowserAction getProgramBrowserAction() {
@@ -318,6 +328,24 @@ public class AmstradPcActions {
 			showJavaConsoleAction = new ShowJavaConsoleAction(getAmstradPc());
 		}
 		return showJavaConsoleAction;
+	}
+
+	public JoystickSetupAction getJoystickSetupAction(AmstradJoystickID joystickId) {
+		JoystickSetupAction action = joystickSetupActions.get(joystickId);
+		if (action == null) {
+			action = new JoystickSetupAction(getAmstradPc(), joystickId);
+			joystickSetupActions.put(joystickId, action);
+		}
+		return action;
+	}
+
+	public JoystickActivationAction getJoystickActivationAction(AmstradJoystickID joystickId) {
+		JoystickActivationAction action = joystickActivationActions.get(joystickId);
+		if (action == null) {
+			action = new JoystickActivationAction(getAmstradPc(), joystickId);
+			joystickActivationActions.put(joystickId, action);
+		}
+		return action;
 	}
 
 	public WindowAlwaysOnTopAction getWindowAlwaysOnTopAction() {

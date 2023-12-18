@@ -8,7 +8,7 @@ public abstract class AmstradAudio extends AmstradDevice {
 
 	private GenericListenerList<AmstradAudioListener> audioListeners;
 
-	public AmstradAudio(AmstradPc amstradPc) {
+	protected AmstradAudio(AmstradPc amstradPc) {
 		super(amstradPc);
 		this.audioListeners = new GenericListenerList<AmstradAudioListener>();
 	}

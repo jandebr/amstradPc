@@ -21,6 +21,7 @@
 			</manifest>
 			<zipfileset src="lib/maiaSwing.jar" />
 			<zipfileset src="lib/maiaUtils.jar" />
+			<zipfileset src="lib/maiaInputDevice.jar" />
 			<fileset dir="bin" />
 		</jar>
 	</target>
@@ -31,7 +32,7 @@
 		<copy todir="dist/staging/${distribution.id}">
 			<file file="dist/amstradPc.jar" />
 		</copy>
-		<jar destfile="dist/staging/${distribution.id}/system/cpc.jar">
+		<jar destfile="dist/staging/${distribution.id}/system/system.jar">
 			<fileset dir="system" />
 		</jar>
 		<copy todir="dist/staging/${distribution.id}/images">

@@ -77,11 +77,11 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		textArea.setFont(this.font);
 		textArea.setEditable(true);
 		textArea.setAutoscrolls(true);
-		textArea.setBackground(Color.BLACK);
-		textArea.setForeground(Color.WHITE);
-		textArea.setCaretColor(Color.WHITE);
-		textArea.setSelectedTextColor(Color.BLACK);
-		textArea.setSelectionColor(Color.PINK);
+		textArea.setBackground(new Color(0, 10, 0));
+		textArea.setForeground(new Color(0, 229, 0));
+		textArea.setCaretColor(textArea.getForeground());
+		textArea.setSelectedTextColor(textArea.getBackground());
+		textArea.setSelectionColor(Color.WHITE);
 		textArea.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		// textArea.setFont(new Font("", 1, 10));
 		textArea.setLineWrap(true);

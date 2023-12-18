@@ -312,11 +312,13 @@ public class Display extends JComponent {
 
 	@Override
 	public synchronized void setBounds(int x, int y, int width, int height) {
-		boolean changedSize = width != getWidth() || height != getHeight();
-		super.setBounds(x, y, width, height);
-		checkSize();
-		if (changedSize) {
-			getRenderDelegate().displayChangedSize(width, height);
+		if (width > 0 && height > 0) {
+			boolean changedSize = width != getWidth() || height != getHeight();
+			super.setBounds(x, y, width, height);
+			checkSize();
+			if (changedSize) {
+				getRenderDelegate().displayChangedSize(width, height);
+			}
 		}
 	}
 

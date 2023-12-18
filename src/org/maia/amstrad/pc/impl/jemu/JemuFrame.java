@@ -1,6 +1,6 @@
 package org.maia.amstrad.pc.impl.jemu;
 
-import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.frame.AmstradPcFrame;
 
 public abstract class JemuFrame extends AmstradPcFrame {
 

@@ -15,7 +15,11 @@ import java.util.Vector;
 
 import javax.swing.Box;
 
-import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.frame.AmstradPcPopupMenu;
+import org.maia.amstrad.pc.impl.joystick.AmstradJoystickGamingController;
+import org.maia.amstrad.pc.impl.joystick.AmstradJoystickPopupMenuController;
+import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.util.SystemUtils;
 
@@ -87,6 +91,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		primaryDisplaySourceResolutionChanged(display,
 				new Dimension(display.getImageWidth(), display.getImageHeight()));
 		display.requestFocus();
+		initJoysticks();
 		System.out.println("Started Jemu DIRECT pc");
 	}
 
@@ -135,6 +140,19 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 	private void initMonitor() {
 		((JemuMonitorImpl) getMonitor()).update();
+	}
+
+	private void initJoysticks() {
+		// Gaming
+		AmstradJoystickGamingController dispatcher = new AmstradJoystickGamingController(getKeyDispatcher());
+		getJoystick(AmstradJoystickID.JOYSTICK0).addJoystickEventListener(dispatcher);
+		getJoystick(AmstradJoystickID.JOYSTICK1).addJoystickEventListener(dispatcher);
+		// PopupMenu
+		AmstradPcPopupMenu popupMenu = getFrame().getInstalledPopupMenu();
+		if (popupMenu != null) {
+			getJoystick(AmstradJoystickID.JOYSTICK0)
+					.addJoystickEventListener(new AmstradJoystickPopupMenuController(popupMenu));
+		}
 	}
 
 	@Override

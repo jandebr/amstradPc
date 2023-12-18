@@ -15,6 +15,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.impl.joystick.AmstradJoystickDisplaySourceController;
+import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
@@ -25,6 +27,8 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		implements AmstradAlternativeDisplaySource, MouseListener, MouseMotionListener {
 
 	private AmstradPc amstradPc;
+
+	private AmstradJoystickDisplaySourceController joystickController;
 
 	private AmstradDisplayCanvasOverImage displayCanvas;
 
@@ -48,6 +52,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	protected AmstradEmulatedDisplaySource(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
+		this.joystickController = new AmstradJoystickDisplaySourceController(this);
 		setRestoreMonitorSettingsOnDispose(false);
 	}
 
@@ -76,6 +81,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		displayComponent.addMouseListener(this);
 		displayComponent.addMouseMotionListener(this);
 		displayComponent.addKeyListener(this);
+		getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK0).addJoystickEventListener(getJoystickController());
 		acquireKeyboard();
 		init(getDisplayCanvas());
 		setBackgroundColorIndex(getDisplayCanvas().getPaperColorIndex());
@@ -91,6 +97,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		displayComponent.removeMouseListener(this);
 		displayComponent.removeMouseMotionListener(this);
 		displayComponent.removeKeyListener(this);
+		getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK0).removeJoystickEventListener(getJoystickController());
 		releaseKeyboard();
 		setCursor(getDisplayComponentInitialCursor());
 		getDisplayCanvas().dispose();
@@ -342,6 +349,10 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
+	}
+
+	private AmstradJoystickDisplaySourceController getJoystickController() {
+		return joystickController;
 	}
 
 	private AmstradDisplayCanvasOverImage getDisplayCanvas() {

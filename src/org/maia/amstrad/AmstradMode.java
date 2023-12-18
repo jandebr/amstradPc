@@ -3,8 +3,8 @@ package org.maia.amstrad;
 import java.io.File;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
+import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.tape.AmstradTape;

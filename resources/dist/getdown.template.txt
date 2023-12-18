@@ -25,7 +25,7 @@ resource = images/launcher-icon.png
 resource = images/splash.png
 
 # System resources
-uresource = system/cpc.jar
+uresource = system/system.jar
 
 # Program resources
 # %AMSTRADPC_PROGRAMS%
@@ -39,6 +39,7 @@ class = org.maia.amstrad.AmstradMain
 # JVM arguments
 jvmarg = -splash:images/splash.png
 jvmarg = -Xmx512m
+jvmarg = -Djava.library.path=system/jinput
 jvmarg = -Djavacpc-version=%AMSTRADPC_VERSION%
 jvmarg = -Djavacpc-ini-read=javacpc.ini
 jvmarg = -Djavacpc-ini-write=javacpc.ini

@@ -1,13 +1,22 @@
 package org.maia.amstrad.pc;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.audio.AmstradAudio;
+import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.frame.AmstradPcFrameListener;
+import org.maia.amstrad.pc.impl.joystick.AmstradJoystickDevice;
+import org.maia.amstrad.pc.joystick.AmstradJoystick;
+import org.maia.amstrad.pc.joystick.AmstradJoystickID;
+import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
@@ -24,12 +33,15 @@ public abstract class AmstradPc {
 
 	private AmstradPcActions actions;
 
+	private Map<AmstradJoystickID, AmstradJoystick> joysticks;
+
 	private GenericListenerList<AmstradPcStateListener> stateListeners;
 
 	private GenericListenerList<AmstradPcPerformanceListener> performanceListeners;
 
 	protected AmstradPc() {
 		this.actions = new AmstradPcActions(this);
+		this.joysticks = new HashMap<AmstradJoystickID, AmstradJoystick>();
 		this.stateListeners = new GenericListenerList<AmstradPcStateListener>();
 		this.performanceListeners = new GenericListenerList<AmstradPcPerformanceListener>();
 	}
@@ -130,6 +142,25 @@ public abstract class AmstradPc {
 
 	public abstract BasicRuntime getBasicRuntime();
 
+	public AmstradJoystick getJoystick(AmstradJoystickID joystickId) {
+		synchronized (getJoysticks()) {
+			AmstradJoystick joystick = getJoysticks().get(joystickId);
+			if (joystick == null) {
+				joystick = createJoystick(joystickId);
+				getJoysticks().put(joystickId, joystick);
+			}
+			return joystick;
+		}
+	}
+
+	protected AmstradJoystick createJoystick(AmstradJoystickID joystickId) {
+		AmstradJoystick joystick = new AmstradJoystickDevice(this, joystickId);
+		JoystickModeManager modeManager = new JoystickModeManager(joystick);
+		getMonitor().addMonitorListener(modeManager);
+		getFrame().addFrameListener(modeManager);
+		return joystick;
+	}
+
 	protected void checkStarted() {
 		if (!isStarted())
 			throw new IllegalStateException("This Amstrad PC has not been started");
@@ -223,12 +254,63 @@ public abstract class AmstradPc {
 		return actions;
 	}
 
+	private Map<AmstradJoystickID, AmstradJoystick> getJoysticks() {
+		return joysticks;
+	}
+
 	protected GenericListenerList<AmstradPcStateListener> getStateListeners() {
 		return stateListeners;
 	}
 
 	protected GenericListenerList<AmstradPcPerformanceListener> getPerformanceListeners() {
 		return performanceListeners;
+	}
+
+	private class JoystickModeManager extends AmstradMonitorAdapter implements AmstradPcFrameListener {
+
+		private AmstradJoystick joystick;
+
+		public JoystickModeManager(AmstradJoystick joystick) {
+			this.joystick = joystick;
+			switchMode(getDefaultModeForMonitor(getMonitor()));
+		}
+
+		@Override
+		public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
+			switchMode(getDefaultModeForMonitor(monitor));
+		}
+
+		@Override
+		public void popupMenuWillBecomeVisible(AmstradPcFrame frame) {
+			switchMode(AmstradJoystickMode.MENU);
+		}
+
+		@Override
+		public void popupMenuWillBecomeInvisible(AmstradPcFrame frame) {
+			switchMode(getDefaultModeForMonitor(getMonitor()));
+		}
+
+		private void switchMode(AmstradJoystickMode mode) {
+			getJoystick().switchMode(mode);
+			getJoystick().switchAutoRepeatEnabled(isAutoRepeatEnabled(mode));
+		}
+
+		private AmstradJoystickMode getDefaultModeForMonitor(AmstradMonitor monitor) {
+			if (monitor.isPrimaryDisplaySourceShowing()) {
+				return AmstradJoystickMode.GAMING;
+			} else {
+				return AmstradJoystickMode.MENU;
+			}
+		}
+
+		private boolean isAutoRepeatEnabled(AmstradJoystickMode mode) {
+			return AmstradJoystickMode.MENU.equals(mode);
+		}
+
+		public AmstradJoystick getJoystick() {
+			return joystick;
+		}
+
 	}
 
 }
