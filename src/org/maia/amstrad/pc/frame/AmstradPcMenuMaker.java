@@ -323,6 +323,8 @@ public class AmstradPcMenuMaker {
 				new MonitorBilinearEffectMenuHelper(createMonitorBilinearEffectMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new MonitorGateArrayMenuHelper(createMonitorGateArrayMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new JSeparator());
+		menu.add(
+				new MonitorAutoHideCursorMenuHelper(createMonitorAutoHideCursorMenuItem(), getMonitor()).getCheckbox());
 		menu.add(new MonitorShowSystemStatsMenuHelper(createMonitorShowSystemStatsMenuItem(), getMonitor())
 				.getCheckbox());
 		return updateMenuLookAndFeel(menu, UIResources.monitorEffectIcon);
@@ -345,6 +347,11 @@ public class AmstradPcMenuMaker {
 
 	private JCheckBoxMenuItem createMonitorGateArrayMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorGateArrayAction());
+		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+	}
+
+	private JCheckBoxMenuItem createMonitorAutoHideCursorMenuItem() {
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorAutoHideCursorAction());
 		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
@@ -662,6 +669,24 @@ public class AmstradPcMenuMaker {
 		@Override
 		protected boolean getState(AmstradMonitor monitor) {
 			return monitor.isFullGateArray();
+		}
+
+	}
+
+	private static class MonitorAutoHideCursorMenuHelper extends MonitorCheckboxMenuHelper {
+
+		public MonitorAutoHideCursorMenuHelper(JCheckBoxMenuItem checkbox, AmstradMonitor monitor) {
+			super(checkbox, monitor);
+		}
+
+		@Override
+		public void amstradMonitorAutoHideCursorChanged(AmstradMonitor monitor) {
+			syncMenu(monitor);
+		}
+
+		@Override
+		protected boolean getState(AmstradMonitor monitor) {
+			return monitor.isAutoHideCursor();
 		}
 
 	}

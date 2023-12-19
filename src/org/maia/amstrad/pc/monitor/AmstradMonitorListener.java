@@ -14,6 +14,8 @@ public interface AmstradMonitorListener extends GenericListener {
 
 	void amstradMonitorGateArraySizeChanged(AmstradMonitor monitor);
 
+	void amstradMonitorAutoHideCursorChanged(AmstradMonitor monitor);
+
 	void amstradMonitorSizeChanged(AmstradMonitor monitor);
 
 	void amstradMonitorFullscreenChanged(AmstradMonitor monitor);

@@ -19,6 +19,7 @@ import org.maia.amstrad.pc.impl.joystick.AmstradJoystickDisplaySourceController;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvasOverImage;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
@@ -75,9 +76,9 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 			AmstradKeyboardController keyboardController) {
 		setDisplayCanvas(new AmstradDisplayCanvasOverImage(graphicsContext));
 		setDisplayComponent(displayComponent);
-		setDisplayComponentInitialCursor(displayComponent.getCursor());
-		setKeyboardController(keyboardController);
+		setDisplayComponentInitialCursor(getCursorController().getCursor());
 		resetCursor();
+		setKeyboardController(keyboardController);
 		displayComponent.addMouseListener(this);
 		displayComponent.addMouseMotionListener(this);
 		displayComponent.addKeyListener(this);
@@ -155,13 +156,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	}
 
 	protected void setCursor(Cursor cursor) {
-		if (getDisplayComponent() != null) {
-			if (cursor == null)
-				cursor = getDefaultCursor();
-			if (cursor != getDisplayComponent().getCursor()) {
-				getDisplayComponent().setCursor(cursor);
-			}
-		}
+		getCursorController().setCursor(cursor == null ? getDefaultCursor() : cursor);
 	}
 
 	@Override
@@ -345,6 +340,10 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	protected void keyboardKeyTyped(KeyEvent e) {
 		// Subclasses may override this method
+	}
+
+	protected AmstradMonitorCursorController getCursorController() {
+		return getAmstradPc().getMonitor().getCursorController();
 	}
 
 	public AmstradPc getAmstradPc() {

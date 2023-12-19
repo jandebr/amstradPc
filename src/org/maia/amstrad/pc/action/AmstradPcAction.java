@@ -133,6 +133,11 @@ public abstract class AmstradPcAction extends AbstractAction
 	}
 
 	@Override
+	public void amstradMonitorAutoHideCursorChanged(AmstradMonitor monitor) {
+		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
+	}
+
+	@Override
 	public void amstradMonitorSizeChanged(AmstradMonitor monitor) {
 		// Subclasses may override after registering with amstradPc's monitor as AmstradMonitorListener
 	}

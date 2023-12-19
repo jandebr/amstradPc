@@ -103,6 +103,7 @@ public class Settings {
 	public static final String SCANLINES = "scanlines";
 	public static final String SCANEFFECT = "display_effect";
 	public static final String BILINEAR = "bilinear";
+	public static final String AUTOHIDE_CURSOR = "autohide_cursor";
 
 	public static final String ALLOW_SCANLINES_LOWPERFORMANCE = "lowperformance.allow_scanlines";
 	public static final String ALLOW_SCANEFFECT_LOWPERFORMANCE = "lowperformance.allow_display_effect";

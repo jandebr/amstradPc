@@ -31,6 +31,11 @@ public abstract class AmstradMonitorAdapter implements AmstradMonitorListener {
 	}
 
 	@Override
+	public void amstradMonitorAutoHideCursorChanged(AmstradMonitor monitor) {
+		// Subclasses can override this
+	}
+
+	@Override
 	public void amstradMonitorSizeChanged(AmstradMonitor monitor) {
 		// Subclasses can override this
 	}

@@ -7,21 +7,34 @@ import javax.swing.JComponent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.impl.cursor.AmstradMonitorCursorControllerImpl;
+import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradImageDisplaySource;
 import org.maia.util.GenericListenerList;
 
+import jemu.settings.Settings;
+
 public abstract class AmstradMonitor extends AmstradDevice {
 
 	private GenericListenerList<AmstradMonitorListener> monitorListeners;
+
+	private AmstradMonitorCursorController cursorController;
 
 	private boolean showSystemStats;
 
 	protected AmstradMonitor(AmstradPc amstradPc) {
 		super(amstradPc);
 		this.monitorListeners = new GenericListenerList<AmstradMonitorListener>();
+		this.cursorController = createCursorController();
+	}
+
+	protected AmstradMonitorCursorController createCursorController() {
+		AmstradMonitorCursorController ctr = new AmstradMonitorCursorControllerImpl(getAmstradPc());
+		ctr.setAutoHideCursor(isAutoHideCursor());
+		return ctr;
 	}
 
 	public abstract AmstradGraphicsContext getGraphicsContext();
@@ -49,6 +62,18 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	public abstract boolean isFullGateArray();
 
 	public abstract void setFullGateArray(boolean full);
+
+	public boolean isAutoHideCursor() {
+		return Settings.getBoolean(Settings.AUTOHIDE_CURSOR, true);
+	}
+
+	public void setAutoHideCursor(boolean autoHide) {
+		if (autoHide != isAutoHideCursor()) {
+			Settings.setBoolean(Settings.AUTOHIDE_CURSOR, autoHide);
+			getCursorController().setAutoHideCursor(autoHide);
+			fireMonitorAutoHideCursorChangedEvent();
+		}
+	}
 
 	public abstract boolean isSingleSize();
 
@@ -149,6 +174,11 @@ public abstract class AmstradMonitor extends AmstradDevice {
 			listener.amstradMonitorGateArraySizeChanged(this);
 	}
 
+	protected void fireMonitorAutoHideCursorChangedEvent() {
+		for (AmstradMonitorListener listener : getMonitorListeners())
+			listener.amstradMonitorAutoHideCursorChanged(this);
+	}
+
 	protected void fireMonitorSizeChangedEvent() {
 		for (AmstradMonitorListener listener : getMonitorListeners())
 			listener.amstradMonitorSizeChanged(this);
@@ -176,6 +206,10 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	protected GenericListenerList<AmstradMonitorListener> getMonitorListeners() {
 		return monitorListeners;
+	}
+
+	public AmstradMonitorCursorController getCursorController() {
+		return cursorController;
 	}
 
 }
