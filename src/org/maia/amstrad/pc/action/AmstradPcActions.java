@@ -44,7 +44,7 @@ public class AmstradPcActions {
 
 	private BasicMemoryDisplayAction basicMemoryDisplayAction;
 
-	private ShowJavaConsoleAction showJavaConsoleAction;
+	private ShowSystemLogsAction showSystemLogsAction;
 
 	private Map<AmstradJoystickID, JoystickSetupAction> joystickSetupActions;
 
@@ -332,11 +332,11 @@ public class AmstradPcActions {
 		return monitorShowSystemStatsAction;
 	}
 
-	public ShowJavaConsoleAction getShowJavaConsoleAction() {
-		if (showJavaConsoleAction == null) {
-			showJavaConsoleAction = new ShowJavaConsoleAction(getAmstradPc());
+	public ShowSystemLogsAction getShowSystemLogsAction() {
+		if (showSystemLogsAction == null) {
+			showSystemLogsAction = new ShowSystemLogsAction(getAmstradPc());
 		}
-		return showJavaConsoleAction;
+		return showSystemLogsAction;
 	}
 
 	public JoystickSetupAction getJoystickSetupAction(AmstradJoystickID joystickId) {

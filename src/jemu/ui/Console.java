@@ -61,7 +61,7 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 
 	private Console() {
 		// create all components and add them
-		frameconsole = new JFrame("JavaCPC Console");
+		frameconsole = new JFrame("System logs");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = new Dimension((int) (screenSize.width / 2), (int) (screenSize.height / 2));
 		int x = (int) (frameSize.width / 2);

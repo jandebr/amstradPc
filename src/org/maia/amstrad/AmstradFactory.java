@@ -228,12 +228,12 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public void initJavaConsole() {
+		public void initSystemLogs() {
 			Console.init();
 		}
 
 		@Override
-		public void showJavaConsole() {
+		public void showSystemLogs() {
 			Console.frameconsole.setVisible(true);
 		}
 

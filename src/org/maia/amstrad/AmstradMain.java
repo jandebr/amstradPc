@@ -11,7 +11,7 @@ public class AmstradMain {
 
 	public static void main(String[] args) throws Exception {
 		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
-		context.initJavaConsole();
+		context.initSystemLogs();
 		System.out.println("Launching AmstradPc");
 		overrideSettingsFromSytemProperties(context.getUserSettings());
 		cleanManagedProgramRepository(context);

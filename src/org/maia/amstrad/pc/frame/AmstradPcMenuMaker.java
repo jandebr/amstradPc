@@ -184,7 +184,7 @@ public class AmstradPcMenuMaker {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(createAmstradSystemColorsDisplayMenuItem());
 		menu.add(createBasicMemoryDisplayMenuItem());
-		menu.add(createShowJavaConsoleMenuItem());
+		menu.add(createShowSystemLogsMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createJoystickMenu());
 		menu.add(createAutoTypeFileMenuItem());
@@ -205,8 +205,8 @@ public class AmstradPcMenuMaker {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getBasicMemoryDisplayAction()));
 	}
 
-	private JMenuItem createShowJavaConsoleMenuItem() {
-		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getShowJavaConsoleAction()));
+	private JMenuItem createShowSystemLogsMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getShowSystemLogsAction()));
 	}
 
 	private JMenuItem createAutoTypeFileMenuItem() {
