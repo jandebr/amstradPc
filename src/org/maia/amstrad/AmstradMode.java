@@ -15,17 +15,27 @@ import jemu.settings.Settings;
 
 public abstract class AmstradMode extends AmstradPcStateAdapter {
 
-	public static final AmstradMode DEFAULT = new DefaultAmstradMode();
+	public static final AmstradMode DESKTOP = new DesktopAmstradMode();
 
-	public static final AmstradMode KIOSK = new KioskAmstradMode();
+	public static final AmstradMode DISCOVER = new DiscoverAmstradMode();
+
+	public static final AmstradMode POWERON = new PowerOnAmstradMode();
+
+	public static final AmstradMode GT65POWERON = new GT65PowerOnAmstradMode();
 
 	public static final AmstradMode CLASSIC = new ClassicAmstradMode();
 
+	public static final AmstradMode DEFAULT_MODE = DESKTOP;
+
 	public static AmstradMode forName(String name) {
-		if (DEFAULT.getName().equalsIgnoreCase(name)) {
-			return DEFAULT;
-		} else if (KIOSK.getName().equalsIgnoreCase(name)) {
-			return KIOSK;
+		if (DESKTOP.getName().equalsIgnoreCase(name)) {
+			return DESKTOP;
+		} else if (DISCOVER.getName().equalsIgnoreCase(name)) {
+			return DISCOVER;
+		} else if (POWERON.getName().equalsIgnoreCase(name)) {
+			return POWERON;
+		} else if (GT65POWERON.getName().equalsIgnoreCase(name)) {
+			return GT65POWERON;
 		} else if (CLASSIC.getName().equalsIgnoreCase(name)) {
 			return CLASSIC;
 		} else {
@@ -50,6 +60,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 																// point in time, but this is a safer setting to prevent
 																// initial 'black screens' with JEMU
 		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalJemuMenu());
+		getUserSettings().setBool(Settings.TERMINATE_ANIMATE, isAnimateOnTerminate());
 	}
 
 	protected abstract void doLaunch(String[] args) throws Exception;
@@ -93,6 +104,16 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	 */
 	public abstract boolean isTapeActivityShown();
 
+	/**
+	 * Tells whether an animation is to be shown when quitting
+	 * <p>
+	 * The animation also provides a delay allowing the configured <em>system command</em> to be cancelled
+	 * </p>
+	 * 
+	 * @return <code>true</code> iff an animation is to be shown
+	 */
+	public abstract boolean isAnimateOnTerminate();
+
 	protected AmstradSettings getUserSettings() {
 		return getAmstradContext().getUserSettings();
 	}
@@ -109,10 +130,10 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		return name;
 	}
 
-	private static class DefaultAmstradMode extends AmstradMode {
+	private static class DesktopAmstradMode extends AmstradMode {
 
-		public DefaultAmstradMode() {
-			super("DEFAULT");
+		public DesktopAmstradMode() {
+			super("DESKTOP");
 		}
 
 		@Override
@@ -151,19 +172,24 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			return true;
 		}
 
+		@Override
+		public boolean isAnimateOnTerminate() {
+			return false;
+		}
+
 	}
 
-	private static class KioskAmstradMode extends AmstradMode {
+	private static abstract class ImmersiveAmstradMode extends AmstradMode {
 
-		public KioskAmstradMode() {
-			super("KIOSK");
+		protected ImmersiveAmstradMode(String name) {
+			super(name);
 		}
 
 		@Override
 		protected void doLaunch(String[] args) {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradMonitor monitor = amstradPc.getMonitor();
-			monitor.setMode(AmstradMonitorMode.COLOR);
+			monitor.setMode(getMonitorModeAtLaunch());
 			monitor.setWindowAlwaysOnTop(true);
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			frame.installAndEnablePopupMenu(false);
@@ -173,13 +199,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		public void amstradPcStarted(AmstradPc amstradPc) {
-			getAmstradContext().showProgramBrowser(amstradPc);
 			amstradPc.getMonitor().makeFullscreen();
-		}
-
-		@Override
-		public boolean isProgramBrowserCentric() {
-			return true;
 		}
 
 		@Override
@@ -195,6 +215,64 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		@Override
 		public boolean isTapeActivityShown() {
 			return false;
+		}
+
+		@Override
+		public boolean isAnimateOnTerminate() {
+			return true;
+		}
+
+		protected AmstradMonitorMode getMonitorModeAtLaunch() {
+			return AmstradMonitorMode.COLOR;
+		}
+
+	}
+
+	private static class DiscoverAmstradMode extends ImmersiveAmstradMode {
+
+		public DiscoverAmstradMode() {
+			super("DISCOVER");
+		}
+
+		@Override
+		public void amstradPcStarted(AmstradPc amstradPc) {
+			getAmstradContext().showProgramBrowser(amstradPc);
+			super.amstradPcStarted(amstradPc);
+		}
+
+		@Override
+		public boolean isProgramBrowserCentric() {
+			return true;
+		}
+
+	}
+
+	private static class PowerOnAmstradMode extends ImmersiveAmstradMode {
+
+		public PowerOnAmstradMode() {
+			this("POWERON");
+		}
+
+		protected PowerOnAmstradMode(String name) {
+			super(name);
+		}
+
+		@Override
+		public boolean isProgramBrowserCentric() {
+			return false;
+		}
+
+	}
+
+	private static class GT65PowerOnAmstradMode extends PowerOnAmstradMode {
+
+		public GT65PowerOnAmstradMode() {
+			super("GT65POWERON");
+		}
+
+		@Override
+		protected AmstradMonitorMode getMonitorModeAtLaunch() {
+			return AmstradMonitorMode.GREEN;
 		}
 
 	}
@@ -236,6 +314,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		public boolean isTapeActivityShown() {
+			return false;
+		}
+
+		@Override
+		public boolean isAnimateOnTerminate() {
 			return false;
 		}
 

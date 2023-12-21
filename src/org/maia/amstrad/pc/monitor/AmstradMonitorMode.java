@@ -4,9 +4,9 @@ import org.maia.util.StringUtils;
 
 public enum AmstradMonitorMode {
 
-	COLOR,
+	COLOR, // CTM644
 
-	GREEN,
+	GREEN, // GT65
 
 	GRAY;
 

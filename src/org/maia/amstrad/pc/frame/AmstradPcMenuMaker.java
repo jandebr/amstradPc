@@ -19,6 +19,8 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.MonitorModeAction;
@@ -106,7 +108,9 @@ public class AmstradPcMenuMaker {
 		popup.add(createScreenshotWithMonitorEffectMenuItem());
 		popup.add(createMonitorModeMenu());
 		popup.add(createMonitorEffectsMenu());
-		popup.add(createMonitorFullscreenMenuItem());
+		if (isFullscreenToggleEnabled()) {
+			popup.add(createMonitorFullscreenMenuItem());
+		}
 		popup.add(new JSeparator());
 		popup.add(createQuitMenuItem());
 		return updatePopupMenuLookAndFeel(popup);
@@ -475,6 +479,14 @@ public class AmstradPcMenuMaker {
 
 	private boolean isEmulatorLookAndFeel() {
 		return LookAndFeel.EMULATOR.equals(getLookAndFeel());
+	}
+
+	private boolean isFullscreenToggleEnabled() {
+		return getMode().isFullscreenToggleEnabled();
+	}
+
+	private AmstradMode getMode() {
+		return AmstradFactory.getInstance().getAmstradContext().getMode();
 	}
 
 	private AmstradSystemColors getSystemColors() {

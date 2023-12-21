@@ -3,7 +3,6 @@ package org.maia.amstrad;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.maia.amstrad.gui.terminate.AmstradTerminationDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
@@ -11,6 +10,8 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourc
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
+
+import jemu.settings.Settings;
 
 public abstract class AmstradContext {
 
@@ -42,10 +43,6 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_LOWPERFORMANCE_ALLOW_SCANLINES_EFFECT = "lowperformance.allow_scanlines";
 
-	private static final String SETTING_TERMINATE_ANIMATE = "quit.animate";
-
-	private static final String SETTING_TERMINATE_SYSTEM_COMMAND = "quit.command";
-
 	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
 
 	private static final String SYSTEM_PROPERTY_VERSION = "javacpc-version";
@@ -70,7 +67,8 @@ public abstract class AmstradContext {
 	}
 
 	public boolean isProgramStandaloneInfoShowing(AmstradPc amstradPc) {
-		return isTypedAlternativeDisplaySourceShowing(amstradPc, AmstradAlternativeDisplaySourceType.PROGRAM_STANDALONE_INFO);
+		return isTypedAlternativeDisplaySourceShowing(amstradPc,
+				AmstradAlternativeDisplaySourceType.PROGRAM_STANDALONE_INFO);
 	}
 
 	public boolean isImageShowing(AmstradPc amstradPc) {
@@ -118,11 +116,11 @@ public abstract class AmstradContext {
 	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
 
 	public AmstradMode getMode() {
-		AmstradMode mode = AmstradMode.forName(getUserSettings().get(SETTING_MODE, AmstradMode.DEFAULT.getName()));
+		AmstradMode mode = AmstradMode.forName(getUserSettings().get(SETTING_MODE, AmstradMode.DEFAULT_MODE.getName()));
 		if (mode != null) {
 			return mode;
 		} else {
-			return AmstradMode.DEFAULT;
+			return AmstradMode.DEFAULT_MODE;
 		}
 	}
 
@@ -199,14 +197,14 @@ public abstract class AmstradContext {
 	}
 
 	public boolean isAnimateOnTerminate() {
-		return getUserSettings().getBool(SETTING_TERMINATE_ANIMATE, false);
+		return getUserSettings().getBool(Settings.TERMINATE_ANIMATE, false);
 	}
 
 	public String getSystemCommandOnTerminate() {
 		String mode = getMode().getName().toLowerCase();
-		String command = getUserSettings().get(SETTING_TERMINATE_SYSTEM_COMMAND + "." + mode, null);
+		String command = getUserSettings().get(Settings.TERMINATE_SYSTEM_COMMAND + "." + mode, null);
 		if (command == null) {
-			command = getUserSettings().get(SETTING_TERMINATE_SYSTEM_COMMAND, null);
+			command = getUserSettings().get(Settings.TERMINATE_SYSTEM_COMMAND, null);
 		}
 		return command;
 	}

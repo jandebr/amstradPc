@@ -34,7 +34,7 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 - Support for Basic IO instructions using the host filesystem
 - Insights into Basic memory allocation
 - Context menu in fullscreen mode
-- *Kiosk mode* for playing games
+- Run modes to accomodate different use cases
 - A clean API to integrate and extend *Amstrad PC*
 - Locomotive Basic parser, compiler and decompiler written in Java
 - Customizable displays rendered with Java code
