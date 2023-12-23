@@ -59,10 +59,6 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		getUserSettings().setBool(Settings.FULLSCREEN, false); // implementations can toggle to fullscreen at a later
 																// point in time, but this is a safer setting to prevent
 																// initial 'black screens' with JEMU
-		if (!isFullscreenToggleEnabled()) {
-			// Avoid other windows (e.g., Bluetooth manager) being inaccessible
-			getUserSettings().setBool(Settings.ONTOP, false);
-		}
 		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalJemuMenu());
 		getUserSettings().setBool(Settings.TERMINATE_ANIMATE, isAnimateOnTerminate());
 	}
@@ -218,6 +214,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradMonitor monitor = amstradPc.getMonitor();
 			monitor.setMode(getMonitorModeAtLaunch());
+			monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager)
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			frame.installAndEnablePopupMenu(false);
 			amstradPc.addStateListener(this);
@@ -231,7 +228,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		public boolean isFullscreenToggleEnabled() {
-			return false; // operates exclusively in fullscreen
+			return true; // TODO should be false (fullscreen only) but keeping this to force-fix issues
 		}
 
 		@Override
