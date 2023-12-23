@@ -30,14 +30,13 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 	}
 
 	private void populateMenu() {
-		boolean primaryDisplayCentric = getBrowser().getMode().isPrimaryDisplayCentric();
 		addMenuItem(new ProgramRunMenuItem(this));
-		if (primaryDisplayCentric) {
+		if (getBrowser().getMode().isProgramSourceCodeAccessible()) {
 			addMenuItem(new ProgramLoadMenuItem(this));
 		}
 		addMenuItem(new ProgramInfoMenuItem(this));
 		addMenuItem(new ProgramImagesMenuItem(this));
-		if (primaryDisplayCentric) {
+		if (getBrowser().getMode().isProgramAuthoringToolsAvailable()) {
 			addMenuItem(new ProgramFileReferencesMenuItem(this));
 		}
 		addMenuItem(new ProgramCloseMenuItem(this));

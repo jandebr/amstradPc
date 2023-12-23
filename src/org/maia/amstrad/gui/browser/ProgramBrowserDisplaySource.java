@@ -426,6 +426,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 				AmstradProgram program = stack.getSelectedItem().asProgram().getProgram();
 				setProgramMenu(createProgramMenu(program));
 				setCurrentWindow(Window.PROGRAM_MENU_MODAL);
+			} else {
+				stack.browseIntoSelectedItem();
 			}
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			if (stack.size() > 1) {

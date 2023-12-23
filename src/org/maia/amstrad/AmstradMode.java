@@ -59,6 +59,10 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		getUserSettings().setBool(Settings.FULLSCREEN, false); // implementations can toggle to fullscreen at a later
 																// point in time, but this is a safer setting to prevent
 																// initial 'black screens' with JEMU
+		if (!isFullscreenToggleEnabled()) {
+			// Avoid other windows (e.g., Bluetooth manager) being inaccessible
+			getUserSettings().setBool(Settings.ONTOP, false);
+		}
 		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalJemuMenu());
 		getUserSettings().setBool(Settings.TERMINATE_ANIMATE, isAnimateOnTerminate());
 	}
@@ -113,6 +117,20 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	 * @return <code>true</code> iff an animation is to be shown
 	 */
 	public abstract boolean isAnimateOnTerminate();
+
+	/**
+	 * Tells whether the source code of programs is accessible in this mode
+	 * 
+	 * @return <code>true</code> iff the source code is accessible
+	 */
+	public abstract boolean isProgramSourceCodeAccessible();
+
+	/**
+	 * Tells whether program authoring tools are available in this mode
+	 * 
+	 * @return <code>true</code> iff program authoring tools are available
+	 */
+	public abstract boolean isProgramAuthoringToolsAvailable();
 
 	protected AmstradSettings getUserSettings() {
 		return getAmstradContext().getUserSettings();
@@ -177,6 +195,16 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			return false;
 		}
 
+		@Override
+		public boolean isProgramSourceCodeAccessible() {
+			return true;
+		}
+
+		@Override
+		public boolean isProgramAuthoringToolsAvailable() {
+			return true;
+		}
+
 	}
 
 	private static abstract class ImmersiveAmstradMode extends AmstradMode {
@@ -190,7 +218,6 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradMonitor monitor = amstradPc.getMonitor();
 			monitor.setMode(getMonitorModeAtLaunch());
-			monitor.setWindowAlwaysOnTop(true);
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			frame.installAndEnablePopupMenu(false);
 			amstradPc.addStateListener(this);
@@ -204,7 +231,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		public boolean isFullscreenToggleEnabled() {
-			return false; // always in fullscreen
+			return false; // operates exclusively in fullscreen
 		}
 
 		@Override
@@ -222,6 +249,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			return true;
 		}
 
+		@Override
+		public boolean isProgramAuthoringToolsAvailable() {
+			return false;
+		}
+
 		protected AmstradMonitorMode getMonitorModeAtLaunch() {
 			return AmstradMonitorMode.COLOR;
 		}
@@ -236,13 +268,18 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		public void amstradPcStarted(AmstradPc amstradPc) {
-			getAmstradContext().showProgramBrowser(amstradPc);
 			super.amstradPcStarted(amstradPc);
+			getAmstradContext().showProgramBrowser(amstradPc);
 		}
 
 		@Override
 		public boolean isProgramBrowserCentric() {
 			return true;
+		}
+
+		@Override
+		public boolean isProgramSourceCodeAccessible() {
+			return false;
 		}
 
 	}
@@ -260,6 +297,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		@Override
 		public boolean isProgramBrowserCentric() {
 			return false;
+		}
+
+		@Override
+		public boolean isProgramSourceCodeAccessible() {
+			return true;
 		}
 
 	}
@@ -319,6 +361,16 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		public boolean isAnimateOnTerminate() {
+			return false;
+		}
+
+		@Override
+		public boolean isProgramSourceCodeAccessible() {
+			return true;
+		}
+
+		@Override
+		public boolean isProgramAuthoringToolsAvailable() {
 			return false;
 		}
 
