@@ -9,7 +9,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class MonitorBilinearEffectAction extends AmstradPcAction {
 
 	public MonitorBilinearEffectAction(AmstradPc amstradPc) {
-		this(amstradPc, "Bilinear effect");
+		this(amstradPc, "Image smoothing");
 	}
 
 	public MonitorBilinearEffectAction(AmstradPc amstradPc, String name) {

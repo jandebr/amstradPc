@@ -297,7 +297,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	private class ProgramMenuControlKey extends ControlKey {
 
 		public ProgramMenuControlKey() {
-			super("ENTER", "Menu");
+			super("ENTER", "Menu/Select");
 		}
 
 		@Override

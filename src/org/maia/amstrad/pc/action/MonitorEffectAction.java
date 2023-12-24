@@ -9,7 +9,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class MonitorEffectAction extends AmstradPcAction {
 
 	public MonitorEffectAction(AmstradPc amstradPc) {
-		this(amstradPc, "Monitor");
+		this(amstradPc, "Monitor frame");
 	}
 
 	public MonitorEffectAction(AmstradPc amstradPc, String name) {
