@@ -307,7 +307,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	}
 
 	@Override
-	public final synchronized void keyPressed(KeyEvent e) {
+	public final void keyPressed(KeyEvent e) {
 		super.keyPressed(e);
 		if (isCatchKeyboardEvents()) {
 			keyboardKeyPressed(e);
@@ -315,7 +315,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	}
 
 	@Override
-	public final synchronized void keyReleased(KeyEvent e) {
+	public final void keyReleased(KeyEvent e) {
 		super.keyReleased(e);
 		if (isCatchKeyboardEvents()) {
 			keyboardKeyReleased(e);
@@ -323,7 +323,7 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	}
 
 	@Override
-	public final synchronized void keyTyped(KeyEvent e) {
+	public final void keyTyped(KeyEvent e) {
 		super.keyTyped(e);
 		if (isCatchKeyboardEvents()) {
 			keyboardKeyTyped(e);
