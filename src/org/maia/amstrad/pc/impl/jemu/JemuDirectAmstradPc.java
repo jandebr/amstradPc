@@ -15,12 +15,14 @@ import java.util.Vector;
 
 import javax.swing.Box;
 
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.frame.AmstradPcPopupMenu;
 import org.maia.amstrad.pc.impl.joystick.AmstradJoystickGamingController;
 import org.maia.amstrad.pc.impl.joystick.AmstradJoystickPopupMenuController;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
+import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
@@ -228,7 +230,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		private Collection<Component> paddingComponents;
 
 		public JemuFrameImpl(boolean exitOnClose) {
-			super(JemuDirectAmstradPc.this, exitOnClose);
+			super(JemuDirectAmstradPc.this, "Amstrad CPC Emulator", exitOnClose);
 			this.paddingComponents = new Vector<Component>(4);
 			setResizable(false);
 			updateBackground();
@@ -285,6 +287,15 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		}
 
 		@Override
+		public void amstradPcStarted(AmstradPc amstradPc) {
+			super.amstradPcStarted(amstradPc);
+			if (amstradPc.getMonitor().isFullscreen()) {
+				// Force full screen as it is not consistently working
+				new MonitorDisplayUltimateFullscreenMaker().start();
+			}
+		}
+
+		@Override
 		public void componentResized(ComponentEvent e) {
 			// no action
 		}
@@ -318,6 +329,43 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		private Collection<Component> getPaddingComponents() {
 			return paddingComponents;
+		}
+
+		private class MonitorDisplayUltimateFullscreenMaker extends Thread {
+
+			public MonitorDisplayUltimateFullscreenMaker() {
+				super("MonitorDisplayUltimateFullscreenMaker");
+				setDaemon(true);
+			}
+
+			@Override
+			public void run() {
+				SystemUtils.sleep(1000L);
+				AmstradMonitor monitor = getAmstradPc().getMonitor();
+				if (monitor.isFullscreen()) {
+					int attempts = 0;
+					while (isDisplayPaddedOnAllSides() && ++attempts <= 3) {
+						System.out.println("Display is forced fullscreen");
+						monitor.toggleFullscreen();
+						monitor.toggleFullscreen();
+						SystemUtils.sleep(500L);
+					}
+				}
+			}
+
+			private boolean isDisplayPaddedOnAllSides() {
+				if (!hasPaddingAroundDisplay())
+					return false;
+				if (getPaddingComponents().size() < 4)
+					return false;
+				for (Component comp : getPaddingComponents()) {
+					// Significant size?
+					if (comp.getWidth() <= 2 || comp.getHeight() <= 2)
+						return false;
+				}
+				return true;
+			}
+
 		}
 
 	}

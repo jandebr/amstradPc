@@ -304,8 +304,9 @@ public class KeyDispatcher implements KeyListener {
 		}
 		setSource(source);
 		if (source != null) {
-			if (!Arrays.asList(source.getKeyListeners()).contains(this))
+			if (!Arrays.asList(source.getKeyListeners()).contains(this)) {
 				source.addKeyListener(this);
+			}
 			setVirtualShiftKeyEventPressed(
 					new KeyEvent(source, KeyEvent.KEY_PRESSED, 0L, 0, KeyEvent.VK_SHIFT, KeyEvent.CHAR_UNDEFINED));
 			setVirtualShiftKeyEventReleased(

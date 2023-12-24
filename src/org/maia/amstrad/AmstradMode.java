@@ -56,9 +56,6 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	}
 
 	protected void overrideSettingsBeforeLaunch() {
-		getUserSettings().setBool(Settings.FULLSCREEN, false); // implementations can toggle to fullscreen at a later
-																// point in time, but this is a safer setting to prevent
-																// initial 'black screens' with JEMU
 		getUserSettings().setBool(Settings.SHOWMENU, isUsingOriginalJemuMenu());
 		getUserSettings().setBool(Settings.TERMINATE_ANIMATE, isAnimateOnTerminate());
 	}
@@ -320,6 +317,13 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		public ClassicAmstradMode() {
 			super("CLASSIC");
+		}
+
+		@Override
+		protected void overrideSettingsBeforeLaunch() {
+			super.overrideSettingsBeforeLaunch();
+			// Starting windowed to prevent initial 'black screens' with JEMU
+			getUserSettings().setBool(Settings.FULLSCREEN, false);
 		}
 
 		@Override

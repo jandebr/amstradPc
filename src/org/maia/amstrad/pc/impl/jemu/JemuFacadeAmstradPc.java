@@ -149,7 +149,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 	private class JemuFrameImpl extends JemuFrame {
 
 		public JemuFrameImpl(boolean exitOnClose) {
-			super(JemuFacadeAmstradPc.this, exitOnClose);
+			super(JemuFacadeAmstradPc.this, "JavaCPC - Amstrad CPC Emulator", exitOnClose);
 		}
 
 		@Override
@@ -194,15 +194,14 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 					int expectedX = (getScreenSize().width - displayComp.getWidth()) / 2;
 					int attempts = 0;
 					while (Math.abs(displayComp.getLocationOnScreen().x - expectedX) > 2 && ++attempts <= 3) {
-						System.out.println("Ultimate center display on screen");
+						System.out.println("Display is forced fullscreen");
 						monitor.toggleFullscreen();
 						monitor.toggleFullscreen();
 						SystemUtils.sleep(500L);
 					}
-					System.out.println("Display is centered fullscreen");
 				} else if (extendsOutsideScreen()) {
-					centerOnScreen();
 					System.out.println("Display is centered on screen");
+					centerOnScreen();
 				}
 			}
 

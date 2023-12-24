@@ -120,6 +120,7 @@ public abstract class AmstradPcFrame extends JFrame
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
 		setVisible(true);
+		getContentComponent().requestFocus();
 	}
 
 	@Override

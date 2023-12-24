@@ -20,6 +20,10 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 
 	private GenericListenerList<ProgramBrowserListener> browserListeners;
 
+	private boolean browserMode;
+
+	private boolean resumeAfterBrowser;
+
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		this.browserListeners = new GenericListenerList<ProgramBrowserListener>();
@@ -54,6 +58,12 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 
 	public void showProgramBrowser() {
 		if (isEnabled()) {
+			resumeAfterBrowser = false;
+			if (!getAmstradPc().getBasicRuntime().isDirectModus()) {
+				// Pause the running program
+				resumeAfterBrowser = !getAmstradPc().isPaused();
+				getAmstradPc().pause();
+			}
 			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
 		}
 	}
@@ -78,6 +88,16 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
 		super.amstradDisplaySourceChanged(monitor);
 		updateName();
+		if (isProgramBrowserShowing()) {
+			browserMode = true; // enter browser
+		} else {
+			if (monitor.isPrimaryDisplaySourceShowing()) {
+				if (browserMode && resumeAfterBrowser) {
+					monitor.getAmstradPc().resume(); // auto-resume
+				}
+			}
+			browserMode = false;
+		}
 	}
 
 	private void updateName() {
