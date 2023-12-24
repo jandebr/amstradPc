@@ -12,7 +12,7 @@ public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySourc
 
 	private static final char MESSAGE_SEPARATOR = '|';
 
-	public static String DEFAULT_MESSAGE = "Treasure the Amstrad";
+	public static String DEFAULT_MESSAGE = "Goodbye";
 
 	private String message;
 
