@@ -27,6 +27,8 @@ import java.util.zip.ZipInputStream;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
+import org.maia.io.inputdevice.InputEventGateway;
+
 import jemu.core.Util;
 import jemu.core.cpu.Processor;
 import jemu.core.device.floppy.Drive;
@@ -884,6 +886,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			processorLaggingSyncs = 0;
 			processorThrottledSyncs = 0;
 		}
+		InputEventGateway.getInstance().pollExternally(); // Joystick controller polling
 	}
 
 	public void setMaxResync(long value) {

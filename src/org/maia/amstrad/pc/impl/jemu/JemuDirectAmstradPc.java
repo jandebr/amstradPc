@@ -20,9 +20,13 @@ import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.frame.AmstradPcPopupMenu;
 import org.maia.amstrad.pc.impl.joystick.AmstradJoystickGamingController;
 import org.maia.amstrad.pc.impl.joystick.AmstradJoystickPopupMenuController;
+import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
+import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
+import org.maia.amstrad.pc.joystick.AmstradJoystickStateAdapter;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.io.inputdevice.InputEventGateway;
 import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
@@ -145,15 +149,18 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	}
 
 	private void initJoysticks() {
+		AmstradJoystick joy0 = getJoystick(AmstradJoystickID.JOYSTICK0);
+		AmstradJoystick joy1 = getJoystick(AmstradJoystickID.JOYSTICK1);
+		// Event polling
+		joy0.addJoystickStateListener(new JoystickEventPollingManager(joy0));
 		// Gaming
 		AmstradJoystickGamingController dispatcher = new AmstradJoystickGamingController(getKeyDispatcher());
-		getJoystick(AmstradJoystickID.JOYSTICK0).addJoystickEventListener(dispatcher);
-		getJoystick(AmstradJoystickID.JOYSTICK1).addJoystickEventListener(dispatcher);
+		joy0.addJoystickEventListener(dispatcher);
+		joy1.addJoystickEventListener(dispatcher);
 		// PopupMenu
 		AmstradPcPopupMenu popupMenu = getFrame().getInstalledPopupMenu();
 		if (popupMenu != null) {
-			getJoystick(AmstradJoystickID.JOYSTICK0)
-					.addJoystickEventListener(new AmstradJoystickPopupMenuController(popupMenu));
+			joy0.addJoystickEventListener(new AmstradJoystickPopupMenuController(popupMenu));
 		}
 	}
 
@@ -661,6 +668,27 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		private JemuFrameImpl getFrame() {
 			return (JemuFrameImpl) JemuDirectAmstradPc.this.getFrame();
+		}
+
+	}
+
+	private class JoystickEventPollingManager extends AmstradJoystickStateAdapter {
+
+		public JoystickEventPollingManager(AmstradJoystick joystick) {
+			updatePollMode(joystick.getMode());
+		}
+
+		@Override
+		public void amstradJoystickChangedMode(AmstradJoystick joystick, AmstradJoystickMode mode) {
+			updatePollMode(mode);
+		}
+
+		private void updatePollMode(AmstradJoystickMode mode) {
+			InputEventGateway.getInstance().setExternalPollMode(isExternalPollMode(mode));
+		}
+
+		private boolean isExternalPollMode(AmstradJoystickMode mode) {
+			return AmstradJoystickMode.GAMING.equals(mode); // Polling is done in Computer#syncProcessor
 		}
 
 	}
