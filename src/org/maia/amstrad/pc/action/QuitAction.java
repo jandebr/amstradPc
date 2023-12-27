@@ -24,7 +24,7 @@ public class QuitAction extends AmstradPcAction {
 	private boolean cancelCommand;
 
 	public QuitAction(AmstradPc amstradPc) {
-		this(amstradPc, "Quit");
+		this(amstradPc, "Power Off");
 	}
 
 	public QuitAction(AmstradPc amstradPc, String name) {

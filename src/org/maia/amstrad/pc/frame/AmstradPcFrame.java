@@ -61,6 +61,10 @@ public abstract class AmstradPcFrame extends JFrame
 		enableMenuBar();
 	}
 
+	public void installAndEnablePopupMenu() {
+		installAndEnablePopupMenu(false);
+	}
+
 	public void installAndEnablePopupMenu(boolean enableOnlyInFullscreen) {
 		AmstradPcMenuMaker menuMaker = new AmstradPcMenuMaker(getAmstradPc().getActions(),
 				AmstradPcMenuMaker.LookAndFeel.EMULATOR);

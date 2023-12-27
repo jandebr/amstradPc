@@ -101,7 +101,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 
 	protected Applet applet;
 	// protected String name;
-	private Thread thread = new Thread(this);
+	private Thread thread = new Thread(this, "JemuComputer");
 	private boolean stopped = false;
 	private int action = STOP;
 	private boolean running = false;
@@ -591,7 +591,11 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				while (!stopped && action == STOP) {
 					setRunning(false);
 					fireActionEvent();
+					if (verboseStopStart)
+						System.out.println("Enter waitUninterrupted");
 					waitUninterrupted();
+					if (verboseStopStart)
+						System.out.println("Exit waitUninterrupted");
 				}
 				shouldRun = !stopped && action != STOP;
 				shouldRunAction = action;
@@ -696,16 +700,28 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 
 	private synchronized void setRunning(boolean newRunning) {
 		running = newRunning;
+		if (verboseStopStart) {
+			System.out.println("Computer.setRunning(" + newRunning + ")");
+			Thread.dumpStack();
+		}
 		this.notifyAll();
 	}
 
 	private synchronized void setAction(int newAction) {
 		action = newAction;
+		if (verboseStopStart) {
+			System.out.println("Computer.setAction(" + newAction + ")");
+			Thread.dumpStack();
+		}
 		this.notifyAll();
 	}
 
 	private synchronized void setConfirmStep(boolean newConfirmStep) {
 		confirmStep = newConfirmStep;
+		if (verboseStopStart) {
+			System.out.println("Computer.setConfirmStep(" + newConfirmStep + ")");
+			Thread.dumpStack();
+		}
 		this.notifyAll();
 	}
 

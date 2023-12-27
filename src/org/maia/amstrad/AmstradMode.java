@@ -152,7 +152,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
 			frame.installAndEnableMenuBar();
-			frame.installAndEnablePopupMenu(true);
+			frame.installAndEnablePopupMenu();
 			if (args.length == 0) {
 				amstradPc.start();
 			} else if (args.length == 1) {
@@ -213,7 +213,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			monitor.setMode(getMonitorModeAtLaunch());
 			monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager)
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
-			frame.installAndEnablePopupMenu(false);
+			frame.installAndEnablePopupMenu();
 			amstradPc.addStateListener(this);
 			amstradPc.start();
 		}

@@ -8,6 +8,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
@@ -214,8 +215,8 @@ public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 		public void run() {
 			System.out.println("Cursor activity tracker started");
 			while (!getAmstradPc().isTerminated()) {
-				if (isAutoHideCursor() && hasCursorBecomeInactive()) {
-					hideCursor();
+				if (!isCursorHidden() && isAutoHideCursor() && hasCursorBecomeInactive()) {
+					autoHideCursor();
 				}
 				SystemUtils.sleep(getAutoHideDelayMillis() / 2);
 			}
@@ -229,6 +230,16 @@ public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 			} else {
 				return System.currentTimeMillis() > getLastCursorActivityTime() + getAutoHideDelayMillis();
 			}
+		}
+
+		private void autoHideCursor() {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					hideCursor();
+				}
+			});
 		}
 
 	}
