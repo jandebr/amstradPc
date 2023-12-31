@@ -1,9 +1,9 @@
 package org.maia.amstrad.pc.impl.joystick;
 
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
-import org.maia.amstrad.pc.joystick.AmstradJoystickEventListener;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
 
@@ -22,6 +22,10 @@ public abstract class AmstradJoystickEventTranslator {
 		}
 	}
 
+	protected Component getKeyEventSource(AmstradJoystickEvent event) {
+		return event.getJoystick().getAmstradPc().getMonitor().getDisplayComponent();
+	}
+
 	protected boolean isGamingMode(AmstradJoystickEvent event) {
 		return AmstradJoystickMode.GAMING.equals(event.getJoystick().getMode());
 	}
@@ -30,11 +34,11 @@ public abstract class AmstradJoystickEventTranslator {
 		return AmstradJoystickMode.MENU.equals(event.getJoystick().getMode());
 	}
 
-	protected boolean isJoystick0(AmstradJoystickEvent event) {
+	protected boolean isPrimaryJoystick(AmstradJoystickEvent event) {
 		return AmstradJoystickID.JOYSTICK0.equals(event.getJoystick().getJoystickId());
 	}
 
-	protected boolean isJoystick1(AmstradJoystickEvent event) {
+	protected boolean isSecondaryJoystick(AmstradJoystickEvent event) {
 		return AmstradJoystickID.JOYSTICK1.equals(event.getJoystick().getJoystickId());
 	}
 

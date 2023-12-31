@@ -14,7 +14,7 @@ public enum AmstradJoystickCommand {
 
 	FIRE1("Fire 1", "FIRE1"),
 
-	OPTIONS("Options", "OPTIONS", "Brings up the options menu"),
+	MENU("Menu", "MENU"),
 
 	CONFIRM("Confirm", "CONFIRM"),
 

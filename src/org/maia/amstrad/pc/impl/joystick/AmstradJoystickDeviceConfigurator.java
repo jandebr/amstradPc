@@ -95,7 +95,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 	protected List<InputCommandGroup> createCommandGroups() {
 		List<InputCommandGroup> commandGroups = new Vector<InputCommandGroup>();
 		InputCommandGroup group = new InputCommandGroup(getContextIdentifierForMode(AmstradJoystickMode.MENU));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.OPTIONS));
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.MENU));
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.CONFIRM));
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.CANCEL));
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.UP));
@@ -104,7 +104,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.RIGHT));
 		commandGroups.add(group);
 		group = new InputCommandGroup(getContextIdentifierForMode(AmstradJoystickMode.GAMING));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.OPTIONS));
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.MENU));
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.UP));
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.DOWN));
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.LEFT));
@@ -132,6 +132,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 		getInteractiveBuilder().resetTo(loadPersistedConfiguration());
 		JInteractiveBuilder jbuilder = new JInteractiveBuilder(getInteractiveBuilder(), frame,
 				"Setup " + getJoystickName());
+		jbuilder.setShowCommandGroupNames(false);
 		jbuilder.addListener(this);
 		jbuilder.show();
 	}

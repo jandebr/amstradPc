@@ -65,7 +65,7 @@ public abstract class AmstradJoystick extends AmstradDevice {
 	public void switchMode(AmstradJoystickMode mode) {
 		AmstradJoystickMode currentMode = getMode();
 		if (currentMode == null || !currentMode.equals(mode)) {
-			System.out.println(getJoystickId().getDisplayName() + " changing mode to " + mode.name());
+			// System.out.println(getJoystickId().getDisplayName() + " changing mode to " + mode.name());
 			setMode(mode);
 			doSwitchMode(mode);
 			fireJoystickChangedMode();

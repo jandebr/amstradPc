@@ -16,7 +16,6 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.impl.MemoryTrapProcessor;
 import org.maia.amstrad.pc.impl.MemoryTrapTask;
-import org.maia.amstrad.pc.joystick.AmstradJoystickStateListener;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
@@ -184,9 +183,11 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 				@Override
 				public void run() {
-					doPause();
-					if (!selfManagesPauseStateEvents())
-						firePausingEvent();
+					if (!isTerminated()) {
+						doPause();
+						if (!selfManagesPauseStateEvents())
+							firePausingEvent();
+					}
 				}
 			});
 		}
@@ -225,9 +226,11 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 				@Override
 				public void run() {
-					doResume();
-					if (!selfManagesPauseStateEvents())
-						fireResumingEvent();
+					if (!isTerminated()) {
+						doResume();
+						if (!selfManagesPauseStateEvents())
+							fireResumingEvent();
+					}
 				}
 			});
 		}

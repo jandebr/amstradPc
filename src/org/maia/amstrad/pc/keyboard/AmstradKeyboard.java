@@ -1,5 +1,6 @@
 package org.maia.amstrad.pc.keyboard;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -52,6 +53,10 @@ public abstract class AmstradKeyboard extends AmstradDevice {
 	}
 
 	public abstract void breakEscape();
+
+	public abstract void pressKey(KeyEvent keyEvent);
+
+	public abstract void releaseKey(KeyEvent keyEvent);
 
 	public abstract AmstradKeyboardController getController();
 

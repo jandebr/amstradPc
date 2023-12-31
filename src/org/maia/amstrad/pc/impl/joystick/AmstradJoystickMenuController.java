@@ -3,7 +3,6 @@ package org.maia.amstrad.pc.impl.joystick;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 
-import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent.EventType;
@@ -16,7 +15,7 @@ public abstract class AmstradJoystickMenuController extends AmstradJoystickEvent
 	@Override
 	protected KeyEvent translateToKeyEvent(AmstradJoystickEvent event) {
 		KeyEvent keyEvent = null;
-		Component source = getKeyEventSource();
+		Component source = getKeyEventSource(event);
 		int type = toKeyEventType(event);
 		long when = System.currentTimeMillis();
 		char cUnd = KeyEvent.CHAR_UNDEFINED;
@@ -49,14 +48,8 @@ public abstract class AmstradJoystickMenuController extends AmstradJoystickEvent
 		return AmstradJoystickCommand.UP.equals(command) || AmstradJoystickCommand.DOWN.equals(command);
 	}
 
-	protected boolean isPopupMenuShowing() {
-		return getAmstradPc().getFrame().isPopupMenuShowing();
+	protected boolean isPopupMenuShowing(AmstradJoystickEvent event) {
+		return event.getJoystick().getAmstradPc().getFrame().isPopupMenuShowing();
 	}
-
-	protected Component getKeyEventSource() {
-		return getAmstradPc().getFrame().getRootPane();
-	}
-
-	protected abstract AmstradPc getAmstradPc();
-
+	
 }

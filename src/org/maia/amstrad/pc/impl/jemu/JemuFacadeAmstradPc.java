@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.MenuBar;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
 import java.util.Vector;
@@ -390,6 +391,16 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 		@Override
 		protected void doBreakEscape() {
 			getJemuInstance().breakEscape();
+		}
+
+		@Override
+		public void pressKey(KeyEvent keyEvent) {
+			getJemuInstance().keyPressed(keyEvent);
+		}
+
+		@Override
+		public void releaseKey(KeyEvent keyEvent) {
+			getJemuInstance().keyReleased(keyEvent);
 		}
 
 	}

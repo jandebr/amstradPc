@@ -7,16 +7,12 @@ import java.awt.event.KeyEvent;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEventListener;
-
-import jemu.ui.KeyDispatcher;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 
 public class AmstradJoystickGamingController extends AmstradJoystickEventTranslator
 		implements AmstradJoystickEventListener {
 
-	private KeyDispatcher keyDispatcher;
-
-	public AmstradJoystickGamingController(KeyDispatcher keyDispatcher) {
-		this.keyDispatcher = keyDispatcher;
+	public AmstradJoystickGamingController() {
 	}
 
 	@Override
@@ -26,7 +22,8 @@ public class AmstradJoystickGamingController extends AmstradJoystickEventTransla
 		if (isGamingMode(event)) {
 			KeyEvent keyEvent = translateToKeyEvent(event);
 			if (keyEvent != null) {
-				dispatchKeyEvent(keyEvent);
+				AmstradKeyboard keyboard = event.getJoystick().getAmstradPc().getKeyboard();
+				dispatchKeyEvent(keyEvent, keyboard);
 				event.consume();
 			}
 		}
@@ -35,17 +32,17 @@ public class AmstradJoystickGamingController extends AmstradJoystickEventTransla
 	@Override
 	protected KeyEvent translateToKeyEvent(AmstradJoystickEvent event) {
 		KeyEvent keyEvent = null;
-		if (isJoystick0(event)) {
-			keyEvent = translateToKeyEventForJoystick0(event);
-		} else if (isJoystick1(event)) {
-			keyEvent = translateToKeyEventForJoystick1(event);
+		if (isPrimaryJoystick(event)) {
+			keyEvent = translateToKeyEventForPrimaryJoystick(event);
+		} else if (isSecondaryJoystick(event)) {
+			keyEvent = translateToKeyEventForSecondaryJoystick(event);
 		}
 		return keyEvent;
 	}
 
-	private KeyEvent translateToKeyEventForJoystick0(AmstradJoystickEvent event) {
+	private KeyEvent translateToKeyEventForPrimaryJoystick(AmstradJoystickEvent event) {
 		KeyEvent keyEvent = null;
-		Component source = getKeyEventSource();
+		Component source = getKeyEventSource(event);
 		int type = toKeyEventType(event);
 		long when = System.currentTimeMillis();
 		AmstradJoystickCommand command = event.getCommand();
@@ -65,9 +62,9 @@ public class AmstradJoystickGamingController extends AmstradJoystickEventTransla
 		return keyEvent;
 	}
 
-	private KeyEvent translateToKeyEventForJoystick1(AmstradJoystickEvent event) {
+	private KeyEvent translateToKeyEventForSecondaryJoystick(AmstradJoystickEvent event) {
 		KeyEvent keyEvent = null;
-		Component source = getKeyEventSource();
+		Component source = getKeyEventSource(event);
 		int type = toKeyEventType(event);
 		long when = System.currentTimeMillis();
 		AmstradJoystickCommand command = event.getCommand();
@@ -87,20 +84,12 @@ public class AmstradJoystickGamingController extends AmstradJoystickEventTransla
 		return keyEvent;
 	}
 
-	private void dispatchKeyEvent(KeyEvent keyEvent) {
+	private void dispatchKeyEvent(KeyEvent keyEvent, AmstradKeyboard keyboard) {
 		if (keyEvent.getID() == KeyEvent.KEY_PRESSED) {
-			getKeyDispatcher().keyPressed(keyEvent);
+			keyboard.pressKey(keyEvent);
 		} else {
-			getKeyDispatcher().keyReleased(keyEvent);
+			keyboard.releaseKey(keyEvent);
 		}
-	}
-
-	protected Component getKeyEventSource() {
-		return getKeyDispatcher().getSource();
-	}
-
-	protected KeyDispatcher getKeyDispatcher() {
-		return keyDispatcher;
 	}
 
 }

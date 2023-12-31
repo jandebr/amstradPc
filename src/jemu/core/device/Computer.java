@@ -27,8 +27,6 @@ import java.util.zip.ZipInputStream;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-import org.maia.io.inputdevice.InputEventGateway;
-
 import jemu.core.Util;
 import jemu.core.cpu.Processor;
 import jemu.core.device.floppy.Drive;
@@ -584,11 +582,11 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 
 	public void run() {
 		System.out.println(this + " Thread start");
-		while (!stopped) {
+		while (!isStopped()) {
 			boolean shouldRun = false;
 			int shouldRunAction = 0;
 			synchronized (this) {
-				while (!stopped && action == STOP) {
+				while (!isStopped() && action == STOP) {
 					setRunning(false);
 					fireActionEvent();
 					if (verboseStopStart)
@@ -597,7 +595,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 					if (verboseStopStart)
 						System.out.println("Exit waitUninterrupted");
 				}
-				shouldRun = !stopped && action != STOP;
+				shouldRun = !isStopped() && action != STOP;
 				shouldRunAction = action;
 			}
 			if (shouldRun) {
@@ -630,6 +628,8 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public synchronized void start() {
+		if (isStopped())
+			return;
 		synchronized (thread) {
 			if (!running) {
 				setAction(RUN);
@@ -641,6 +641,8 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public synchronized void stop() {
+		if (isStopped())
+			return;
 		synchronized (thread) {
 			if (running) {
 				setAction(STOP);
@@ -692,6 +694,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		thread = null;
 		display = null;
 		applet = null;
+	}
+
+	public boolean isStopped() {
+		return stopped;
 	}
 
 	public synchronized boolean isRunning() {
@@ -855,7 +861,6 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		startTime += count;
 		startCycles = getProcessor().getCycles();
 		long time = timer != null ? timer.getCount() : System.currentTimeMillis();
-		// System.out.println(": " + startTime + ", " + time + "," + deviation);
 		if (time < startTime - deviation) {
 			setFrameSkip(0);
 			startTime = time;
@@ -902,7 +907,6 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			processorLaggingSyncs = 0;
 			processorThrottledSyncs = 0;
 		}
-		InputEventGateway.getInstance().pollExternally(); // Joystick controller polling
 	}
 
 	public void setMaxResync(long value) {

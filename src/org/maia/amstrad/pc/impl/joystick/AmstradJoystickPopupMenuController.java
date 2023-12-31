@@ -2,7 +2,6 @@ package org.maia.amstrad.pc.impl.joystick;
 
 import java.awt.event.KeyEvent;
 
-import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.frame.AmstradPcPopupMenu;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
@@ -11,41 +10,41 @@ import org.maia.amstrad.pc.joystick.AmstradJoystickEventListener;
 public class AmstradJoystickPopupMenuController extends AmstradJoystickMenuController
 		implements AmstradJoystickEventListener {
 
-	private AmstradPcPopupMenu popupMenu;
-
-	public AmstradJoystickPopupMenuController(AmstradPcPopupMenu popupMenu) {
-		this.popupMenu = popupMenu;
+	public AmstradJoystickPopupMenuController() {
 	}
 
 	@Override
 	public void amstradJoystickEventDispatched(AmstradJoystickEvent event) {
+		AmstradPcPopupMenu popupMenu = event.getJoystick().getAmstradPc().getFrame().getInstalledPopupMenu();
+		if (popupMenu == null)
+			return;
 		if (event.isConsumed())
 			return;
 		if (!isAutoRepeatSafe(event))
 			return;
-		if (!isPopupMenuShowing() && isPopupMenuTrigger(event)) {
-			getPopupMenu().showPopupMenu();
+		if (!isPopupMenuShowing(event) && isPopupMenuTrigger(event)) {
+			// Bring up the popup menu
+			popupMenu.showPopupMenu();
 			event.consume();
-		} else if (isPopupMenuShowing()) {
-			KeyEvent keyEvent = translateToKeyEvent(event);
+		} else if (isPopupMenuShowing(event)) {
+			KeyEvent keyEvent = null;
+			if (isPopupMenuTrigger(event)) {
+				// Cancel the popup menu
+				keyEvent = translateToKeyEvent(new AmstradJoystickEvent(event.getJoystick(),
+						AmstradJoystickCommand.CANCEL, event.getEventType()));
+			} else {
+				// Control the popup menu
+				keyEvent = translateToKeyEvent(event);
+			}
 			if (keyEvent != null) {
-				getPopupMenu().handleKeyEvent(keyEvent);
+				popupMenu.handleKeyEvent(keyEvent);
 				event.consume();
 			}
 		}
 	}
 
 	protected boolean isPopupMenuTrigger(AmstradJoystickEvent event) {
-		return AmstradJoystickCommand.OPTIONS.equals(event.getCommand()) && event.isFired();
-	}
-
-	@Override
-	protected AmstradPc getAmstradPc() {
-		return getPopupMenu().getAmstradPc();
-	}
-
-	protected AmstradPcPopupMenu getPopupMenu() {
-		return popupMenu;
+		return AmstradJoystickCommand.MENU.equals(event.getCommand()) && event.isFired();
 	}
 
 }

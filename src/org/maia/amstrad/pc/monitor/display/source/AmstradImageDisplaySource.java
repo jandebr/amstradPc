@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.monitor.display.source;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
 
@@ -32,6 +33,16 @@ public class AmstradImageDisplaySource implements AmstradAlternativeDisplaySourc
 	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
 		display.drawImage(getImage(), displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height,
 				null);
+	}
+
+	@Override
+	public void pressKey(KeyEvent keyEvent) {
+		// no action
+	}
+
+	@Override
+	public void releaseKey(KeyEvent keyEvent) {
+		// no action
 	}
 
 	@Override

@@ -1636,23 +1636,23 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void keyTyped(KeyEvent e) {
-		keyDispatcher.keyTyped(e);
+		getKeyDispatcher().keyTyped(e);
 	}
 
 	public void keyPressed(KeyEvent e) {
-		keyDispatcher.keyPressed(e);
+		getKeyDispatcher().keyPressed(e);
 	}
 
 	public void keyReleased(KeyEvent e) {
-		keyDispatcher.keyReleased(e);
+		getKeyDispatcher().keyReleased(e);
 	}
 
 	public void resetKeyModifiers() {
-		keyDispatcher.resetKeyModifiers();
+		getKeyDispatcher().resetKeyModifiers();
 	}
 
 	public void breakEscape() {
-		keyDispatcher.breakEscape();
+		getKeyDispatcher().breakEscape();
 	}
 
 	public void MenuCheck() {
@@ -2156,7 +2156,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				System.out.println("Computer Disposed");
 			}
 			computer = newComputer;
-			keyDispatcher.changeDestination(newComputer);
+			getKeyDispatcher().changeDestination(newComputer);
 			Settings.set(Settings.SYSTEM, name);
 			setFullSize(large);
 			computer.start();
@@ -5103,7 +5103,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	public void setControlKeysEnabled(boolean controlKeysEnabled) {
-		keyDispatcher.setControlKeysEnabled(controlKeysEnabled);
+		getKeyDispatcher().setControlKeysEnabled(controlKeysEnabled);
 	}
 
 	public void addPauseListener(PauseListener listener) {
@@ -5116,6 +5116,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	private List<PauseListener> getPauseListeners() {
 		return pauseListeners;
+	}
+
+	private JemuKeyDispatcher getKeyDispatcher() {
+		return keyDispatcher;
 	}
 
 	public static interface PauseListener {
