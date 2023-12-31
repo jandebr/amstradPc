@@ -683,8 +683,8 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			return; // already disposed
 		if (verboseStopStart)
 			System.out.println(this + " Dispose");
-		stopped = true;
 		stop();
+		stopped = true;
 		setAction(STOP); // awake when in stop-wait
 		try {
 			thread.join();
