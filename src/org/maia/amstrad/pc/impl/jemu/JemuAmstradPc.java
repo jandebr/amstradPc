@@ -629,12 +629,12 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 		@Override
 		public void amstradPcPausing(AmstradPc amstradPc) {
-			resetMonitoring();
+			resetMonitoringData();
 		}
 
 		@Override
 		public void amstradPcResuming(AmstradPc amstradPc) {
-			resetMonitoring();
+			resetMonitoringData();
 		}
 
 		@Override
@@ -666,10 +666,14 @@ public abstract class JemuAmstradPc extends AmstradPc
 		}
 
 		private synchronized void resetMonitoring() {
-			monitorDataIndex = 0;
-			monitorDataPoints = 0;
+			resetMonitoringData();
 			lastBoostTime = 0L;
 			minimumSecondsToNextBoost = 0;
+		}
+
+		private synchronized void resetMonitoringData() {
+			monitorDataIndex = 0;
+			monitorDataPoints = 0;
 		}
 
 		private void boostCpuAsync() {
