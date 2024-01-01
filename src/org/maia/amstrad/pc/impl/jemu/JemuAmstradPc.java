@@ -14,6 +14,8 @@ import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicMemoryFullException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcPerformanceAdapter;
+import org.maia.amstrad.pc.AmstradPcStateListener;
 import org.maia.amstrad.pc.impl.MemoryTrapProcessor;
 import org.maia.amstrad.pc.impl.MemoryTrapTask;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
@@ -28,6 +30,7 @@ import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerPerformanceListener;
+import jemu.core.device.ComputerTimer;
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
@@ -61,7 +64,11 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 	private JemuGraphicsContext graphicsContext;
 
+	private AdaptiveCpuBooster adaptiveCpuBooster;
+
 	private static boolean instanceRunning; // maximum 1 running Jemu in JVM (static Switches etc.)
+
+	private static final String SETTING_CPU_BOOST = "cpu_boost";
 
 	protected JemuAmstradPc() {
 		this.keyboard = createKeyboard();
@@ -72,6 +79,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 		this.basicRuntime = createBasicRuntime();
 		this.memoryTrapProcessor = createMemoryTrapProcessor();
 		this.graphicsContext = createGraphicsContext();
+		this.adaptiveCpuBooster = new AdaptiveCpuBooster();
 	}
 
 	protected abstract JemuKeyboard createKeyboard();
@@ -112,6 +120,8 @@ public abstract class JemuAmstradPc extends AmstradPc
 				Switches.FloppySound = false;
 			doStart();
 			getMemoryTrapProcessor().start();
+			if (Settings.getBoolean(SETTING_CPU_BOOST, true))
+				getAdaptiveCpuBooster().start();
 			setStarted(true);
 			JemuAmstradPc.setInstanceRunning(true);
 			fireStartedEvent();
@@ -370,6 +380,10 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 	protected abstract Font getJemuDisplayFont();
 
+	private AdaptiveCpuBooster getAdaptiveCpuBooster() {
+		return adaptiveCpuBooster;
+	}
+
 	protected abstract class JemuBaseMonitor extends JemuMonitor {
 
 		protected JemuBaseMonitor() {
@@ -555,6 +569,172 @@ public abstract class JemuAmstradPc extends AmstradPc
 			// modifiers, this may leave the JEMU instance and JEMU computer in an obsolete key modifier state causing
 			// artefacts when resuming focus. To prevent this, we reset modifiers when a dialog is closed.
 			getKeyboard().getController().resetKeyModifiers();
+		}
+
+	}
+
+	/**
+	 * Adaptive CPU booster
+	 * 
+	 * <p>
+	 * On some systems it was observed that the CPU sync rate can suddenly degrade for unknown reasons (audio sync?) and
+	 * might not always recover automatically or quickly. It was also observed that a simple pause-resume of the
+	 * <code>Computer</code> restores the performance instantly. This helper class automates this trick.
+	 * </p>
+	 * 
+	 * @see Computer#syncProcessor
+	 * @see ComputerTimer
+	 */
+	private class AdaptiveCpuBooster extends AmstradPcPerformanceAdapter implements AmstradPcStateListener {
+
+		private int[] monitorData = new int[10]; // CPU syncs per second
+
+		private int monitorDataIndex; // slot for the next data value
+
+		private int monitorDataPoints; // available historic data values
+
+		private int maximumDataValue; // all-times maximum
+
+		private float degradationThresholdFactor;
+
+		private long lastBoostTime = 0L;
+
+		private int minimumSecondsToNextBoost = 0;
+
+		private int minimumSecondsBetweenBoosts = 10;
+
+		private int maximumSecondsBetweenBoosts = 160;
+
+		private int secondsMultiplierBetweenBoosts = 2;
+
+		public AdaptiveCpuBooster() {
+			this(0.8f);
+		}
+
+		public AdaptiveCpuBooster(float degradationThresholdFactor) {
+			this.degradationThresholdFactor = degradationThresholdFactor;
+		}
+
+		public void start() {
+			System.out.println("Starting adaptive CPU booster");
+			resetMonitoring();
+			addPerformanceListener(this);
+			addStateListener(this);
+		}
+
+		@Override
+		public void amstradPcStarted(AmstradPc amstradPc) {
+			resetMonitoring();
+		}
+
+		@Override
+		public void amstradPcPausing(AmstradPc amstradPc) {
+			resetMonitoring();
+		}
+
+		@Override
+		public void amstradPcResuming(AmstradPc amstradPc) {
+			resetMonitoring();
+		}
+
+		@Override
+		public void amstradPcRebooting(AmstradPc amstradPc) {
+			resetMonitoring();
+		}
+
+		@Override
+		public void amstradPcTerminated(AmstradPc amstradPc) {
+			resetMonitoring();
+		}
+
+		@Override
+		public void amstradPcProgramLoaded(AmstradPc amstradPc) {
+			resetMonitoring();
+		}
+
+		@Override
+		public synchronized void processorPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis,
+				int timerSyncs, int laggingSyncs, int throttledSyncs) {
+			int syncsPerSecond = Math.round(timerSyncs / (timeIntervalMillis / 1000f));
+			monitorData[monitorDataIndex] = syncsPerSecond;
+			monitorDataIndex = (monitorDataIndex + 1) % monitorData.length;
+			monitorDataPoints = Math.min(monitorDataPoints + 1, monitorData.length);
+			maximumDataValue = Math.max(maximumDataValue, syncsPerSecond);
+			if (isEligibleForCpuBoost()) {
+				boostCpuAsync();
+			}
+		}
+
+		private synchronized void resetMonitoring() {
+			monitorDataIndex = 0;
+			monitorDataPoints = 0;
+			lastBoostTime = 0L;
+			minimumSecondsToNextBoost = 0;
+		}
+
+		private void boostCpuAsync() {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					boostCpu();
+				}
+			}).start();
+		}
+
+		private synchronized void boostCpu() {
+			System.out.println("CPU BOOST (avg=" + getAverageDataValue() + ", max=" + getMaximumDataValue() + ")");
+			getMemory().pauseComputerInstantly();
+			getMemory().resumeComputerInstantly();
+			updateMinimumSecondsToNextBoost();
+			lastBoostTime = System.currentTimeMillis();
+		}
+
+		private void updateMinimumSecondsToNextBoost() {
+			if (minimumSecondsToNextBoost == 0) {
+				minimumSecondsToNextBoost = minimumSecondsBetweenBoosts;
+			} else {
+				minimumSecondsToNextBoost = Math.min(minimumSecondsToNextBoost * secondsMultiplierBetweenBoosts,
+						maximumSecondsBetweenBoosts);
+			}
+			System.out.println("Next CPU boost not earlier than " + minimumSecondsToNextBoost + " seconds");
+		}
+
+		private boolean isEligibleForCpuBoost() {
+			long now = System.currentTimeMillis();
+			if (now < lastBoostTime + minimumSecondsToNextBoost * 1000L)
+				return false;
+			return isDegradedCpuPerformance();
+		}
+
+		private boolean isDegradedCpuPerformance() {
+			if (!isCompleteMonitoringData()) {
+				return false; // too early to judge
+			} else {
+				return getAverageDataValue() < getDegradationThresholdFactor() * getMaximumDataValue();
+			}
+		}
+
+		private boolean isCompleteMonitoringData() {
+			return monitorDataPoints == monitorData.length;
+		}
+
+		private int getAverageDataValue() {
+			if (monitorDataPoints == 0)
+				return 0;
+			int sum = 0;
+			for (int i = 0; i < monitorDataPoints; i++) {
+				sum += monitorData[(monitorDataIndex - 1 - i + monitorData.length) % monitorData.length];
+			}
+			return sum / monitorDataPoints;
+		}
+
+		private int getMaximumDataValue() {
+			return maximumDataValue;
+		}
+
+		private float getDegradationThresholdFactor() {
+			return degradationThresholdFactor;
 		}
 
 	}
