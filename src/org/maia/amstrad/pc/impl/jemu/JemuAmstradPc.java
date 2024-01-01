@@ -605,9 +605,9 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 		private int minimumSecondsBetweenBoosts = 10;
 
-		private int maximumSecondsBetweenBoosts = 160;
+		private int maximumSecondsBetweenBoosts = 120;
 
-		private int secondsMultiplierBetweenBoosts = 2;
+		private float secondsMultiplierBetweenBoosts = 1.5f;
 
 		public AdaptiveDisplayPerformanceBooster() {
 			this(0.8f);
@@ -704,7 +704,8 @@ public abstract class JemuAmstradPc extends AmstradPc
 			if (minimumSecondsToNextBoost == 0) {
 				minimumSecondsToNextBoost = minimumSecondsBetweenBoosts;
 			} else {
-				minimumSecondsToNextBoost = Math.min(minimumSecondsToNextBoost * secondsMultiplierBetweenBoosts,
+				minimumSecondsToNextBoost = Math.min(
+						Math.round(minimumSecondsToNextBoost * secondsMultiplierBetweenBoosts),
 						maximumSecondsBetweenBoosts);
 			}
 			System.out.println("Next Display boost no earlier than " + minimumSecondsToNextBoost + " seconds");
