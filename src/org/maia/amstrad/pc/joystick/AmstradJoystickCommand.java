@@ -10,15 +10,17 @@ public enum AmstradJoystickCommand {
 
 	RIGHT("Right", "RIGHT"),
 
-	FIRE2("Fire 2", "FIRE2"),
+	FIRE2("Fire 2", "FIRE2", "Also used to CONFIRM"),
 
-	FIRE1("Fire 1", "FIRE1"),
+	FIRE1("Fire 1", "FIRE1", "Also used to CANCEL"),
 
-	MENU("Menu", "MENU"),
+	MENU("Menu", "MENU", "Brings up the menu. Suspends the running program"),
 
-	CONFIRM("Confirm", "CONFIRM"),
+	KEYBOARD("Keyboard", "KEYBOARD", "Brings up a virtual keyboard on screen");
 
-	CANCEL("Cancel", "CANCEL");
+	public static final AmstradJoystickCommand CONFIRM = FIRE2;
+
+	public static final AmstradJoystickCommand CANCEL = FIRE1;
 
 	private String displayName;
 

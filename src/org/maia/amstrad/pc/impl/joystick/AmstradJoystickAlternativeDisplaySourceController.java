@@ -22,7 +22,7 @@ public class AmstradJoystickAlternativeDisplaySourceController extends AmstradJo
 			return;
 		if (!isAutoRepeatSafe(event))
 			return;
-		if (!isPopupMenuShowing(event) && isMenuMode(event)) {
+		if (!isPopupMenuShowing(event)) {
 			KeyEvent keyEvent = translateToKeyEvent(event);
 			if (keyEvent != null) {
 				dispatchKeyEvent(keyEvent, displaySource);

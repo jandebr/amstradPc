@@ -4,16 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.JFrame;
 
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
-import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
 import org.maia.io.inputdevice.InputDeviceFilter;
 import org.maia.io.inputdevice.InputEventGateway;
 import org.maia.io.inputdevice.InputFilter;
@@ -60,9 +57,8 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 	}
 
 	protected InteractiveBuilder createBuilder() {
-		List<InputCommandGroup> commandGroups = createCommandGroups();
 		final Set<JoystickCommand> requiredCommands = getRequiredCommands();
-		InteractiveBuilder builder = new InteractiveBuilder(commandGroups, InputDeviceFilter.STICK_OR_GAMEPAD);
+		InteractiveBuilder builder = new InteractiveBuilder(createCommandGroup(), InputDeviceFilter.STICK_OR_GAMEPAD);
 		builder.withControllerType(InputControllerType.JOYSTICK).withControllerName(getJoystickName())
 				.withControls(new InteractiveBuilderControls() {
 
@@ -73,8 +69,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 							return InteractiveBuilderControlType.PREVIOUS;
 						} else if (AmstradJoystickCommand.DOWN.getIdentifier().equals(commandId)) {
 							return InteractiveBuilderControlType.NEXT;
-						} else if (AmstradJoystickCommand.FIRE2.getIdentifier().equals(commandId)
-								|| AmstradJoystickCommand.FIRE1.getIdentifier().equals(commandId)) {
+						} else if (AmstradJoystickCommand.FIRE2.getIdentifier().equals(commandId)) {
 							return InteractiveBuilderControlType.SUBMIT;
 						} else {
 							// fyi, no mapping for InteractiveBuilderControlType.CLEAR
@@ -92,27 +87,17 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 		return builder;
 	}
 
-	protected List<InputCommandGroup> createCommandGroups() {
-		List<InputCommandGroup> commandGroups = new Vector<InputCommandGroup>();
-		InputCommandGroup group = new InputCommandGroup(getContextIdentifierForMode(AmstradJoystickMode.MENU));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.MENU));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.CONFIRM));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.CANCEL));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.UP));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.DOWN));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.LEFT));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.RIGHT));
-		commandGroups.add(group);
-		group = new InputCommandGroup(getContextIdentifierForMode(AmstradJoystickMode.GAMING));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.MENU));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.UP));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.DOWN));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.LEFT));
-		group.addMember(getJoystickCommand(AmstradJoystickCommand.RIGHT));
+	protected InputCommandGroup createCommandGroup() {
+		InputCommandGroup group = new InputCommandGroup("amstrad");
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.FIRE2));
 		group.addMember(getJoystickCommand(AmstradJoystickCommand.FIRE1));
-		commandGroups.add(group);
-		return commandGroups;
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.UP));
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.DOWN));
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.LEFT));
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.RIGHT));
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.MENU));
+		group.addMember(getJoystickCommand(AmstradJoystickCommand.KEYBOARD));
+		return group;
 	}
 
 	protected Set<JoystickCommand> getRequiredCommands() {
@@ -200,10 +185,6 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static String getContextIdentifierForMode(AmstradJoystickMode mode) {
-		return mode.name();
 	}
 
 	private static JoystickCommand getJoystickCommand(AmstradJoystickCommand command) {

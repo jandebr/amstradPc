@@ -25,9 +25,4 @@ public abstract class AmstradJoystickStateAdapter implements AmstradJoystickStat
 		// Subclasses can override this
 	}
 
-	@Override
-	public void amstradJoystickChangedMode(AmstradJoystick joystick, AmstradJoystickMode mode) {
-		// Subclasses can override this
-	}
-
 }

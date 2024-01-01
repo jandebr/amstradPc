@@ -12,6 +12,4 @@ public interface AmstradJoystickStateListener extends GenericListener {
 
 	void amstradJoystickDeactivated(AmstradJoystick joystick);
 
-	void amstradJoystickChangedMode(AmstradJoystick joystick, AmstradJoystickMode mode);
-
 }

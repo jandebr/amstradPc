@@ -5,7 +5,6 @@ import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.frame.AmstradPcFrameListener;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
-import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 
@@ -19,8 +18,8 @@ public class AmstradJoystickManager extends AmstradMonitorAdapter implements Ams
 	}
 
 	protected void init() {
-		// Mode switching
-		updateMode();
+		// Auto-repeat
+		restoreAutoRepeatEnabled();
 		getMonitor().addMonitorListener(this);
 		getFrame().addFrameListener(this);
 		// Gaming mode
@@ -34,38 +33,26 @@ public class AmstradJoystickManager extends AmstradMonitorAdapter implements Ams
 
 	@Override
 	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
-		updateMode();
+		restoreAutoRepeatEnabled();
 	}
 
 	@Override
 	public void popupMenuWillBecomeVisible(AmstradPcFrame frame) {
-		switchMode(AmstradJoystickMode.MENU);
+		setAutoRepeatEnabled(true);
 	}
 
 	@Override
 	public void popupMenuWillBecomeInvisible(AmstradPcFrame frame) {
-		updateMode();
+		restoreAutoRepeatEnabled();
 	}
 
-	protected void updateMode() {
-		switchMode(getTargetMode());
+	protected void restoreAutoRepeatEnabled() {
+		boolean autoRepeat = getMonitor().isAlternativeDisplaySourceShowing();
+		setAutoRepeatEnabled(autoRepeat);
 	}
 
-	protected void switchMode(AmstradJoystickMode mode) {
-		getJoystick().switchMode(mode);
-		getJoystick().switchAutoRepeatEnabled(isAutoRepeatEnabled(mode));
-	}
-
-	protected AmstradJoystickMode getTargetMode() {
-		if (getMonitor().isPrimaryDisplaySourceShowing()) {
-			return AmstradJoystickMode.GAMING;
-		} else {
-			return AmstradJoystickMode.MENU;
-		}
-	}
-
-	protected boolean isAutoRepeatEnabled(AmstradJoystickMode mode) {
-		return AmstradJoystickMode.MENU.equals(mode);
+	protected void setAutoRepeatEnabled(boolean autoRepeat) {
+		getJoystick().switchAutoRepeatEnabled(autoRepeat);
 	}
 
 	protected boolean isPrimaryJoystick() {

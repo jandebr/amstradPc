@@ -19,7 +19,6 @@ import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.impl.jemu.JemuDirectAmstradPc;
 import org.maia.amstrad.pc.impl.jemu.JemuFacadeAmstradPc;
 import org.maia.amstrad.pc.impl.joystick.AmstradJoystickDevice;
-import org.maia.amstrad.pc.impl.joystick.AmstradJoystickManager;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
@@ -128,9 +127,7 @@ public class AmstradFactory {
 	}
 
 	public AmstradJoystick createJoystick(AmstradPc amstradPc, AmstradJoystickID joystickId) {
-		AmstradJoystick joystick = new AmstradJoystickDevice(amstradPc, joystickId);
-		AmstradJoystickManager manager = new AmstradJoystickManager(joystick);
-		return joystick;
+		return new AmstradJoystickDevice(amstradPc, joystickId);
 	}
 
 	public AmstradProgramRepository createProgramRepository() {

@@ -10,8 +10,6 @@ public abstract class AmstradJoystick extends AmstradDevice {
 
 	private AmstradJoystickID joystickId;
 
-	private AmstradJoystickMode mode;
-
 	private boolean active;
 
 	private boolean autoRepeatEnabled;
@@ -62,18 +60,6 @@ public abstract class AmstradJoystick extends AmstradDevice {
 
 	protected abstract void doDeactivate();
 
-	public void switchMode(AmstradJoystickMode mode) {
-		AmstradJoystickMode currentMode = getMode();
-		if (currentMode == null || !currentMode.equals(mode)) {
-			// System.out.println(getJoystickId().getDisplayName() + " changing mode to " + mode.name());
-			setMode(mode);
-			doSwitchMode(mode);
-			fireJoystickChangedMode();
-		}
-	}
-
-	protected abstract void doSwitchMode(AmstradJoystickMode mode);
-
 	public void switchAutoRepeatEnabled(boolean autoRepeatEnabled) {
 		if (autoRepeatEnabled != isAutoRepeatEnabled()) {
 			setAutoRepeatEnabled(autoRepeatEnabled);
@@ -119,11 +105,6 @@ public abstract class AmstradJoystick extends AmstradDevice {
 			listener.amstradJoystickDeactivated(this);
 	}
 
-	protected void fireJoystickChangedMode() {
-		for (AmstradJoystickStateListener listener : getJoystickStateListeners())
-			listener.amstradJoystickChangedMode(this, getMode());
-	}
-
 	protected void fireJoystickEvent(AmstradJoystickEvent event) {
 		for (AmstradJoystickEventListener listener : getJoystickEventListeners())
 			listener.amstradJoystickEventDispatched(event);
@@ -139,14 +120,6 @@ public abstract class AmstradJoystick extends AmstradDevice {
 
 	public AmstradJoystickID getJoystickId() {
 		return joystickId;
-	}
-
-	public AmstradJoystickMode getMode() {
-		return mode;
-	}
-
-	private void setMode(AmstradJoystickMode mode) {
-		this.mode = mode;
 	}
 
 	public boolean isActive() {

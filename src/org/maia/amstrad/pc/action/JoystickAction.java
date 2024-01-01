@@ -3,7 +3,6 @@ package org.maia.amstrad.pc.action;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
-import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
 import org.maia.amstrad.pc.joystick.AmstradJoystickStateListener;
 
 public abstract class JoystickAction extends AmstradPcAction implements AmstradJoystickStateListener {
@@ -32,11 +31,6 @@ public abstract class JoystickAction extends AmstradPcAction implements AmstradJ
 
 	@Override
 	public void amstradJoystickDeactivated(AmstradJoystick joystick) {
-		// Subclasses may override after registering with joystick
-	}
-
-	@Override
-	public void amstradJoystickChangedMode(AmstradJoystick joystick, AmstradJoystickMode mode) {
 		// Subclasses may override after registering with joystick
 	}
 

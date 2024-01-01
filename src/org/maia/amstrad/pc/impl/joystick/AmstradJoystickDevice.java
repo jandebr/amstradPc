@@ -9,8 +9,6 @@ import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent.EventType;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
-import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
-import org.maia.io.inputdevice.controller.InputControllerException;
 import org.maia.io.inputdevice.joystick.Joystick;
 import org.maia.io.inputdevice.joystick.JoystickCommand;
 import org.maia.io.inputdevice.joystick.JoystickListener;
@@ -23,10 +21,13 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 
 	private AmstradJoystickDeviceConfigurator configurator;
 
+	private AmstradJoystickManager manager;
+
 	public AmstradJoystickDevice(AmstradPc amstradPc, AmstradJoystickID joystickId) {
 		super(amstradPc, joystickId);
 		this.delegateCommandMap = new HashMap<JoystickCommand, AmstradJoystickCommand>();
 		this.configurator = new AmstradJoystickDeviceConfigurator(this);
+		this.manager = new AmstradJoystickManager(this);
 	}
 
 	@Override
@@ -37,11 +38,6 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 	@Override
 	public boolean isConnected() {
 		return getJoystickDelegate() != null;
-	}
-
-	@Override
-	protected void doSwitchMode(AmstradJoystickMode mode) {
-		switchJoystickContext(AmstradJoystickDeviceConfigurator.getContextIdentifierForMode(mode));
 	}
 
 	@Override
@@ -94,18 +90,6 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 		return command;
 	}
 
-	private void switchJoystickContext(String contextIdentifier) {
-		Joystick joy = getJoystickDelegate();
-		if (joy != null) {
-			try {
-				joy.switchContext(contextIdentifier);
-			} catch (InputControllerException e) {
-				// context does not exist (should not happen)
-				System.err.println(e.getMessage());
-			}
-		}
-	}
-
 	synchronized void disposeJoystickDelegate() {
 		Joystick joy = getJoystickDelegate();
 		if (joy != null) {
@@ -121,9 +105,6 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 		if (newDelegate != null) {
 			System.out.println("Activating " + getJoystickId().getDisplayName());
 			setJoystickDelegate(newDelegate);
-			AmstradJoystickMode mode = getMode();
-			if (mode != null)
-				doSwitchMode(mode);
 			if (isActive()) {
 				doActivate();
 			} else {
@@ -149,6 +130,10 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 
 	private AmstradJoystickDeviceConfigurator getConfigurator() {
 		return configurator;
+	}
+
+	private AmstradJoystickManager getManager() {
+		return manager;
 	}
 
 }

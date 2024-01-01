@@ -3,9 +3,10 @@ package org.maia.amstrad.pc.impl.joystick;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 
+import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
-import org.maia.amstrad.pc.joystick.AmstradJoystickMode;
+import org.maia.amstrad.pc.joystick.AmstradJoystickEvent.EventType;
 
 public abstract class AmstradJoystickEventTranslator {
 
@@ -27,11 +28,8 @@ public abstract class AmstradJoystickEventTranslator {
 	}
 
 	protected boolean isGamingMode(AmstradJoystickEvent event) {
-		return AmstradJoystickMode.GAMING.equals(event.getJoystick().getMode());
-	}
-
-	protected boolean isMenuMode(AmstradJoystickEvent event) {
-		return AmstradJoystickMode.MENU.equals(event.getJoystick().getMode());
+		return event.getJoystick().getAmstradPc().getMonitor().isPrimaryDisplaySourceShowing()
+				&& !isPopupMenuShowing(event);
 	}
 
 	protected boolean isPrimaryJoystick(AmstradJoystickEvent event) {
@@ -40,6 +38,22 @@ public abstract class AmstradJoystickEventTranslator {
 
 	protected boolean isSecondaryJoystick(AmstradJoystickEvent event) {
 		return AmstradJoystickID.JOYSTICK1.equals(event.getJoystick().getJoystickId());
+	}
+
+	protected boolean isAutoRepeatSafe(AmstradJoystickEvent event) {
+		if (EventType.FIRED_AUTO_REPEAT.equals(event.getEventType())) {
+			return isAutoRepeatSafe(event.getCommand());
+		} else {
+			return true;
+		}
+	}
+
+	protected boolean isAutoRepeatSafe(AmstradJoystickCommand command) {
+		return AmstradJoystickCommand.UP.equals(command) || AmstradJoystickCommand.DOWN.equals(command);
+	}
+
+	protected boolean isPopupMenuShowing(AmstradJoystickEvent event) {
+		return event.getJoystick().getAmstradPc().getFrame().isPopupMenuShowing();
 	}
 
 }
