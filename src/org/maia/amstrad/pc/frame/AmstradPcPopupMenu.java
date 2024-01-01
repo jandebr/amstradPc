@@ -86,9 +86,20 @@ public class AmstradPcPopupMenu extends JPopupMenu {
 		handleKeyEvent(createInitialMenuSelectionKeyEvent(KeyEvent.KEY_RELEASED));
 	}
 
+	private void cancelPopupMenu() {
+		handleKeyEvent(createCancelMenuKeyEvent(KeyEvent.KEY_PRESSED));
+		handleKeyEvent(createCancelMenuKeyEvent(KeyEvent.KEY_RELEASED));
+	}
+
 	private KeyEvent createInitialMenuSelectionKeyEvent(int keyEventType) {
 		Component source = getAmstradPc().getFrame().getRootPane();
 		return new KeyEvent(source, keyEventType, System.currentTimeMillis(), 0, KeyEvent.VK_DOWN,
+				KeyEvent.CHAR_UNDEFINED);
+	}
+
+	private KeyEvent createCancelMenuKeyEvent(int keyEventType) {
+		Component source = getAmstradPc().getFrame().getRootPane();
+		return new KeyEvent(source, keyEventType, System.currentTimeMillis(), 0, KeyEvent.VK_ESCAPE,
 				KeyEvent.CHAR_UNDEFINED);
 	}
 
@@ -138,9 +149,12 @@ public class AmstradPcPopupMenu extends JPopupMenu {
 
 		@Override
 		public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
-			if (event.isKeyPressed() && event.getKeyCode() == getTriggerKeyCode()) {
-				if (!isTerminating()) {
+			if (event.isKeyPressed() && event.getKeyCode() == getTriggerKeyCode() && !isTerminating()) {
+				if (!isPopupMenuShowing()) {
 					showPopupMenu();
+				} else {
+					// This code actually never gets hit, since key focus is on popup menu
+					cancelPopupMenu();
 				}
 			}
 		}
