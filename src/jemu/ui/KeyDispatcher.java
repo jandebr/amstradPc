@@ -168,8 +168,8 @@ public class KeyDispatcher implements KeyListener {
 			e.setKeyCode(91);
 		} else if (keyChar == '-') {
 			e.setKeyCode(45);
-		} else if (keyChar == '^') {
-			e.setKeyCode(61);
+		} else if (keyCode == 104 || keyChar == '^') {
+			e.setKeyCode(61); // ^ (power operator)
 		} else if (keyCode == 130) {
 			e.setKeyCode(65406); // [
 		} else if (keyChar == ']') {
