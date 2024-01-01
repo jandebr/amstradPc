@@ -595,7 +595,9 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 		private int monitorDataPoints; // available historic data values
 
-		private int maximumDataValue; // all-times maximum
+		private int maximumDataValue; // all-times observed maximum
+
+		private int upperboundDataValue = 50;
 
 		private float degradationThresholdFactor;
 
@@ -658,6 +660,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 		public void displayPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int framesPainted,
 				int imagesUpdated) {
 			int syncsPerSecond = Math.round(imagesUpdated / (timeIntervalMillis / 1000f));
+			syncsPerSecond = Math.min(syncsPerSecond, upperboundDataValue);
 			addMonitoringDataPoint(syncsPerSecond);
 		}
 
