@@ -2,10 +2,10 @@ package org.maia.amstrad.pc.memory;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.maia.amstrad.pc.AmstradDevice;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
 
-public abstract class AmstradMemory extends AmstradDevice {
+public abstract class AmstradMemory extends AmstradPcDevice {
 
 	private ReentrantLock exclusiveThreadUseLock;
 

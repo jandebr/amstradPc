@@ -1,12 +1,12 @@
 package org.maia.amstrad.pc.joystick;
 
-import org.maia.amstrad.pc.AmstradDevice;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.util.GenericListenerList;
 
 import jemu.settings.Settings;
 
-public abstract class AmstradJoystick extends AmstradDevice {
+public abstract class AmstradJoystick extends AmstradPcDevice {
 
 	private AmstradJoystickID joystickId;
 

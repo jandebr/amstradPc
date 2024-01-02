@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.pc.AmstradDevice;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
@@ -17,7 +17,7 @@ import org.maia.util.GenericListenerList;
 
 import jemu.settings.Settings;
 
-public abstract class AmstradMonitor extends AmstradDevice {
+public abstract class AmstradMonitor extends AmstradPcDevice {
 
 	private GenericListenerList<AmstradMonitorListener> monitorListeners;
 

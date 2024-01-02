@@ -1,10 +1,10 @@
 package org.maia.amstrad.pc.audio;
 
-import org.maia.amstrad.pc.AmstradDevice;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.util.GenericListenerList;
 
-public abstract class AmstradAudio extends AmstradDevice {
+public abstract class AmstradAudio extends AmstradPcDevice {
 
 	private GenericListenerList<AmstradAudioListener> audioListeners;
 

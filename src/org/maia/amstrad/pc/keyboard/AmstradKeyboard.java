@@ -4,12 +4,12 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
-import org.maia.amstrad.pc.AmstradDevice;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.io.util.IOUtils;
 import org.maia.util.GenericListenerList;
 
-public abstract class AmstradKeyboard extends AmstradDevice {
+public abstract class AmstradKeyboard extends AmstradPcDevice {
 
 	private GenericListenerList<AmstradKeyboardListener> keyboardListeners;
 
