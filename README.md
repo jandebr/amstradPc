@@ -1,8 +1,8 @@
 # Amstrad PC
 
-*Amstrad PC* -- A fork of the *JavaCPC* emulator with enhancements for managing and playing a collection of Basic program files
+*Amstrad PC* -- A fork of the *JavaCPC* emulator with enhancements for playing a collection of Basic program files
 
-This software was created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
+This software is 100% pure Java. It is created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
 
 There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the software
 
@@ -14,9 +14,9 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 
 ## Copyright
 
-*Amstrad PC* is a modified work of [JavaCPC][1], by Markus Hohmann
+*Amstrad PC* is a modified work of [JavaCPC][1] by Markus Hohmann
 
-*JavaCPC* is based on the original [JEMU][2], by Richard Wilson
+*JavaCPC* is based on the original [JEMU][2] by Richard Wilson
  
 *JavaCPC* is distributed under the [GNU GENERAL PUBLIC LICENSE](LICENSE.txt) and so is this work
 
@@ -24,21 +24,24 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 
 ## Features
 
-*Amstrad PC* provides several improvements and features over *JavaCPC* / *JEMU*
+*Amstrad PC* provides several enhancements over *JavaCPC* / *JEMU*
 
-- Modern keyboard key mapping
-- Instant loading of Basic source code
-- Instant saving of Basic source code
-- Integrated program browser
-- Quick access to program info (e.g. game controls) depending on available metadata
-- Support for Basic IO instructions using the host filesystem
+- Complete keyboard mapping
+- Optimized fullscreen rendering
+- Integrated Basic program browser
+- Instant loading and saving of Basic programs
+- Quick access to program info depending on available metadata
+- Basic IO instructions ported to the host filesystem
 - Insights into Basic memory allocation
-- Context menu in fullscreen mode
-- Run modes to accomodate different use cases
-- A clean API to integrate and extend *Amstrad PC*
-- Locomotive Basic parser, compiler and decompiler written in Java
-- Customizable displays rendered with Java code
-- Stability and bug fixes
+- On-screen popup menu
+- *(coming up) Virtual on-screen keyboard*
+- Joystick support including popular gamepads (Xbox, PS) using the [JInput][3] library
+- Run modes to accomodate different uses
+- Extensible and easily integrated using pure Java code
+	- A clean API to *Amstrad PC*
+	- Parser, compiler and decompiler for Locomotive Basic
+	- Customizable displays rendered with Java AWT
+- Many stability fixes
 
 For more information see the [Features](https://github.com/jandebr/amstradPc/wiki/Features) documentation
 
@@ -52,7 +55,7 @@ Getting started with *Amstrad PC* is a simple three-step process
 
 1. Obtain source code from [github](https://github.com/jandebr/amstradPc)
 2. Build with Ant `ant -buildfile ant.xml package`, which produces `dist/amstradPc.jar`
-3. Run with Java `java -jar dist/amstradPc.jar`, which uses the provided [config file](https://github.com/jandebr/amstradPc/wiki/Config-javacpc.ini) `javacpc.ini`
+3. Run with Java `java -Djava.library.path=system/jinput -jar dist/amstradPc.jar`, which uses the provided [config file](https://github.com/jandebr/amstradPc/wiki/Config-javacpc.ini) `javacpc.ini`
 
 Alternatively, one can distribute *Amstrad PC* to end user computers using [getdown](https://github.com/threerings/getdown) as detailed in the [distribution](https://github.com/jandebr/amstradPc/wiki/Distribute-using-getdown) documentation
 
@@ -64,3 +67,4 @@ To setup your own (local) program collection, see the [repository](https://githu
 
 [1]: <http://cpc-live.com> "JavaCPC"
 [2]: <http://jemu.winape.net> "JEMU"
+[3]: <https://github.com/jinput/jinput> "JInput"
