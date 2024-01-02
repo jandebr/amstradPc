@@ -5,6 +5,8 @@ import java.io.File;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
 import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.menu.AmstradMenu;
+import org.maia.amstrad.pc.menu.maker.AmstradMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.tape.AmstradTape;
@@ -61,6 +63,17 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	}
 
 	protected abstract void doLaunch(String[] args) throws Exception;
+
+	protected AmstradMenu createMenuBar(AmstradPc amstradPc) {
+		AmstradMenuMaker menuMaker = new AmstradMenuMaker(amstradPc.getActions(), AmstradMenuMaker.LookAndFeel.JAVA);
+		return menuMaker.createMenuBar();
+	}
+
+	protected AmstradMenu createPopupMenu(AmstradPc amstradPc) {
+		AmstradMenuMaker menuMaker = new AmstradMenuMaker(amstradPc.getActions(),
+				AmstradMenuMaker.LookAndFeel.EMULATOR);
+		return menuMaker.createStandardPopupMenu();
+	}
 
 	/**
 	 * Tells whether the AmstradPc primary display is the central and start screen at launch
@@ -151,8 +164,8 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 		protected void doLaunch(String[] args) throws AmstradProgramException {
 			AmstradPc amstradPc = getAmstradFactory().createAmstradPc();
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
-			frame.installAndEnableMenuBar();
-			frame.installAndEnablePopupMenu();
+			createMenuBar(amstradPc).install();
+			createPopupMenu(amstradPc).install();
 			if (args.length == 0) {
 				amstradPc.start();
 			} else if (args.length == 1) {
@@ -213,7 +226,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 			monitor.setMode(getMonitorModeAtLaunch());
 			monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager)
 			AmstradPcFrame frame = amstradPc.displayInFrame(true);
-			frame.installAndEnablePopupMenu();
+			createPopupMenu(amstradPc).install();
 			amstradPc.addStateListener(this);
 			amstradPc.start();
 		}
@@ -225,7 +238,7 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 
 		@Override
 		public boolean isFullscreenToggleEnabled() {
-			return true; // TODO should be false (fullscreen only) but keeping this to force-fix issues
+			return false;
 		}
 
 		@Override

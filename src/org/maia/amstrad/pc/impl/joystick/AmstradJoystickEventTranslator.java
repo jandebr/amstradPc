@@ -5,8 +5,8 @@ import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
-import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent.EventType;
+import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 
 public abstract class AmstradJoystickEventTranslator {
 
@@ -53,7 +53,7 @@ public abstract class AmstradJoystickEventTranslator {
 	}
 
 	protected boolean isPopupMenuShowing(AmstradJoystickEvent event) {
-		return event.getJoystick().getAmstradPc().getFrame().isPopupMenuShowing();
+		return event.getJoystick().getAmstradPc().getMonitor().isPopupMenuShowing();
 	}
 
 }

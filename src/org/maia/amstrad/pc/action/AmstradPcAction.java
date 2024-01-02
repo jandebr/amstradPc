@@ -70,7 +70,7 @@ public abstract class AmstradPcAction extends AbstractAction
 	}
 
 	protected boolean isTriggeredByMenuKeyBindings() {
-		return getAmstradPc().getFrame() != null && getAmstradPc().getFrame().isMenuKeyBindingsEnabled();
+		return getAmstradPc().isMenuKeyBindingsEnabled();
 	}
 
 	public AmstradPc getAmstradPc() {

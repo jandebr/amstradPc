@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.frame;
+package org.maia.amstrad.pc.menu;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -15,70 +15,92 @@ import javax.swing.event.PopupMenuListener;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 
-public class AmstradPcPopupMenu extends JPopupMenu {
+public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 
 	private AmstradPc amstradPc;
 
+	private PopupMenuKeyActivator keyActivator;
+
+	private PopupMenuController popupMenuController;
+
+	private MenuController menuController;
+
 	public static int KEY_CODE_TRIGGER = KeyEvent.VK_F2;
 
-	public AmstradPcPopupMenu(AmstradPc amstradPc) {
+	public AmstradPopupMenu(AmstradPc amstradPc) {
 		this(amstradPc, "Amstrad Menu");
 	}
 
-	public AmstradPcPopupMenu(AmstradPc amstradPc, String label) {
+	public AmstradPopupMenu(AmstradPc amstradPc, String label) {
 		super(label);
 		this.amstradPc = amstradPc;
-		init();
+		this.keyActivator = new PopupMenuKeyActivator(KEY_CODE_TRIGGER);
+		this.popupMenuController = new PopupMenuController();
+		this.menuController = new MenuController();
 	}
 
-	private void init() {
-		getAmstradPc().getKeyboard().addKeyboardListener(new PopupMenuKeyActivator(KEY_CODE_TRIGGER));
-		addPopupMenuListener(new PopupMenuController());
-		installControllerOnMenus(this, new MenuController());
-	}
-
-	private void installControllerOnMenus(MenuElement element, MenuController controller) {
-		if (element instanceof JMenu) {
-			((JMenu) element).addMenuListener(controller);
-		}
-		for (MenuElement child : element.getSubElements()) {
-			installControllerOnMenus(child, controller);
+	@Override
+	public void install() {
+		AmstradMonitor monitor = getMonitor();
+		if (monitor != null) {
+			monitor.installPopupMenu(this);
+			activate();
 		}
 	}
 
-	public void enableAutomaticallyWhenInFullscreen() {
-		getAmstradPc().getMonitor().addMonitorListener(new PopupMenuFullscreenActivator());
-		if (getFrame().isFullscreen()) {
-			enablePopupMenu();
+	@Override
+	public void uninstall() {
+		AmstradMonitor monitor = getMonitor();
+		if (monitor != null) {
+			monitor.uninstallPopupMenu();
+			deactivate();
 		}
-	}
-
-	public void enablePopupMenu() {
-		getAttachedComponent().setComponentPopupMenu(this);
-	}
-
-	public void disablePopupMenu() {
-		getAttachedComponent().setComponentPopupMenu(null);
 	}
 
 	public void showPopupMenu() {
-		if (isPopupMenuShowing())
-			return;
-		if (isPopupMenuEnabled()) {
+		if (isPopupMenuInstalled() && !isPopupMenuShowing()) {
 			Dimension dim = getPreferredSize();
-			JComponent comp = getAmstradPc().getMonitor().getDisplayComponent();
+			JComponent comp = getMonitor().getDisplayComponent();
 			show(comp, (comp.getWidth() - dim.width) / 2, (comp.getHeight() - dim.height) / 2);
 			forceInitialMenuSelection();
 		}
 	}
 
+	public void hidePopupMenu() {
+		if (isPopupMenuShowing()) {
+			cancelPopupMenu();
+		}
+	}
+
 	public void handleKeyEvent(KeyEvent keyEvent) {
 		processKeyEvent(keyEvent);
+	}
+
+	private void activate() {
+		getAmstradPc().getKeyboard().addKeyboardListener(getKeyActivator());
+		addPopupMenuListener(getPopupMenuController());
+		installControllerOnMenus(this);
+	}
+
+	private void installControllerOnMenus(MenuElement element) {
+		if (element instanceof JMenu) {
+			JMenu menu = ((JMenu) element);
+			menu.removeMenuListener(getMenuController()); // not adding twice
+			menu.addMenuListener(getMenuController());
+		}
+		for (MenuElement child : element.getSubElements()) {
+			installControllerOnMenus(child);
+		}
+	}
+
+	private void deactivate() {
+		getAmstradPc().getKeyboard().removeKeyboardListener(getKeyActivator());
+		removePopupMenuListener(getPopupMenuController());
 	}
 
 	private void forceInitialMenuSelection() {
@@ -103,40 +125,37 @@ public class AmstradPcPopupMenu extends JPopupMenu {
 				KeyEvent.CHAR_UNDEFINED);
 	}
 
-	public boolean isPopupMenuEnabled() {
-		return equals(getAttachedComponent().getComponentPopupMenu());
+	public boolean isPopupMenuInstalled() {
+		return equals(getMonitor().getInstalledPopupMenu());
 	}
 
 	public boolean isPopupMenuShowing() {
-		return isPopupMenuEnabled() && isShowing();
+		return isPopupMenuInstalled() && isShowing();
 	}
 
-	private JComponent getAttachedComponent() {
-		return getAmstradPc().getMonitor().getDisplayComponent();
+	private AmstradMonitor getMonitor() {
+		return getAmstradPc().getMonitor();
 	}
 
 	private AmstradPcFrame getFrame() {
 		return getAmstradPc().getFrame();
 	}
 
+	@Override
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}
 
-	private class PopupMenuFullscreenActivator extends AmstradMonitorAdapter {
+	private PopupMenuKeyActivator getKeyActivator() {
+		return keyActivator;
+	}
 
-		public PopupMenuFullscreenActivator() {
-		}
+	private PopupMenuController getPopupMenuController() {
+		return popupMenuController;
+	}
 
-		@Override
-		public void amstradMonitorFullscreenChanged(AmstradMonitor monitor) {
-			if (monitor.isFullscreen()) {
-				enablePopupMenu();
-			} else {
-				disablePopupMenu();
-			}
-		}
-
+	private MenuController getMenuController() {
+		return menuController;
 	}
 
 	private class PopupMenuKeyActivator extends AmstradKeyboardAdapter {
@@ -154,7 +173,7 @@ public class AmstradPcPopupMenu extends JPopupMenu {
 					showPopupMenu();
 				} else {
 					// This code actually never gets hit, since key focus is on popup menu
-					cancelPopupMenu();
+					hidePopupMenu();
 				}
 			}
 		}
@@ -176,18 +195,27 @@ public class AmstradPcPopupMenu extends JPopupMenu {
 
 		@Override
 		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-			getFrame().firePopupMenuWillBecomeVisible();
+			AmstradPcFrame frame = getFrame();
+			if (frame != null) {
+				frame.firePopupMenuWillBecomeVisible(); // TODO used?
+			}
 		}
 
 		@Override
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-			getFrame().refreshUI(); // ensures the display is restored properly
-			getFrame().firePopupMenuWillBecomeInvisible();
+			AmstradPcFrame frame = getFrame();
+			if (frame != null) {
+				frame.refreshUI(); // ensures the display is restored properly
+				frame.firePopupMenuWillBecomeInvisible(); // TODO used?
+			}
 		}
 
 		@Override
 		public void popupMenuCanceled(PopupMenuEvent e) {
-			getFrame().firePopupMenuWillBecomeInvisible();
+			AmstradPcFrame frame = getFrame();
+			if (frame != null) {
+				frame.firePopupMenuWillBecomeInvisible(); // TODO used?
+			}
 		}
 
 	}
@@ -203,7 +231,10 @@ public class AmstradPcPopupMenu extends JPopupMenu {
 
 		@Override
 		public void menuDeselected(MenuEvent e) {
-			getFrame().refreshUI(); // ensures the display is restored properly
+			AmstradPcFrame frame = getFrame();
+			if (frame != null) {
+				frame.refreshUI(); // ensures the display is restored properly}
+			}
 		}
 
 		@Override

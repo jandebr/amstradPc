@@ -8,6 +8,7 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.impl.cursor.AmstradMonitorCursorControllerImpl;
+import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
@@ -35,6 +36,27 @@ public abstract class AmstradMonitor extends AmstradDevice {
 		AmstradMonitorCursorController ctr = new AmstradMonitorCursorControllerImpl(getAmstradPc());
 		ctr.setAutoHideCursor(isAutoHideCursor());
 		return ctr;
+	}
+
+	public void installPopupMenu(AmstradPopupMenu popupMenu) {
+		getDisplayComponent().setComponentPopupMenu(popupMenu);
+	}
+
+	public void uninstallPopupMenu() {
+		getDisplayComponent().setComponentPopupMenu(null);
+	}
+
+	public boolean isPopupMenuInstalled() {
+		return getInstalledPopupMenu() != null;
+	}
+
+	public boolean isPopupMenuShowing() {
+		AmstradPopupMenu popupMenu = getInstalledPopupMenu();
+		return popupMenu != null && popupMenu.isShowing();
+	}
+
+	public AmstradPopupMenu getInstalledPopupMenu() {
+		return (AmstradPopupMenu) getDisplayComponent().getComponentPopupMenu();
 	}
 
 	public abstract AmstradGraphicsContext getGraphicsContext();

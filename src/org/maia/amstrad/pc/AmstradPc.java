@@ -150,6 +150,16 @@ public abstract class AmstradPc {
 		}
 	}
 
+	public boolean isMenuKeyBindingsEnabled() {
+		AmstradPcFrame frame = getFrame();
+		if (frame != null && frame.isMenuBarInstalled())
+			return true;
+		AmstradMonitor monitor = getMonitor();
+		if (monitor != null && monitor.isPopupMenuShowing())
+			return true;
+		return false;
+	}
+
 	protected void checkStarted() {
 		if (!isStarted())
 			throw new IllegalStateException("This Amstrad PC has not been started");

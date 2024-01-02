@@ -10,22 +10,18 @@ import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateListener;
+import org.maia.amstrad.pc.menu.AmstradMenuBar;
 import org.maia.util.GenericListenerList;
 
 public abstract class AmstradPcFrame extends JFrame
 		implements AmstradPcStateListener, WindowListener, WindowStateListener {
 
 	private AmstradPc amstradPc;
-
-	private JMenuBar installedMenuBar;
-
-	private AmstradPcPopupMenu installedPopupMenu;
 
 	private boolean closing;
 
@@ -53,54 +49,12 @@ public abstract class AmstradPcFrame extends JFrame
 		getFrameListeners().removeListener(listener);
 	}
 
-	public void installAndEnableMenuBar() {
-		AmstradPcMenuMaker menuMaker = new AmstradPcMenuMaker(getAmstradPc().getActions(),
-				AmstradPcMenuMaker.LookAndFeel.JAVA);
-		JMenuBar menuBar = menuMaker.createMenuBar();
-		setInstalledMenuBar(menuBar);
-		enableMenuBar();
+	public void installMenuBar(AmstradMenuBar menuBar) {
+		setJMenuBar(menuBar);
 	}
 
-	public void installAndEnablePopupMenu() {
-		installAndEnablePopupMenu(false);
-	}
-
-	public void installAndEnablePopupMenu(boolean enableOnlyInFullscreen) {
-		AmstradPcMenuMaker menuMaker = new AmstradPcMenuMaker(getAmstradPc().getActions(),
-				AmstradPcMenuMaker.LookAndFeel.EMULATOR);
-		AmstradPcPopupMenu popupMenu = menuMaker.createStandardPopupMenu();
-		setInstalledPopupMenu(popupMenu);
-		if (enableOnlyInFullscreen) {
-			popupMenu.enableAutomaticallyWhenInFullscreen();
-		} else {
-			popupMenu.enablePopupMenu();
-		}
-	}
-
-	public void enableMenuBar() {
-		setJMenuBar(getInstalledMenuBar());
-	}
-
-	public void disableMenuBar() {
+	public void uninstallMenuBar() {
 		setJMenuBar(null);
-	}
-
-	public boolean isMenuBarEnabled() {
-		return getJMenuBar() != null;
-	}
-
-	public boolean isPopupMenuEnabled() {
-		AmstradPcPopupMenu popupMenu = getInstalledPopupMenu();
-		return popupMenu != null && popupMenu.isPopupMenuEnabled();
-	}
-
-	public boolean isPopupMenuShowing() {
-		AmstradPcPopupMenu popupMenu = getInstalledPopupMenu();
-		return popupMenu != null && popupMenu.isPopupMenuShowing();
-	}
-
-	public boolean isMenuKeyBindingsEnabled() {
-		return isMenuBarEnabled() || isPopupMenuShowing();
 	}
 
 	public void centerOnScreen() {
@@ -202,40 +156,32 @@ public abstract class AmstradPcFrame extends JFrame
 		}
 	}
 
-	protected void refreshUI() {
+	public void refreshUI() {
 		getContentComponent().revalidate();
 	}
 
-	protected void firePopupMenuWillBecomeVisible() {
+	public void firePopupMenuWillBecomeVisible() {
 		for (AmstradPcFrameListener listener : getFrameListeners())
 			listener.popupMenuWillBecomeVisible(this);
 	}
 
-	protected void firePopupMenuWillBecomeInvisible() {
+	public void firePopupMenuWillBecomeInvisible() {
 		for (AmstradPcFrameListener listener : getFrameListeners())
 			listener.popupMenuWillBecomeInvisible(this);
 	}
 
 	protected abstract Component getContentComponent();
 
+	public boolean isMenuBarInstalled() {
+		return getInstalledMenuBar() != null;
+	}
+
+	public AmstradMenuBar getInstalledMenuBar() {
+		return (AmstradMenuBar) getJMenuBar();
+	}
+
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
-	}
-
-	public JMenuBar getInstalledMenuBar() {
-		return installedMenuBar;
-	}
-
-	private void setInstalledMenuBar(JMenuBar menuBar) {
-		this.installedMenuBar = menuBar;
-	}
-
-	public AmstradPcPopupMenu getInstalledPopupMenu() {
-		return installedPopupMenu;
-	}
-
-	private void setInstalledPopupMenu(AmstradPcPopupMenu popupMenu) {
-		this.installedPopupMenu = popupMenu;
 	}
 
 	private boolean isClosing() {

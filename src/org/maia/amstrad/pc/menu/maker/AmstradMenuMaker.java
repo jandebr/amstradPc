@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.frame;
+package org.maia.amstrad.pc.menu.maker;
 
 import java.awt.Cursor;
 import java.awt.Font;
@@ -12,7 +12,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
@@ -22,18 +21,21 @@ import javax.swing.UIManager;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.gui.UIResources;
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.MonitorModeAction;
 import org.maia.amstrad.pc.action.MonitorSizeAction;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.joystick.AmstradJoystickStateAdapter;
+import org.maia.amstrad.pc.menu.AmstradMenuBar;
+import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 
-public class AmstradPcMenuMaker {
+public class AmstradMenuMaker {
 
 	private AmstradPcActions actions;
 
@@ -51,7 +53,7 @@ public class AmstradPcMenuMaker {
 
 	private static final int EMULATOR_LAF_COLOR_SELECTION_FG = 25;
 
-	public AmstradPcMenuMaker(AmstradPcActions actions, LookAndFeel lookAndFeel) {
+	public AmstradMenuMaker(AmstradPcActions actions, LookAndFeel lookAndFeel) {
 		this.actions = actions;
 		this.lookAndFeel = lookAndFeel;
 		initLookAndFeel();
@@ -77,8 +79,8 @@ public class AmstradPcMenuMaker {
 		}
 	}
 
-	public JMenuBar createMenuBar() {
-		JMenuBar menubar = new JMenuBar();
+	public AmstradMenuBar createMenuBar() {
+		AmstradMenuBar menubar = new AmstradMenuBar(getAmstradPc());
 		menubar.add(createFileMenu());
 		menubar.add(createEmulatorMenu());
 		menubar.add(createMonitorMenu());
@@ -86,8 +88,8 @@ public class AmstradPcMenuMaker {
 		return updateMenuBarLookAndFeel(menubar);
 	}
 
-	public AmstradPcPopupMenu createFullPopupMenu() {
-		AmstradPcPopupMenu popup = new AmstradPcPopupMenu(getActions().getAmstradPc());
+	public AmstradPopupMenu createFullPopupMenu() {
+		AmstradPopupMenu popup = new AmstradPopupMenu(getAmstradPc());
 		popup.add(createFileMenu());
 		popup.add(createEmulatorMenu());
 		popup.add(createMonitorMenu());
@@ -95,8 +97,8 @@ public class AmstradPcMenuMaker {
 		return updatePopupMenuLookAndFeel(popup);
 	}
 
-	public AmstradPcPopupMenu createStandardPopupMenu() {
-		AmstradPcPopupMenu popup = new AmstradPcPopupMenu(getActions().getAmstradPc());
+	public AmstradPopupMenu createStandardPopupMenu() {
+		AmstradPopupMenu popup = new AmstradPopupMenu(getAmstradPc());
 		popup.add(createProgramBrowserMenuItem());
 		popup.add(createProgramBrowserSetupMenuItem());
 		popup.add(createProgramInfoMenuItem());
@@ -243,11 +245,11 @@ public class AmstradPcMenuMaker {
 	private JMenu createJoystickMenu() {
 		JMenu menu = new JMenu("Joysticks");
 		menu.add(new JoystickActivationMenuHelper(createJoystickActivationMenuItem(AmstradJoystickID.JOYSTICK0),
-				getActions().getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK0)).getCheckbox());
+				getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK0)).getCheckbox());
 		menu.add(createJoystickSetupMenuItem(AmstradJoystickID.JOYSTICK0));
 		menu.add(new JSeparator());
 		menu.add(new JoystickActivationMenuHelper(createJoystickActivationMenuItem(AmstradJoystickID.JOYSTICK1),
-				getActions().getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK1)).getCheckbox());
+				getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK1)).getCheckbox());
 		menu.add(createJoystickSetupMenuItem(AmstradJoystickID.JOYSTICK1));
 		return updateMenuLookAndFeel(menu, UIResources.joystickIcon);
 	}
@@ -423,11 +425,11 @@ public class AmstradPcMenuMaker {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getAboutAction()));
 	}
 
-	private JMenuBar updateMenuBarLookAndFeel(JMenuBar menubar) {
+	private AmstradMenuBar updateMenuBarLookAndFeel(AmstradMenuBar menubar) {
 		return menubar; // nothing special
 	}
 
-	private AmstradPcPopupMenu updatePopupMenuLookAndFeel(AmstradPcPopupMenu menu) {
+	private AmstradPopupMenu updatePopupMenuLookAndFeel(AmstradPopupMenu menu) {
 		if (isEmulatorLookAndFeel()) {
 			menu.setBackground(getSystemColors().getColor(EMULATOR_LAF_COLOR_BACKGROUND));
 			menu.setForeground(getSystemColors().getColor(EMULATOR_LAF_COLOR_FOREGROUND));
@@ -494,7 +496,11 @@ public class AmstradPcMenuMaker {
 	}
 
 	private AmstradMonitor getMonitor() {
-		return getActions().getAmstradPc().getMonitor();
+		return getAmstradPc().getMonitor();
+	}
+
+	private AmstradPc getAmstradPc() {
+		return getActions().getAmstradPc();
 	}
 
 	public AmstradPcActions getActions() {

@@ -19,6 +19,7 @@ import javax.swing.Box;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
+import org.maia.amstrad.pc.menu.AmstradMenuBar;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.util.SystemUtils;
 
@@ -302,6 +303,12 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		}
 
 		@Override
+		public void installMenuBar(AmstradMenuBar menuBar) {
+			super.installMenuBar(menuBar);
+			((JemuMonitorImpl) getMonitor()).setMenuBarWhenWindowed(menuBar);
+		}
+
+		@Override
 		protected Component getContentComponent() {
 			return getDisplay();
 		}
@@ -461,6 +468,8 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 	private class JemuMonitorImpl extends JemuBaseMonitor {
 
+		private AmstradMenuBar menuBarWhenWindowed;
+
 		public JemuMonitorImpl() {
 		}
 
@@ -494,7 +503,8 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 				Dimension screenSize = AmstradPcFrame.getScreenSize();
 				JemuFrameImpl frame = getFrame();
 				boolean visible = frame.isVisible();
-				frame.disableMenuBar();
+				setMenuBarWhenWindowed(frame.getInstalledMenuBar()); // remember
+				frame.uninstallMenuBar();
 				frame.dispose();
 				frame.setUndecorated(true);
 				frame.setLocation(0, 0);
@@ -514,7 +524,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 				int frameY = Integer.parseInt(Settings.get(Settings.FRAMEY, "0"));
 				JemuFrameImpl frame = getFrame();
 				boolean visible = frame.isVisible();
-				frame.enableMenuBar();
+				frame.installMenuBar(getMenuBarWhenWindowed()); // restore
 				frame.dispose();
 				frame.setUndecorated(false);
 				frame.removePaddingAroundDisplay();
@@ -654,6 +664,14 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		private JemuFrameImpl getFrame() {
 			return (JemuFrameImpl) JemuDirectAmstradPc.this.getFrame();
+		}
+
+		protected AmstradMenuBar getMenuBarWhenWindowed() {
+			return menuBarWhenWindowed;
+		}
+
+		protected void setMenuBarWhenWindowed(AmstradMenuBar menuBar) {
+			this.menuBarWhenWindowed = menuBar;
 		}
 
 	}

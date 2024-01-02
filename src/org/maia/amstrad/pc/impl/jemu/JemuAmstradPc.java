@@ -597,7 +597,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 		private int maximumDataValue; // all-times observed maximum
 
-		private int upperboundDataValue = 50;
+		private int upperboundDataValue = 50; // outliers above this value
 
 		private float degradationThresholdFactor;
 

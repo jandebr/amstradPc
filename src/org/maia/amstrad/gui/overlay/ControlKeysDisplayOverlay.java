@@ -263,7 +263,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 		@Override
 		public boolean isAvailable() {
-			return getAmstracPc().getFrame().isPopupMenuEnabled();
+			return getAmstracPc().getMonitor().isPopupMenuInstalled();
 		}
 
 	}

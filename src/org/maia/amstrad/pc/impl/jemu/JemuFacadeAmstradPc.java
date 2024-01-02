@@ -135,6 +135,12 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 	}
 
 	@Override
+	public final boolean isMenuKeyBindingsEnabled() {
+		// Key bindings on menu items are not enabled through JEMU instance
+		return false;
+	}
+
+	@Override
 	protected Font getJemuDisplayFont() {
 		return getJemuInstance().getDisplay().getDisplayFont();
 	}
@@ -166,12 +172,6 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 				}
 			}
 			new MonitorDisplayUltimateCenterer().start(); // final check and attempts
-		}
-
-		@Override
-		public final boolean isMenuKeyBindingsEnabled() {
-			// Key bindings on menu items are not enabled through JEMU instance
-			return false;
 		}
 
 		@Override

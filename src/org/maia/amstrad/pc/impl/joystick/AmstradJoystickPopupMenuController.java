@@ -2,10 +2,10 @@ package org.maia.amstrad.pc.impl.joystick;
 
 import java.awt.event.KeyEvent;
 
-import org.maia.amstrad.pc.frame.AmstradPcPopupMenu;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEventListener;
+import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 
 public class AmstradJoystickPopupMenuController extends AmstradJoystickMenuController
 		implements AmstradJoystickEventListener {
@@ -15,7 +15,7 @@ public class AmstradJoystickPopupMenuController extends AmstradJoystickMenuContr
 
 	@Override
 	public void amstradJoystickEventDispatched(AmstradJoystickEvent event) {
-		AmstradPcPopupMenu popupMenu = event.getJoystick().getAmstradPc().getFrame().getInstalledPopupMenu();
+		AmstradPopupMenu popupMenu = event.getJoystick().getAmstradPc().getMonitor().getInstalledPopupMenu();
 		if (popupMenu == null)
 			return;
 		if (event.isConsumed())
