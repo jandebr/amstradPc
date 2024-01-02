@@ -45,7 +45,5 @@ jvmarg = -Djavacpc-ini-read=javacpc.ini
 jvmarg = -Djavacpc-ini-write=javacpc.ini
 jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
 desktop.jvmarg = -Djavacpc.mode=DESKTOP
-discover.jvmarg = -Djavacpc.mode=DISCOVER
-poweron.jvmarg = -Djavacpc.mode=POWERON
-gt65poweron.jvmarg = -Djavacpc.mode=GT65POWERON
-classic.jvmarg = -Djavacpc.mode=CLASSIC
+entertainment.jvmarg = -Djavacpc.mode=ENTERTAINMENT
+javacpc.jvmarg = -Djavacpc.mode=JAVACPC
