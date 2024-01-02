@@ -7,7 +7,6 @@ import javax.swing.JComponent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.impl.cursor.AmstradMonitorCursorControllerImpl;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
@@ -22,6 +21,8 @@ public abstract class AmstradMonitor extends AmstradDevice {
 
 	private GenericListenerList<AmstradMonitorListener> monitorListeners;
 
+	private GenericListenerList<AmstradMonitorPopupMenuListener> popupMenuListeners;
+
 	private AmstradMonitorCursorController cursorController;
 
 	private boolean showSystemStats;
@@ -29,13 +30,9 @@ public abstract class AmstradMonitor extends AmstradDevice {
 	protected AmstradMonitor(AmstradPc amstradPc) {
 		super(amstradPc);
 		this.monitorListeners = new GenericListenerList<AmstradMonitorListener>();
-		this.cursorController = createCursorController();
-	}
-
-	protected AmstradMonitorCursorController createCursorController() {
-		AmstradMonitorCursorController ctr = new AmstradMonitorCursorControllerImpl(getAmstradPc());
-		ctr.setAutoHideCursor(isAutoHideCursor());
-		return ctr;
+		this.popupMenuListeners = new GenericListenerList<AmstradMonitorPopupMenuListener>();
+		this.cursorController = AmstradFactory.getInstance().createCursorController(amstradPc);
+		this.cursorController.setAutoHideCursor(isAutoHideCursor());
 	}
 
 	public void installPopupMenu(AmstradPopupMenu popupMenu) {
@@ -171,6 +168,14 @@ public abstract class AmstradMonitor extends AmstradDevice {
 		getMonitorListeners().removeListener(listener);
 	}
 
+	public void addPopupMenuListener(AmstradMonitorPopupMenuListener listener) {
+		getPopupMenuListeners().addListener(listener);
+	}
+
+	public void removePopupMenuListener(AmstradMonitorPopupMenuListener listener) {
+		getPopupMenuListeners().removeListener(listener);
+	}
+
 	protected void fireMonitorModeChangedEvent() {
 		for (AmstradMonitorListener listener : getMonitorListeners())
 			listener.amstradMonitorModeChanged(this);
@@ -226,8 +231,22 @@ public abstract class AmstradMonitor extends AmstradDevice {
 			listener.amstradDisplaySourceChanged(this);
 	}
 
+	public void firePopupMenuWillBecomeVisible(AmstradPopupMenu popupMenu) {
+		for (AmstradMonitorPopupMenuListener listener : getPopupMenuListeners())
+			listener.popupMenuWillBecomeVisible(popupMenu);
+	}
+
+	public void firePopupMenuWillBecomeInvisible(AmstradPopupMenu popupMenu) {
+		for (AmstradMonitorPopupMenuListener listener : getPopupMenuListeners())
+			listener.popupMenuWillBecomeInvisible(popupMenu);
+	}
+
 	protected GenericListenerList<AmstradMonitorListener> getMonitorListeners() {
 		return monitorListeners;
+	}
+
+	protected GenericListenerList<AmstradMonitorPopupMenuListener> getPopupMenuListeners() {
+		return popupMenuListeners;
 	}
 
 	public AmstradMonitorCursorController getCursorController() {

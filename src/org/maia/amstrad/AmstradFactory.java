@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JSeparator;
+
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.gui.overlay.AutotypeDisplayOverlay;
@@ -16,12 +18,22 @@ import org.maia.amstrad.gui.overlay.SystemStatsDisplayOverlay;
 import org.maia.amstrad.gui.overlay.TapeDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
+import org.maia.amstrad.pc.impl.cursor.AmstradMonitorCursorControllerImpl;
 import org.maia.amstrad.pc.impl.jemu.JemuDirectAmstradPc;
 import org.maia.amstrad.pc.impl.jemu.JemuFacadeAmstradPc;
 import org.maia.amstrad.pc.impl.joystick.AmstradJoystickDevice;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
+import org.maia.amstrad.pc.menu.AmstradMenuBar;
+import org.maia.amstrad.pc.menu.AmstradPopupMenu;
+import org.maia.amstrad.pc.menu.maker.AmstradMenuBarMaker;
+import org.maia.amstrad.pc.menu.maker.AmstradMenuDefaultLookAndFeel;
+import org.maia.amstrad.pc.menu.maker.AmstradMenuEmulatedLookAndFeel;
+import org.maia.amstrad.pc.menu.maker.AmstradMenuLookAndFeel;
+import org.maia.amstrad.pc.menu.maker.AmstradPopupMenuMaker;
+import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
@@ -128,6 +140,55 @@ public class AmstradFactory {
 
 	public AmstradJoystick createJoystick(AmstradPc amstradPc, AmstradJoystickID joystickId) {
 		return new AmstradJoystickDevice(amstradPc, joystickId);
+	}
+
+	public AmstradMonitorCursorController createCursorController(AmstradPc amstradPc) {
+		return new AmstradMonitorCursorControllerImpl(amstradPc);
+	}
+
+	public AmstradMenuLookAndFeel createMenuLookAndFeel() {
+		return new AmstradMenuDefaultLookAndFeel();
+	}
+
+	public AmstradMenuBar createMenuBar(AmstradPc amstradPc) {
+		return new AmstradMenuBarMaker(amstradPc, new AmstradMenuDefaultLookAndFeel()) {
+
+			@Override
+			protected AmstradMenuBar doCreateMenu() {
+				AmstradMenuBar menuBar = new AmstradMenuBar(getAmstradPc());
+				menuBar.add(createFileMenu());
+				menuBar.add(createEmulatorMenu());
+				menuBar.add(createMonitorMenu());
+				menuBar.add(createWindowMenu());
+				return updateMenuBarLookAndFeel(menuBar);
+			}
+		}.createMenuBar();
+	}
+
+	public AmstradPopupMenu createPopupMenu(AmstradPc amstradPc) {
+		AmstradGraphicsContext gContext = amstradPc.getMonitor().getGraphicsContext();
+		return new AmstradPopupMenuMaker(amstradPc, new AmstradMenuEmulatedLookAndFeel(gContext)) {
+
+			@Override
+			protected AmstradPopupMenu doCreateMenu() {
+				AmstradPopupMenu popupMenu = new AmstradPopupMenu(getAmstradPc());
+				popupMenu.add(createProgramBrowserMenuItem());
+				popupMenu.add(createProgramBrowserSetupMenuItem());
+				popupMenu.add(createProgramInfoMenuItem());
+				popupMenu.add(createJoystickMenu());
+				popupMenu.add(createAudioMenuItem());
+				popupMenu.add(createPauseResumeMenuItem());
+				popupMenu.add(new JSeparator());
+				popupMenu.add(createScreenshotMenuItem());
+				popupMenu.add(createScreenshotWithMonitorEffectMenuItem());
+				popupMenu.add(createMonitorModeMenu());
+				popupMenu.add(createMonitorEffectsMenu());
+				popupMenu.add(createMonitorFullscreenMenuItem());
+				popupMenu.add(new JSeparator());
+				popupMenu.add(createQuitMenuItem());
+				return updatePopupMenuLookAndFeel(popupMenu);
+			}
+		}.createPopupMenu();
 	}
 
 	public AmstradProgramRepository createProgramRepository() {

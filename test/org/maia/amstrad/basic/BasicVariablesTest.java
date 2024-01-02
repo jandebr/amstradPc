@@ -13,7 +13,7 @@ import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 

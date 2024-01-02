@@ -17,7 +17,7 @@ import java.util.Vector;
 import javax.swing.Box;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.menu.AmstradMenuBar;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;

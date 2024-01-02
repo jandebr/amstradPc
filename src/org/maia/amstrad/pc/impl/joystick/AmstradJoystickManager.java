@@ -1,14 +1,14 @@
 package org.maia.amstrad.pc.impl.joystick;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
-import org.maia.amstrad.pc.frame.AmstradPcFrameListener;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
+import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
+import org.maia.amstrad.pc.monitor.AmstradMonitorPopupMenuListener;
 
-public class AmstradJoystickManager extends AmstradMonitorAdapter implements AmstradPcFrameListener {
+public class AmstradJoystickManager extends AmstradMonitorAdapter implements AmstradMonitorPopupMenuListener {
 
 	private AmstradJoystick joystick;
 
@@ -21,7 +21,7 @@ public class AmstradJoystickManager extends AmstradMonitorAdapter implements Ams
 		// Auto-repeat
 		restoreAutoRepeatEnabled();
 		getMonitor().addMonitorListener(this);
-		getFrame().addFrameListener(this);
+		getMonitor().addPopupMenuListener(this);
 		// Gaming mode
 		getJoystick().addJoystickEventListener(new AmstradJoystickGamingController());
 		// Menu mode
@@ -37,12 +37,12 @@ public class AmstradJoystickManager extends AmstradMonitorAdapter implements Ams
 	}
 
 	@Override
-	public void popupMenuWillBecomeVisible(AmstradPcFrame frame) {
+	public void popupMenuWillBecomeVisible(AmstradPopupMenu popupMenu) {
 		setAutoRepeatEnabled(true);
 	}
 
 	@Override
-	public void popupMenuWillBecomeInvisible(AmstradPcFrame frame) {
+	public void popupMenuWillBecomeInvisible(AmstradPopupMenu popupMenu) {
 		restoreAutoRepeatEnabled();
 	}
 
@@ -61,10 +61,6 @@ public class AmstradJoystickManager extends AmstradMonitorAdapter implements Ams
 
 	protected AmstradMonitor getMonitor() {
 		return getAmstradPc().getMonitor();
-	}
-
-	protected AmstradPcFrame getFrame() {
-		return getAmstradPc().getFrame();
 	}
 
 	protected AmstradPc getAmstradPc() {

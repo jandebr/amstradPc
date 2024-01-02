@@ -3,7 +3,7 @@ package org.maia.amstrad.pc.action;
 import java.awt.event.ActionEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.AmstradPcFrame;
 
 public class WindowCenterOnScreenAction extends AmstradPcAction {
 

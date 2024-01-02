@@ -16,7 +16,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.util.SystemUtils;

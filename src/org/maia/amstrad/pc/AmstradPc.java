@@ -8,7 +8,6 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.audio.AmstradAudio;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;

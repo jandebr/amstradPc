@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.frame;
+package org.maia.amstrad.pc;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -13,10 +13,7 @@ import javax.swing.JFrame;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.AmstradPcStateListener;
 import org.maia.amstrad.pc.menu.AmstradMenuBar;
-import org.maia.util.GenericListenerList;
 
 public abstract class AmstradPcFrame extends JFrame
 		implements AmstradPcStateListener, WindowListener, WindowStateListener {
@@ -25,12 +22,9 @@ public abstract class AmstradPcFrame extends JFrame
 
 	private boolean closing;
 
-	private GenericListenerList<AmstradPcFrameListener> frameListeners;
-
 	protected AmstradPcFrame(AmstradPc amstradPc, String title, boolean exitOnClose) {
 		super(title);
 		this.amstradPc = amstradPc;
-		this.frameListeners = new GenericListenerList<AmstradPcFrameListener>();
 		amstradPc.addStateListener(this);
 		addWindowListener(this);
 		addWindowStateListener(this);
@@ -39,14 +33,6 @@ public abstract class AmstradPcFrame extends JFrame
 		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
 		setIconImage(UIResources.cpcIcon.getImage());
 		getContentPane().add(getContentComponent(), BorderLayout.CENTER);
-	}
-
-	public void addFrameListener(AmstradPcFrameListener listener) {
-		getFrameListeners().addListener(listener);
-	}
-
-	public void removeFrameListener(AmstradPcFrameListener listener) {
-		getFrameListeners().removeListener(listener);
 	}
 
 	public void installMenuBar(AmstradMenuBar menuBar) {
@@ -156,20 +142,6 @@ public abstract class AmstradPcFrame extends JFrame
 		}
 	}
 
-	public void refreshUI() {
-		getContentComponent().revalidate();
-	}
-
-	public void firePopupMenuWillBecomeVisible() {
-		for (AmstradPcFrameListener listener : getFrameListeners())
-			listener.popupMenuWillBecomeVisible(this);
-	}
-
-	public void firePopupMenuWillBecomeInvisible() {
-		for (AmstradPcFrameListener listener : getFrameListeners())
-			listener.popupMenuWillBecomeInvisible(this);
-	}
-
 	protected abstract Component getContentComponent();
 
 	public boolean isMenuBarInstalled() {
@@ -190,10 +162,6 @@ public abstract class AmstradPcFrame extends JFrame
 
 	private void setClosing(boolean closing) {
 		this.closing = closing;
-	}
-
-	private GenericListenerList<AmstradPcFrameListener> getFrameListeners() {
-		return frameListeners;
 	}
 
 }

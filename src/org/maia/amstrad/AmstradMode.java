@@ -3,10 +3,9 @@ package org.maia.amstrad;
 import java.io.File;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.menu.AmstradMenu;
-import org.maia.amstrad.pc.menu.maker.AmstradMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.tape.AmstradTape;
@@ -65,14 +64,11 @@ public abstract class AmstradMode extends AmstradPcStateAdapter {
 	protected abstract void doLaunch(String[] args) throws Exception;
 
 	protected AmstradMenu createMenuBar(AmstradPc amstradPc) {
-		AmstradMenuMaker menuMaker = new AmstradMenuMaker(amstradPc.getActions(), AmstradMenuMaker.LookAndFeel.JAVA);
-		return menuMaker.createMenuBar();
+		return AmstradFactory.getInstance().createMenuBar(amstradPc);
 	}
 
 	protected AmstradMenu createPopupMenu(AmstradPc amstradPc) {
-		AmstradMenuMaker menuMaker = new AmstradMenuMaker(amstradPc.getActions(),
-				AmstradMenuMaker.LookAndFeel.EMULATOR);
-		return menuMaker.createStandardPopupMenu();
+		return AmstradFactory.getInstance().createPopupMenu(amstradPc);
 	}
 
 	/**

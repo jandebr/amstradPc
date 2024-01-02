@@ -15,7 +15,6 @@ import javax.swing.event.PopupMenuListener;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
@@ -125,6 +124,13 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 				KeyEvent.CHAR_UNDEFINED);
 	}
 
+	private void refreshUI() {
+		AmstradMonitor monitor = getMonitor();
+		if (monitor != null) {
+			monitor.getDisplayComponent().revalidate();
+		}
+	}
+
 	public boolean isPopupMenuInstalled() {
 		return equals(getMonitor().getInstalledPopupMenu());
 	}
@@ -135,10 +141,6 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 
 	private AmstradMonitor getMonitor() {
 		return getAmstradPc().getMonitor();
-	}
-
-	private AmstradPcFrame getFrame() {
-		return getAmstradPc().getFrame();
 	}
 
 	@Override
@@ -195,26 +197,31 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 
 		@Override
 		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-			AmstradPcFrame frame = getFrame();
-			if (frame != null) {
-				frame.firePopupMenuWillBecomeVisible(); // TODO used?
-			}
+			firePopupMenuWillBecomeVisible();
 		}
 
 		@Override
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-			AmstradPcFrame frame = getFrame();
-			if (frame != null) {
-				frame.refreshUI(); // ensures the display is restored properly
-				frame.firePopupMenuWillBecomeInvisible(); // TODO used?
-			}
+			firePopupMenuWillBecomeInvisible();
 		}
 
 		@Override
 		public void popupMenuCanceled(PopupMenuEvent e) {
-			AmstradPcFrame frame = getFrame();
-			if (frame != null) {
-				frame.firePopupMenuWillBecomeInvisible(); // TODO used?
+			firePopupMenuWillBecomeInvisible();
+		}
+
+		private void firePopupMenuWillBecomeVisible() {
+			AmstradMonitor monitor = getMonitor();
+			if (monitor != null) {
+				monitor.firePopupMenuWillBecomeVisible(AmstradPopupMenu.this);
+			}
+		}
+
+		private void firePopupMenuWillBecomeInvisible() {
+			refreshUI(); // ensures the display is restored properly
+			AmstradMonitor monitor = getMonitor();
+			if (monitor != null) {
+				monitor.firePopupMenuWillBecomeInvisible(AmstradPopupMenu.this);
 			}
 		}
 
@@ -231,10 +238,7 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 
 		@Override
 		public void menuDeselected(MenuEvent e) {
-			AmstradPcFrame frame = getFrame();
-			if (frame != null) {
-				frame.refreshUI(); // ensures the display is restored properly}
-			}
+			refreshUI(); // ensures the display is restored properly
 		}
 
 		@Override

@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.repo.facet.Facet;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 import org.maia.amstrad.program.repo.facet.FacetList;

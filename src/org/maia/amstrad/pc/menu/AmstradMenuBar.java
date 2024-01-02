@@ -3,7 +3,7 @@ package org.maia.amstrad.pc.menu;
 import javax.swing.JMenuBar;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.frame.AmstradPcFrame;
+import org.maia.amstrad.pc.AmstradPcFrame;
 
 public class AmstradMenuBar extends JMenuBar implements AmstradMenu {
 
