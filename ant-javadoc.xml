@@ -6,6 +6,7 @@
 			<classpath>
 				<pathelement location="lib/maiaSwing.jar" />
 				<pathelement location="lib/maiaUtils.jar" />
+				<pathelement location="lib/maiaInputDevice.jar" />
 			</classpath>
 		</javadoc>
 	</target>

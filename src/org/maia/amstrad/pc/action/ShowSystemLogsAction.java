@@ -16,7 +16,7 @@ public class ShowSystemLogsAction extends AmstradPcAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		getAmstradSystem().showSystemLogs();
+		getAmstradSystem().getSystemLogs().show();
 	}
 
 }

@@ -7,9 +7,9 @@ import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.menu.AmstradMenu;
 import org.maia.amstrad.system.impl.AmstradSystemElementaryTermination;
+import org.maia.amstrad.system.impl.AmstradSystemJemuLogs;
 
 import jemu.settings.Settings;
-import jemu.ui.Console;
 
 public abstract class AmstradSystem {
 
@@ -17,18 +17,17 @@ public abstract class AmstradSystem {
 
 	private AmstradSystemSettings systemSettings;
 
+	private AmstradSystemLogs systemLogs;
+
 	protected AmstradSystem() {
 		this.amstradPc = createAmstradPc();
 		this.systemSettings = createSystemSettings();
-		initSystemLogs();
+		this.systemLogs = createSystemLogs();
+		init();
 	}
 
-	public void initSystemLogs() {
-		Console.init();
-	}
-
-	public void showSystemLogs() {
-		Console.frameconsole.setVisible(true);
+	protected void init() {
+		getSystemLogs().init();
 	}
 
 	public final void launch(String[] args) throws AmstradException {
@@ -58,6 +57,10 @@ public abstract class AmstradSystem {
 
 	protected abstract AmstradSystemSettings createSystemSettings();
 
+	protected AmstradSystemLogs createSystemLogs() {
+		return new AmstradSystemJemuLogs();
+	}
+
 	protected AmstradMenu createMenuBar() {
 		return AmstradFactory.getInstance().createMenuBar(getAmstradPc());
 	}
@@ -82,6 +85,10 @@ public abstract class AmstradSystem {
 
 	public AmstradSystemSettings getSystemSettings() {
 		return systemSettings;
+	}
+
+	public AmstradSystemLogs getSystemLogs() {
+		return systemLogs;
 	}
 
 }
