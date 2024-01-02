@@ -11,14 +11,15 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourc
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
-
-import jemu.settings.Settings;
+import org.maia.amstrad.system.AmstradSystem;
 
 public abstract class AmstradContext {
 
+	private AmstradSystem amstradSystem;
+
 	private AmstradMenuLookAndFeel menuLookAndFeel;
 
-	private static final String SETTING_MODE = "mode";
+	public static final String SETTING_AMSTRAD_SYSTEM = "mode";
 
 	private static final String SETTING_CURRENT_DIR = "current_dir";
 
@@ -53,15 +54,25 @@ public abstract class AmstradContext {
 	protected AmstradContext() {
 	}
 
+	public AmstradSystem setupAmstradSystem() {
+		AmstradSystem system = AmstradFactory.getInstance().createAmstradSystem();
+		setAmstradSystem(system);
+		return system;
+	}
+
+	public AmstradSystem getAmstradSystem() {
+		return amstradSystem;
+	}
+
+	private void setAmstradSystem(AmstradSystem amstradSystem) {
+		this.amstradSystem = amstradSystem;
+	}
+
 	public abstract AmstradSettings getUserSettings();
 
 	public abstract PrintStream getConsoleOutputStream();
 
 	public abstract PrintStream getConsoleErrorStream();
-
-	public abstract void initSystemLogs();
-
-	public abstract void showSystemLogs();
 
 	public abstract void showProgramBrowser(AmstradPc amstradPc);
 
@@ -117,15 +128,6 @@ public abstract class AmstradContext {
 	public abstract boolean isBasicProtectiveMode(AmstradPc amstradPc);
 
 	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
-
-	public AmstradMode getMode() {
-		AmstradMode mode = AmstradMode.forName(getUserSettings().get(SETTING_MODE, AmstradMode.DEFAULT_MODE.getName()));
-		if (mode != null) {
-			return mode;
-		} else {
-			return AmstradMode.DEFAULT_MODE;
-		}
-	}
 
 	public AmstradMenuLookAndFeel getMenuLookAndFeel() {
 		if (menuLookAndFeel == null) {
@@ -208,19 +210,6 @@ public abstract class AmstradContext {
 
 	public String getVersionString() {
 		return System.getProperty(SYSTEM_PROPERTY_VERSION, "");
-	}
-
-	public boolean isAnimateOnTerminate() {
-		return getUserSettings().getBool(Settings.TERMINATE_ANIMATE, false);
-	}
-
-	public String getSystemCommandOnTerminate() {
-		String mode = getMode().getName().toLowerCase();
-		String command = getUserSettings().get(Settings.TERMINATE_SYSTEM_COMMAND + "." + mode, null);
-		if (command == null) {
-			command = getUserSettings().get(Settings.TERMINATE_SYSTEM_COMMAND, null);
-		}
-		return command;
 	}
 
 	public void executeSystemCommand(String systemCommand) {

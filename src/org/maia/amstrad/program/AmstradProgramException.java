@@ -1,6 +1,8 @@
 package org.maia.amstrad.program;
 
-public class AmstradProgramException extends Exception {
+import org.maia.amstrad.AmstradException;
+
+public class AmstradProgramException extends AmstradException {
 
 	private AmstradProgram program;
 

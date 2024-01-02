@@ -33,7 +33,8 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		AmstradTape tape = getAmstracPc().getTape();
-		if (tape.isActive() && !tape.isSuppressMessages() && getMode().isTapeActivityShown() && !offscreenImage) {
+		if (tape.isActive() && !tape.isSuppressMessages()
+				&& getAmstradSystem().getSystemSettings().isTapeActivityShown() && !offscreenImage) {
 			String filename = tape.getFilenameAtTapeHead();
 			if (filename != null) {
 				// tape icon

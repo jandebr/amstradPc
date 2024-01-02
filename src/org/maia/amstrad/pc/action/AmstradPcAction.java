@@ -18,6 +18,8 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardListener;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorListener;
+import org.maia.amstrad.system.AmstradSystem;
+import org.maia.amstrad.system.AmstradSystemSettings;
 
 public abstract class AmstradPcAction extends AbstractAction
 		implements AmstradPcStateListener, AmstradMonitorListener, AmstradKeyboardListener, AmstradAudioListener {
@@ -59,6 +61,14 @@ public abstract class AmstradPcAction extends AbstractAction
 
 	protected String getName() {
 		return getValue(Action.NAME).toString();
+	}
+
+	protected AmstradSystemSettings getSystemSettings() {
+		return getAmstradSystem().getSystemSettings();
+	}
+
+	protected AmstradSystem getAmstradSystem() {
+		return getAmstradContext().getAmstradSystem();
 	}
 
 	protected AmstradContext getAmstradContext() {

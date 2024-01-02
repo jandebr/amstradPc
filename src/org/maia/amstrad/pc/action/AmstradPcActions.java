@@ -36,7 +36,7 @@ public class AmstradPcActions {
 
 	private SaveSnapshotFileAction saveSnapshotFileAction;
 
-	private QuitAction quitAction;
+	private PowerOffAction powerOffAction;
 
 	/* Emulator actions */
 
@@ -169,11 +169,11 @@ public class AmstradPcActions {
 		return saveSnapshotFileAction;
 	}
 
-	public QuitAction getQuitAction() {
-		if (quitAction == null) {
-			quitAction = new QuitAction(getAmstradPc());
+	public PowerOffAction getPowerOffAction() {
+		if (powerOffAction == null) {
+			powerOffAction = new PowerOffAction(getAmstradPc());
 		}
-		return quitAction;
+		return powerOffAction;
 	}
 
 	public AutoTypeFileAction getAutoTypeFileAction() {

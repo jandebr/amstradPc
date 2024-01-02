@@ -5,8 +5,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
+import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.components.FolderItemList;
 import org.maia.amstrad.gui.browser.components.ProgramFileReferencesSheet;
@@ -26,6 +26,8 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.system.AmstradSystem;
+import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.util.GenericListenerList;
 import org.maia.util.StringUtils;
 
@@ -432,7 +434,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			if (stack.size() > 1) {
 				stack.browseBack();
-			} else if (getMode().isPrimaryDisplayCentric()) {
+			} else if (!getSystemSettings().isProgramBrowserCentric()) {
 				close();
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
@@ -540,8 +542,8 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	@Override
 	public void closeMainWindow() {
-		if (getMode().isProgramBrowserCentric()) {
-			getAmstradPc().getActions().getQuitAction().quit();
+		if (getSystemSettings().isProgramBrowserCentric()) {
+			getAmstradPc().getActions().getPowerOffAction().powerOff();
 		} else {
 			super.closeMainWindow();
 		}
@@ -604,7 +606,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private boolean canShowMiniInfo() {
-		if (getSettings().getBool(SETTING_SHOW_MINI_INFO, true)) {
+		if (getUserSettings().getBool(SETTING_SHOW_MINI_INFO, true)) {
 			return !isModalWindowOpen() || Window.PROGRAM_MENU_MODAL.equals(getCurrentWindow());
 		} else {
 			return false;
@@ -612,7 +614,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	private boolean hasCurrentCoverImage() {
-		if (getSettings().getBool(SETTING_SHOW_COVER_IMAGES, true)) {
+		if (getUserSettings().getBool(SETTING_SHOW_COVER_IMAGES, true)) {
 			Node node = getCurrentNode();
 			return node != null && node.getCoverImage() != null;
 		} else {
@@ -713,12 +715,20 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
 	}
 
-	public AmstradMode getMode() {
-		return AmstradFactory.getInstance().getAmstradContext().getMode();
+	private AmstradSettings getUserSettings() {
+		return getAmstradContext().getUserSettings();
 	}
 
-	private AmstradSettings getSettings() {
-		return AmstradFactory.getInstance().getAmstradContext().getUserSettings();
+	public AmstradSystemSettings getSystemSettings() {
+		return getAmstradSystem().getSystemSettings();
+	}
+
+	private AmstradSystem getAmstradSystem() {
+		return getAmstradContext().getAmstradSystem();
+	}
+
+	private AmstradContext getAmstradContext() {
+		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
 	private GenericListenerList<ProgramBrowserListener> getBrowserListeners() {

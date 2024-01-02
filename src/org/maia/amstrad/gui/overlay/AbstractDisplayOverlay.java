@@ -10,11 +10,11 @@ import javax.swing.JComponent;
 
 import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.amstrad.system.AmstradSystem;
 
 public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
@@ -100,8 +100,8 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 		return displayBounds.height >= 540;
 	}
 
-	protected AmstradMode getMode() {
-		return getAmstradContext().getMode();
+	protected AmstradSystem getAmstradSystem() {
+		return getAmstradContext().getAmstradSystem();
 	}
 
 	protected AmstradContext getAmstradContext() {

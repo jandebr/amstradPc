@@ -71,7 +71,7 @@ public class UIResources {
 	public static Icon radioButtonMenuItemIcon = new ButtonStateIcon(loadIcon("unselected32.png"),
 			loadIcon("selected32.png"));
 
-	public static ImageIcon quitIcon = loadIcon("poweroff32.png");
+	public static ImageIcon powerOffIcon = loadIcon("poweroff32.png");
 
 	public static ImageIcon pauseOverlayIcon = loadIcon("overlay/pause64.png");
 

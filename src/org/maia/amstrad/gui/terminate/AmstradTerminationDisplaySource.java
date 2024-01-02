@@ -8,7 +8,7 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradEmulatedDisplaySource;
 
 public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySource {
 
-	private static final String SETTING_MESSAGE = "quit.animate.message";
+	private static final String SETTING_MESSAGE = "poweroff.animate.message";
 
 	private static final char MESSAGE_SEPARATOR = '|';
 

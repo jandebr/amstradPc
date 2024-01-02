@@ -114,9 +114,6 @@ public class Settings {
 	public static final String DISPLAY_RENDER_CANVAS_KEYFRAME_INTERVAL = "display.render.canvas.keyframe_interval";
 	public static final String DISPLAY_RENDER_CANVAS_LOG = "display.render.canvas.log";
 
-	public static final String TERMINATE_ANIMATE = "quit.animate";
-	public static final String TERMINATE_SYSTEM_COMMAND = "quit.command";
-	
 	// Enum values for "MONITOR" setting
 	public static final String MONITOR_COLOUR = "COLOUR";
 	public static final String MONITOR_GREEN = "GREEN";

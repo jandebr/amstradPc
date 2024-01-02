@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.AmstradMode;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.ProgramBrowserListener;
 import org.maia.amstrad.pc.AmstradPc;
@@ -71,7 +70,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	public void closeProgramBrowser() {
 		if (isEnabled()) {
 			getAmstradPc().getMonitor().resetDisplaySource();
-			if (getMode().isProgramBrowserCentric()) {
+			if (getSystemSettings().isProgramBrowserCentric()) {
 				getAmstradPc().reboot(false, false);
 			}
 		}
@@ -109,15 +108,11 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	}
 
 	private String getNameToOpen() {
-		return getMode().isProgramBrowserCentric() ? "Program browser" : "Open program browser";
+		return getSystemSettings().isProgramBrowserCentric() ? "Program browser" : "Open program browser";
 	}
 
 	private String getNameToClose() {
-		return getMode().isProgramBrowserCentric() ? "New Basic prompt" : "Close program browser";
-	}
-
-	private AmstradMode getMode() {
-		return AmstradFactory.getInstance().getAmstradContext().getMode();
+		return getSystemSettings().isProgramBrowserCentric() ? "New Basic prompt" : "Close program browser";
 	}
 
 	public boolean isProgramBrowserShowing() {

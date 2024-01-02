@@ -45,6 +45,10 @@ import org.maia.amstrad.program.repo.facet.FacetedAmstradProgramRepository;
 import org.maia.amstrad.program.repo.file.BasicProgramFileRepository;
 import org.maia.amstrad.program.repo.rename.RenamingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.search.SearchingAmstradProgramRepository;
+import org.maia.amstrad.system.AmstradSystem;
+import org.maia.amstrad.system.impl.AmstradDesktopSystem;
+import org.maia.amstrad.system.impl.AmstradEntertainmentSystem;
+import org.maia.amstrad.system.impl.AmstradJavaCpcSystem;
 
 import jemu.core.device.Computer;
 import jemu.settings.Settings;
@@ -57,9 +61,9 @@ import jemu.ui.DisplayStagedRenderDelegate;
 
 public class AmstradFactory {
 
-	private static AmstradFactory instance;
-
 	private AmstradContext context;
+
+	private static AmstradFactory instance;
 
 	private AmstradFactory() {
 	}
@@ -74,6 +78,23 @@ public class AmstradFactory {
 
 	private AmstradSettings createUserSettings() {
 		return new AmstradSettingsImpl();
+	}
+
+	public AmstradSystem createAmstradSystem() {
+		AmstradSystem system = null;
+		String systemName = getAmstradContext().getUserSettings().get(AmstradContext.SETTING_AMSTRAD_SYSTEM,
+				AmstradDesktopSystem.NAME);
+		if (systemName.equalsIgnoreCase(AmstradDesktopSystem.NAME)) {
+			system = new AmstradDesktopSystem();
+		} else if (systemName.equalsIgnoreCase(AmstradEntertainmentSystem.NAME)) {
+			system = new AmstradEntertainmentSystem();
+		} else if (systemName.equalsIgnoreCase(AmstradJavaCpcSystem.NAME)) {
+			system = new AmstradJavaCpcSystem();
+		} else {
+			// default
+			system = new AmstradDesktopSystem();
+		}
+		return system;
 	}
 
 	public AmstradPc createAmstradPc() {
@@ -185,7 +206,7 @@ public class AmstradFactory {
 				popupMenu.add(createMonitorEffectsMenu());
 				popupMenu.add(createMonitorFullscreenMenuItem());
 				popupMenu.add(new JSeparator());
-				popupMenu.add(createQuitMenuItem());
+				popupMenu.add(createPowerOffMenuItem());
 				return updatePopupMenuLookAndFeel(popupMenu);
 			}
 		}.createPopupMenu();
@@ -293,16 +314,6 @@ public class AmstradFactory {
 		@Override
 		public PrintStream getConsoleErrorStream() {
 			return consoleErrorStream;
-		}
-
-		@Override
-		public void initSystemLogs() {
-			Console.init();
-		}
-
-		@Override
-		public void showSystemLogs() {
-			Console.frameconsole.setVisible(true);
 		}
 
 		@Override

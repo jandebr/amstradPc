@@ -64,7 +64,7 @@ public abstract class AmstradMenuMaker {
 		menu.add(createSaveBasicBinaryFileMenuItem());
 		menu.add(createSaveSnapshotFileMenuItem());
 		menu.add(new JSeparator());
-		menu.add(createQuitMenuItem());
+		menu.add(createPowerOffMenuItem());
 		return updateMenuLookAndFeel(menu);
 	}
 
@@ -111,11 +111,11 @@ public abstract class AmstradMenuMaker {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getSaveSnapshotFileAction()));
 	}
 
-	protected JMenuItem createQuitMenuItem() {
-		JMenuItem item = new JMenuItem(getActions().getQuitAction());
+	protected JMenuItem createPowerOffMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getPowerOffAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item, UIResources.quitIcon);
+		return updateMenuItemLookAndFeel(item, UIResources.powerOffIcon);
 	}
 
 	protected JMenu createEmulatorMenu() {

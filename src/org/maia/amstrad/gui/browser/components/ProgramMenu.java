@@ -31,12 +31,12 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
 	private void populateMenu() {
 		addMenuItem(new ProgramRunMenuItem(this));
-		if (getBrowser().getMode().isProgramSourceCodeAccessible()) {
+		if (getBrowser().getSystemSettings().isProgramSourceCodeAccessible()) {
 			addMenuItem(new ProgramLoadMenuItem(this));
 		}
 		addMenuItem(new ProgramInfoMenuItem(this));
 		addMenuItem(new ProgramImagesMenuItem(this));
-		if (getBrowser().getMode().isProgramAuthoringToolsAvailable()) {
+		if (getBrowser().getSystemSettings().isProgramAuthoringToolsAvailable()) {
 			addMenuItem(new ProgramFileReferencesMenuItem(this));
 		}
 		addMenuItem(new ProgramCloseMenuItem(this));

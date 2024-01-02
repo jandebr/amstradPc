@@ -1,6 +1,8 @@
 package org.maia.amstrad.basic;
 
-public class BasicException extends Exception {
+import org.maia.amstrad.AmstradException;
+
+public class BasicException extends AmstradException {
 
 	public BasicException(String message) {
 		super(message);

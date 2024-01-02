@@ -35,7 +35,7 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 						@Override
 						public void perform(AmstradProgramRuntime programRuntime) {
 							setFailed(programRuntime.getExitCode() != 0);
-							if (getBrowser().getMode().isProgramSourceCodeAccessible()) {
+							if (getBrowser().getSystemSettings().isProgramSourceCodeAccessible()) {
 								getMenu().addReturnMenuItem();
 							}
 							AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(getAmstradPc());

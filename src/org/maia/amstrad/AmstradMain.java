@@ -11,11 +11,9 @@ public class AmstradMain {
 
 	public static void main(String[] args) throws Exception {
 		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
-		context.initSystemLogs();
-		System.out.println("Launching AmstradPc");
 		overrideSettingsFromSytemProperties(context.getUserSettings());
 		cleanManagedProgramRepository(context);
-		context.getMode().launch(args);
+		context.setupAmstradSystem().launch(args);
 	}
 
 	private static void overrideSettingsFromSytemProperties(AmstradSettings settings) {
