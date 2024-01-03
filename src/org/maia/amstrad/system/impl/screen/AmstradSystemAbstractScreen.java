@@ -15,6 +15,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private AmstradPopupMenu popupMenu;
 
+	private boolean autohideControlKeys;
+
 	protected AmstradSystemAbstractScreen(String screenIdentifier, AmstradSystem amstradSystem) {
 		if (screenIdentifier == null)
 			throw new NullPointerException("Screen identifier is null");
@@ -22,6 +24,7 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 			throw new NullPointerException("Amstrad system is null");
 		this.screenIdentifier = screenIdentifier;
 		this.amstradSystem = amstradSystem;
+		this.autohideControlKeys = isDefaultAutohideControlKeys();
 	}
 
 	@Override
@@ -39,11 +42,6 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 			return false;
 		AmstradSystemAbstractScreen other = (AmstradSystemAbstractScreen) obj;
 		return Objects.equals(getScreenIdentifier(), other.getScreenIdentifier());
-	}
-
-	@Override
-	public boolean isAutohideControlKeys() {
-		return isDefaultAutohideControlKeys();
 	}
 
 	protected boolean isDefaultAutohideControlKeys() {
@@ -68,6 +66,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	protected AmstradSystem getAmstradSystem() {
 		return amstradSystem;
+	}
+
+	@Override
+	public boolean isAutohideControlKeys() {
+		return autohideControlKeys;
+	}
+
+	public void setAutohideControlKeys(boolean autohide) {
+		this.autohideControlKeys = autohide;
 	}
 
 }

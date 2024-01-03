@@ -7,15 +7,12 @@ public class AmstradSystemCustomScreen extends AmstradSystemAbstractScreen {
 
 	private AmstradAlternativeDisplaySource customDisplaySource;
 
-	private boolean autohideControlKeys;
-
 	public AmstradSystemCustomScreen(String screenIdentifier, AmstradSystem amstradSystem,
 			AmstradAlternativeDisplaySource customDisplaySource) {
 		super(screenIdentifier, amstradSystem);
 		if (customDisplaySource == null)
 			throw new NullPointerException("Custom display source is null");
 		this.customDisplaySource = customDisplaySource;
-		this.autohideControlKeys = isDefaultAutohideControlKeys();
 	}
 
 	@Override
@@ -31,15 +28,6 @@ public class AmstradSystemCustomScreen extends AmstradSystemAbstractScreen {
 	@Override
 	public AmstradAlternativeDisplaySource getCustomDisplaySource() {
 		return customDisplaySource;
-	}
-
-	@Override
-	public boolean isAutohideControlKeys() {
-		return autohideControlKeys;
-	}
-
-	public void setAutohideControlKeys(boolean autohide) {
-		this.autohideControlKeys = autohide;
 	}
 
 }

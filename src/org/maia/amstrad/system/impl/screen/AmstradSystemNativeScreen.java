@@ -7,6 +7,8 @@ public class AmstradSystemNativeScreen extends AmstradSystemAbstractScreen {
 
 	public static final String SCREEN_ID = "_NATIVE";
 
+	private boolean autohideControlKeysOverride;
+
 	public AmstradSystemNativeScreen(AmstradSystem amstradSystem) {
 		super(SCREEN_ID, amstradSystem);
 	}
@@ -23,7 +25,17 @@ public class AmstradSystemNativeScreen extends AmstradSystemAbstractScreen {
 
 	@Override
 	public boolean isAutohideControlKeys() {
-		return !getAmstradSystem().getAmstradPc().getBasicRuntime().isDirectModus();
+		if (autohideControlKeysOverride) {
+			return super.isAutohideControlKeys();
+		} else {
+			return !getAmstradSystem().getAmstradPc().getBasicRuntime().isDirectModus();
+		}
+	}
+
+	@Override
+	public void setAutohideControlKeys(boolean autohide) {
+		super.setAutohideControlKeys(autohide);
+		autohideControlKeysOverride = true;
 	}
 
 	@Override
