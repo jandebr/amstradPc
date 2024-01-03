@@ -64,6 +64,7 @@ public abstract class AmstradPcFrame extends JFrame
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
 		setVisible(true);
+		toFront();
 		getContentComponent().requestFocus();
 	}
 
@@ -111,6 +112,7 @@ public abstract class AmstradPcFrame extends JFrame
 			if (!getAmstradPc().isTerminated()) {
 				getAmstradPc().terminate();
 				AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
+				System.exit(0);
 			}
 		}
 	}
