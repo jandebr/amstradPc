@@ -29,7 +29,11 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 
 	private MenuController menuController;
 
-	public static int KEY_CODE_TRIGGER = KeyEvent.VK_F2;
+	public static int KEY_TRIGGER_CODE = KeyEvent.VK_F2;
+
+	public static int KEY_TRIGGER_MODIFIERS = KeyEvent.CTRL_DOWN_MASK;
+	
+	public static String KEY_TRIGGER_TEXT = "Ctrl F2";
 
 	public AmstradPopupMenu(AmstradPc amstradPc) {
 		this(amstradPc, "Amstrad Menu");
@@ -38,7 +42,7 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 	public AmstradPopupMenu(AmstradPc amstradPc, String label) {
 		super(label);
 		this.amstradPc = amstradPc;
-		this.keyActivator = new PopupMenuKeyActivator(KEY_CODE_TRIGGER);
+		this.keyActivator = new PopupMenuKeyActivator(KEY_TRIGGER_CODE, KEY_TRIGGER_MODIFIERS);
 		this.popupMenuController = new PopupMenuController();
 		this.menuController = new MenuController();
 	}
@@ -162,15 +166,19 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 
 	private class PopupMenuKeyActivator extends AmstradKeyboardAdapter {
 
-		private int triggerKeyCode;
+		private int keyTriggerCode;
 
-		public PopupMenuKeyActivator(int triggerKeyCode) {
-			this.triggerKeyCode = triggerKeyCode;
+		private int keyTriggerModifiers;
+
+		public PopupMenuKeyActivator(int keyTriggerCode, int keyTriggerModifiers) {
+			this.keyTriggerCode = keyTriggerCode;
+			this.keyTriggerModifiers = keyTriggerModifiers;
 		}
 
 		@Override
 		public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
-			if (event.isKeyPressed() && event.getKeyCode() == getTriggerKeyCode() && !isTerminating()) {
+			if (event.isKeyPressed() && event.getKeyCode() == getKeyTriggerCode()
+					&& event.getKeyModifiers() == getKeyTriggerModifiers() && !isTerminating()) {
 				if (!isPopupMenuShowing()) {
 					showPopupMenu();
 				} else {
@@ -184,8 +192,12 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 			return AmstradFactory.getInstance().getAmstradContext().isTerminationShowing(getAmstradPc());
 		}
 
-		public int getTriggerKeyCode() {
-			return triggerKeyCode;
+		public int getKeyTriggerCode() {
+			return keyTriggerCode;
+		}
+
+		public int getKeyTriggerModifiers() {
+			return keyTriggerModifiers;
 		}
 
 	}

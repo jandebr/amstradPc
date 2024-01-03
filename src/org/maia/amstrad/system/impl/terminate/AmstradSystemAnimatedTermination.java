@@ -1,4 +1,4 @@
-package org.maia.amstrad.system.impl;
+package org.maia.amstrad.system.impl.terminate;
 
 import java.awt.Insets;
 import java.awt.Rectangle;

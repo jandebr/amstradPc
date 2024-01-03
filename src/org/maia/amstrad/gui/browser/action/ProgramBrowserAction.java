@@ -19,6 +19,10 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 
 	private GenericListenerList<ProgramBrowserListener> browserListeners;
 
+	private String nameToOpen;
+
+	private String nameToClose;
+
 	private boolean browserMode;
 
 	private boolean resumeAfterBrowser;
@@ -26,6 +30,8 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		this.browserListeners = new GenericListenerList<ProgramBrowserListener>();
+		this.nameToOpen = getSystemSettings().isProgramBrowserCentric() ? "Program browser" : "Open program browser";
+		this.nameToClose = getSystemSettings().isProgramBrowserCentric() ? "New Basic prompt" : "Close program browser";
 		updateName();
 		amstradPc.getMonitor().addMonitorListener(this);
 		amstradPc.getKeyboard().addKeyboardListener(this);
@@ -107,12 +113,22 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		}
 	}
 
-	private String getNameToOpen() {
-		return getSystemSettings().isProgramBrowserCentric() ? "Program browser" : "Open program browser";
+	public String getNameToOpen() {
+		return nameToOpen;
 	}
 
-	private String getNameToClose() {
-		return getSystemSettings().isProgramBrowserCentric() ? "New Basic prompt" : "Close program browser";
+	public void setNameToOpen(String nameToOpen) {
+		this.nameToOpen = nameToOpen;
+		updateName();
+	}
+
+	public String getNameToClose() {
+		return nameToClose;
+	}
+
+	public void setNameToClose(String nameToClose) {
+		this.nameToClose = nameToClose;
+		updateName();
 	}
 
 	public boolean isProgramBrowserShowing() {
@@ -148,7 +164,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		}
 	}
 
-	private ProgramBrowserDisplaySource getDisplaySource() {
+	public ProgramBrowserDisplaySource getDisplaySource() {
 		if (displaySource == null) {
 			displaySource = AmstradFactory.getInstance().createProgramRepositoryBrowser(getAmstradPc());
 			displaySource.addListener(this);

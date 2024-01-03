@@ -9,15 +9,22 @@ import java.awt.Rectangle;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComponent;
+
+import org.maia.amstrad.gui.browser.action.ProgramInfoAction;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.amstrad.system.AmstradSystem;
 
 public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
-	private static final String SETTING_SHOW_CONTROLKEYS = "show_controlkeys";
+	public static final String SETTING_SHOW_CONTROLKEYS = "show_controlkeys";
 
-	private static final String SETTING_AUTOHIDE_CONTROLKEYS = "show_controlkeys.autohide";
+	public static final String SETTING_AUTOHIDE_CONTROLKEYS = "show_controlkeys.autohide";
+
+	public static boolean DEFAULT_AUTOHIDE_CONTROLKEYS = true;
 
 	private static long FADEOUT_TIME_MILLIS = 8000L;
 
@@ -45,7 +52,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 	private Font font;
 
-	private long lastTimeBasicDirectModus;
+	private long autohideOffsetTime;
 
 	private List<ControlKey> controlKeys;
 
@@ -56,18 +63,29 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	private void populateControlKeys() {
-		getControlKeys().add(new PopupMenuControlKey());
+		getControlKeys().add(new ProgramRunControlKey());
 		getControlKeys().add(new ProgramMenuControlKey());
 		getControlKeys().add(new ProgramInfoControlKey());
-		getControlKeys().add(new ProgramRunControlKey());
+		getControlKeys().add(new PopupMenuControlKey());
 	}
 
 	private boolean isShowControlKeysEnabled() {
 		return getAmstradContext().getUserSettings().getBool(SETTING_SHOW_CONTROLKEYS, true);
 	}
 
-	private boolean isAutohideControlKeysEnabled() {
-		return getAmstradContext().getUserSettings().getBool(SETTING_AUTOHIDE_CONTROLKEYS, true);
+	private boolean isAutohideControlKeys() {
+		boolean autohide = DEFAULT_AUTOHIDE_CONTROLKEYS;
+		AmstradSystem system = getAmstradContext().getAmstradSystem();
+		if (system != null) {
+			autohide = system.getCurrentScreen().isAutohideControlKeys();
+		}
+		return autohide;
+	}
+
+	@Override
+	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
+		super.init(displayComponent, graphicsContext);
+		setAutohideOffsetTime(System.currentTimeMillis());
 	}
 
 	@Override
@@ -80,11 +98,11 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		if (getAmstradContext().isTerminationShowing(getAmstracPc()))
 			return;
 		double r = 0;
-		if (isAutohideControlKeysEnabled()) {
-			long now = System.currentTimeMillis();
-			if (getAmstracPc().getBasicRuntime().isDirectModus())
-				setLastTimeBasicDirectModus(now);
-			r = (now - getLastTimeBasicDirectModus()) / (double) FADEOUT_TIME_MILLIS;
+		long now = System.currentTimeMillis();
+		if (isAutohideControlKeys()) {
+			r = (now - getAutohideOffsetTime()) / (double) FADEOUT_TIME_MILLIS;
+		} else {
+			setAutohideOffsetTime(now);
 		}
 		if (r <= 1.0) {
 			double fadeout = r <= 0.4 ? 0.0 : Math.sqrt((r - 0.4) / 0.6);
@@ -211,12 +229,12 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		this.labelColor = labelColor;
 	}
 
-	private long getLastTimeBasicDirectModus() {
-		return lastTimeBasicDirectModus;
+	private long getAutohideOffsetTime() {
+		return autohideOffsetTime;
 	}
 
-	private void setLastTimeBasicDirectModus(long time) {
-		this.lastTimeBasicDirectModus = time;
+	private void setAutohideOffsetTime(long time) {
+		this.autohideOffsetTime = time;
 	}
 
 	private abstract class ControlKey {
@@ -258,7 +276,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	private class PopupMenuControlKey extends ControlKey {
 
 		public PopupMenuControlKey() {
-			super("F2", "Options");
+			super(AmstradPopupMenu.KEY_TRIGGER_TEXT, "Menu");
 		}
 
 		@Override
@@ -271,7 +289,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	private class ProgramInfoControlKey extends ControlKey {
 
 		public ProgramInfoControlKey() {
-			super("F1", "Info");
+			super(ProgramInfoAction.KEY_TRIGGER_TEXT, "Info");
 		}
 
 		@Override
@@ -297,7 +315,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	private class ProgramMenuControlKey extends ControlKey {
 
 		public ProgramMenuControlKey() {
-			super("ENTER", "Menu/Select");
+			super("ENTER", "Select");
 		}
 
 		@Override

@@ -57,6 +57,7 @@ public abstract class AmstradContext {
 	public AmstradSystem setupAmstradSystem() {
 		AmstradSystem system = AmstradFactory.getInstance().createAmstradSystem();
 		setAmstradSystem(system);
+		system.init();
 		return system;
 	}
 

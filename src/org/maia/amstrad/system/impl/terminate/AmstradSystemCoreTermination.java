@@ -1,4 +1,4 @@
-package org.maia.amstrad.system.impl;
+package org.maia.amstrad.system.impl.terminate;
 
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.system.AmstradSystem;

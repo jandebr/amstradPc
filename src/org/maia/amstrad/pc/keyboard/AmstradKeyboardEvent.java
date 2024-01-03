@@ -1,5 +1,6 @@
 package org.maia.amstrad.pc.keyboard;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class AmstradKeyboardEvent {
@@ -11,6 +12,10 @@ public class AmstradKeyboardEvent {
 	public AmstradKeyboardEvent(AmstradKeyboard keyboard, KeyEvent key) {
 		this.keyboard = keyboard;
 		this.key = key;
+	}
+
+	public static String getKeyModifiersText(int keyModifiers) {
+		return InputEvent.getModifiersExText(keyModifiers);
 	}
 
 	public boolean isKeyPressed() {
@@ -39,6 +44,10 @@ public class AmstradKeyboardEvent {
 
 	public int getKeyCode() {
 		return getKey().getKeyCode();
+	}
+
+	public int getKeyModifiers() {
+		return getKey().getModifiersEx();
 	}
 
 	public AmstradKeyboard getKeyboard() {

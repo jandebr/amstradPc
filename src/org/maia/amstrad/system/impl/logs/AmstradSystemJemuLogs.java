@@ -1,4 +1,4 @@
-package org.maia.amstrad.system.impl;
+package org.maia.amstrad.system.impl.logs;
 
 import org.maia.amstrad.system.AmstradSystemLogs;
 

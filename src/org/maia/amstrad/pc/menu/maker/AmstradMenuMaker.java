@@ -83,7 +83,7 @@ public abstract class AmstradMenuMaker {
 
 	protected JMenuItem createProgramInfoMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getProgramInfoAction());
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, InputEvent.CTRL_DOWN_MASK));
 		return updateMenuItemLookAndFeel(item, UIResources.infoIcon);
 	}
 

@@ -52,7 +52,6 @@ import org.maia.amstrad.system.impl.AmstradJavaCpcSystem;
 
 import jemu.core.device.Computer;
 import jemu.settings.Settings;
-import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.DisplayCanvasRenderDelegate;
 import jemu.ui.DisplayClassicRenderDelegate;
@@ -64,6 +63,10 @@ public class AmstradFactory {
 	private AmstradContext context;
 
 	private static AmstradFactory instance;
+
+	static {
+		new AmstradMenuDefaultLookAndFeel(); // Remember default Look & Feel settings
+	}
 
 	private AmstradFactory() {
 	}
@@ -196,8 +199,8 @@ public class AmstradFactory {
 				popupMenu.add(createProgramBrowserMenuItem());
 				popupMenu.add(createProgramBrowserSetupMenuItem());
 				popupMenu.add(createProgramInfoMenuItem());
-				popupMenu.add(createJoystickMenu());
 				popupMenu.add(createAudioMenuItem());
+				popupMenu.add(createJoystickMenu());
 				popupMenu.add(createPauseResumeMenuItem());
 				popupMenu.add(new JSeparator());
 				popupMenu.add(createScreenshotMenuItem());

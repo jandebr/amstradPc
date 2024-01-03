@@ -26,6 +26,8 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 
 	private static String NAME_CLOSE = "Hide program info";
 
+	public static String KEY_TRIGGER_TEXT = "Ctrl F1";
+
 	public ProgramInfoAction(ProgramBrowserAction browserAction) {
 		super(browserAction.getAmstradPc(), "");
 		browserAction.addListener(this);
@@ -67,7 +69,7 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
 		super.amstradKeyboardEventDispatched(event);
 		if (!isTriggeredByMenuKeyBindings()) {
-			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F1) {
+			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F1 && event.isControlDown()) {
 				toggleProgramInfo();
 			}
 		}

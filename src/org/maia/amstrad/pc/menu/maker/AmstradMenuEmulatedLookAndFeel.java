@@ -37,6 +37,8 @@ public class AmstradMenuEmulatedLookAndFeel extends AmstradMenuLookAndFeel {
 
 	@Override
 	public void applySystemWide() {
+		UIManager.put("PopupMenu.background", getSystemColors().getColor(EMULATOR_LAF_COLOR_BACKGROUND));
+		UIManager.put("PopupMenu.foreground", getSystemColors().getColor(EMULATOR_LAF_COLOR_FOREGROUND));
 		UIManager.put("Menu.selectionBackground", getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_BG));
 		UIManager.put("Menu.selectionForeground", getSystemColors().getColor(EMULATOR_LAF_COLOR_SELECTION_FG));
 		UIManager.put("Menu.arrowIcon", UIResources.menuArrowIcon);
