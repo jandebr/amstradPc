@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.menu.AmstradMenuBar;
+import org.maia.amstrad.system.AmstradSystem;
 
 public abstract class AmstradPcFrame extends JFrame
 		implements AmstradPcStateListener, WindowListener, WindowStateListener {
@@ -110,9 +111,14 @@ public abstract class AmstradPcFrame extends JFrame
 		if (!isClosing()) {
 			setClosing(true);
 			if (!getAmstradPc().isTerminated()) {
-				getAmstradPc().terminate();
-				AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
-				System.exit(0);
+				AmstradSystem system = AmstradFactory.getInstance().getAmstradContext().getAmstradSystem();
+				if (system != null) {
+					system.terminate();
+				} else {
+					getAmstradPc().terminate();
+					AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
+					System.exit(0);
+				}
 			}
 		}
 	}
