@@ -2,7 +2,7 @@ package org.maia.amstrad.gui.browser.components;
 
 import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgramImage;
+import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.util.StringUtils;
 
 public class ProgramImageGallery extends ScrollableItemList<AmstradProgramImage> {

@@ -3,9 +3,9 @@ package org.maia.amstrad.program.repo.search;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
-import org.maia.amstrad.program.repo.cover.CoverImage;
 import org.maia.util.StringUtils;
 
 public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramRepository {
@@ -64,7 +64,7 @@ public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramR
 		}
 
 		@Override
-		protected CoverImage readCoverImage() {
+		protected AmstradProgramImage readCoverImage() {
 			return null; // no such image
 		}
 

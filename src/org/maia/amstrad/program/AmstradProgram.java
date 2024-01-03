@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.payload.AmstradProgramPayload;
 import org.maia.util.StringUtils;
 
@@ -111,9 +112,11 @@ public abstract class AmstradProgram implements Cloneable {
 	public void dispose() {
 		setPayload(null);
 		for (AmstradProgramImage image : getImages()) {
-			image.dispose();
+			image.disposeImage();
 		}
-		// no dispose on cover image because these are managed externally
+		AmstradProgramImage image = getCoverImage();
+		if (image != null)
+			image.disposeImage();
 	}
 
 	public boolean hasDescriptiveInfo() {

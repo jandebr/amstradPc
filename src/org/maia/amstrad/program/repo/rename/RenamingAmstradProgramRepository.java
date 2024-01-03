@@ -6,9 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
-import org.maia.amstrad.program.repo.cover.CoverImage;
 
 public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
@@ -57,7 +57,7 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 		}
 
 		@Override
-		protected CoverImage readCoverImage() {
+		protected AmstradProgramImage readCoverImage() {
 			return getDelegate().getCoverImage();
 		}
 

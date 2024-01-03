@@ -23,7 +23,7 @@ import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgramImage;
+import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.system.AmstradSystem;
@@ -328,9 +328,10 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 			}
 		}
 		// Caption
-		if (!StringUtils.isEmpty(image.getCaption())) {
+		String caption = image.getCaption();
+		if (!StringUtils.isEmpty(caption)) {
 			canvas.pen(14).locate(5, 23);
-			canvas.print(StringUtils.fitWidthCenterAlign(image.getCaption(), 32));
+			canvas.print(StringUtils.fitWidthCenterAlign(caption, 32));
 		}
 	}
 
@@ -624,7 +625,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private Image getCurrentCoverImage() {
 		if (hasCurrentCoverImage()) {
-			return getCurrentNode().getCoverImage().demandImage();
+			return getCurrentNode().getCoverImage().requestImage();
 		} else {
 			return null;
 		}

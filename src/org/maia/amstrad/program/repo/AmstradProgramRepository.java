@@ -5,11 +5,9 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.gui.ImageProxy;
 import org.maia.amstrad.gui.components.ScrollableItem;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.repo.cover.CoverImage;
-import org.maia.amstrad.program.repo.cover.CoverImageImpl;
+import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.util.KeyedCacheLRU;
 
 public abstract class AmstradProgramRepository {
@@ -51,7 +49,7 @@ public abstract class AmstradProgramRepository {
 
 		private String name;
 
-		private CoverImage coverImage;
+		private AmstradProgramImage coverImage;
 
 		private boolean coverImageVerified;
 
@@ -94,7 +92,7 @@ public abstract class AmstradProgramRepository {
 			return name;
 		}
 
-		public CoverImage getCoverImage() {
+		public AmstradProgramImage getCoverImage() {
 			if (coverImage == null && !coverImageVerified) {
 				coverImage = readCoverImage();
 				coverImageVerified = true;
@@ -102,7 +100,7 @@ public abstract class AmstradProgramRepository {
 			return coverImage;
 		}
 
-		protected abstract CoverImage readCoverImage();
+		protected abstract AmstradProgramImage readCoverImage();
 
 	}
 
@@ -179,13 +177,8 @@ public abstract class AmstradProgramRepository {
 		protected abstract AmstradProgram readProgram();
 
 		@Override
-		protected CoverImage readCoverImage() {
-			CoverImage cover = null;
-			ImageProxy proxy = getProgram().getCoverImage();
-			if (proxy != null) {
-				cover = new CoverImageImpl(this, proxy);
-			}
-			return cover;
+		protected AmstradProgramImage readCoverImage() {
+			return getProgram().getCoverImage();
 		}
 
 	}

@@ -10,10 +10,11 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicLanguage;
-import org.maia.amstrad.gui.FileBasedImageProxy;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
+import org.maia.amstrad.program.image.AmstradProgramImage;
+import org.maia.amstrad.program.image.AmstradProgramImageSourcedByFile;
 import org.maia.util.StringUtils;
 
 public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
@@ -190,7 +191,7 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		while (fileRef != null) {
 			File file = new File(relativePath, fileRef);
 			String caption = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_CAPTION);
-			AmstradProgramImage image = new ProgramImageStoredInFile(file, caption);
+			AmstradProgramImage image = new AmstradProgramImageSourcedByFile(file, caption);
 			images.add(image);
 			i++;
 			fileRef = props.getProperty(AMD_IMAGES_PREFIX + '[' + i + ']' + AMD_IMAGES_SUFFIX_FILEREF);
@@ -203,7 +204,7 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		String fileRef = props.getProperty(AMD_COVER_IMAGE);
 		if (fileRef != null) {
 			File file = new File(relativePath, fileRef);
-			image = new ProgramImageStoredInFile(file, "COVER");
+			image = new AmstradProgramImageSourcedByFile(file, "COVER");
 		}
 		return image;
 	}
@@ -253,31 +254,6 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 
 	private AmstradProgram getProgram() {
 		return program;
-	}
-
-	private static class ProgramImageStoredInFile extends FileBasedImageProxy implements AmstradProgramImage {
-
-		private String caption;
-
-		public ProgramImageStoredInFile(File file, String caption) {
-			super(file);
-			this.caption = caption;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder();
-			builder.append("ProgramImage [caption=");
-			builder.append(getCaption());
-			builder.append("]");
-			return builder.toString();
-		}
-
-		@Override
-		public String getCaption() {
-			return caption;
-		}
-
 	}
 
 	private static class RelativePathFileReference extends FileReference {

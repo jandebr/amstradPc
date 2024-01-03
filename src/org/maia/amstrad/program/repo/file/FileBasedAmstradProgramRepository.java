@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.AmstradFileType;
-import org.maia.amstrad.gui.FileBasedImageProxy;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.image.AmstradProgramImage;
+import org.maia.amstrad.program.image.AmstradProgramImageSourcedByFile;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.amstrad.program.repo.cover.CoverImage;
-import org.maia.amstrad.program.repo.cover.CoverImageImpl;
 import org.maia.io.util.IOUtils;
 
 public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
@@ -162,11 +161,11 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		}
 
 		@Override
-		protected CoverImage readCoverImage() {
-			CoverImage cover = null;
+		protected AmstradProgramImage readCoverImage() {
+			AmstradProgramImage cover = null;
 			File coverFile = selectCoverImageFileInFolder(getFolder());
 			if (coverFile != null) {
-				cover = new CoverImageImpl(this, new FileBasedImageProxy(coverFile));
+				cover = new AmstradProgramImageSourcedByFile(coverFile, "COVER");
 			}
 			return cover;
 		}

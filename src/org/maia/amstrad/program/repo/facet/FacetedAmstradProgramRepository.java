@@ -10,9 +10,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
-import org.maia.amstrad.program.repo.cover.CoverImage;
 
 public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRepository {
 
@@ -109,7 +109,7 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 		}
 
 		@Override
-		protected CoverImage readCoverImage() {
+		protected AmstradProgramImage readCoverImage() {
 			return null; // no such image
 		}
 
