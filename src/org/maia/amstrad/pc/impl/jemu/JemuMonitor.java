@@ -402,7 +402,7 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 			rememberedMonitorEffect = monitor.isMonitorEffectOn();
 			rememberedMonitorScanLinesEffect = monitor.isScanLinesEffectOn();
 			rememberedMonitorBilinearEffect = monitor.isBilinearEffectOn();
-			getSource().init(displayComponent, getGraphicsContext(), getAmstradPc().getKeyboard().getController());
+			getSource().init(displayComponent, getGraphicsContext());
 		}
 
 		@Override

@@ -1,31 +1,20 @@
 package org.maia.amstrad.pc.monitor.display.source;
 
-import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
-import org.maia.amstrad.pc.monitor.AmstradMonitor;
-import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvasOverImage;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
-public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
-		implements AmstradAlternativeDisplaySource, MouseListener, MouseMotionListener {
-
-	private AmstradPc amstradPc;
+public abstract class AmstradEmulatedDisplaySource extends AmstradAbstractDisplaySource {
 
 	private AmstradDisplayCanvasOverImage displayCanvas;
 
@@ -35,49 +24,16 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 
 	private Rectangle boundsOnDisplayComponent;
 
-	private JComponent displayComponent;
-
-	private Cursor displayComponentInitialCursor;
-
 	private Point mousePositionOnCanvas;
 
-	private AmstradKeyboardController keyboardController;
-
-	private boolean catchKeyboardEvents;
-
-	private boolean restoreMonitorSettingsOnDispose;
-
 	protected AmstradEmulatedDisplaySource(AmstradPc amstradPc) {
-		this.amstradPc = amstradPc;
-		setRestoreMonitorSettingsOnDispose(false);
-	}
-
-	/**
-	 * Closes this display source
-	 * <p>
-	 * The default behavior is to turn back to the primary display source. This display source will then get disposed
-	 * until it is swapped back in.
-	 * </p>
-	 * 
-	 * @see AmstradMonitor#resetDisplaySource()
-	 * @see AmstradMonitor#swapDisplaySource(AmstradAlternativeDisplaySource)
-	 */
-	public void close() {
-		getAmstradPc().getMonitor().resetDisplaySource(); // will invoke dispose()
+		super(amstradPc);
 	}
 
 	@Override
-	public final void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext,
-			AmstradKeyboardController keyboardController) {
+	public final void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
+		super.init(displayComponent, graphicsContext);
 		setDisplayCanvas(new AmstradDisplayCanvasOverImage(graphicsContext));
-		setDisplayComponent(displayComponent);
-		setDisplayComponentInitialCursor(getCursorController().getCursor());
-		resetCursor();
-		setKeyboardController(keyboardController);
-		displayComponent.addMouseListener(this);
-		displayComponent.addMouseMotionListener(this);
-		displayComponent.addKeyListener(this);
-		acquireKeyboard();
 		init(getDisplayCanvas());
 		setBackgroundColorIndex(getDisplayCanvas().getPaperColorIndex());
 	}
@@ -89,12 +45,8 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 	@Override
 	public final void dispose(JComponent displayComponent) {
 		dispose();
-		displayComponent.removeMouseListener(this);
-		displayComponent.removeMouseMotionListener(this);
-		displayComponent.removeKeyListener(this);
-		releaseKeyboard();
-		setCursor(getDisplayComponentInitialCursor());
 		getDisplayCanvas().dispose();
+		super.dispose(displayComponent);
 	}
 
 	protected void dispose() {
@@ -133,23 +85,6 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		Rectangle rect = new Rectangle(x, y, width, height);
 		setBoundsOnDisplayComponent(rect);
 		return rect;
-	}
-
-	protected Cursor getDefaultCursor() {
-		// Subclasses may override this method
-		if (getDisplayComponentInitialCursor() != null) {
-			return getDisplayComponentInitialCursor();
-		} else {
-			return Cursor.getDefaultCursor();
-		}
-	}
-
-	protected void resetCursor() {
-		setCursor(getDefaultCursor());
-	}
-
-	protected void setCursor(Cursor cursor) {
-		getCursorController().setCursor(cursor == null ? getDefaultCursor() : cursor);
 	}
 
 	@Override
@@ -289,70 +224,6 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		return canvasPosition;
 	}
 
-	public final synchronized void acquireKeyboard() {
-		setCatchKeyboardEvents(true);
-		getKeyboardController().sendKeyboardEventsToComputer(false);
-	}
-
-	public final synchronized void releaseKeyboard() {
-		setCatchKeyboardEvents(false);
-		getKeyboardController().sendKeyboardEventsToComputer(true);
-	}
-
-	@Override
-	public final void pressKey(KeyEvent keyEvent) {
-		keyPressed(keyEvent);
-	}
-
-	@Override
-	public final void releaseKey(KeyEvent keyEvent) {
-		keyReleased(keyEvent);
-	}
-
-	@Override
-	public final void keyPressed(KeyEvent e) {
-		super.keyPressed(e);
-		if (isCatchKeyboardEvents()) {
-			keyboardKeyPressed(e);
-		}
-	}
-
-	@Override
-	public final void keyReleased(KeyEvent e) {
-		super.keyReleased(e);
-		if (isCatchKeyboardEvents()) {
-			keyboardKeyReleased(e);
-		}
-	}
-
-	@Override
-	public final void keyTyped(KeyEvent e) {
-		super.keyTyped(e);
-		if (isCatchKeyboardEvents()) {
-			keyboardKeyTyped(e);
-		}
-	}
-
-	protected void keyboardKeyPressed(KeyEvent e) {
-		// Subclasses may override this method
-	}
-
-	protected void keyboardKeyReleased(KeyEvent e) {
-		// Subclasses may override this method
-	}
-
-	protected void keyboardKeyTyped(KeyEvent e) {
-		// Subclasses may override this method
-	}
-
-	protected AmstradMonitorCursorController getCursorController() {
-		return getAmstradPc().getMonitor().getCursorController();
-	}
-
-	public AmstradPc getAmstradPc() {
-		return amstradPc;
-	}
-
 	private AmstradDisplayCanvasOverImage getDisplayCanvas() {
 		return displayCanvas;
 	}
@@ -389,53 +260,12 @@ public abstract class AmstradEmulatedDisplaySource extends KeyAdapter
 		this.boundsOnDisplayComponent = bounds;
 	}
 
-	private JComponent getDisplayComponent() {
-		return displayComponent;
-	}
-
-	private void setDisplayComponent(JComponent displayComponent) {
-		this.displayComponent = displayComponent;
-	}
-
-	private Cursor getDisplayComponentInitialCursor() {
-		return displayComponentInitialCursor;
-	}
-
-	private void setDisplayComponentInitialCursor(Cursor cursor) {
-		this.displayComponentInitialCursor = cursor;
-	}
-
 	protected Point getMousePositionOnCanvas() {
 		return mousePositionOnCanvas;
 	}
 
 	private void setMousePositionOnCanvas(Point mousePositionOnCanvas) {
 		this.mousePositionOnCanvas = mousePositionOnCanvas;
-	}
-
-	private AmstradKeyboardController getKeyboardController() {
-		return keyboardController;
-	}
-
-	private void setKeyboardController(AmstradKeyboardController keyboardController) {
-		this.keyboardController = keyboardController;
-	}
-
-	private boolean isCatchKeyboardEvents() {
-		return catchKeyboardEvents;
-	}
-
-	private void setCatchKeyboardEvents(boolean catchKeyboardEvents) {
-		this.catchKeyboardEvents = catchKeyboardEvents;
-	}
-
-	@Override
-	public boolean isRestoreMonitorSettingsOnDispose() {
-		return restoreMonitorSettingsOnDispose;
-	}
-
-	public void setRestoreMonitorSettingsOnDispose(boolean restore) {
-		this.restoreMonitorSettingsOnDispose = restore;
 	}
 
 }

@@ -3,56 +3,28 @@ package org.maia.amstrad.pc.monitor.display.source;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 
-import javax.swing.JComponent;
-
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
-public class AmstradImageDisplaySource implements AmstradAlternativeDisplaySource {
+public class AmstradImageDisplaySource extends AmstradAbstractDisplaySource {
 
 	private Image image;
 
-	public AmstradImageDisplaySource(Image image) {
+	public AmstradImageDisplaySource(AmstradPc amstradPc, Image image) {
+		super(amstradPc);
 		setImage(image);
 	}
 
 	public static AmstradImageDisplaySource createFreezeFrame(AmstradMonitor monitor) {
-		return new AmstradImageDisplaySource(monitor.makeScreenshot(false));
-	}
-
-	@Override
-	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext,
-			AmstradKeyboardController keyboardController) {
-		// no action
+		return new AmstradImageDisplaySource(monitor.getAmstradPc(), monitor.makeScreenshot(false));
 	}
 
 	@Override
 	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
 		display.drawImage(getImage(), displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height,
 				null);
-	}
-
-	@Override
-	public void pressKey(KeyEvent keyEvent) {
-		// no action
-	}
-
-	@Override
-	public void releaseKey(KeyEvent keyEvent) {
-		// no action
-	}
-
-	@Override
-	public void dispose(JComponent displayComponent) {
-		// no action
-	}
-
-	@Override
-	public boolean isRestoreMonitorSettingsOnDispose() {
-		return false;
 	}
 
 	@Override

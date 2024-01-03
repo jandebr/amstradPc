@@ -7,8 +7,8 @@ import org.maia.image.pool.PooledImageSourcedByFile;
 
 public class AmstradProgramImageSourcedByFile extends PooledImageSourcedByFile implements AmstradProgramImage {
 
-	public AmstradProgramImageSourcedByFile(File file, String title) {
-		super(file, AmstradProgramImagePool.getInstance(), new ImageInfoImpl(title));
+	public AmstradProgramImageSourcedByFile(File file, String caption) {
+		super(file, AmstradProgramImagePool.getInstance(), new ImageInfoImpl(caption));
 	}
 
 	@Override

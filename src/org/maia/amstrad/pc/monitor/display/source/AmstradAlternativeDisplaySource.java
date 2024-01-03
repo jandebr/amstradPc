@@ -6,13 +6,11 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
 
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public interface AmstradAlternativeDisplaySource {
 
-	void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext,
-			AmstradKeyboardController keyboardController);
+	void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext);
 
 	void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext);
 
