@@ -6,7 +6,7 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.menu.AmstradMenu;
-import org.maia.amstrad.system.impl.AmstradSystemElementaryTermination;
+import org.maia.amstrad.system.impl.AmstradSystemCoreTermination;
 import org.maia.amstrad.system.impl.AmstradSystemJemuLogs;
 
 import jemu.settings.Settings;
@@ -52,7 +52,7 @@ public abstract class AmstradSystem {
 	}
 
 	protected AmstradSystemTermination createTermination() {
-		return new AmstradSystemElementaryTermination();
+		return new AmstradSystemCoreTermination();
 	}
 
 	protected abstract AmstradSystemSettings createSystemSettings();

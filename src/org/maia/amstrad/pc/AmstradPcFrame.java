@@ -30,7 +30,7 @@ public abstract class AmstradPcFrame extends JFrame
 		addWindowStateListener(this);
 		setFocusable(false);
 		setAlwaysOnTop(amstradPc.getMonitor().isWindowAlwaysOnTop());
-		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(UIResources.cpcIcon.getImage());
 		getContentPane().add(getContentComponent(), BorderLayout.CENTER);
 	}
@@ -110,8 +110,8 @@ public abstract class AmstradPcFrame extends JFrame
 			setClosing(true);
 			if (!getAmstradPc().isTerminated()) {
 				getAmstradPc().terminate();
+				AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
 			}
-			AmstradFactory.getInstance().getAmstradContext().getUserSettings().flush();
 		}
 	}
 

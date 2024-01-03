@@ -22,7 +22,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		AmstradMonitor monitor = amstradPc.getMonitor();
 		monitor.setMode(AmstradMonitorMode.COLOR);
 		monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager)
-		AmstradPcFrame frame = amstradPc.displayInFrame(true);
+		AmstradPcFrame frame = amstradPc.displayInFrame(false);
 		createPopupMenu().install();
 		amstradPc.addStateListener(new AmstradPcPostStartupAction());
 		amstradPc.start();

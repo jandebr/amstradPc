@@ -28,7 +28,7 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 
 	@Override
 	protected void doLaunch(AmstradPc amstradPc, String[] args) throws AmstradException {
-		AmstradPcFrame frame = amstradPc.displayInFrame(true);
+		AmstradPcFrame frame = amstradPc.displayInFrame(false);
 		if (args.length == 0) {
 			amstradPc.start();
 		} else if (args.length == 1) {

@@ -17,7 +17,7 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.util.SystemUtils;
 
-public class AmstradSystemAnimatedTermination extends AmstradSystemElementaryTermination
+public class AmstradSystemAnimatedTermination extends AmstradSystemCoreTermination
 		implements AmstradKeyboardListener {
 
 	private AmstradTerminationDisplaySource terminationDisplaySource;
