@@ -5,8 +5,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
@@ -112,6 +112,11 @@ public abstract class AmstradMonitor extends AmstradPcDevice {
 
 	public void makeFullscreen() {
 		if (!isFullscreen())
+			toggleFullscreen();
+	}
+
+	public void makeWindowed() {
+		if (isFullscreen())
 			toggleFullscreen();
 	}
 

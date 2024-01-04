@@ -10,20 +10,11 @@ import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemSettings;
 
-import jemu.settings.Settings;
-
 public class AmstradJavaCpcSystem extends AmstradSystem {
 
 	public static final String NAME = "JAVACPC";
 
 	public AmstradJavaCpcSystem() {
-	}
-
-	@Override
-	protected void overrideUserSettingsBeforeLaunch() {
-		super.overrideUserSettingsBeforeLaunch();
-		// Starting windowed to prevent initial 'black screens' with JEMU
-		getUserSettings().setBool(Settings.FULLSCREEN, false);
 	}
 
 	@Override
@@ -58,6 +49,12 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 
 		@Override
 		public boolean isProgramBrowserCentric() {
+			return false;
+		}
+
+		@Override
+		public boolean isLaunchInFullscreen() {
+			// Starting windowed to prevent initial 'black screens' with JEMU
 			return false;
 		}
 

@@ -74,6 +74,11 @@ public class AmstradDesktopSystem extends AmstradSystem {
 		}
 
 		@Override
+		public boolean isLaunchInFullscreen() {
+			return false;
+		}
+
+		@Override
 		public boolean isFullscreenToggleEnabled() {
 			return true;
 		}

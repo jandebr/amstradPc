@@ -56,12 +56,18 @@ public abstract class AmstradSystem {
 	}
 
 	protected void overrideUserSettingsBeforeLaunch() {
+		getUserSettings().setBool(Settings.FULLSCREEN, getSystemSettings().isLaunchInFullscreen());
 		getUserSettings().setBool(Settings.SHOWMENU, getSystemSettings().isUsingOriginalJemuMenu());
 	}
 
 	protected abstract void doLaunch(AmstradPc amstradPc, String[] args) throws AmstradException;
 
 	protected void doPostStartupActions(AmstradPc amstradPc) {
+		if (getSystemSettings().isLaunchInFullscreen()) {
+			amstradPc.getMonitor().makeFullscreen();
+		} else {
+			amstradPc.getMonitor().makeWindowed();
+		}
 		notifyInitialScreen(getCurrentScreen());
 		// Subclasses may extend this method
 	}

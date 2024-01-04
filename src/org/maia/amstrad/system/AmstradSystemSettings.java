@@ -12,6 +12,13 @@ public interface AmstradSystemSettings {
 	boolean isProgramBrowserCentric();
 
 	/**
+	 * Tells whether to launch in fullscreen or windowed
+	 * 
+	 * @return <code>true</code> when launching in fullscreen, <code>false</code> when windowed
+	 */
+	boolean isLaunchInFullscreen();
+
+	/**
 	 * Tells whether fullscreen toggling is enabled
 	 * 
 	 * @return <code>true</code> iff fullscreen can be toggled

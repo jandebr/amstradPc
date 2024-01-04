@@ -44,8 +44,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		super.doPostStartupActions(amstradPc);
 		AmstradMonitor monitor = amstradPc.getMonitor();
 		monitor.setMode(AmstradMonitorMode.COLOR);
-		monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager)
-		monitor.makeFullscreen();
+		monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager) since fullscreen
 		getAmstradContext().showProgramBrowser(amstradPc);
 	}
 
@@ -94,6 +93,11 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 
 		@Override
 		public boolean isProgramBrowserCentric() {
+			return true;
+		}
+
+		@Override
+		public boolean isLaunchInFullscreen() {
 			return true;
 		}
 
