@@ -2,7 +2,6 @@ package org.maia.amstrad.system.impl.screen;
 
 import java.util.Objects;
 
-import org.maia.amstrad.gui.overlay.ControlKeysDisplayOverlay;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemScreen;
@@ -15,6 +14,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private AmstradPopupMenu popupMenu;
 
+	private boolean showControlKeys;
+
 	private boolean autohideControlKeys;
 
 	protected AmstradSystemAbstractScreen(String screenIdentifier, AmstradSystem amstradSystem) {
@@ -24,7 +25,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 			throw new NullPointerException("Amstrad system is null");
 		this.screenIdentifier = screenIdentifier;
 		this.amstradSystem = amstradSystem;
-		this.autohideControlKeys = isDefaultAutohideControlKeys();
+		this.showControlKeys = false; // default
+		this.autohideControlKeys = true; // default
 	}
 
 	@Override
@@ -44,12 +46,6 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 		return Objects.equals(getScreenIdentifier(), other.getScreenIdentifier());
 	}
 
-	protected boolean isDefaultAutohideControlKeys() {
-		return getAmstradSystem().getAmstradContext().getUserSettings().getBool(
-				ControlKeysDisplayOverlay.SETTING_AUTOHIDE_CONTROLKEYS,
-				ControlKeysDisplayOverlay.DEFAULT_AUTOHIDE_CONTROLKEYS);
-	}
-
 	@Override
 	public String getScreenIdentifier() {
 		return screenIdentifier;
@@ -66,6 +62,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	protected AmstradSystem getAmstradSystem() {
 		return amstradSystem;
+	}
+
+	@Override
+	public boolean isShowControlKeys() {
+		return showControlKeys;
+	}
+
+	public void setShowControlKeys(boolean show) {
+		this.showControlKeys = show;
 	}
 
 	@Override

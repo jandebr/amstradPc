@@ -9,8 +9,6 @@ public interface AmstradSystemScreen {
 
 	boolean isUnknownScreen();
 
-	boolean isAutohideControlKeys();
-
 	String getScreenIdentifier();
 
 	/**
@@ -30,5 +28,23 @@ public interface AmstradSystemScreen {
 	 * @return The popup menu, or <code>null</code> when none
 	 */
 	AmstradPopupMenu getPopupMenu();
+
+	/**
+	 * Tells whether control keys are to be shown on screen
+	 * 
+	 * @return <code>true</code> iff control keys are to be shown
+	 */
+	boolean isShowControlKeys();
+
+	/**
+	 * Tells whether control keys are automatically hidden after some time or some event
+	 * 
+	 * <p>
+	 * This setting is only relevant when {@link #isShowControlKeys()} return <code>true</code>
+	 * </p>
+	 * 
+	 * @return <code>true</code> iff control keys are hidden automatically
+	 */
+	boolean isAutohideControlKeys();
 
 }

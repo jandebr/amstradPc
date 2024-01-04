@@ -20,11 +20,9 @@ import org.maia.amstrad.system.AmstradSystem;
 
 public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
-	public static final String SETTING_SHOW_CONTROLKEYS = "show_controlkeys";
+	private static boolean DEFAULT_SHOW_CONTROLKEYS = false;
 
-	public static final String SETTING_AUTOHIDE_CONTROLKEYS = "show_controlkeys.autohide";
-
-	public static boolean DEFAULT_AUTOHIDE_CONTROLKEYS = true;
+	private static boolean DEFAULT_AUTOHIDE_CONTROLKEYS = true;
 
 	private static long FADEOUT_TIME_MILLIS = 8000L;
 
@@ -70,7 +68,12 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	private boolean isShowControlKeysEnabled() {
-		return getAmstradContext().getUserSettings().getBool(SETTING_SHOW_CONTROLKEYS, true);
+		boolean show = DEFAULT_SHOW_CONTROLKEYS;
+		AmstradSystem system = getAmstradContext().getAmstradSystem();
+		if (system != null) {
+			show = system.getCurrentScreen().isShowControlKeys();
+		}
+		return show;
 	}
 
 	private boolean isAutohideControlKeys() {

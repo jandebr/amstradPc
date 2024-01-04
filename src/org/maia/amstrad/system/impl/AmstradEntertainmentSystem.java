@@ -70,6 +70,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 	private AmstradSystemScreen createNativeScreen() {
 		AmstradSystemNativeScreen screen = new AmstradSystemNativeScreen(this);
 		screen.setPopupMenu(new ProgramPopupMenuMaker().createPopupMenu());
+		screen.setShowControlKeys(true);
 		return screen;
 	}
 
@@ -79,6 +80,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		AmstradSystemCustomScreen screen = new AmstradSystemCustomScreen(PROGRAM_BROWSER_SCREEN_ID, this,
 				displaySource);
 		screen.setPopupMenu(new ProgramBrowserPopupMenuMaker().createPopupMenu());
+		screen.setShowControlKeys(true);
 		screen.setAutohideControlKeys(false);
 		return screen;
 	}
