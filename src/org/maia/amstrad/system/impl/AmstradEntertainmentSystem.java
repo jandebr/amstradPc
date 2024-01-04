@@ -117,13 +117,12 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 			menu.add(createJoystickMenu());
 			menu.add(createMonitorModeMenu());
 			menu.add(createMonitorEffectsMenu());
-			return updateMenuLookAndFeel(menu, UIResources.joystickIcon); // TODO icon
+			return updateMenuLookAndFeel(menu, UIResources.settingsIcon);
 		}
 
 		protected JMenuItem createProgramBrowserMenuItem() {
 			getAmstradPc().getActions().getProgramBrowserAction().setNameToOpen("Quit program");
-			return updateMenuItemLookAndFeel(super.createProgramBrowserMenuItem(), UIResources.powerOffIcon); // TODO
-																												// icon
+			return updateMenuItemLookAndFeel(super.createProgramBrowserMenuItem(), UIResources.quitIcon);
 		}
 
 	}

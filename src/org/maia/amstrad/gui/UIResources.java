@@ -14,8 +14,8 @@ import javax.swing.JMenuItem;
 
 import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.AudioAction;
-import org.maia.amstrad.pc.action.PauseResumeAction;
 import org.maia.amstrad.pc.action.MonitorFullscreenAction;
+import org.maia.amstrad.pc.action.PauseResumeAction;
 
 public class UIResources {
 
@@ -30,6 +30,8 @@ public class UIResources {
 	public static Icon basicOrBrowserIcon = new BasicOrBrowserIcon(basicIcon, browserIcon);
 
 	public static ImageIcon browserSetupIcon = loadIcon("browser-setup32.png");
+
+	public static ImageIcon settingsIcon = loadIcon("settings32.png");
 
 	public static ImageIcon joystickIcon = loadIcon("joystick32.png");
 
@@ -70,6 +72,8 @@ public class UIResources {
 
 	public static Icon radioButtonMenuItemIcon = new ButtonStateIcon(loadIcon("unselected32.png"),
 			loadIcon("selected32.png"));
+
+	public static ImageIcon quitIcon = loadIcon("quit32.png");
 
 	public static ImageIcon powerOffIcon = loadIcon("poweroff32.png");
 
