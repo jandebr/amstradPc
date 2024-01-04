@@ -2,21 +2,14 @@ package org.maia.amstrad.program.load.basic.staged.file;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
-import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
-import org.maia.amstrad.basic.BasicSourceCode;
-import org.maia.amstrad.basic.BasicSourceTokenSequence;
-import org.maia.amstrad.basic.BasicSyntaxException;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
-import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicVariableSpace;
 import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.basic.staged.ErrorOutCodes;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
-import org.maia.amstrad.program.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.util.SystemUtils;
 
 public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocessor
@@ -25,36 +18,6 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 	private static final String SETTING_DELAYS = "basic_staging.delayFileOperations";
 
 	protected FileCommandBasicPreprocessor() {
-	}
-
-	protected BasicSourceTokenSequence createWaitResumeMacroInvocationSequence(StagedBasicProgramLoaderSession session,
-			int macroHandlerMemoryAddress, int macroHandlerMemoryValue) throws BasicSyntaxException {
-		return createGosubMacroInvocationSequence(session.getMacroAdded(WaitResumeMacro.class),
-				macroHandlerMemoryAddress, macroHandlerMemoryValue);
-	}
-
-	protected BasicSourceTokenSequence createGosubMacroInvocationSequence(FileCommandMacro macro,
-			int macroHandlerMemoryAddress, int macroHandlerMemoryValue) throws BasicSyntaxException {
-		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
-		return createMacroHandlerInvocationSequence(macroHandlerMemoryAddress, macroHandlerMemoryValue).append(
-				stf.createInstructionSeparator(), stf.createBasicKeyword("GOSUB"), stf.createLiteral(" "),
-				stf.createLineNumberReference(macro.getLineNumberFrom()));
-	}
-
-	protected BasicSourceTokenSequence createGotoMacroInvocationSequence(FileCommandMacro macro,
-			int macroHandlerMemoryAddress, int macroHandlerMemoryValue) throws BasicSyntaxException {
-		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
-		return createMacroHandlerInvocationSequence(macroHandlerMemoryAddress, macroHandlerMemoryValue).append(
-				stf.createInstructionSeparator(), stf.createBasicKeyword("GOTO"), stf.createLiteral(" "),
-				stf.createLineNumberReference(macro.getLineNumberFrom()));
-	}
-
-	private BasicSourceTokenSequence createMacroHandlerInvocationSequence(int macroHandlerMemoryAddress,
-			int macroHandlerMemoryValue) throws BasicSyntaxException {
-		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
-		return new BasicSourceTokenSequence().append(stf.createBasicKeyword("POKE"), stf.createLiteral(" "),
-				stf.createPositiveInteger16BitHexadecimal(macroHandlerMemoryAddress), stf.createLiteral(","),
-				stf.createPositiveInteger8BitDecimal(macroHandlerMemoryValue));
 	}
 
 	protected LocomotiveBasicVariableSpace getRuntimeVariables(StagedBasicProgramLoaderSession session)
@@ -91,44 +54,6 @@ public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocess
 		if (settings.getBool(SETTING_DELAYS, true)) {
 			SystemUtils.sleep(delayMillis);
 		}
-	}
-
-	protected void waitUntilBasicInterpreterInWaitLoop() {
-		SystemUtils.sleep(DELAYMILLIS_ENTER_MACRO_WAIT_LOOP);
-	}
-
-	protected void endWithError(int errorCode, BasicSourceCode sourceCode, FileCommandMacro macro,
-			StagedBasicProgramLoaderSession session) {
-		System.err.println("FileCommand ended with ERROR " + errorCode);
-		try {
-			substituteErrorCode(errorCode, sourceCode, session);
-			addCodeLine(sourceCode, macro.getLineNumberTo(), "GOTO " + session.getErrorOutMacroLineNumber());
-			waitUntilBasicInterpreterInWaitLoop(); // save to swap code
-			resumeWithNewSourceCode(sourceCode, macro, session);
-		} catch (BasicException e) {
-			e.printStackTrace();
-		}
-	}
-
-	protected void resumeWithNewSourceCode(BasicSourceCode newSourceCode, FileCommandMacro macro,
-			StagedBasicProgramLoaderSession session) throws BasicException {
-		BasicByteCode newByteCode = prepareCodeForSwapping(newSourceCode, session);
-		session.getBasicRuntime().swap(newByteCode);
-		resumeRun(macro, session);
-	}
-
-	protected void resumeRun(FileCommandMacro macro, StagedBasicProgramLoaderSession session) {
-		session.getBasicRuntime().poke(macro.getResumeMemoryAddress(), (byte) 1);
-	}
-
-	private BasicByteCode prepareCodeForSwapping(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session)
-			throws BasicException {
-		BasicByteCode byteCode = session.getBasicRuntime().getCompiler().compile(sourceCode);
-		if (byteCode instanceof LocomotiveBasicByteCode) {
-			// Keep the macro code bitwise identical so there can be no issues with the running Basic interpreter
-			((LocomotiveBasicByteCode) byteCode).updateLineReferencesToPointers();
-		}
-		return byteCode;
 	}
 
 }

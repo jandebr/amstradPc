@@ -1,4 +1,4 @@
-package org.maia.amstrad.program.load.basic.staged.file;
+package org.maia.amstrad.program.load.basic.staged;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,8 +7,6 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicLineNumberRange;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
-import org.maia.amstrad.program.load.basic.staged.StagedBasicPreprocessor;
-import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
 
 public class WaitResumeBasicPreprocessor extends StagedBasicPreprocessor {
 
@@ -49,10 +47,17 @@ public class WaitResumeBasicPreprocessor extends StagedBasicPreprocessor {
 		session.addMacro(new WaitResumeMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 
-	public static class WaitResumeMacro extends FileCommandMacro {
+	public static class WaitResumeMacro extends StagedBasicMacro {
+
+		private int resumeMemoryAddress;
 
 		public WaitResumeMacro(BasicLineNumberRange range, int resumeMemoryAddress) {
-			super(range, resumeMemoryAddress);
+			super(range);
+			this.resumeMemoryAddress = resumeMemoryAddress;
+		}
+
+		public int getResumeMemoryAddress() {
+			return resumeMemoryAddress;
 		}
 
 	}

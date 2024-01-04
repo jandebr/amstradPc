@@ -22,8 +22,8 @@ import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.load.basic.staged.file.PrintStreamCommand.Argument;
-import org.maia.amstrad.program.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
 
 public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 

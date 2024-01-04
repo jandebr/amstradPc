@@ -7,10 +7,11 @@ import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
-import org.maia.amstrad.program.load.basic.staged.StagedBasicMacroHandler;
-import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
+import org.maia.amstrad.program.load.basic.staged.StagedBasicMacroHandler;
+import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 
 public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
@@ -20,7 +21,8 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	private AmstradProgram program;
 
-	protected FileCommandMacroHandler(FileCommandMacro macro, BasicSourceCode sourceCode,
+	protected FileCommandMacroHandler(
+			WaitResumeMacro macro, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
 		super(macro, session);
 		this.sourceCode = sourceCode;

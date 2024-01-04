@@ -15,7 +15,6 @@ import org.maia.amstrad.program.load.basic.staged.file.ChainRunBasicPreprocessor
 import org.maia.amstrad.program.load.basic.staged.file.TextLoadBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.file.TextSaveBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.file.UnsupportedFileCommandPreprocessor;
-import org.maia.amstrad.program.load.basic.staged.file.WaitResumeBasicPreprocessor;
 
 public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 
@@ -46,14 +45,15 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(preamble);
 		addPreprocessor(new PreambleLandingBasicPreprocessor());
 		addPreprocessor(new LinkResolveBasicPreprocessor());
+		addPreprocessor(new WaitResumeBasicPreprocessor());
 		addPreprocessor(new ChainMergeBasicPreprocessor());
 		addPreprocessor(new ChainRunBasicPreprocessor());
-		addPreprocessor(new WaitResumeBasicPreprocessor());
 		addPreprocessor(new BinaryLoadBasicPreprocessor());
 		addPreprocessor(new BinarySaveBasicPreprocessor());
 		addPreprocessor(new TextLoadBasicPreprocessor());
 		addPreprocessor(new TextSaveBasicPreprocessor());
 		addPreprocessor(new UnsupportedFileCommandPreprocessor()); // after all file preprocesors
+		addPreprocessor(new EmulatorKeywordBasicPreprocessor());
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new ErrorOutBasicPreprocessor());
 		addPreprocessor(new PreambleJumpingBasicPreprocessor());

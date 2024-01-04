@@ -19,7 +19,7 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
-import org.maia.amstrad.program.load.basic.staged.file.WaitResumeBasicPreprocessor.WaitResumeMacro;
+import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.io.util.IOUtils;
 
 public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor implements LocomotiveBasicMemoryMap {

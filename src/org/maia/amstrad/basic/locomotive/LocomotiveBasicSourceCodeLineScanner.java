@@ -59,7 +59,7 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 					token = scanNumericToken();
 				} else if ("<=>+-*/^\\".indexOf(c) >= 0) {
 					token = scanNumericOperator();
-				} else if (isLetter(c)) {
+				} else if (isLetter(c) || c == LocomotiveBasicKeywords.EMULATOR_KEYWORD_PREFIX_CHAR) {
 					String symbol = scanSymbol();
 					if (getSourceTokenFactory().isOperator(symbol)) {
 						token = getSourceTokenFactory().createOperator(symbol);

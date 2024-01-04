@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class LocomotiveBasicKeywords {
+import org.maia.amstrad.basic.emulator.EmulatorBasicKeywords;
+
+public class LocomotiveBasicKeywords implements EmulatorBasicKeywords {
 
 	private Map<Integer, LocomotiveBasicKeyword> byteCodeMap;
 
@@ -17,6 +19,8 @@ public class LocomotiveBasicKeywords {
 	private static LocomotiveBasicKeywords instance;
 
 	private static final byte EXTENDED_PREFIX_BYTE = (byte) 0xff; // prefix byte for the extended keywords
+
+	public static final char EMULATOR_KEYWORD_PREFIX_CHAR = '_'; // prefix character for the emulator keywords
 
 	public static LocomotiveBasicKeywords getInstance() {
 		if (instance == null) {
@@ -37,6 +41,7 @@ public class LocomotiveBasicKeywords {
 		this.multiSymbolMap = new HashMap<String, Set<LocomotiveBasicKeyword>>(16);
 		loadBasicKeywords();
 		loadExtendedKeywords();
+		loadExtendedEmulatorKeywords();
 	}
 
 	private void loadBasicKeywords() {
@@ -147,6 +152,7 @@ public class LocomotiveBasicKeywords {
 		register(new LocomotiveBasicKeyword((byte) 0xeb, "THEN"));
 		register(new LocomotiveBasicKeyword((byte) 0xec, "TO"));
 		register(new LocomotiveBasicKeyword((byte) 0xed, "USING"));
+		// 0xee until 0xfe reserved for operators, 0xff reserved for extended keywords
 	}
 
 	private void loadExtendedKeywords() {
@@ -205,6 +211,11 @@ public class LocomotiveBasicKeywords {
 		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7d, "TESTR"));
 		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7e, "COPYCHR$"));
 		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7f, "VPOS"));
+	}
+
+	private void loadExtendedEmulatorKeywords() {
+		// Keywords not in the Basic standard that have a special function when run in the emulator
+		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x80, EmulatorBasicKeywords.REBOOT));
 	}
 
 	private void register(LocomotiveBasicKeyword keyword) {

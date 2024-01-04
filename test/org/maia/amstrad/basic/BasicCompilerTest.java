@@ -23,6 +23,7 @@ public class BasicCompilerTest {
 	}
 
 	public static void main(String[] args) throws Exception {
+		AmstradFactory.getInstance().getAmstradContext().setupAmstradSystem();
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
 		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		LocomotiveBasicCompiler compiler = new LocomotiveBasicCompiler();
