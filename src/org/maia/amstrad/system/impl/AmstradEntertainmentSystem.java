@@ -89,45 +89,6 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		return NAME;
 	}
 
-	private static class EntertainmentSystemSettings implements AmstradSystemSettings {
-
-		@Override
-		public boolean isProgramBrowserCentric() {
-			return true;
-		}
-
-		@Override
-		public boolean isLaunchInFullscreen() {
-			return true;
-		}
-
-		@Override
-		public boolean isFullscreenToggleEnabled() {
-			return false;
-		}
-
-		@Override
-		public boolean isUsingOriginalJemuMenu() {
-			return false;
-		}
-
-		@Override
-		public boolean isTapeActivityShown() {
-			return false;
-		}
-
-		@Override
-		public boolean isProgramSourceCodeAccessible() {
-			return false;
-		}
-
-		@Override
-		public boolean isProgramAuthoringToolsAvailable() {
-			return false;
-		}
-
-	}
-
 	private abstract class EntertainmentPopupMenuMaker extends AmstradPopupMenuMaker {
 
 		protected EntertainmentPopupMenuMaker() {
@@ -178,6 +139,45 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 			popupMenu.add(new JSeparator());
 			popupMenu.add(createPowerOffMenuItem());
 			return updatePopupMenuLookAndFeel(popupMenu);
+		}
+
+	}
+
+	private static class EntertainmentSystemSettings implements AmstradSystemSettings {
+
+		@Override
+		public boolean isProgramBrowserCentric() {
+			return true;
+		}
+
+		@Override
+		public boolean isLaunchInFullscreen() {
+			return true;
+		}
+
+		@Override
+		public boolean isFullscreenToggleEnabled() {
+			return false;
+		}
+
+		@Override
+		public boolean isUsingOriginalJemuMenu() {
+			return false;
+		}
+
+		@Override
+		public boolean isTapeActivityShown() {
+			return false;
+		}
+
+		@Override
+		public boolean isProgramSourceCodeAccessible() {
+			return false;
+		}
+
+		@Override
+		public boolean isProgramAuthoringToolsAvailable() {
+			return false;
 		}
 
 	}

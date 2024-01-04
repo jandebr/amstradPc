@@ -5,10 +5,6 @@ import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 
 public abstract class AmstradPopupMenuMaker extends AmstradMenuMaker {
 
-	protected AmstradPopupMenuMaker(AmstradPc amstradPc) {
-		super(amstradPc);
-	}
-
 	protected AmstradPopupMenuMaker(AmstradPc amstradPc, AmstradMenuLookAndFeel lookAndFeel) {
 		super(amstradPc, lookAndFeel);
 	}

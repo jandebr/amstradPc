@@ -6,7 +6,6 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
-import org.maia.amstrad.pc.menu.AmstradMenu;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
@@ -113,14 +112,6 @@ public abstract class AmstradSystem {
 
 	protected AmstradSystemScreenSet createScreenSet() {
 		return new AmstradSystemScreenSetImpl(this);
-	}
-
-	protected AmstradMenu createMenuBar() {
-		return AmstradFactory.getInstance().createMenuBar(getAmstradPc());
-	}
-
-	protected AmstradPopupMenu createPopupMenu() {
-		return AmstradFactory.getInstance().createPopupMenu(getAmstradPc());
 	}
 
 	private AmstradSystemScreen findCurrentScreen() {

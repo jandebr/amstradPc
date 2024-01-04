@@ -2,9 +2,16 @@ package org.maia.amstrad.system.impl;
 
 import java.io.File;
 
+import javax.swing.JSeparator;
+
 import org.maia.amstrad.AmstradException;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.menu.AmstradMenuBar;
+import org.maia.amstrad.pc.menu.AmstradPopupMenu;
+import org.maia.amstrad.pc.menu.maker.AmstradMenuBarMaker;
+import org.maia.amstrad.pc.menu.maker.AmstradMenuDefaultLookAndFeel;
+import org.maia.amstrad.pc.menu.maker.AmstradPopupMenuMaker;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemScreen;
@@ -61,9 +68,63 @@ public class AmstradDesktopSystem extends AmstradSystem {
 		return screen;
 	}
 
+	private AmstradMenuBar createMenuBar() {
+		return new DesktopMenuBarMaker().createMenuBar();
+	}
+
+	private AmstradPopupMenu createPopupMenu() {
+		return new DesktopPopupMenuMaker().createPopupMenu();
+	}
+
 	@Override
 	public String getName() {
 		return NAME;
+	}
+
+	private class DesktopMenuBarMaker extends AmstradMenuBarMaker {
+
+		public DesktopMenuBarMaker() {
+			super(AmstradDesktopSystem.this.getAmstradPc(), new AmstradMenuDefaultLookAndFeel());
+		}
+
+		@Override
+		protected AmstradMenuBar doCreateMenu() {
+			AmstradMenuBar menuBar = new AmstradMenuBar(getAmstradPc());
+			menuBar.add(createFileMenu());
+			menuBar.add(createEmulatorMenu());
+			menuBar.add(createMonitorMenu());
+			menuBar.add(createWindowMenu());
+			return updateMenuBarLookAndFeel(menuBar);
+		}
+
+	}
+
+	private class DesktopPopupMenuMaker extends AmstradPopupMenuMaker {
+
+		public DesktopPopupMenuMaker() {
+			super(AmstradDesktopSystem.this.getAmstradPc(), new AmstradMenuDefaultLookAndFeel());
+		}
+
+		@Override
+		protected AmstradPopupMenu doCreateMenu() {
+			AmstradPopupMenu popupMenu = new AmstradPopupMenu(getAmstradPc());
+			popupMenu.add(createProgramBrowserMenuItem());
+			popupMenu.add(createProgramBrowserSetupMenuItem());
+			popupMenu.add(createProgramInfoMenuItem());
+			popupMenu.add(createAudioMenuItem());
+			popupMenu.add(createJoystickMenu());
+			popupMenu.add(createPauseResumeMenuItem());
+			popupMenu.add(new JSeparator());
+			popupMenu.add(createScreenshotMenuItem());
+			popupMenu.add(createScreenshotWithMonitorEffectMenuItem());
+			popupMenu.add(createMonitorModeMenu());
+			popupMenu.add(createMonitorEffectsMenu());
+			popupMenu.add(createMonitorFullscreenMenuItem());
+			popupMenu.add(new JSeparator());
+			popupMenu.add(createPowerOffMenuItem());
+			return updatePopupMenuLookAndFeel(popupMenu);
+		}
+
 	}
 
 	private static class DesktopSystemSettings implements AmstradSystemSettings {

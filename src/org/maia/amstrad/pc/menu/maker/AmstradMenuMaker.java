@@ -14,7 +14,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
-import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
@@ -33,10 +32,6 @@ public abstract class AmstradMenuMaker {
 	private AmstradPc amstradPc;
 
 	private AmstradMenuLookAndFeel lookAndFeel;
-
-	protected AmstradMenuMaker(AmstradPc amstradPc) {
-		this(amstradPc, AmstradFactory.getInstance().getAmstradContext().getMenuLookAndFeel());
-	}
 
 	protected AmstradMenuMaker(AmstradPc amstradPc, AmstradMenuLookAndFeel lookAndFeel) {
 		this.amstradPc = amstradPc;

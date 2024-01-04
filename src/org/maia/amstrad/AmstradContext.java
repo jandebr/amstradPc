@@ -5,7 +5,6 @@ import java.io.PrintStream;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
-import org.maia.amstrad.pc.menu.maker.AmstradMenuLookAndFeel;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
@@ -16,8 +15,6 @@ import org.maia.amstrad.system.AmstradSystem;
 public abstract class AmstradContext {
 
 	private AmstradSystem amstradSystem;
-
-	private AmstradMenuLookAndFeel menuLookAndFeel;
 
 	public static final String SETTING_AMSTRAD_SYSTEM = "mode";
 
@@ -129,17 +126,6 @@ public abstract class AmstradContext {
 	public abstract boolean isBasicProtectiveMode(AmstradPc amstradPc);
 
 	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
-
-	public AmstradMenuLookAndFeel getMenuLookAndFeel() {
-		if (menuLookAndFeel == null) {
-			menuLookAndFeel = AmstradFactory.getInstance().createMenuLookAndFeel();
-		}
-		return menuLookAndFeel;
-	}
-
-	public void setMenuLookAndFeel(AmstradMenuLookAndFeel menuLookAndFeel) {
-		this.menuLookAndFeel = menuLookAndFeel;
-	}
 
 	public File getCurrentDirectory() {
 		String dir = getUserSettings().get(SETTING_CURRENT_DIR, null);
