@@ -659,9 +659,11 @@ public abstract class JemuAmstradPc extends AmstradPc
 		@Override
 		public void displayPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int framesPainted,
 				int imagesUpdated) {
-			int syncsPerSecond = Math.round(imagesUpdated / (timeIntervalMillis / 1000f));
-			syncsPerSecond = Math.min(syncsPerSecond, upperboundDataValue);
-			addMonitoringDataPoint(syncsPerSecond);
+			if (!amstradPc.isPaused()) {
+				int syncsPerSecond = Math.round(imagesUpdated / (timeIntervalMillis / 1000f));
+				syncsPerSecond = Math.min(syncsPerSecond, upperboundDataValue);
+				addMonitoringDataPoint(syncsPerSecond);
+			}
 		}
 
 		private synchronized void resetMonitoring() {
@@ -696,11 +698,14 @@ public abstract class JemuAmstradPc extends AmstradPc
 		}
 
 		private synchronized void boost() {
-			System.out.println("Display BOOST (avg=" + getAverageDataValue() + ", max=" + getMaximumDataValue() + ")");
-			getMemory().pauseComputerInstantly();
-			getMemory().resumeComputerInstantly();
-			updateMinimumSecondsToNextBoost();
-			lastBoostTime = System.currentTimeMillis();
+			if (!isPaused()) {
+				System.out.println(
+						"Display BOOST (avg=" + getAverageDataValue() + ", max=" + getMaximumDataValue() + ")");
+				getMemory().pauseComputerInstantly();
+				getMemory().resumeComputerInstantly();
+				updateMinimumSecondsToNextBoost();
+				lastBoostTime = System.currentTimeMillis();
+			}
 		}
 
 		private void updateMinimumSecondsToNextBoost() {
