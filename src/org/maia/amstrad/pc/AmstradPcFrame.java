@@ -61,9 +61,18 @@ public abstract class AmstradPcFrame extends JFrame
 		getAmstradPc().getMonitor().toggleFullscreen();
 	}
 
+	public void deiconify() {
+		setExtendedState(getExtendedState() & ~Frame.ICONIFIED);
+	}
+
+	public void iconify() {
+		setExtendedState(getExtendedState() | Frame.ICONIFIED);
+	}
+
 	@Override
 	public void amstradPcStarted(AmstradPc amstradPc) {
 		setVisible(true);
+		deiconify();
 		toFront();
 		getContentComponent().requestFocus();
 	}
@@ -138,6 +147,7 @@ public abstract class AmstradPcFrame extends JFrame
 	@Override
 	public void windowStateChanged(WindowEvent event) {
 		if ((event.getNewState() & Frame.MAXIMIZED_BOTH) != 0) {
+			// user may have maximized the frame via the window controls
 			getAmstradPc().getMonitor().makeFullscreen();
 		}
 	}
