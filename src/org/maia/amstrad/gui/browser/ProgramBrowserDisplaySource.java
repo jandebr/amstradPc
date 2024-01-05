@@ -26,7 +26,6 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.util.GenericListenerList;
 import org.maia.util.StringUtils;
@@ -721,11 +720,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	public AmstradSystemSettings getSystemSettings() {
-		return getAmstradSystem().getSystemSettings();
-	}
-
-	private AmstradSystem getAmstradSystem() {
-		return getAmstradContext().getAmstradSystem();
+		return getAmstradContext().getSystemSettings();
 	}
 
 	private AmstradContext getAmstradContext() {

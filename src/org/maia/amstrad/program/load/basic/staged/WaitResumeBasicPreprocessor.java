@@ -47,17 +47,10 @@ public class WaitResumeBasicPreprocessor extends StagedBasicPreprocessor {
 		session.addMacro(new WaitResumeMacro(new BasicLineNumberRange(ln1, ln2), addrResume));
 	}
 
-	public static class WaitResumeMacro extends StagedBasicMacro {
-
-		private int resumeMemoryAddress;
+	public static class WaitResumeMacro extends ResumableMacro {
 
 		public WaitResumeMacro(BasicLineNumberRange range, int resumeMemoryAddress) {
-			super(range);
-			this.resumeMemoryAddress = resumeMemoryAddress;
-		}
-
-		public int getResumeMemoryAddress() {
-			return resumeMemoryAddress;
+			super(range, resumeMemoryAddress);
 		}
 
 	}

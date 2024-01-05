@@ -22,16 +22,17 @@ import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.program.AmstradBasicProgramFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
+import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.basic.BasicPreprocessor;
 import org.maia.amstrad.program.load.basic.BasicPreprocessorBatch;
 import org.maia.amstrad.program.load.basic.staged.CompactBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.InterruptBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.ProgramBridgeBasicPreprocessor;
+import org.maia.amstrad.program.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
+import org.maia.amstrad.program.load.basic.staged.ResumableMacro;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.program.load.basic.staged.StagedLineNumberMapping;
-import org.maia.amstrad.program.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
-import org.maia.amstrad.program.AmstradProgramException;
 
 public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
@@ -248,7 +249,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		return false;
 	}
 
-	public static class ChainMergeMacro extends FileCommandMacro {
+	public static class ChainMergeMacro extends ResumableMacro {
 
 		public ChainMergeMacro(BasicLineNumberRange range, int resumeMemoryAddress) {
 			super(range, resumeMemoryAddress);

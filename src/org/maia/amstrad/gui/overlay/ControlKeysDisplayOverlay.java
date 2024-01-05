@@ -16,13 +16,12 @@ import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
-import org.maia.amstrad.system.AmstradSystem;
 
 public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
-	private static boolean DEFAULT_SHOW_CONTROLKEYS = false;
+	public static boolean DEFAULT_SHOW_CONTROLKEYS = false;
 
-	private static boolean DEFAULT_AUTOHIDE_CONTROLKEYS = true;
+	public static boolean DEFAULT_AUTOHIDE_CONTROLKEYS = true;
 
 	private static long FADEOUT_TIME_MILLIS = 8000L;
 
@@ -67,24 +66,6 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		getControlKeys().add(new PopupMenuControlKey());
 	}
 
-	private boolean isShowControlKeysEnabled() {
-		boolean show = DEFAULT_SHOW_CONTROLKEYS;
-		AmstradSystem system = getAmstradContext().getAmstradSystem();
-		if (system != null) {
-			show = system.getCurrentScreen().isShowControlKeys();
-		}
-		return show;
-	}
-
-	private boolean isAutohideControlKeys() {
-		boolean autohide = DEFAULT_AUTOHIDE_CONTROLKEYS;
-		AmstradSystem system = getAmstradContext().getAmstradSystem();
-		if (system != null) {
-			autohide = system.getCurrentScreen().isAutohideControlKeys();
-		}
-		return autohide;
-	}
-
 	@Override
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		super.init(displayComponent, graphicsContext);
@@ -111,6 +92,22 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 			double fadeout = r <= 0.4 ? 0.0 : Math.sqrt((r - 0.4) / 0.6);
 			updateColors(fadeout);
 			renderControlKeysBar(displayView, displayBounds, monitorInsets, graphicsContext);
+		}
+	}
+
+	private boolean isShowControlKeysEnabled() {
+		if (isAmstradSystemSetup()) {
+			return getAmstradSystem().getCurrentScreen().isShowControlKeys();
+		} else {
+			return DEFAULT_SHOW_CONTROLKEYS;
+		}
+	}
+
+	private boolean isAutohideControlKeys() {
+		if (isAmstradSystemSetup()) {
+			return getAmstradSystem().getCurrentScreen().isAutohideControlKeys();
+		} else {
+			return DEFAULT_AUTOHIDE_CONTROLKEYS;
 		}
 	}
 

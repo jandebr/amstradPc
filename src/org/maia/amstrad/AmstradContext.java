@@ -11,6 +11,8 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourc
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 import org.maia.amstrad.system.AmstradSystem;
+import org.maia.amstrad.system.AmstradSystemSettings;
+import org.maia.amstrad.system.impl.AmstradDesktopSystem;
 
 public abstract class AmstradContext {
 
@@ -58,12 +60,39 @@ public abstract class AmstradContext {
 		return system;
 	}
 
+	public boolean isAmstradSystemSetup() {
+		return getAmstradSystem() != null;
+	}
+
+	/**
+	 * Returns the Amstrad System, when setup
+	 * 
+	 * @return The Amstrad System, or <code>null</code> when no System has been setup
+	 * @see #isAmstradSystemSetup()
+	 * @see #setupAmstradSystem()
+	 */
 	public AmstradSystem getAmstradSystem() {
 		return amstradSystem;
 	}
 
 	private void setAmstradSystem(AmstradSystem amstradSystem) {
 		this.amstradSystem = amstradSystem;
+	}
+
+	/**
+	 * Returns the system settings
+	 * 
+	 * @return The system settings, guaranteed to be non-<code>null</code> (defaulted when no Amstrad System is setup
+	 *         yet)
+	 * @see #isAmstradSystemSetup()
+	 */
+	public AmstradSystemSettings getSystemSettings() {
+		if (isAmstradSystemSetup()) {
+			return getAmstradSystem().getSystemSettings();
+		} else {
+			// default (Desktop)
+			return AmstradDesktopSystem.SETTINGS;
+		}
 	}
 
 	public abstract AmstradSettings getUserSettings();
@@ -209,6 +238,16 @@ public abstract class AmstradContext {
 		} catch (Exception e) {
 			System.err.println("Failed to execute system command");
 			System.err.println(e);
+		}
+	}
+
+	public void powerOff(AmstradPc amstradPc) {
+		if (isAmstradSystemSetup()) {
+			getAmstradSystem().terminate();
+		} else {
+			amstradPc.terminate();
+			getUserSettings().flush();
+			System.exit(0);
 		}
 	}
 

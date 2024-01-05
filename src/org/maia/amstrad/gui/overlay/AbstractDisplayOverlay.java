@@ -15,6 +15,7 @@ import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.system.AmstradSystem;
+import org.maia.amstrad.system.AmstradSystemSettings;
 
 public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
@@ -98,6 +99,14 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
 	protected boolean isLargeDisplay(Rectangle displayBounds) {
 		return displayBounds.height >= 540;
+	}
+
+	protected AmstradSystemSettings getSystemSettings() {
+		return getAmstradContext().getSystemSettings();
+	}
+
+	protected boolean isAmstradSystemSetup() {
+		return getAmstradContext().isAmstradSystemSetup();
 	}
 
 	protected AmstradSystem getAmstradSystem() {

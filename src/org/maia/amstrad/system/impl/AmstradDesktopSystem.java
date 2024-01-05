@@ -25,6 +25,8 @@ public class AmstradDesktopSystem extends AmstradSystem {
 
 	public static final String NAME = "DESKTOP";
 
+	public static final AmstradSystemSettings SETTINGS = new DesktopSystemSettings();
+
 	public AmstradDesktopSystem() {
 	}
 
@@ -44,7 +46,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 
 	@Override
 	protected AmstradSystemSettings createSystemSettings() {
-		return new DesktopSystemSettings();
+		return SETTINGS;
 	}
 
 	@Override
@@ -128,6 +130,9 @@ public class AmstradDesktopSystem extends AmstradSystem {
 	}
 
 	private static class DesktopSystemSettings implements AmstradSystemSettings {
+
+		public DesktopSystemSettings() {
+		}
 
 		@Override
 		public boolean isProgramBrowserCentric() {

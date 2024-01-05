@@ -21,7 +21,6 @@ public class BasicStagingTest {
 	public static void main(String[] args) throws AmstradProgramException {
 		File dir = new File("resources/test/staging");
 		AmstradFactory fac = AmstradFactory.getInstance();
-		fac.getAmstradContext().setupAmstradSystem();
 		BasicStagingTest test = new BasicStagingTest();
 		test.run(fac.createBasicProgram(new File(dir, "emulator.bas")));
 		// test.run(fac.createBasicDescribedProgram(new File(dir, "textload.bas"), new File(dir, "textload.amd")));

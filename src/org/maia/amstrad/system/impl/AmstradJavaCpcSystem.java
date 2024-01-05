@@ -14,6 +14,8 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 
 	public static final String NAME = "JAVACPC";
 
+	public static final AmstradSystemSettings SETTINGS = new JavaCpcSystemSettings();
+
 	public AmstradJavaCpcSystem() {
 	}
 
@@ -37,7 +39,7 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 
 	@Override
 	protected AmstradSystemSettings createSystemSettings() {
-		return new JavaCpcSystemSettings();
+		return SETTINGS;
 	}
 
 	@Override
@@ -46,6 +48,9 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 	}
 
 	private static class JavaCpcSystemSettings implements AmstradSystemSettings {
+
+		public JavaCpcSystemSettings() {
+		}
 
 		@Override
 		public boolean isProgramBrowserCentric() {

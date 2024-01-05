@@ -85,7 +85,7 @@ public class AmstradFactory {
 		} else if (systemName.equalsIgnoreCase(AmstradJavaCpcSystem.NAME)) {
 			system = new AmstradJavaCpcSystem();
 		} else {
-			// default
+			// default (Desktop)
 			system = new AmstradDesktopSystem();
 		}
 		return system;

@@ -105,7 +105,7 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 				stf.createPositiveInteger8BitDecimal(macroHandlerMemoryValue));
 	}
 
-	protected void endWithError(int errorCode, BasicSourceCode sourceCode, WaitResumeMacro macro,
+	protected void endWithError(int errorCode, BasicSourceCode sourceCode, ResumableMacro macro,
 			StagedBasicProgramLoaderSession session) {
 		System.err.println("Staged Basic program ended with ERROR " + errorCode);
 		try {
@@ -122,14 +122,14 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 		SystemUtils.sleep(DELAYMILLIS_ENTER_MACRO_WAIT_LOOP);
 	}
 
-	protected void resumeWithNewSourceCode(BasicSourceCode newSourceCode, WaitResumeMacro macro,
+	protected void resumeWithNewSourceCode(BasicSourceCode newSourceCode, ResumableMacro macro,
 			StagedBasicProgramLoaderSession session) throws BasicException {
 		BasicByteCode newByteCode = prepareCodeForSwapping(newSourceCode, session);
 		session.getBasicRuntime().swap(newByteCode);
 		resumeRun(macro, session);
 	}
 
-	protected void resumeRun(WaitResumeMacro macro, StagedBasicProgramLoaderSession session) {
+	protected void resumeRun(ResumableMacro macro, StagedBasicProgramLoaderSession session) {
 		session.getBasicRuntime().poke(macro.getResumeMemoryAddress(), (byte) 1);
 	}
 

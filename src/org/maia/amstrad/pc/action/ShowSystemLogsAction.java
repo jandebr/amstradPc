@@ -12,11 +12,14 @@ public class ShowSystemLogsAction extends AmstradPcAction {
 
 	public ShowSystemLogsAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
+		setEnabled(isAmstradSystemSetup());
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		getAmstradSystem().getSystemLogs().show();
+		if (isEnabled()) {
+			getAmstradSystem().getSystemLogs().show();
+		}
 	}
 
 }

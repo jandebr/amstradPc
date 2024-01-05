@@ -28,6 +28,8 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 
 	public static final String NAME = "ENTERTAINMENT";
 
+	public static final AmstradSystemSettings SETTINGS = new EntertainmentSystemSettings();
+
 	private static final String PROGRAM_BROWSER_SCREEN_ID = "PROGRAM_BROWSER";
 
 	public AmstradEntertainmentSystem() {
@@ -55,7 +57,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 
 	@Override
 	protected AmstradSystemSettings createSystemSettings() {
-		return new EntertainmentSystemSettings();
+		return SETTINGS;
 	}
 
 	@Override
@@ -143,6 +145,9 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 	}
 
 	private static class EntertainmentSystemSettings implements AmstradSystemSettings {
+
+		public EntertainmentSystemSettings() {
+		}
 
 		@Override
 		public boolean isProgramBrowserCentric() {

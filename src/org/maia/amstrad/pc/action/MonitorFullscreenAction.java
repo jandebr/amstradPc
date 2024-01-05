@@ -18,7 +18,7 @@ public class MonitorFullscreenAction extends AmstradPcAction {
 		updateName();
 		amstradPc.getMonitor().addMonitorListener(this);
 		amstradPc.getKeyboard().addKeyboardListener(this);
-		setEnabled(getAmstradSystem().getSystemSettings().isFullscreenToggleEnabled());
+		setEnabled(getSystemSettings().isFullscreenToggleEnabled());
 	}
 
 	@Override

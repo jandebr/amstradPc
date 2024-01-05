@@ -64,7 +64,11 @@ public abstract class AmstradPcAction extends AbstractAction
 	}
 
 	protected AmstradSystemSettings getSystemSettings() {
-		return getAmstradSystem().getSystemSettings();
+		return getAmstradContext().getSystemSettings();
+	}
+
+	protected boolean isAmstradSystemSetup() {
+		return getAmstradContext().isAmstradSystemSetup();
 	}
 
 	protected AmstradSystem getAmstradSystem() {

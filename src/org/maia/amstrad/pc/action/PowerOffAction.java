@@ -45,7 +45,7 @@ public class PowerOffAction extends AmstradPcAction {
 	}
 
 	private void doPowerOff() {
-		getAmstradContext().getAmstradSystem().terminate();
+		getAmstradContext().powerOff(getAmstradPc());
 	}
 
 }

@@ -20,7 +20,6 @@ import org.maia.amstrad.program.AmstradProgramException;
 public class BasicVariablesTest {
 
 	public static void main(String[] args) throws AmstradProgramException, BasicException {
-		AmstradFactory.getInstance().getAmstradContext().setupAmstradSystem();
 		BasicVariablesTest test = new BasicVariablesTest();
 		AmstradProgram program = test.getTestProgram();
 		test.run(program);

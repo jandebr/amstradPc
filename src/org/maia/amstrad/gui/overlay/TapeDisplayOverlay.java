@@ -19,6 +19,8 @@ import org.maia.amstrad.pc.tape.AmstradTape;
 
 public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 
+	public static boolean DEFAULT_SHOW_TAPE_ACTIVITY = false;
+
 	private static Color colorRead = AmstradSystemColors.getSystemColors(AmstradMonitorMode.COLOR).getColor(22);
 
 	private static Color colorWrite = AmstradSystemColors.getSystemColors(AmstradMonitorMode.COLOR).getColor(16);
@@ -33,8 +35,7 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		AmstradTape tape = getAmstracPc().getTape();
-		if (tape.isActive() && !tape.isSuppressMessages()
-				&& getAmstradSystem().getSystemSettings().isTapeActivityShown() && !offscreenImage) {
+		if (tape.isActive() && !tape.isSuppressMessages() && isTapeActivityShowEnabled() && !offscreenImage) {
 			String filename = tape.getFilenameAtTapeHead();
 			if (filename != null) {
 				// tape icon
@@ -62,6 +63,14 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 				g.drawString(label, labelOffset, labelBaseline);
 				g.dispose();
 			}
+		}
+	}
+
+	private boolean isTapeActivityShowEnabled() {
+		if (isAmstradSystemSetup()) {
+			return getSystemSettings().isTapeActivityShown();
+		} else {
+			return DEFAULT_SHOW_TAPE_ACTIVITY;
 		}
 	}
 
