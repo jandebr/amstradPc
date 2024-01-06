@@ -33,7 +33,8 @@ public abstract class AmstradPcFrame extends JFrame
 		addWindowStateListener(this);
 		setFocusable(false);
 		setAlwaysOnTop(amstradPc.getMonitor().isWindowAlwaysOnTop());
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // exit behavior is handled in windowClosing()
+		setDefaultCloseOperation(exitOnClose ? JFrame.DO_NOTHING_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE); // see also
+																										// windowClosing()
 		setIconImage(UIResources.cpcIcon.getImage());
 		getContentPane().add(getContentComponent(), BorderLayout.CENTER);
 	}
