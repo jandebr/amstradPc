@@ -74,11 +74,6 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 		}
 
 		@Override
-		public boolean isTapeActivityShown() {
-			return false;
-		}
-
-		@Override
 		public boolean isProgramSourceCodeAccessible() {
 			return true;
 		}

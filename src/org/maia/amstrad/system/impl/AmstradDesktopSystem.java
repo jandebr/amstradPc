@@ -155,11 +155,6 @@ public class AmstradDesktopSystem extends AmstradSystem {
 		}
 
 		@Override
-		public boolean isTapeActivityShown() {
-			return true;
-		}
-
-		@Override
 		public boolean isProgramSourceCodeAccessible() {
 			return true;
 		}

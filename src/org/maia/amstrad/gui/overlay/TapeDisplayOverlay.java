@@ -19,7 +19,7 @@ import org.maia.amstrad.pc.tape.AmstradTape;
 
 public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 
-	public static boolean DEFAULT_SHOW_TAPE_ACTIVITY = false;
+	public static boolean DEFAULT_SHOW_TAPE_ACTIVITY = true;
 
 	private static Color colorRead = AmstradSystemColors.getSystemColors(AmstradMonitorMode.COLOR).getColor(22);
 
@@ -35,40 +35,42 @@ public class TapeDisplayOverlay extends AbstractDisplayOverlay {
 	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
 		AmstradTape tape = getAmstracPc().getTape();
-		if (tape.isActive() && !tape.isSuppressMessages() && isTapeActivityShowEnabled() && !offscreenImage) {
-			String filename = tape.getFilenameAtTapeHead();
-			if (filename != null) {
-				// tape icon
-				ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.tapeOverlayIcon
-						: UIResources.tapeSmallOverlayIcon;
-				Rectangle iconBounds = drawIconTopLeft(icon, displayView, displayBounds, monitorInsets);
-				int x0 = iconBounds.x + iconBounds.width + 3;
-				int yc = iconBounds.y + iconBounds.height / 2;
-				// activity icon & label
-				String label = filename;
-				Font labelFont = getLabelFont(graphicsContext);
-				FontMetrics fm = displayView.getFontMetrics(labelFont);
-				int labelWidth = fm.stringWidth(label);
-				int labelOffset = 24;
-				int labelBaseline = 10 + (fm.getAscent() - fm.getDescent()) / 2 + 1;
-				Graphics2D g = displayView.createDisplayViewport(x0, yc - 10, labelOffset + labelWidth, 22);
-				if (tape.isWriting()) {
-					drawIcon(UIResources.tapeWriteOverlayIcon, 0, 0, g);
-					g.setColor(colorWrite);
-				} else {
-					drawIcon(UIResources.tapeReadOverlayIcon, 0, 0, g);
-					g.setColor(colorRead);
+		if (tape.isActive()) {
+			if (isShowTapeActivityEnabled() && !tape.isSuppressMessages() && !offscreenImage) {
+				String filename = tape.getFilenameAtTapeHead();
+				if (filename != null) {
+					// tape icon
+					ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.tapeOverlayIcon
+							: UIResources.tapeSmallOverlayIcon;
+					Rectangle iconBounds = drawIconTopLeft(icon, displayView, displayBounds, monitorInsets);
+					int x0 = iconBounds.x + iconBounds.width + 3;
+					int yc = iconBounds.y + iconBounds.height / 2;
+					// activity icon & label
+					String label = filename;
+					Font labelFont = getLabelFont(graphicsContext);
+					FontMetrics fm = displayView.getFontMetrics(labelFont);
+					int labelWidth = fm.stringWidth(label);
+					int labelOffset = 24;
+					int labelBaseline = 10 + (fm.getAscent() - fm.getDescent()) / 2 + 1;
+					Graphics2D g = displayView.createDisplayViewport(x0, yc - 10, labelOffset + labelWidth, 22);
+					if (tape.isWriting()) {
+						drawIcon(UIResources.tapeWriteOverlayIcon, 0, 0, g);
+						g.setColor(colorWrite);
+					} else {
+						drawIcon(UIResources.tapeReadOverlayIcon, 0, 0, g);
+						g.setColor(colorRead);
+					}
+					g.setFont(labelFont);
+					g.drawString(label, labelOffset, labelBaseline);
+					g.dispose();
 				}
-				g.setFont(labelFont);
-				g.drawString(label, labelOffset, labelBaseline);
-				g.dispose();
 			}
 		}
 	}
 
-	private boolean isTapeActivityShowEnabled() {
+	private boolean isShowTapeActivityEnabled() {
 		if (isAmstradSystemSetup()) {
-			return getSystemSettings().isTapeActivityShown();
+			return getAmstradSystem().getCurrentScreen().isShowTapeActivity();
 		} else {
 			return DEFAULT_SHOW_TAPE_ACTIVITY;
 		}

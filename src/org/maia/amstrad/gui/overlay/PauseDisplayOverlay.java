@@ -12,6 +12,8 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class PauseDisplayOverlay extends AbstractDisplayOverlay {
 
+	public static boolean DEFAULT_SHOW_PAUSE = true;
+
 	public PauseDisplayOverlay(AmstradPc amstracPc) {
 		super(amstracPc);
 	}
@@ -19,10 +21,20 @@ public class PauseDisplayOverlay extends AbstractDisplayOverlay {
 	@Override
 	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
-		if (getAmstracPc().isPaused() && !getAmstracPc().getTape().isActive() && !offscreenImage) {
-			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.pauseOverlayIcon
-					: UIResources.pauseSmallOverlayIcon;
-			drawIconTopRight(icon, displayView, displayBounds, monitorInsets);
+		if (getAmstracPc().isPaused()) {
+			if (isShowPauseEnabled() && !getAmstracPc().getTape().isActive() && !offscreenImage) {
+				ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.pauseOverlayIcon
+						: UIResources.pauseSmallOverlayIcon;
+				drawIconTopRight(icon, displayView, displayBounds, monitorInsets);
+			}
+		}
+	}
+
+	private boolean isShowPauseEnabled() {
+		if (isAmstradSystemSetup()) {
+			return getAmstradSystem().getCurrentScreen().isShowPause();
+		} else {
+			return DEFAULT_SHOW_PAUSE;
 		}
 	}
 

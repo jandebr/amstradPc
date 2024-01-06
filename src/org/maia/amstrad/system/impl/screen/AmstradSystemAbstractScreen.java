@@ -14,9 +14,13 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private AmstradPopupMenu popupMenu;
 
+	private boolean showPause;
+
 	private boolean showControlKeys;
 
 	private boolean autohideControlKeys;
+
+	private boolean showTapeActivity;
 
 	protected AmstradSystemAbstractScreen(String screenIdentifier, AmstradSystem amstradSystem) {
 		if (screenIdentifier == null)
@@ -25,8 +29,11 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 			throw new NullPointerException("Amstrad system is null");
 		this.screenIdentifier = screenIdentifier;
 		this.amstradSystem = amstradSystem;
-		this.showControlKeys = false; // default
-		this.autohideControlKeys = true; // default
+		// Defaults
+		this.showPause = true;
+		this.showControlKeys = false;
+		this.autohideControlKeys = true;
+		this.showTapeActivity = true;
 	}
 
 	@Override
@@ -65,6 +72,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 	}
 
 	@Override
+	public boolean isShowPause() {
+		return showPause;
+	}
+
+	public void setShowPause(boolean show) {
+		this.showPause = show;
+	}
+
+	@Override
 	public boolean isShowControlKeys() {
 		return showControlKeys;
 	}
@@ -80,6 +96,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	public void setAutohideControlKeys(boolean autohide) {
 		this.autohideControlKeys = autohide;
+	}
+
+	@Override
+	public boolean isShowTapeActivity() {
+		return showTapeActivity;
+	}
+
+	public void setShowTapeActivity(boolean show) {
+		this.showTapeActivity = show;
 	}
 
 }

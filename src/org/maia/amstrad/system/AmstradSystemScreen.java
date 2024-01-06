@@ -2,6 +2,7 @@ package org.maia.amstrad.system;
 
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.tape.AmstradTape;
 
 public interface AmstradSystemScreen {
 
@@ -30,6 +31,13 @@ public interface AmstradSystemScreen {
 	AmstradPopupMenu getPopupMenu();
 
 	/**
+	 * Tells whether the paused state is to be shown on screen
+	 * 
+	 * @return <code>true</code> iff paused state is to be shown
+	 */
+	boolean isShowPause();
+
+	/**
 	 * Tells whether control keys are to be shown on screen
 	 * 
 	 * @return <code>true</code> iff control keys are to be shown
@@ -46,5 +54,14 @@ public interface AmstradSystemScreen {
 	 * @return <code>true</code> iff control keys are hidden automatically
 	 */
 	boolean isAutohideControlKeys();
+
+	/**
+	 * Tells whether visual indications for tape activity are to be shown on screen
+	 * 
+	 * @return <code>true</code> iff tape activity is to be shown
+	 * 
+	 * @see AmstradTape#isActive()
+	 */
+	boolean isShowTapeActivity();
 
 }

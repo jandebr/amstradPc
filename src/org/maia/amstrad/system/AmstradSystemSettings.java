@@ -1,7 +1,5 @@
 package org.maia.amstrad.system;
 
-import org.maia.amstrad.pc.tape.AmstradTape;
-
 public interface AmstradSystemSettings {
 
 	/**
@@ -31,15 +29,6 @@ public interface AmstradSystemSettings {
 	 * @return <code>true</code> iff the original Jemu menu is to be shown
 	 */
 	boolean isUsingOriginalJemuMenu();
-
-	/**
-	 * Tells whether visual indications for tape activity are to be shown
-	 * 
-	 * @return <code>true</code> iff tape activity is to be shown
-	 * 
-	 * @see AmstradTape#isActive()
-	 */
-	boolean isTapeActivityShown();
 
 	/**
 	 * Tells whether the source code of programs is accessible
