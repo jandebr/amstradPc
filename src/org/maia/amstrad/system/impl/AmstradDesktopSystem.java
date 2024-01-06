@@ -32,7 +32,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 
 	@Override
 	protected void doLaunch(AmstradPc amstradPc, String[] args) throws AmstradException {
-		AmstradPcFrame frame = amstradPc.displayInFrame(false);
+		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		createMenuBar().install();
 		if (args.length == 0) {
 			amstradPc.start();

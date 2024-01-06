@@ -20,17 +20,20 @@ public abstract class AmstradPcFrame extends JFrame
 
 	private AmstradPc amstradPc;
 
+	private boolean exitOnClose;
+
 	private boolean closing;
 
 	protected AmstradPcFrame(AmstradPc amstradPc, String title, boolean exitOnClose) {
 		super(title);
 		this.amstradPc = amstradPc;
+		this.exitOnClose = exitOnClose;
 		amstradPc.addStateListener(this);
 		addWindowListener(this);
 		addWindowStateListener(this);
 		setFocusable(false);
 		setAlwaysOnTop(amstradPc.getMonitor().isWindowAlwaysOnTop());
-		setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // exit behavior is handled in windowClosing()
 		setIconImage(UIResources.cpcIcon.getImage());
 		getContentPane().add(getContentComponent(), BorderLayout.CENTER);
 	}
@@ -118,7 +121,7 @@ public abstract class AmstradPcFrame extends JFrame
 	public synchronized void windowClosing(WindowEvent event) {
 		if (!isClosing()) {
 			setClosing(true);
-			if (!getAmstradPc().isTerminated()) {
+			if (!getAmstradPc().isTerminated() && isExitOnClose()) {
 				AmstradFactory.getInstance().getAmstradContext().powerOff(getAmstradPc());
 			}
 		}
@@ -164,6 +167,10 @@ public abstract class AmstradPcFrame extends JFrame
 
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
+	}
+
+	public boolean isExitOnClose() {
+		return exitOnClose;
 	}
 
 	private boolean isClosing() {

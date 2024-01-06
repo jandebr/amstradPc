@@ -37,7 +37,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 
 	@Override
 	protected void doLaunch(AmstradPc amstradPc, String[] args) throws AmstradException {
-		AmstradPcFrame frame = amstradPc.displayInFrame(false);
+		AmstradPcFrame frame = amstradPc.displayInFrame(true);
 		amstradPc.start();
 	}
 
