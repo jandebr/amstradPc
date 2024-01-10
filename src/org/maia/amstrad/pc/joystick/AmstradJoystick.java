@@ -1,7 +1,7 @@
 package org.maia.amstrad.pc.joystick;
 
-import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.util.GenericListenerList;
 
 import jemu.settings.Settings;
@@ -18,12 +18,19 @@ public abstract class AmstradJoystick extends AmstradPcDevice {
 
 	private GenericListenerList<AmstradJoystickEventListener> joystickEventListeners;
 
+	private AmstradJoystickController controller;
+
 	protected AmstradJoystick(AmstradPc amstradPc, AmstradJoystickID joystickId) {
 		super(amstradPc);
 		this.joystickId = joystickId;
 		this.joystickStateListeners = new GenericListenerList<AmstradJoystickStateListener>();
 		this.joystickEventListeners = new GenericListenerList<AmstradJoystickEventListener>();
+		this.controller = createController();
 		switchActiveState(getInitialActiveState());
+	}
+
+	protected AmstradJoystickController createController() {
+		return new AmstradJoystickController(this);
 	}
 
 	public abstract void showSetupDialog();
@@ -118,6 +125,14 @@ public abstract class AmstradJoystick extends AmstradPcDevice {
 		return Settings.JOYSTICK + "." + getJoystickId().getIdentifier();
 	}
 
+	public boolean isPrimaryJoystick() {
+		return AmstradJoystickID.JOYSTICK0.equals(getJoystickId());
+	}
+
+	public boolean isSecondaryJoystick() {
+		return AmstradJoystickID.JOYSTICK1.equals(getJoystickId());
+	}
+
 	public AmstradJoystickID getJoystickId() {
 		return joystickId;
 	}
@@ -144,6 +159,10 @@ public abstract class AmstradJoystick extends AmstradPcDevice {
 
 	protected GenericListenerList<AmstradJoystickEventListener> getJoystickEventListeners() {
 		return joystickEventListeners;
+	}
+
+	protected AmstradJoystickController getController() {
+		return controller;
 	}
 
 }

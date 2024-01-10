@@ -32,7 +32,7 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 	public static int KEY_TRIGGER_CODE = KeyEvent.VK_F2;
 
 	public static int KEY_TRIGGER_MODIFIERS = KeyEvent.CTRL_DOWN_MASK;
-	
+
 	public static String KEY_TRIGGER_TEXT = "Ctrl F2";
 
 	public AmstradPopupMenu(AmstradPc amstradPc) {

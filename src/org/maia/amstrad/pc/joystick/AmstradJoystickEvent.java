@@ -8,8 +8,6 @@ public class AmstradJoystickEvent {
 
 	private EventType eventType;
 
-	private boolean consumed;
-
 	public AmstradJoystickEvent(AmstradJoystick joystick, AmstradJoystickCommand command, EventType eventType) {
 		this.joystick = joystick;
 		this.command = command;
@@ -29,10 +27,6 @@ public class AmstradJoystickEvent {
 		return builder.toString();
 	}
 
-	public void consume() {
-		setConsumed(true);
-	}
-
 	public boolean isFired() {
 		return EventType.FIRED.equals(getEventType()) || EventType.FIRED_AUTO_REPEAT.equals(getEventType());
 	}
@@ -47,14 +41,6 @@ public class AmstradJoystickEvent {
 
 	public AmstradJoystickCommand getCommand() {
 		return command;
-	}
-
-	public boolean isConsumed() {
-		return consumed;
-	}
-
-	private void setConsumed(boolean consumed) {
-		this.consumed = consumed;
 	}
 
 	public EventType getEventType() {

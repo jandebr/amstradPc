@@ -1,4 +1,4 @@
-package org.maia.amstrad.pc.impl.joystick;
+package org.maia.amstrad.pc.joystick.keys;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -6,13 +6,13 @@ import java.awt.event.KeyEvent;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent;
 
-public abstract class AmstradJoystickMenuController extends AmstradJoystickEventTranslator {
+public class AmstradJoystickMenuAdapter extends AmstradJoystickKeyEventAdapter {
 
-	protected AmstradJoystickMenuController() {
+	public AmstradJoystickMenuAdapter() {
 	}
 
 	@Override
-	protected KeyEvent translateToKeyEvent(AmstradJoystickEvent event) {
+	public KeyEvent translateToKeyEvent(AmstradJoystickEvent event) {
 		KeyEvent keyEvent = null;
 		Component source = getKeyEventSource(event);
 		int type = toKeyEventType(event);

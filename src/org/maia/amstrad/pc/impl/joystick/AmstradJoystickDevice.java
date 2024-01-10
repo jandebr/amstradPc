@@ -21,13 +21,10 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 
 	private AmstradJoystickDeviceConfigurator configurator;
 
-	private AmstradJoystickManager manager;
-
 	public AmstradJoystickDevice(AmstradPc amstradPc, AmstradJoystickID joystickId) {
 		super(amstradPc, joystickId);
 		this.delegateCommandMap = new HashMap<JoystickCommand, AmstradJoystickCommand>();
 		this.configurator = new AmstradJoystickDeviceConfigurator(this);
-		this.manager = new AmstradJoystickManager(this);
 	}
 
 	@Override
@@ -130,10 +127,6 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 
 	private AmstradJoystickDeviceConfigurator getConfigurator() {
 		return configurator;
-	}
-
-	private AmstradJoystickManager getManager() {
-		return manager;
 	}
 
 }

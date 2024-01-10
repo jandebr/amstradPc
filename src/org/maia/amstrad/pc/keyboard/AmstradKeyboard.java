@@ -1,15 +1,14 @@
 package org.maia.amstrad.pc.keyboard;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
-import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.io.util.IOUtils;
 import org.maia.util.GenericListenerList;
 
-public abstract class AmstradKeyboard extends AmstradPcDevice {
+public abstract class AmstradKeyboard extends AmstradPcDevice implements KeyEventTarget {
 
 	private GenericListenerList<AmstradKeyboardListener> keyboardListeners;
 
@@ -53,10 +52,6 @@ public abstract class AmstradKeyboard extends AmstradPcDevice {
 	}
 
 	public abstract void breakEscape();
-
-	public abstract void pressKey(KeyEvent keyEvent);
-
-	public abstract void releaseKey(KeyEvent keyEvent);
 
 	public abstract AmstradKeyboardController getController();
 
