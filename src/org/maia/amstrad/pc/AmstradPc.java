@@ -6,13 +6,16 @@ import java.util.Map;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.gui.overlay.VirtualKeyboardDisplayOverlay;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.audio.AmstradAudio;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
+import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboard;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.tape.AmstradTape;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
@@ -28,6 +31,10 @@ public abstract class AmstradPc {
 	private AmstradPcFrame frame;
 
 	private AmstradPcActions actions;
+
+	private AmstradVirtualKeyboard virtualKeyboard;
+
+	private AmstradDisplayOverlay virtualKeyboardDisplayOverlay;
 
 	private Map<AmstradJoystickID, AmstradJoystick> joysticks;
 
@@ -137,6 +144,24 @@ public abstract class AmstradPc {
 	public abstract AmstradAudio getAudio();
 
 	public abstract BasicRuntime getBasicRuntime();
+
+	public AmstradVirtualKeyboard getVirtualKeyboard() {
+		if (virtualKeyboard == null) {
+			virtualKeyboard = AmstradFactory.getInstance().createVirtualKeyboard(this);
+		}
+		return virtualKeyboard;
+	}
+
+	public AmstradDisplayOverlay getVirtualKeyboardDisplayOverlay() {
+		if (virtualKeyboardDisplayOverlay == null) {
+			virtualKeyboardDisplayOverlay = createVirtualKeyboardDisplayOverlay();
+		}
+		return virtualKeyboardDisplayOverlay;
+	}
+
+	protected AmstradDisplayOverlay createVirtualKeyboardDisplayOverlay() {
+		return new VirtualKeyboardDisplayOverlay(this);
+	}
 
 	public AmstradJoystick getJoystick(AmstradJoystickID joystickId) {
 		synchronized (getJoysticks()) {

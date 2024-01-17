@@ -90,7 +90,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		}
 		if (r <= 1.0) {
 			double fadeout = r <= 0.4 ? 0.0 : Math.sqrt((r - 0.4) / 0.6);
-			updateColors(fadeout);
+			updateColors((float) fadeout);
 			renderControlKeysBar(displayView, displayBounds, monitorInsets, graphicsContext);
 		}
 	}
@@ -111,7 +111,7 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		}
 	}
 
-	private void updateColors(double fadeout) {
+	private void updateColors(float fadeout) {
 		setBoxColor(makeColorMoreTransparent(BOX_COLOR, fadeout));
 		setKeyColor(makeColorMoreTransparent(KEY_COLOR, fadeout));
 		setKeyBorderColor(makeColorMoreTransparent(KEY_BORDER_COLOR, fadeout));

@@ -114,6 +114,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 			popupMenu.add(createProgramBrowserSetupMenuItem());
 			popupMenu.add(createProgramInfoMenuItem());
 			popupMenu.add(createAudioMenuItem());
+			popupMenu.add(createVirtualKeyboardMenuItem());
 			popupMenu.add(createJoystickMenu());
 			popupMenu.add(createPauseResumeMenuItem());
 			popupMenu.add(new JSeparator());

@@ -27,6 +27,8 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
 	private static double DEFAULT_ICON_OUTSIDE_INNER_AREA_RATIO = 0.3;
 
+	private static float[] hsbComps = new float[3];
+
 	protected AbstractDisplayOverlay(AmstradPc amstracPc) {
 		this.amstracPc = amstracPc;
 		this.iconBounds = new Rectangle();
@@ -43,12 +45,17 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 		// Subclasses to override
 	}
 
-	protected Color makeColorMoreTransparent(Color baseColor, double transparencyFactor) {
+	protected float getBrightness(Color color) {
+		Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsbComps);
+		return hsbComps[2];
+	}
+
+	protected Color makeColorMoreTransparent(Color baseColor, float transparencyFactor) {
 		if (transparencyFactor == 0)
 			return baseColor;
-		double transparency = 1.0 - baseColor.getAlpha() / 255.0;
-		double newTransparency = transparency + (1.0 - transparency) * transparencyFactor;
-		int newAlpha = (int) Math.round((1.0 - newTransparency) * 255.0);
+		float transparency = 1f - baseColor.getAlpha() / 255f;
+		float newTransparency = transparency + (1f - transparency) * transparencyFactor;
+		int newAlpha = Math.round((1f - newTransparency) * 255f);
 		return new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), newAlpha);
 	}
 

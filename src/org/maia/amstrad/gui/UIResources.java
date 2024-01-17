@@ -16,6 +16,7 @@ import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.AudioAction;
 import org.maia.amstrad.pc.action.MonitorFullscreenAction;
 import org.maia.amstrad.pc.action.PauseResumeAction;
+import org.maia.amstrad.pc.action.VirtualKeyboardAction;
 
 public class UIResources {
 
@@ -40,6 +41,12 @@ public class UIResources {
 	public static ImageIcon unmuteIcon = loadIcon("unmute32.png");
 
 	public static Icon audioIcon = new AudioIcon(muteIcon, unmuteIcon);
+
+	public static ImageIcon virtualKeyboardOffIcon = loadIcon("vkeyboard-off32.png");
+
+	public static ImageIcon virtualKeyboardOnIcon = loadIcon("vkeyboard-on32.png");
+
+	public static Icon virtualKeyboardIcon = new VirtualKeyboardIcon(virtualKeyboardOffIcon, virtualKeyboardOnIcon);
 
 	public static ImageIcon pauseIcon = loadIcon("pause32.png");
 
@@ -159,6 +166,20 @@ public class UIResources {
 		protected boolean isSelected(Component c) {
 			Action a = ((JMenuItem) c).getAction();
 			return ((AudioAction) a).isMuted();
+		}
+
+	}
+
+	private static class VirtualKeyboardIcon extends ButtonStateIcon {
+
+		public VirtualKeyboardIcon(Icon offIcon, Icon onIcon) {
+			super(offIcon, onIcon);
+		}
+
+		@Override
+		protected boolean isSelected(Component c) {
+			Action a = ((JMenuItem) c).getAction();
+			return !((VirtualKeyboardAction) a).isActive();
 		}
 
 	}

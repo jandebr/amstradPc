@@ -5,9 +5,10 @@ import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.audio.AmstradAudio;
+import org.maia.amstrad.pc.audio.AmstradAudioListener;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 
-public class AudioAction extends AmstradPcAction {
+public class AudioAction extends AmstradPcAction implements AmstradAudioListener {
 
 	private static String NAME_MUTE = "Turn audio off";
 
@@ -27,13 +28,11 @@ public class AudioAction extends AmstradPcAction {
 
 	@Override
 	public void amstradAudioMuted(AmstradAudio audio) {
-		super.amstradAudioMuted(audio);
 		updateName();
 	}
 
 	@Override
 	public void amstradAudioUnmuted(AmstradAudio audio) {
-		super.amstradAudioUnmuted(audio);
 		updateName();
 	}
 

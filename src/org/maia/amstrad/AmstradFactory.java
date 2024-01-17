@@ -20,8 +20,10 @@ import org.maia.amstrad.pc.impl.cursor.AmstradMonitorCursorControllerImpl;
 import org.maia.amstrad.pc.impl.jemu.JemuDirectAmstradPc;
 import org.maia.amstrad.pc.impl.jemu.JemuFacadeAmstradPc;
 import org.maia.amstrad.pc.impl.joystick.AmstradJoystickDevice;
+import org.maia.amstrad.pc.impl.keyboard.virtual.AmstradVirtualKeyboardImpl;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
+import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboard;
 import org.maia.amstrad.pc.menu.maker.AmstradMenuDefaultLookAndFeel;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
@@ -145,11 +147,12 @@ public class AmstradFactory {
 
 	private AmstradDisplayOverlay createCustomDisplayOverlay(AmstradPc amstradPc) {
 		StackedDisplayOverlay overlay = new StackedDisplayOverlay();
-		overlay.addOverlay(new PauseDisplayOverlay(amstradPc), 1);
-		overlay.addOverlay(new AutotypeDisplayOverlay(amstradPc), 1);
-		overlay.addOverlay(new TapeDisplayOverlay(amstradPc), 1);
-		overlay.addOverlay(new SystemStatsDisplayOverlay(amstradPc), 0);
-		overlay.addOverlay(new ControlKeysDisplayOverlay(amstradPc), 0);
+		overlay.addOverlay(new PauseDisplayOverlay(amstradPc), 2);
+		overlay.addOverlay(new AutotypeDisplayOverlay(amstradPc), 2);
+		overlay.addOverlay(new TapeDisplayOverlay(amstradPc), 2);
+		overlay.addOverlay(new SystemStatsDisplayOverlay(amstradPc), 1);
+		overlay.addOverlay(new ControlKeysDisplayOverlay(amstradPc), 1);
+		overlay.addOverlay(amstradPc.getVirtualKeyboardDisplayOverlay(), 0);
 		return overlay;
 	}
 
@@ -159,6 +162,10 @@ public class AmstradFactory {
 
 	public AmstradMonitorCursorController createCursorController(AmstradPc amstradPc) {
 		return new AmstradMonitorCursorControllerImpl(amstradPc);
+	}
+
+	public AmstradVirtualKeyboard createVirtualKeyboard(AmstradPc amstradPc) {
+		return new AmstradVirtualKeyboardImpl(amstradPc);
 	}
 
 	public AmstradProgramRepository createProgramRepository() {

@@ -1,9 +1,15 @@
 package org.maia.amstrad.pc.impl.jemu;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -16,11 +22,17 @@ import java.util.Vector;
 
 import javax.swing.Box;
 
+import org.maia.amstrad.gui.overlay.VirtualKeyboardDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboard;
+import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboardGridLayout;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.menu.AmstradMenuBar;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
+import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
@@ -193,6 +205,11 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	}
 
 	@Override
+	protected AmstradDisplayOverlay createVirtualKeyboardDisplayOverlay() {
+		return new VirtualKeyboardRelocatingOverlay();
+	}
+
+	@Override
 	protected Font getJemuDisplayFont() {
 		return getDisplay().getDisplayFont();
 	}
@@ -212,6 +229,8 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	private class JemuFrameImpl extends JemuFrame implements ComponentListener {
 
 		private Collection<Component> paddingComponents;
+
+		private VirtualKeyboardSidePanel virtualKeyboardSidePanel; // one of paddingComponents (can be null)
 
 		public JemuFrameImpl(boolean exitOnClose) {
 			super(JemuDirectAmstradPc.this, "Amstrad CPC Emulator", exitOnClose);
@@ -241,9 +260,12 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 					getPaddingComponents().add(comp);
 				}
 				if (padRight > 0) {
-					Component comp = Box.createHorizontalStrut(padRight);
+					VirtualKeyboardSidePanel comp = new VirtualKeyboardSidePanel(padRight);
 					getContentPane().add(comp, BorderLayout.EAST);
 					getPaddingComponents().add(comp);
+					setVirtualKeyboardSidePanel(comp);
+				} else {
+					setVirtualKeyboardSidePanel(null);
 				}
 				// Vertical padding
 				int padTop = (screenSize.height - displaySize.height) / 2;
@@ -267,6 +289,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 					getContentPane().remove(comp);
 				}
 				getPaddingComponents().clear();
+				setVirtualKeyboardSidePanel(null);
 			}
 		}
 
@@ -313,12 +336,24 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 			return getDisplay();
 		}
 
+		public Color getBackgroundColor() {
+			return getContentPane().getBackground();
+		}
+
 		private boolean hasPaddingAroundDisplay() {
 			return !getPaddingComponents().isEmpty();
 		}
 
 		private Collection<Component> getPaddingComponents() {
 			return paddingComponents;
+		}
+
+		public VirtualKeyboardSidePanel getVirtualKeyboardSidePanel() {
+			return virtualKeyboardSidePanel;
+		}
+
+		private void setVirtualKeyboardSidePanel(VirtualKeyboardSidePanel sidePanel) {
+			this.virtualKeyboardSidePanel = sidePanel;
 		}
 
 		private class MonitorDisplayUltimateFullscreenMaker extends Thread {
@@ -672,6 +707,121 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		protected void setMenuBarWhenWindowed(AmstradMenuBar menuBar) {
 			this.menuBarWhenWindowed = menuBar;
+		}
+
+	}
+
+	private class VirtualKeyboardRelocatingOverlay extends VirtualKeyboardDisplayOverlay {
+
+		private boolean rendered;
+
+		private RenderContext renderContext;
+
+		public VirtualKeyboardRelocatingOverlay() {
+			super(JemuDirectAmstradPc.this);
+		}
+
+		@Override
+		public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
+				boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
+			rendered = false;
+			super.renderOntoDisplay(displayView, displayBounds, monitorInsets, offscreenImage, graphicsContext);
+			if (!rendered)
+				stopShowingInSidePanel();
+		}
+
+		@Override
+		protected void renderVirtualKeyboard(AmstradVirtualKeyboard keyboard, AmstradVirtualKeyboardGridLayout layout,
+				AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets) {
+			VirtualKeyboardSidePanel sidePanel = getSidePanel();
+			int sidePanelWidth = sidePanel != null ? sidePanel.getWidth() : -1;
+			int gridWidth = computeKeyRowWidth(keyboard, layout);
+			if (sidePanelWidth >= gridWidth + 4) {
+				// render in side panel
+				setupRenderContextForSidePanel(sidePanel, keyboard, layout);
+				sidePanel.setShowVirtualKeyboard(true);
+				sidePanel.repaint();
+			} else {
+				// render as overlay
+				stopShowingInSidePanel();
+				super.renderVirtualKeyboard(keyboard, layout, displayView, displayBounds, monitorInsets);
+			}
+			rendered = true;
+		}
+
+		private void setupRenderContextForSidePanel(VirtualKeyboardSidePanel sidePanel, AmstradVirtualKeyboard keyboard,
+				AmstradVirtualKeyboardGridLayout layout) {
+			Sizes sizes = getCurrentSizes();
+			int gridWidth = computeKeyRowWidth(keyboard, layout);
+			int gridHeight = computeKeyColumnHeight(keyboard, layout);
+			int x0 = (sidePanel.getWidth() - gridWidth) / 2;
+			int y0 = (sidePanel.getHeight() - gridHeight) / 2;
+			RenderContext context = new RenderContext(keyboard, layout, null); // inject Graphics2D later
+			context.setSizes(sizes);
+			context.setLocationOfUpperLeftKey(new Point(x0, y0));
+			setRenderContext(context);
+		}
+
+		public void renderAllKeys(Graphics2D g) {
+			getSymbolRenderer().replaceGraphics2D(g);
+			RenderContext context = getRenderContext();
+			context.setGraphics2D(g);
+			super.renderAllKeys(context);
+		}
+
+		private void stopShowingInSidePanel() {
+			VirtualKeyboardSidePanel sidePanel = getSidePanel();
+			if (sidePanel != null && sidePanel.isShowVirtualKeyboard()) {
+				sidePanel.setShowVirtualKeyboard(false);
+				sidePanel.repaint();
+			}
+		}
+
+		private VirtualKeyboardSidePanel getSidePanel() {
+			VirtualKeyboardSidePanel sidePanel = null;
+			if (hasFrame()) {
+				sidePanel = ((JemuFrameImpl) getFrame()).getVirtualKeyboardSidePanel();
+			}
+			return sidePanel;
+		}
+
+		private RenderContext getRenderContext() {
+			return renderContext;
+		}
+
+		private void setRenderContext(RenderContext context) {
+			this.renderContext = context;
+		}
+
+	}
+
+	private class VirtualKeyboardSidePanel extends Box.Filler {
+
+		private boolean showVirtualKeyboard;
+
+		public VirtualKeyboardSidePanel(int fixedWidth) {
+			super(new Dimension(fixedWidth, 0), new Dimension(fixedWidth, 0),
+					new Dimension(fixedWidth, Short.MAX_VALUE));
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			if (isShowVirtualKeyboard() && g instanceof Graphics2D) {
+				getOverlay().renderAllKeys((Graphics2D) g);
+			}
+		}
+
+		private VirtualKeyboardRelocatingOverlay getOverlay() {
+			return (VirtualKeyboardRelocatingOverlay) getVirtualKeyboardDisplayOverlay();
+		}
+
+		public boolean isShowVirtualKeyboard() {
+			return showVirtualKeyboard;
+		}
+
+		public void setShowVirtualKeyboard(boolean show) {
+			this.showVirtualKeyboard = show;
 		}
 
 	}

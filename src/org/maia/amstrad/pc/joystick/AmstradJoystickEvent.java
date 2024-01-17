@@ -8,6 +8,8 @@ public class AmstradJoystickEvent {
 
 	private EventType eventType;
 
+	private boolean consumed;
+
 	public AmstradJoystickEvent(AmstradJoystick joystick, AmstradJoystickCommand command, EventType eventType) {
 		this.joystick = joystick;
 		this.command = command;
@@ -25,6 +27,10 @@ public class AmstradJoystickEvent {
 		builder.append(getEventType());
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public void consume() {
+		setConsumed(true);
 	}
 
 	public boolean isFired() {
@@ -45,6 +51,14 @@ public class AmstradJoystickEvent {
 
 	public EventType getEventType() {
 		return eventType;
+	}
+
+	public boolean isConsumed() {
+		return consumed;
+	}
+
+	private void setConsumed(boolean consumed) {
+		this.consumed = consumed;
 	}
 
 	public static enum EventType {

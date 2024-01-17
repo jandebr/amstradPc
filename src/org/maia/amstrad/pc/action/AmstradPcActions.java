@@ -50,6 +50,8 @@ public class AmstradPcActions {
 
 	private Map<AmstradJoystickID, JoystickActivationAction> joystickActivationActions;
 
+	private VirtualKeyboardAction virtualKeyboardAction;
+
 	private AutoTypeFileAction autoTypeFileAction;
 
 	private BreakEscapeAction breakEscapeAction;
@@ -355,6 +357,13 @@ public class AmstradPcActions {
 			joystickActivationActions.put(joystickId, action);
 		}
 		return action;
+	}
+
+	public VirtualKeyboardAction getVirtualKeyboardAction() {
+		if (virtualKeyboardAction == null) {
+			virtualKeyboardAction = new VirtualKeyboardAction(getAmstradPc());
+		}
+		return virtualKeyboardAction;
 	}
 
 	public WindowAlwaysOnTopAction getWindowAlwaysOnTopAction() {

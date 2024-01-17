@@ -449,7 +449,21 @@ public abstract class AmstradDisplayCanvas {
 		return getGraphicsOrigin().y + y;
 	}
 
-	protected abstract Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY, Rectangle returnValue);
+	protected Rectangle getTextCursorBoundsOnGraphics2D(int cursorX, int cursorY, Rectangle returnValue) {
+		int charWidth = getWidth() / getGraphicsContext().getTextColumns();
+		int charHeight = getHeight() / getGraphicsContext().getTextRows();
+		int xLeft = (cursorX - 1) * charWidth;
+		int yTop = (cursorY - 1) * charHeight;
+		if (returnValue == null) {
+			return new Rectangle(xLeft, yTop, charWidth, charHeight);
+		} else {
+			returnValue.x = xLeft;
+			returnValue.y = yTop;
+			returnValue.width = charWidth;
+			returnValue.height = charHeight;
+			return returnValue;
+		}
+	}
 
 	public Rectangle getTextCursorBoundsOnCanvas(int cursorX, int cursorY) {
 		int charWidth = getWidth() / getGraphicsContext().getTextColumns();

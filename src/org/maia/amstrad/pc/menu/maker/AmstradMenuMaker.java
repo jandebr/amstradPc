@@ -119,11 +119,12 @@ public abstract class AmstradMenuMaker {
 		menu.add(createBasicMemoryDisplayMenuItem());
 		menu.add(createShowSystemLogsMenuItem());
 		menu.add(new JSeparator());
+		menu.add(createAudioMenuItem());
+		menu.add(createVirtualKeyboardMenuItem());
 		menu.add(createJoystickMenu());
+		menu.add(new JSeparator());
 		menu.add(createAutoTypeFileMenuItem());
 		menu.add(createBreakEscapeMenuItem());
-		menu.add(new JSeparator());
-		menu.add(createAudioMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createPauseResumeMenuItem());
 		menu.add(createRebootMenuItem());
@@ -156,6 +157,11 @@ public abstract class AmstradMenuMaker {
 		return updateMenuItemLookAndFeel(item, UIResources.audioIcon);
 	}
 
+	protected JMenuItem createVirtualKeyboardMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getVirtualKeyboardAction()),
+				UIResources.virtualKeyboardIcon);
+	}
+
 	protected JMenuItem createPauseResumeMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getPauseResumeAction());
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0));
@@ -171,12 +177,10 @@ public abstract class AmstradMenuMaker {
 
 	protected JMenu createJoystickMenu() {
 		JMenu menu = new JMenu("Joysticks");
-		menu.add(new JoystickActivationMenuHelper(createJoystickActivationMenuItem(AmstradJoystickID.JOYSTICK0),
-				getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK0)).getCheckbox());
+		menu.add(createJoystickActivationMenuItem(AmstradJoystickID.JOYSTICK0));
 		menu.add(createJoystickSetupMenuItem(AmstradJoystickID.JOYSTICK0));
 		menu.add(new JSeparator());
-		menu.add(new JoystickActivationMenuHelper(createJoystickActivationMenuItem(AmstradJoystickID.JOYSTICK1),
-				getAmstradPc().getJoystick(AmstradJoystickID.JOYSTICK1)).getCheckbox());
+		menu.add(createJoystickActivationMenuItem(AmstradJoystickID.JOYSTICK1));
 		menu.add(createJoystickSetupMenuItem(AmstradJoystickID.JOYSTICK1));
 		return updateMenuLookAndFeel(menu, UIResources.joystickIcon);
 	}
@@ -187,7 +191,8 @@ public abstract class AmstradMenuMaker {
 
 	protected JCheckBoxMenuItem createJoystickActivationMenuItem(AmstradJoystickID joystickId) {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getJoystickActivationAction(joystickId));
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+		updateMenuItemLookAndFeel(item);
+		return new JoystickActivationMenuHelper(item, getAmstradPc().getJoystick(joystickId)).getCheckbox();
 	}
 
 	protected JMenu createMonitorMenu() {
@@ -249,48 +254,50 @@ public abstract class AmstradMenuMaker {
 
 	protected JMenu createMonitorEffectsMenu() {
 		JMenu menu = new JMenu("Monitor effects");
-		menu.add(new MonitorEffectMenuHelper(createMonitorEffectMenuItem(), getMonitor()).getCheckbox());
-		menu.add(new MonitorScanLinesEffectMenuHelper(createMonitorScanLinesEffectMenuItem(), getMonitor())
-				.getCheckbox());
-		menu.add(
-				new MonitorBilinearEffectMenuHelper(createMonitorBilinearEffectMenuItem(), getMonitor()).getCheckbox());
-		menu.add(new MonitorGateArrayMenuHelper(createMonitorGateArrayMenuItem(), getMonitor()).getCheckbox());
+		menu.add(createMonitorEffectMenuItem());
+		menu.add(createMonitorScanLinesEffectMenuItem());
+		menu.add(createMonitorBilinearEffectMenuItem());
+		menu.add(createMonitorGateArrayMenuItem());
 		menu.add(new JSeparator());
-		menu.add(
-				new MonitorAutoHideCursorMenuHelper(createMonitorAutoHideCursorMenuItem(), getMonitor()).getCheckbox());
-		menu.add(new MonitorShowSystemStatsMenuHelper(createMonitorShowSystemStatsMenuItem(), getMonitor())
-				.getCheckbox());
+		menu.add(createMonitorAutoHideCursorMenuItem());
+		menu.add(createMonitorShowSystemStatsMenuItem());
 		return updateMenuLookAndFeel(menu, UIResources.monitorEffectIcon);
 	}
 
 	protected JCheckBoxMenuItem createMonitorEffectMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorEffectAction());
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+		updateMenuItemLookAndFeel(item);
+		return new MonitorEffectMenuHelper(item, getMonitor()).getCheckbox();
 	}
 
 	protected JCheckBoxMenuItem createMonitorScanLinesEffectMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorScanLinesEffectAction());
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+		updateMenuItemLookAndFeel(item);
+		return new MonitorScanLinesEffectMenuHelper(item, getMonitor()).getCheckbox();
 	}
 
 	protected JCheckBoxMenuItem createMonitorBilinearEffectMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorBilinearEffectAction());
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+		updateMenuItemLookAndFeel(item);
+		return new MonitorBilinearEffectMenuHelper(item, getMonitor()).getCheckbox();
 	}
 
 	protected JCheckBoxMenuItem createMonitorGateArrayMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorGateArrayAction());
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+		updateMenuItemLookAndFeel(item);
+		return new MonitorGateArrayMenuHelper(item, getMonitor()).getCheckbox();
 	}
 
 	protected JCheckBoxMenuItem createMonitorAutoHideCursorMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorAutoHideCursorAction());
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+		updateMenuItemLookAndFeel(item);
+		return new MonitorAutoHideCursorMenuHelper(item, getMonitor()).getCheckbox();
 	}
 
 	protected JCheckBoxMenuItem createMonitorShowSystemStatsMenuItem() {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getMonitorShowSystemStatsAction());
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(item);
+		updateMenuItemLookAndFeel(item);
+		return new MonitorShowSystemStatsMenuHelper(item, getMonitor()).getCheckbox();
 	}
 
 	protected JMenu createMonitorSizeMenu() {
@@ -332,7 +339,7 @@ public abstract class AmstradMenuMaker {
 
 	protected JMenu createWindowMenu() {
 		JMenu menu = new JMenu("Window");
-		menu.add(new WindowAlwaysOnTopMenuHelper(createWindowAlwaysOnTopMenuItem(), getMonitor()).getCheckbox());
+		menu.add(createWindowAlwaysOnTopMenuItem());
 		menu.add(createWindowCenterOnScreenMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createAboutMenuItem());
@@ -340,8 +347,9 @@ public abstract class AmstradMenuMaker {
 	}
 
 	protected JCheckBoxMenuItem createWindowAlwaysOnTopMenuItem() {
-		return (JCheckBoxMenuItem) updateMenuItemLookAndFeel(
-				new JCheckBoxMenuItem(getActions().getWindowAlwaysOnTopAction()));
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(getActions().getWindowAlwaysOnTopAction());
+		updateMenuItemLookAndFeel(item);
+		return new WindowAlwaysOnTopMenuHelper(item, getMonitor()).getCheckbox();
 	}
 
 	protected JMenuItem createWindowCenterOnScreenMenuItem() {

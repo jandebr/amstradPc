@@ -11,8 +11,6 @@ import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateListener;
-import org.maia.amstrad.pc.audio.AmstradAudio;
-import org.maia.amstrad.pc.audio.AmstradAudioListener;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardListener;
@@ -22,7 +20,7 @@ import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemSettings;
 
 public abstract class AmstradPcAction extends AbstractAction
-		implements AmstradPcStateListener, AmstradMonitorListener, AmstradKeyboardListener, AmstradAudioListener {
+		implements AmstradPcStateListener, AmstradMonitorListener, AmstradKeyboardListener {
 
 	private AmstradPc amstradPc;
 
@@ -184,16 +182,6 @@ public abstract class AmstradPcAction extends AbstractAction
 	@Override
 	public void amstradKeyboardBreakEscaped(AmstradKeyboard keyboard) {
 		// Subclasses may override after registering with amstradPc's keyboard as AmstradKeyboardListener
-	}
-
-	@Override
-	public void amstradAudioMuted(AmstradAudio audio) {
-		// Subclasses may override after registering with amstradPc's audio as AmstradAudioListener
-	}
-
-	@Override
-	public void amstradAudioUnmuted(AmstradAudio audio) {
-		// Subclasses may override after registering with amstradPc's audio as AmstradAudioListener
 	}
 
 }

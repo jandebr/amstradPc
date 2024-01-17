@@ -9,7 +9,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class MonitorShowSystemStatsAction extends AmstradPcAction {
 
 	public MonitorShowSystemStatsAction(AmstradPc amstradPc) {
-		this(amstradPc, "OSD stats");
+		this(amstradPc, "Onscreen system info");
 	}
 
 	public MonitorShowSystemStatsAction(AmstradPc amstradPc, String name) {
