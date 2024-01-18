@@ -33,8 +33,8 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 - Quick access to program info depending on available metadata
 - Basic IO instructions ported to the host filesystem
 - Insights into Basic memory allocation
-- On-screen popup menu
-- On-screen keyboard
+- Onscreen popup menu
+- Onscreen keyboard
 - Joystick support including popular gamepads (Xbox, PS)
 - Run modes to accomodate different uses
 - Extensible and easily integrated using pure Java code
