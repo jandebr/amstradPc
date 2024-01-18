@@ -34,8 +34,8 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 - Basic IO instructions ported to the host filesystem
 - Insights into Basic memory allocation
 - On-screen popup menu
-- *(coming up) Virtual on-screen keyboard*
-- Joystick support including popular gamepads (Xbox, PS) using the [JInput][3] library
+- On-screen keyboard
+- Joystick support including popular gamepads (Xbox, PS)
 - Run modes to accomodate different uses
 - Extensible and easily integrated using pure Java code
 	- A clean API to *Amstrad PC*
@@ -67,4 +67,3 @@ To setup your own (local) program collection, see the [repository](https://githu
 
 [1]: <http://cpc-live.com> "JavaCPC"
 [2]: <http://jemu.winape.net> "JEMU"
-[3]: <https://github.com/jinput/jinput> "JInput"
