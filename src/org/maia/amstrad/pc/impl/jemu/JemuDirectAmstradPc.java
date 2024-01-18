@@ -43,7 +43,6 @@ import jemu.system.cpc.CPCPrinter;
 import jemu.system.cpc.GateArray;
 import jemu.system.cpc.RomSetter;
 import jemu.ui.Autotype;
-import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.JEMU;
 import jemu.ui.KeyDispatcher;
@@ -120,7 +119,6 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		new RomSetter().prepareRomsetter();
 		new Autotype();
 		new CPCPrinter();
-		Console.init();
 		System.out.println("JavaCPC [v." + JEMU.version + "]\n\n[" + Calendar.getInstance().getTime() + "]\n");
 		Switches.availmem = Runtime.getRuntime().freeMemory();
 		Switches.overrideP = Settings.getBoolean(Settings.OVERRIDEP, false);

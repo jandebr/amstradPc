@@ -13,13 +13,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintStream;
 
 import javax.swing.JButton;
@@ -41,21 +39,19 @@ import jemu.settings.Settings;
  * @author Devilmarkus
  * @version 4.0
  */
-public class Console extends WindowAdapter implements WindowListener, ActionListener, Runnable {
-	JFileChooser saveFileChooser = new JFileChooser();
-	protected GridBagConstraints gbcConstraints = null;
-	public static JFrame frameconsole;
-	public static JTextArea textArea;
-	private Thread reader;
-	private Thread reader2;
-	private boolean quit;
-	JButton button = new JButton("Clear");
-	JButton button2 = new JButton("Copy");
-	JButton button3 = new JButton("Save");
+public class Console extends WindowAdapter implements WindowListener, ActionListener {
 
-	private final PipedInputStream pin = new PipedInputStream();
-	private final PipedInputStream pin2 = new PipedInputStream();
-	protected Font font;
+	private JFileChooser saveFileChooser = new JFileChooser();
+	private GridBagConstraints gbcConstraints = null;
+	private JFrame frameconsole;
+	private JTextArea textArea;
+	private Font font;
+
+	private JButton button = new JButton("Clear");
+	private JButton button2 = new JButton("Copy");
+	private JButton button3 = new JButton("Save");
+
+	private ByteArrayOutputStream outputSink = new ByteArrayOutputStream(10000);
 
 	private static Console instance;
 
@@ -75,7 +71,7 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		} catch (Exception e) {
 		}
 		textArea.setFont(this.font);
-		textArea.setEditable(true);
+		textArea.setEditable(false);
 		textArea.setAutoscrolls(true);
 		textArea.setBackground(new Color(0, 10, 0));
 		textArea.setForeground(new Color(0, 229, 0));
@@ -114,48 +110,33 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		button3.setFocusable(false);
 		button3.addActionListener(this);
 
+		// Stdout
 		try {
 			MultiplexOutputStream multiplexOut = new MultiplexOutputStream();
 			OutputStream cos = AmstradFactory.getInstance().getAmstradContext().getConsoleOutputStream();
 			if (cos != null)
 				multiplexOut.addOutputStream(cos);
 			if (Settings.getBoolean(Settings.CONSOLE, false)) {
-				multiplexOut.addOutputStream(new PipedOutputStream(this.pin));
+				multiplexOut.addOutputStream(outputSink);
 			}
 			System.setOut(new PrintStream(multiplexOut, true));
-		} catch (java.io.IOException io) {
-			textArea.append("Couldn't redirect STDOUT to this console\n" + io.getMessage());
 		} catch (SecurityException se) {
 			textArea.append("Couldn't redirect STDOUT to this console\n" + se.getMessage());
 		}
 
+		// Stderr
 		try {
 			MultiplexOutputStream multiplexOut = new MultiplexOutputStream();
 			OutputStream ces = AmstradFactory.getInstance().getAmstradContext().getConsoleErrorStream();
 			if (ces != null)
 				multiplexOut.addOutputStream(ces);
 			if (Settings.getBoolean(Settings.CONSOLE, false)) {
-				multiplexOut.addOutputStream(new PipedOutputStream(this.pin2));
+				multiplexOut.addOutputStream(outputSink);
 			}
 			System.setErr(new PrintStream(multiplexOut, true));
-		} catch (java.io.IOException io) {
-			textArea.append("Couldn't redirect STDERR to this console\n" + io.getMessage());
 		} catch (SecurityException se) {
 			textArea.append("Couldn't redirect STDERR to this console\n" + se.getMessage());
 		}
-
-		quit = false; // signals the Threads that they should exit
-
-		// Starting two seperate threads to read from the PipedInputStreams
-		//
-		reader = new Thread(this);
-		reader.setDaemon(true);
-		reader.start();
-		//
-		reader2 = new Thread(this);
-		reader2.setDaemon(true);
-		reader2.start();
-
 	}
 
 	private GridBagConstraints getGridBagConstraints(int x, int y, double weightx, double weighty, int width,
@@ -173,9 +154,23 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 	}
 
 	public static synchronized void init() {
+		getInstance();
+	}
+
+	public static synchronized Console getInstance() {
 		if (instance == null) {
 			instance = new Console();
 		}
+		return instance;
+	}
+
+	public void showInFrame() {
+		textArea.setText(outputSink.toString());
+		frameconsole.setVisible(true);
+	}
+
+	public String getText() {
+		return textArea.getText();
 	}
 
 	public synchronized void windowClosing(WindowEvent evt) {
@@ -186,64 +181,17 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 	public synchronized void actionPerformed(ActionEvent evt) {
 		if (evt.getSource() == button) {
 			textArea.setText("");
+			outputSink.reset();
 		}
 		if (evt.getSource() == button2) {
-			textArea.selectAll();
+			if (textArea.getSelectedText() == null)
+				textArea.selectAll();
 			textArea.copy();
 			System.out.println("Console content copied to clipboard.");
 		}
 		if (evt.getSource() == button3) {
 			saveFile();
 		}
-	}
-
-	public synchronized void run() {
-		try {
-			while (Thread.currentThread() == reader) {
-				try {
-					this.wait(100);
-				} catch (InterruptedException ie) {
-				}
-				if (pin.available() != 0) {
-					String input = this.readLine(pin);
-					textArea.append(input);
-					textArea.select(2000000000, 2000000000);
-				}
-				if (quit)
-					return;
-			}
-
-			while (Thread.currentThread() == reader2) {
-				try {
-					this.wait(100);
-				} catch (InterruptedException ie) {
-				}
-				if (pin2.available() != 0) {
-					String input = this.readLine(pin2);
-					textArea.append(input);
-					textArea.select(2000000000, 2000000000);
-				}
-				if (quit)
-					return;
-			}
-		} catch (Exception e) {
-			textArea.append("\nConsole reports an Internal error.");
-			textArea.append("The error is: " + e);
-		}
-
-	}
-
-	public synchronized String readLine(PipedInputStream in) throws IOException {
-		String input = "";
-		do {
-			int available = in.available();
-			if (available == 0)
-				break;
-			byte b[] = new byte[available];
-			in.read(b);
-			input = input + new String(b, 0, b.length);
-		} while (!input.endsWith("\n") && !input.endsWith("\r\n") && !quit);
-		return input;
 	}
 
 	public void saveFile() {
@@ -257,7 +205,7 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 			if (!savename.toLowerCase().endsWith(".txt"))
 				savename = savename + ".txt";
 			File file = new File(savename);
-			String gettext = textArea.getText();
+			String gettext = getText();
 			try {
 				FileWriter fw = new FileWriter(file);
 				fw.write(gettext);
@@ -268,4 +216,5 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		}
 		filedia.dispose();
 	}
+
 }

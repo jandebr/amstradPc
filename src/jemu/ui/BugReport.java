@@ -62,7 +62,7 @@ public class BugReport {
       line="";
       out.println(line);
       try{
-          out.println(Console.textArea.getText());
+          out.println(Console.getInstance().getText());
       } catch (Exception b) {
           out.println("Console is disabled / empty?!?\nUsing BETA?\n\n");
       }

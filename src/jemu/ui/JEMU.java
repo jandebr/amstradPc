@@ -2571,7 +2571,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				romsetter.setRoms();
 				applyAlwaysOnTop(onTop);
 			} else if (menuAdd.equals("Java console"))
-				Console.frameconsole.setVisible(true);
+				Console.getInstance().showInFrame();
 			else if (menuAdd.equals("Pause"))
 				pauseToggle();
 			else if (menuAdd.equals("Eject all")) {

@@ -29,13 +29,12 @@ public abstract class AmstradSystem {
 	private AmstradSystemScreen currentScreen;
 
 	protected AmstradSystem() {
+		this.systemLogs = createSystemLogs();
 		this.amstradPc = createAmstradPc();
 		this.systemSettings = createSystemSettings();
-		this.systemLogs = createSystemLogs();
 	}
 
 	public void init() {
-		getSystemLogs().init();
 		setScreenSet(createScreenSet());
 		setCurrentScreen(findCurrentScreen());
 		// Subclasses may extend this method
