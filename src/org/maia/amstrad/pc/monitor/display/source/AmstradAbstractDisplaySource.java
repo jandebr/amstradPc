@@ -55,6 +55,12 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 		setCursor(getDisplayComponentInitialCursor());
 	}
 
+	@Override
+	public boolean isStretchToFullscreen() {
+		// Subclasses may override this setting
+		return false;
+	}
+
 	/**
 	 * Closes this display source
 	 * <p>

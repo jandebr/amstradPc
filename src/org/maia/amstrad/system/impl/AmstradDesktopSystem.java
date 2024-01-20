@@ -136,7 +136,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 		}
 
 		@Override
-		public boolean isProgramBrowserCentric() {
+		public boolean isProgramCentric() {
 			return false;
 		}
 

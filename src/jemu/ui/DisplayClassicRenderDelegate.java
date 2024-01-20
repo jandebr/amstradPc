@@ -113,8 +113,9 @@ public class DisplayClassicRenderDelegate extends DisplayRenderDelegate {
 
 	private void paintDisplayImage(Graphics g) {
 		Rectangle imageRect = getImageRect();
-		if (hasSecondaryDisplaySource()) {
-			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
+		SecondaryDisplaySource secondaryDs = getSecondaryDisplaySource();
+		if (secondaryDs != null) {
+			secondaryDs.renderOntoDisplay((Graphics2D) g, imageRect);
 		} else {
 			boolean sameSize = imageRect.width == image.getWidth() && imageRect.height == image.getHeight();
 			if (sameSize) {

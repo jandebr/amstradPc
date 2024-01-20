@@ -14,6 +14,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private AmstradPopupMenu popupMenu;
 
+	private boolean showMonitor;
+
 	private boolean showPause;
 
 	private boolean showControlKeys;
@@ -30,6 +32,7 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 		this.screenIdentifier = screenIdentifier;
 		this.amstradSystem = amstradSystem;
 		// Defaults
+		this.showMonitor = true;
 		this.showPause = true;
 		this.showControlKeys = false;
 		this.autohideControlKeys = true;
@@ -69,6 +72,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	protected AmstradSystem getAmstradSystem() {
 		return amstradSystem;
+	}
+
+	@Override
+	public boolean isShowMonitor() {
+		return showMonitor;
+	}
+
+	public void setShowMonitor(boolean show) {
+		this.showMonitor = show;
 	}
 
 	@Override

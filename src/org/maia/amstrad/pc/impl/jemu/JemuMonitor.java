@@ -238,7 +238,7 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 			checkStarted();
 			checkNotTerminated();
 			if (displaySource != null) {
-				getJemuDisplay().installSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
+				doSwapDisplaySource(displaySource);
 				fireDisplaySourceChangedEvent();
 				handleAutonomousDisplayRendering();
 			} else {
@@ -247,17 +247,25 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 		}
 	}
 
+	protected void doSwapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
+		getJemuDisplay().installSecondaryDisplaySource(new JemuSecondaryDisplaySourceBridge(displaySource));
+	}
+
 	@Override
 	public void resetDisplaySource() {
 		synchronized (getAmstradPc()) {
 			checkStarted();
 			checkNotTerminated();
 			if (isAlternativeDisplaySourceShowing()) {
-				getJemuDisplay().uninstallSecondaryDisplaySource();
+				doResetDisplaySource();
 				fireDisplaySourceChangedEvent();
 				handleAutonomousDisplayRendering();
 			}
 		}
+	}
+
+	protected void doResetDisplaySource() {
+		getJemuDisplay().uninstallSecondaryDisplaySource();
 	}
 
 	@Override

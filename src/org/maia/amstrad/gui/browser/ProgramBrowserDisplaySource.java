@@ -434,7 +434,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 		} else if (keyCode == KeyEvent.VK_ESCAPE) {
 			if (stack.size() > 1) {
 				stack.browseBack();
-			} else if (!getSystemSettings().isProgramBrowserCentric()) {
+			} else if (!getSystemSettings().isProgramCentric()) {
 				close();
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
@@ -542,7 +542,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	@Override
 	public void closeMainWindow() {
-		if (getSystemSettings().isProgramBrowserCentric()) {
+		if (getSystemSettings().isProgramCentric()) {
 			getAmstradPc().getActions().getPowerOffAction().powerOff();
 		} else {
 			super.closeMainWindow();

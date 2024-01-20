@@ -6,8 +6,10 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.maia.amstrad.gui.browser.ProgramBrowserAction;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
+import org.maia.amstrad.gui.carousel.ProgramCarouselAction;
+import org.maia.amstrad.gui.carousel.ProgramCarouselDisplaySource;
 import org.maia.amstrad.gui.overlay.AutotypeDisplayOverlay;
 import org.maia.amstrad.gui.overlay.ControlKeysDisplayOverlay;
 import org.maia.amstrad.gui.overlay.PauseDisplayOverlay;
@@ -39,6 +41,7 @@ import org.maia.amstrad.program.repo.file.BasicProgramFileRepository;
 import org.maia.amstrad.program.repo.rename.RenamingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.search.SearchingAmstradProgramRepository;
 import org.maia.amstrad.system.AmstradSystem;
+import org.maia.amstrad.system.impl.AmstradCarouselSystem;
 import org.maia.amstrad.system.impl.AmstradDesktopSystem;
 import org.maia.amstrad.system.impl.AmstradEntertainmentSystem;
 import org.maia.amstrad.system.impl.AmstradJavaCpcSystem;
@@ -84,6 +87,8 @@ public class AmstradFactory {
 			system = new AmstradDesktopSystem();
 		} else if (systemName.equalsIgnoreCase(AmstradEntertainmentSystem.NAME)) {
 			system = new AmstradEntertainmentSystem();
+		} else if (systemName.equalsIgnoreCase(AmstradCarouselSystem.NAME)) {
+			system = new AmstradCarouselSystem();
 		} else if (systemName.equalsIgnoreCase(AmstradJavaCpcSystem.NAME)) {
 			system = new AmstradJavaCpcSystem();
 		} else {
@@ -193,6 +198,10 @@ public class AmstradFactory {
 		return ProgramBrowserDisplaySource.createProgramInfo(amstradPc, program);
 	}
 
+	public ProgramCarouselDisplaySource createProgramCarousel(AmstradPc amstradPc) {
+		return new ProgramCarouselDisplaySource(amstradPc);
+	}
+
 	public AmstradPcSnapshotFile createCpcSnapshotProgram(File snapshotFile) {
 		return createCpcSnapshotProgram(snapshotFile.getName(), snapshotFile);
 	}
@@ -278,6 +287,16 @@ public class AmstradFactory {
 				ProgramBrowserAction browserAction = amstradPc.getActions().getProgramBrowserAction();
 				if (browserAction != null) {
 					browserAction.showProgramBrowser();
+				}
+			}
+		}
+
+		@Override
+		public void showProgramCarousel(AmstradPc amstradPc) {
+			if (!isProgramCarouselShowing(amstradPc)) {
+				ProgramCarouselAction carouselAction = amstradPc.getActions().getProgramCarouselAction();
+				if (carouselAction != null) {
+					carouselAction.showProgramCarousel();
 				}
 			}
 		}

@@ -6,7 +6,7 @@ import javax.swing.JSeparator;
 
 import org.maia.amstrad.AmstradException;
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.carousel.ProgramCarouselDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
@@ -24,15 +24,15 @@ import org.maia.amstrad.system.impl.screen.AmstradSystemNativeScreen;
 import org.maia.amstrad.system.impl.screen.AmstradSystemScreenSetImpl;
 import org.maia.amstrad.system.impl.terminate.AmstradSystemAnimatedTermination;
 
-public class AmstradEntertainmentSystem extends AmstradSystem {
+public class AmstradCarouselSystem extends AmstradSystem {
 
-	public static final String NAME = "ENTERTAINMENT";
+	public static final String NAME = "CAROUSEL";
 
-	public static final AmstradSystemSettings SETTINGS = new EntertainmentSystemSettings();
+	public static final AmstradSystemSettings SETTINGS = new CarouselSystemSettings();
 
-	private static final String PROGRAM_BROWSER_SCREEN_ID = "PROGRAM_BROWSER";
+	private static final String PROGRAM_CAROUSEL_SCREEN_ID = "PROGRAM_CAROUSEL";
 
-	public AmstradEntertainmentSystem() {
+	public AmstradCarouselSystem() {
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		AmstradMonitor monitor = amstradPc.getMonitor();
 		monitor.setMode(AmstradMonitorMode.COLOR);
 		monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager) since fullscreen
-		getAmstradContext().showProgramBrowser(amstradPc);
+		getAmstradContext().showProgramCarousel(amstradPc);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 	protected AmstradSystemScreenSet createScreenSet() {
 		AmstradSystemScreenSetImpl screenSet = new AmstradSystemScreenSetImpl(this);
 		screenSet.setNativeScreen(createNativeScreen());
-		screenSet.addCustomScreen(createProgramBrowserScreen());
+		screenSet.addCustomScreen(createProgramCarouselScreen());
 		return screenSet;
 	}
 
@@ -76,15 +76,15 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		return screen;
 	}
 
-	private AmstradSystemScreen createProgramBrowserScreen() {
-		ProgramBrowserDisplaySource displaySource = getAmstradPc().getActions().getProgramBrowserAction()
+	private AmstradSystemScreen createProgramCarouselScreen() {
+		ProgramCarouselDisplaySource displaySource = getAmstradPc().getActions().getProgramCarouselAction()
 				.getDisplaySource();
-		AmstradSystemCustomScreen screen = new AmstradSystemCustomScreen(PROGRAM_BROWSER_SCREEN_ID, this,
+		AmstradSystemCustomScreen screen = new AmstradSystemCustomScreen(PROGRAM_CAROUSEL_SCREEN_ID, this,
 				displaySource);
-		screen.setPopupMenu(new ProgramBrowserPopupMenuMaker().createPopupMenu());
+		screen.setPopupMenu(new ProgramCarouselPopupMenuMaker().createPopupMenu());
+		screen.setShowMonitor(false);
 		screen.setShowPause(false);
-		screen.setShowControlKeys(true);
-		screen.setAutohideControlKeys(false);
+		screen.setShowControlKeys(false);
 		return screen;
 	}
 
@@ -93,16 +93,16 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		return NAME;
 	}
 
-	private abstract class EntertainmentPopupMenuMaker extends AmstradPopupMenuMaker {
+	private abstract class CarouselPopupMenuMaker extends AmstradPopupMenuMaker {
 
-		protected EntertainmentPopupMenuMaker() {
-			super(AmstradEntertainmentSystem.this.getAmstradPc(), new AmstradMenuEmulatedLookAndFeel(
-					AmstradEntertainmentSystem.this.getAmstradPc().getMonitor().getGraphicsContext()));
+		protected CarouselPopupMenuMaker() {
+			super(AmstradCarouselSystem.this.getAmstradPc(), new AmstradMenuEmulatedLookAndFeel(
+					AmstradCarouselSystem.this.getAmstradPc().getMonitor().getGraphicsContext()));
 		}
 
 	}
 
-	private class ProgramPopupMenuMaker extends EntertainmentPopupMenuMaker {
+	private class ProgramPopupMenuMaker extends CarouselPopupMenuMaker {
 
 		@Override
 		protected AmstradPopupMenu doCreateMenu() {
@@ -112,7 +112,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 			popupMenu.add(createVirtualKeyboardMenuItem());
 			popupMenu.add(createSettingsMenu());
 			popupMenu.add(new JSeparator());
-			popupMenu.add(createProgramBrowserMenuItem());
+			popupMenu.add(createProgramCarouselMenuItem());
 			return updatePopupMenuLookAndFeel(popupMenu);
 		}
 
@@ -125,14 +125,14 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 			return updateMenuLookAndFeel(menu, UIResources.settingsIcon);
 		}
 
-		protected JMenuItem createProgramBrowserMenuItem() {
-			getAmstradPc().getActions().getProgramBrowserAction().setNameToOpen("Quit program");
-			return updateMenuItemLookAndFeel(super.createProgramBrowserMenuItem(), UIResources.quitIcon);
+		protected JMenuItem createProgramCarouselMenuItem() {
+			getAmstradPc().getActions().getProgramCarouselAction().setNameToOpen("Quit program");
+			return updateMenuItemLookAndFeel(super.createProgramCarouselMenuItem(), UIResources.quitIcon);
 		}
 
 	}
 
-	private class ProgramBrowserPopupMenuMaker extends EntertainmentPopupMenuMaker {
+	private class ProgramCarouselPopupMenuMaker extends CarouselPopupMenuMaker {
 
 		@Override
 		protected AmstradPopupMenu doCreateMenu() {
@@ -147,9 +147,9 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 
 	}
 
-	private static class EntertainmentSystemSettings implements AmstradSystemSettings {
+	private static class CarouselSystemSettings implements AmstradSystemSettings {
 
-		public EntertainmentSystemSettings() {
+		public CarouselSystemSettings() {
 		}
 
 		@Override

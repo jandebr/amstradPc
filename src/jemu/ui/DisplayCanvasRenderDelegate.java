@@ -194,8 +194,9 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 	@Override
 	public void paintDisplayOnscreen(Graphics g, boolean monitorEffect) {
 		Rectangle imageRect = getImageRect();
-		if (hasSecondaryDisplaySource()) {
-			getSecondaryDisplaySource().renderOntoDisplay((Graphics2D) g, imageRect);
+		SecondaryDisplaySource secondaryDs = getSecondaryDisplaySource();
+		if (secondaryDs != null) {
+			secondaryDs.renderOntoDisplay((Graphics2D) g, imageRect);
 			paintDisplayOverlays(g, false, monitorEffect);
 		} else {
 			BufferedImage image = getImageToPaint();

@@ -103,6 +103,8 @@ public abstract class AmstradContext {
 
 	public abstract void showProgramBrowser(AmstradPc amstradPc);
 
+	public abstract void showProgramCarousel(AmstradPc amstradPc);
+
 	public boolean isProgramBrowserShowing(AmstradPc amstradPc) {
 		return isTypedAlternativeDisplaySourceShowing(amstradPc, AmstradAlternativeDisplaySourceType.PROGRAM_BROWSER);
 	}
@@ -110,6 +112,10 @@ public abstract class AmstradContext {
 	public boolean isProgramStandaloneInfoShowing(AmstradPc amstradPc) {
 		return isTypedAlternativeDisplaySourceShowing(amstradPc,
 				AmstradAlternativeDisplaySourceType.PROGRAM_STANDALONE_INFO);
+	}
+
+	public boolean isProgramCarouselShowing(AmstradPc amstradPc) {
+		return isTypedAlternativeDisplaySourceShowing(amstradPc, AmstradAlternativeDisplaySourceType.PROGRAM_CAROUSEL);
 	}
 
 	public boolean isImageShowing(AmstradPc amstradPc) {

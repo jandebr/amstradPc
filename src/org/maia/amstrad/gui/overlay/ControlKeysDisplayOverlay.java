@@ -11,7 +11,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 
-import org.maia.amstrad.gui.browser.action.ProgramInfoAction;
+import org.maia.amstrad.gui.browser.ProgramInfoAction;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;

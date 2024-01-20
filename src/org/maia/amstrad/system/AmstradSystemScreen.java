@@ -31,6 +31,13 @@ public interface AmstradSystemScreen {
 	AmstradPopupMenu getPopupMenu();
 
 	/**
+	 * Tells whether to show the monitor for this screen
+	 * 
+	 * @return <code>true</code> iff the monitor is to be shown
+	 */
+	boolean isShowMonitor();
+
+	/**
 	 * Tells whether the paused state is to be shown on screen
 	 * 
 	 * @return <code>true</code> iff paused state is to be shown

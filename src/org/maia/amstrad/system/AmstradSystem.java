@@ -66,13 +66,21 @@ public abstract class AmstradSystem {
 	}
 
 	protected void notifyInitialScreen(AmstradSystemScreen currentScreen) {
+		updateScreenMonitorVisibility(currentScreen);
 		updateScreenPopupMenu(null, currentScreen);
 		// Subclasses may extend this method
 	}
 
 	protected void notifyScreenChange(AmstradSystemScreen previousScreen, AmstradSystemScreen currentScreen) {
+		updateScreenMonitorVisibility(currentScreen);
 		updateScreenPopupMenu(previousScreen, currentScreen);
 		// Subclasses may extend this method
+	}
+
+	private void updateScreenMonitorVisibility(AmstradSystemScreen currentScreen) {
+		boolean visible = currentScreen.isShowMonitor();
+		getAmstradPc().getMonitor().setMonitorEffect(visible);
+		getAmstradPc().getActions().getMonitorEffectAction().setEnabled(visible);
 	}
 
 	private void updateScreenPopupMenu(AmstradSystemScreen previousScreen, AmstradSystemScreen currentScreen) {

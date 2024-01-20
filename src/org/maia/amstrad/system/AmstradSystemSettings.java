@@ -3,11 +3,11 @@ package org.maia.amstrad.system;
 public interface AmstradSystemSettings {
 
 	/**
-	 * Tells whether the program browser is the central and start screen at launch
+	 * Tells whether to launch with an inventory of programs that can be run or played
 	 * 
 	 * @return <code>true</code> iff the program browser is centric
 	 */
-	boolean isProgramBrowserCentric();
+	boolean isProgramCentric();
 
 	/**
 	 * Tells whether to launch in fullscreen or windowed

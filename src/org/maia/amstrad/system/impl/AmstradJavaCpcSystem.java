@@ -53,7 +53,7 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 		}
 
 		@Override
-		public boolean isProgramBrowserCentric() {
+		public boolean isProgramCentric() {
 			return false;
 		}
 

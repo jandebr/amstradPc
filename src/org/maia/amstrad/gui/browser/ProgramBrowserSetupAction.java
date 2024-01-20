@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.browser.action;
+package org.maia.amstrad.gui.browser;
 
 import java.awt.event.KeyEvent;
 

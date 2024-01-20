@@ -16,6 +16,8 @@ public interface AmstradAlternativeDisplaySource extends KeyEventTarget {
 
 	void dispose(JComponent displayComponent);
 
+	boolean isStretchToFullscreen();
+
 	boolean isRestoreMonitorSettingsOnDispose();
 
 	AmstradAlternativeDisplaySourceType getType();

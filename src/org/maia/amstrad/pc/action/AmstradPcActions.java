@@ -3,9 +3,10 @@ package org.maia.amstrad.pc.action;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maia.amstrad.gui.browser.action.ProgramBrowserAction;
-import org.maia.amstrad.gui.browser.action.ProgramBrowserSetupAction;
-import org.maia.amstrad.gui.browser.action.ProgramInfoAction;
+import org.maia.amstrad.gui.browser.ProgramBrowserAction;
+import org.maia.amstrad.gui.browser.ProgramBrowserSetupAction;
+import org.maia.amstrad.gui.browser.ProgramInfoAction;
+import org.maia.amstrad.gui.carousel.ProgramCarouselAction;
 import org.maia.amstrad.gui.colors.AmstradSystemColorsDisplayAction;
 import org.maia.amstrad.gui.memory.BasicMemoryDisplayAction;
 import org.maia.amstrad.pc.AmstradPc;
@@ -23,6 +24,8 @@ public class AmstradPcActions {
 	private ProgramBrowserSetupAction programBrowserSetupAction;
 
 	private ProgramInfoAction programInfoAction;
+
+	private ProgramCarouselAction programCarouselAction;
 
 	private LoadBasicSourceFileAction loadBasicSourceFileAction;
 
@@ -127,6 +130,13 @@ public class AmstradPcActions {
 			programInfoAction = new ProgramInfoAction(getProgramBrowserAction());
 		}
 		return programInfoAction;
+	}
+
+	public ProgramCarouselAction getProgramCarouselAction() {
+		if (programCarouselAction == null) {
+			programCarouselAction = new ProgramCarouselAction(getAmstradPc());
+		}
+		return programCarouselAction;
 	}
 
 	public LoadBasicSourceFileAction getLoadBasicSourceFileAction() {

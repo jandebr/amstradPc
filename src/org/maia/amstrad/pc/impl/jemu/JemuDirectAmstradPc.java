@@ -33,6 +33,7 @@ import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
@@ -278,6 +279,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 					getContentPane().add(comp, BorderLayout.SOUTH);
 					getPaddingComponents().add(comp);
 				}
+				revalidate();
 			}
 		}
 
@@ -286,6 +288,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 				for (Component comp : getPaddingComponents()) {
 					getContentPane().remove(comp);
 				}
+				revalidate();
 				getPaddingComponents().clear();
 				setVirtualKeyboardSidePanel(null);
 			}
@@ -580,13 +583,48 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 			int height = display.getScaledHeight();
 			if (isFullscreen()) {
 				Dimension screenSize = AmstradPcFrame.getScreenSize();
-				double scaleX = screenSize.getWidth() / width;
-				double scaleY = screenSize.getHeight() / height;
-				double scale = Math.min(scaleX, scaleY);
-				width = (int) Math.ceil(scale * width);
-				height = (int) Math.ceil(scale * height);
+				AmstradAlternativeDisplaySource currentDs = getCurrentAlternativeDisplaySource();
+				if (currentDs != null && currentDs.isStretchToFullscreen()) {
+					width = screenSize.width;
+					height = screenSize.height;
+				} else {
+					double scaleX = screenSize.getWidth() / width;
+					double scaleY = screenSize.getHeight() / height;
+					double scale = Math.min(scaleX, scaleY);
+					width = (int) Math.ceil(scale * width);
+					height = (int) Math.ceil(scale * height);
+				}
 			}
 			display.setSize(width, height);
+		}
+
+		@Override
+		protected void doSwapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
+			AmstradAlternativeDisplaySource currentDs = getCurrentAlternativeDisplaySource();
+			boolean oldStretching = currentDs != null ? currentDs.isStretchToFullscreen() : false;
+			boolean newStretching = displaySource.isStretchToFullscreen();
+			super.doSwapDisplaySource(displaySource);
+			updateStretching(oldStretching, newStretching);
+		}
+
+		@Override
+		protected void doResetDisplaySource() {
+			AmstradAlternativeDisplaySource currentDs = getCurrentAlternativeDisplaySource();
+			boolean oldStretching = currentDs != null ? currentDs.isStretchToFullscreen() : false;
+			super.doResetDisplaySource();
+			updateStretching(oldStretching, false);
+		}
+
+		private void updateStretching(boolean oldStretching, boolean newStretching) {
+			if (isFullscreen()) {
+				if (oldStretching && !newStretching) {
+					updateDisplaySize();
+					getFrame().addPaddingAroundDisplay();
+				} else if (!oldStretching && newStretching) {
+					updateDisplaySize();
+					getFrame().removePaddingAroundDisplay();
+				}
+			}
 		}
 
 		@Override
