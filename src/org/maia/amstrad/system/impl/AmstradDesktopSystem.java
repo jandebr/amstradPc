@@ -122,6 +122,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 			popupMenu.add(createScreenshotWithMonitorEffectMenuItem());
 			popupMenu.add(createMonitorModeMenu());
 			popupMenu.add(createMonitorEffectsMenu());
+			popupMenu.add(createMonitorSizeMenu());
 			popupMenu.add(createMonitorFullscreenMenuItem());
 			popupMenu.add(new JSeparator());
 			popupMenu.add(createPowerOffMenuItem());

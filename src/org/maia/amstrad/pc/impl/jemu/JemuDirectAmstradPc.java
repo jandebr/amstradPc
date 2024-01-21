@@ -795,6 +795,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 			RenderContext context = new RenderContext(keyboard, layout, null); // inject Graphics2D later
 			context.setSizes(sizes);
 			context.setLocationOfUpperLeftKey(new Point(x0, y0));
+			context.setLowPerformance(isLowPerformance());
 			setRenderContext(context);
 		}
 
@@ -838,6 +839,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		public VirtualKeyboardSidePanel(int fixedWidth) {
 			super(new Dimension(fixedWidth, 0), new Dimension(fixedWidth, 0),
 					new Dimension(fixedWidth, Short.MAX_VALUE));
+			setBackground(Color.BLACK); // only used when keyboard showing (opaque)
 		}
 
 		@Override
@@ -857,6 +859,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		}
 
 		public void setShowVirtualKeyboard(boolean show) {
+			setOpaque(show);
 			this.showVirtualKeyboard = show;
 		}
 

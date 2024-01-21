@@ -23,6 +23,8 @@ import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboardLayout;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
+import jemu.settings.Settings;
+
 public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 
 	private AmstradSymbolRenderer symbolRenderer;
@@ -89,6 +91,7 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 		RenderContext context = new RenderContext(keyboard, layout, g);
 		context.setSizes(sizes);
 		context.setLocationOfUpperLeftKey(new Point(sizes.getBoardMarginLeft(), (totalHeight - gridHeight) / 2));
+		context.setLowPerformance(isLowPerformance());
 		renderBoard(context, totalWidth, totalHeight);
 		renderAllKeys(context);
 		g.dispose();
@@ -111,15 +114,12 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 	}
 
 	protected void renderAllKeys(RenderContext context) {
-		Object antialiasBefore = context.getGraphics2D().getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-		context.getGraphics2D().setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		getSymbolRenderer().scale(context.getSizes().getKeyLabelScale());
 		List<KeyGroup> keyGroups = context.getKeyboard().getKeyGroups();
 		for (int i = 0; i < keyGroups.size(); i++) {
 			KeyGroup keyGroup = keyGroups.get(i);
 			renderKeyGroup(keyGroup, i, context);
 		}
-		context.getGraphics2D().setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasBefore);
 	}
 
 	protected void renderKeyGroup(KeyGroup keyGroup, int keyGroupIndex, RenderContext context) {
@@ -140,13 +140,26 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 		int diam = sizes.getKeyCornerRoundDiameter();
 		boolean cursor = key.equals(context.getKeyboard().getKeyAtCursor());
 		boolean pressed = key.equals(context.getKeyboard().getKeyBeingPressed());
+		boolean lowperformance = context.isLowPerformance();
+		Object antialiasBefore = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		if (!lowperformance)
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		if (cursor) {
 			int t = sizes.getKeyBorderThickness();
 			g.setColor(KEY_BORDER_COLOR);
-			g.fillRoundRect(x0 - t, y0 - t, keyWidth + 2 * t, keyHeight + 2 * t, diam + t, diam + t);
+			if (lowperformance) {
+				g.fillRect(x0 - t, y0 - t, keyWidth + 2 * t, keyHeight + 2 * t);
+			} else {
+				g.fillRoundRect(x0 - t, y0 - t, keyWidth + 2 * t, keyHeight + 2 * t, diam + t, diam + t);
+			}
 		}
 		g.setColor(getBackgroundColor(keyGroup, keyGroupIndex, pressed));
-		g.fillRoundRect(x0, y0, keyWidth, keyHeight, diam, diam);
+		if (lowperformance) {
+			g.fillRect(x0, y0, keyWidth, keyHeight);
+		} else {
+			g.fillRoundRect(x0, y0, keyWidth, keyHeight, diam, diam);
+		}
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasBefore);
 		renderKeyLabel(g, x0, y0, keyWidth, keyHeight, key, keyGroup, keyGroupIndex, pressed, context);
 	}
 
@@ -255,6 +268,10 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 		return getCurrentSizes();
 	}
 
+	protected boolean isLowPerformance() {
+		return getAmstradContext().getUserSettings().getBool(Settings.LOWPERFORMANCE, false);
+	}
+
 	protected AmstradSymbolRenderer getSymbolRenderer() {
 		return symbolRenderer;
 	}
@@ -299,6 +316,8 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 
 		private Sizes sizes;
 
+		private boolean lowPerformance;
+
 		public RenderContext(AmstradVirtualKeyboard keyboard, AmstradVirtualKeyboardGridLayout keyboardLayout,
 				Graphics2D graphics2D) {
 			this.keyboard = keyboard;
@@ -336,6 +355,14 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 
 		public void setSizes(Sizes sizes) {
 			this.sizes = sizes;
+		}
+
+		public boolean isLowPerformance() {
+			return lowPerformance;
+		}
+
+		public void setLowPerformance(boolean lowPerformance) {
+			this.lowPerformance = lowPerformance;
 		}
 
 	}
