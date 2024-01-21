@@ -123,13 +123,7 @@ public abstract class AmstradPcFrame extends JFrame
 		if (!isClosing()) {
 			setClosing(true);
 			if (!getAmstradPc().isTerminated() && isExitOnClose()) {
-				new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						AmstradFactory.getInstance().getAmstradContext().powerOff(getAmstradPc());
-					}
-				}).start();
+				AmstradFactory.getInstance().getAmstradContext().powerOff(getAmstradPc());
 			}
 		}
 	}

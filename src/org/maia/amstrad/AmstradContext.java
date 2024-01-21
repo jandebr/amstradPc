@@ -13,6 +13,7 @@ import org.maia.amstrad.program.repo.facet.FacetFactory;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.amstrad.system.impl.AmstradDesktopSystem;
+import org.maia.util.SystemUtils;
 
 public abstract class AmstradContext {
 
@@ -247,14 +248,20 @@ public abstract class AmstradContext {
 		}
 	}
 
-	public void powerOff(AmstradPc amstradPc) {
-		if (isAmstradSystemSetup()) {
-			getAmstradSystem().terminate();
-		} else {
-			amstradPc.terminate();
-			getUserSettings().flush();
-			System.exit(0);
-		}
+	public void powerOff(final AmstradPc amstradPc) {
+		SystemUtils.runOutsideAwtEventDispatchThread(new Runnable() {
+
+			@Override
+			public void run() {
+				if (isAmstradSystemSetup()) {
+					getAmstradSystem().terminate();
+				} else {
+					amstradPc.terminate();
+					getUserSettings().flush();
+					System.exit(0);
+				}
+			}
+		});
 	}
 
 }

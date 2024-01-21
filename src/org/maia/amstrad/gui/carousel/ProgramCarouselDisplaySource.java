@@ -27,10 +27,7 @@ public class ProgramCarouselDisplaySource extends AmstradAbstractDisplaySource {
 	protected void renderContent(Graphics2D g, int width, int height) {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, width, height);
-		g.setColor(Color.RED);
-		g.drawLine(0, 0, width - 1, height - 1);
-		g.setColor(Color.GREEN);
-		g.drawLine(0, height - 1, width - 1, 0);
+		// TODO
 	}
 
 	@Override

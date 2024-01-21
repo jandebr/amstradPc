@@ -35,17 +35,8 @@ public class PowerOffAction extends AmstradPcAction {
 	public void powerOff() {
 		if (isEnabled()) {
 			setEnabled(false);
-			runInSeparateThread(new Runnable() {
-				@Override
-				public void run() {
-					doPowerOff();
-				}
-			});
+			getAmstradContext().powerOff(getAmstradPc());
 		}
-	}
-
-	private void doPowerOff() {
-		getAmstradContext().powerOff(getAmstradPc());
 	}
 
 }

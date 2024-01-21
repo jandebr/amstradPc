@@ -216,8 +216,8 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 
 	protected Sizes createSmallSizes() {
 		Sizes sizes = new Sizes(540); // suitable for 540p display
-		sizes.setBoardMarginLeft(10);
-		sizes.setBoardMarginRight(0);
+		sizes.setBoardMarginLeft(8);
+		sizes.setBoardMarginRight(4);
 		sizes.setKeyUnitWidth(15);
 		sizes.setKeyUnitHeight(15);
 		sizes.setKeyHorizontalGap(5);
@@ -230,8 +230,8 @@ public class VirtualKeyboardDisplayOverlay extends AbstractDisplayOverlay {
 
 	protected Sizes createLargeSizes() {
 		Sizes sizes = new Sizes(1080); // suitable for 1080p display
-		sizes.setBoardMarginLeft(20);
-		sizes.setBoardMarginRight(0);
+		sizes.setBoardMarginLeft(16);
+		sizes.setBoardMarginRight(4);
 		sizes.setKeyUnitWidth(28);
 		sizes.setKeyUnitHeight(28);
 		sizes.setKeyHorizontalGap(9);

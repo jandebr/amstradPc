@@ -82,8 +82,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
+
+import org.maia.util.SystemUtils;
 
 import jemu.core.Util;
 import jemu.core.device.Computer;
@@ -1901,17 +1902,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	}
 
 	private void pauseComputerOutsideAwtEventDispatchThread() {
-		if (SwingUtilities.isEventDispatchThread()) {
-			new Thread(new Runnable() {
+		SystemUtils.runOutsideAwtEventDispatchThread(new Runnable() {
 
-				@Override
-				public void run() {
-					pauseComputer();
-				}
-			}).start();
-		} else {
-			pauseComputer();
-		}
+			@Override
+			public void run() {
+				pauseComputer();
+			}
+		});
 	}
 
 	public void fsoundcheck() {

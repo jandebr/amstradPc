@@ -189,7 +189,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 			setPaused(true);
 			getMonitor().getDisplayComponent().repaint(); // making sure pause overlay is shown
 			// Disconnect from the AWT event dispatch thread, as this may lead to deadlock!
-			runOutsideAwtEventDispatchThread(new Runnable() {
+			SystemUtils.runOutsideAwtEventDispatchThread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -232,7 +232,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 		if (isPaused()) {
 			setPaused(false);
 			// Disconnect from the AWT event dispatch thread, as this may lead to deadlock!
-			runOutsideAwtEventDispatchThread(new Runnable() {
+			SystemUtils.runOutsideAwtEventDispatchThread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -290,14 +290,6 @@ public abstract class JemuAmstradPc extends AmstradPc
 	public void processorPerformanceUpdate(Computer computer, long timeIntervalMillis, int timerSyncs, int laggingSyncs,
 			int throttledSyncs) {
 		fireProcessorPerformanceUpdate(timeIntervalMillis, timerSyncs, laggingSyncs, throttledSyncs);
-	}
-
-	private static void runOutsideAwtEventDispatchThread(Runnable task) {
-		if (SwingUtilities.isEventDispatchThread()) {
-			new Thread(task).start();
-		} else {
-			task.run();
-		}
 	}
 
 	protected static void checkNoInstanceRunning() {
