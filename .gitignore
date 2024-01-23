@@ -1,4 +1,4 @@
 /bin/
 /docs/javadoc/
-/dist/
+/dist/*.war
 /JOY0.ini
