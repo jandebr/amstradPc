@@ -25,14 +25,15 @@ import org.maia.swing.cards.CardsInOrderPanel;
 import org.maia.swing.cards.CardsInOrderPanel.Card;
 import org.maia.swing.cards.CardsOfChoicePanel;
 import org.maia.swing.dialog.ActionableDialog;
-import org.maia.swing.file.FileFolderInputField;
-import org.maia.swing.file.FileFolderInputFieldListener;
+import org.maia.swing.file.FolderInputField;
+import org.maia.swing.file.GenericFileInputField;
+import org.maia.swing.file.GenericFileInputFieldListener;
 
 public class AmstradProgramRepositoryConfigurator extends Box {
 
 	private AmstradProgramRepositoryConfiguration state;
 
-	private FileFolderInputField rootFolderField;
+	private FolderInputField rootFolderField;
 
 	private JCheckBox hideSequenceNumbersOption;
 
@@ -125,14 +126,14 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		return comp;
 	}
 
-	private FileFolderInputField createRootFolderField() {
-		FileFolderInputField field = new FileFolderInputField(getState().getRootFolder());
-		field.setFolderChooserDialogTitle("Select the home folder of programs");
-		field.addListener(new FileFolderInputFieldListener() {
+	private FolderInputField createRootFolderField() {
+		FolderInputField field = new FolderInputField(getState().getRootFolder());
+		field.setFileChooserDialogTitle("Select the home folder of programs");
+		field.addListener(new GenericFileInputFieldListener() {
 
 			@Override
-			public void folderChanged(FileFolderInputField field) {
-				getState().setRootFolder(field.getFolder());
+			public void fileSelectionChanged(GenericFileInputField inputField) {
+				getState().setRootFolder(inputField.getFile());
 			}
 		});
 		return field;
@@ -272,7 +273,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 		return state;
 	}
 
-	private FileFolderInputField getRootFolderField() {
+	private FolderInputField getRootFolderField() {
 		return rootFolderField;
 	}
 
