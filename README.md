@@ -51,11 +51,10 @@ For more information see the [Features](https://github.com/jandebr/amstradPc/wik
 
 ## Getting started
 
-Getting started with *Amstrad PC* is a simple three-step process
+Getting started with *Amstrad PC* is easy
 
-1. Obtain source code from [github](https://github.com/jandebr/amstradPc)
-2. Build with Ant `ant -buildfile ant.xml package` to produce an updated `dist/amstradPc.jar` (or use the provided jar)
-3. Run with Java `java -Djava.library.path=system/jinput -jar dist/amstradPc.jar`, which uses the provided [config file](https://github.com/jandebr/amstradPc/wiki/Config-javacpc.ini) `javacpc.ini`
+1. Download the project sources from [github](https://github.com/jandebr/amstradPc)
+2. From the parent directory, run `java -Djava.library.path=system/jinput -jar dist/amstradPc.jar` (using the provided [config file](Config-javacpc.ini) `javacpc.ini`)
 
 Alternatively, one can distribute *Amstrad PC* to end user computers using [getdown](https://github.com/threerings/getdown) as detailed in the [distribution](https://github.com/jandebr/amstradPc/wiki/Distribute-using-getdown) documentation
 
