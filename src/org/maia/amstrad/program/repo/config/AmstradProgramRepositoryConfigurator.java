@@ -128,6 +128,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 
 	private FolderInputField createRootFolderField() {
 		FolderInputField field = new FolderInputField(getState().getRootFolder());
+		field.setShowAbsolutePath(true);
 		field.setFileChooserDialogTitle("Select the home folder of programs");
 		field.addListener(new GenericFileInputFieldListener() {
 
@@ -136,6 +137,7 @@ public class AmstradProgramRepositoryConfigurator extends Box {
 				getState().setRootFolder(inputField.getFile());
 			}
 		});
+		field.disableClear();
 		return field;
 	}
 
