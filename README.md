@@ -51,7 +51,7 @@ For more information see the [Features](https://github.com/jandebr/amstradPc/wik
 
 ## Getting started
 
-Getting started with *Amstrad PC* is easy
+Follow these steps to start using *Amstrad PC*
 
 1. Download the project sources from [github](https://github.com/jandebr/amstradPc)
 2. From the parent directory, run `java -Djava.library.path=system/jinput -jar dist/amstradPc.jar` (using the provided [config file](Config-javacpc.ini) `javacpc.ini`)
