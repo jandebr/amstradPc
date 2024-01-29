@@ -19,6 +19,8 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 
 	private boolean RSXenabled;
 
+	private static final LocomotiveBasicKeyword PRINT = LocomotiveBasicKeywords.getInstance().getKeyword("PRINT");
+
 	public LocomotiveBasicDecompiler() {
 		setRSXenabled(false); // default
 	}
@@ -85,12 +87,15 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 
 	private CharSequence nextLineOfCode(int lineNumber) throws EndOfByteCodeException {
 		StringBuilder line = new StringBuilder(256);
+		boolean printPreceding = false; // last keyword is PRINT
+		boolean print = false; // current keyword is PRINT
 		int bytecodeOffset = byteCodeIndex;
 		int b = nextByte();
 		while (b != 0x00) {
+			print = false;
 			int linePositionFrom = line.length();
 			if (b == 0x01) {
-				// statement seperator
+				// statement separator
 				if (!nextByteIsKeywordPrecededByInstructionSeparator()) {
 					line.append(InstructionSeparatorToken.SEPARATOR);
 				}
@@ -152,7 +157,10 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 				LocomotiveBasicKeyword keyword = b < 0xff ? getBasicKeywords().getKeyword((byte) b)
 						: getBasicKeywords().getKeyword((byte) b, (byte) nextByte());
 				if (keyword != null) {
+					if (printPreceding)
+						line.append(' '); // e.g., PRINTCHR$ -> PRINT CHR$
 					line.append(keyword.getSourceForm());
+					print = keyword.equals(PRINT);
 				} else {
 					line.append("[?!:").append(b).append(']');
 				}
@@ -164,6 +172,7 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 						bytecodeLength);
 				bytecodeOffset = byteCodeIndex;
 			}
+			printPreceding = print;
 			b = nextByte();
 		}
 		return line;
