@@ -83,6 +83,11 @@ public abstract class BasicSourceCodeLine implements Cloneable, Comparable<Basic
 
 	public abstract BasicSourceCodeLineScanner createScanner();
 
+	public String getCode() {
+		int offset = String.valueOf(getLineNumber()).length() + 1; // <linenr><space>
+		return getText().substring(offset);
+	}
+
 	public String getText() {
 		return text;
 	}

@@ -41,10 +41,14 @@ public abstract class AmstradPcFrame extends JFrame
 
 	public void installMenuBar(AmstradMenuBar menuBar) {
 		setJMenuBar(menuBar);
+		validate();
+		repaint();
 	}
 
 	public void uninstallMenuBar() {
 		setJMenuBar(null);
+		validate();
+		repaint();
 	}
 
 	public void centerOnScreen() {
