@@ -46,7 +46,7 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 		updateProgram(program);
 	}
 
-	private void updateProgram(AmstradProgram program) {
+	public void updateProgram(AmstradProgram program) {
 		if (program != null && program.hasDescriptiveInfo()) {
 			setProgram(program);
 			setDisplaySource(AmstradFactory.getInstance().createProgramInfo(getAmstradPc(), program));
