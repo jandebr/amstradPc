@@ -49,9 +49,9 @@ public abstract class AmstradPc {
 		this.performanceListeners = new GenericListenerList<AmstradPcPerformanceListener>();
 	}
 
-	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
+	public AmstradPcFrame displayInFrame(boolean powerOffWhenClosed) {
 		checkNotTerminated();
-		AmstradPcFrame frame = createFrame(exitOnClose);
+		AmstradPcFrame frame = createFrame(powerOffWhenClosed);
 		setFrame(frame);
 		if (isStarted()) {
 			frame.amstradPcStarted(this);
@@ -59,7 +59,7 @@ public abstract class AmstradPc {
 		return frame;
 	}
 
-	protected abstract AmstradPcFrame createFrame(boolean exitOnClose);
+	protected abstract AmstradPcFrame createFrame(boolean powerOffWhenClosed);
 
 	public void showActionableDialog(ActionableDialog dialog) {
 		dialog.setVisible(true);

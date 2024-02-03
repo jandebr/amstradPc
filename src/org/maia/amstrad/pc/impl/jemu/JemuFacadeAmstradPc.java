@@ -45,8 +45,8 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 	}
 
 	@Override
-	protected AmstradPcFrame createFrame(boolean exitOnClose) {
-		return new JemuFrameImpl(exitOnClose);
+	protected AmstradPcFrame createFrame(boolean powerOffWhenClosed) {
+		return new JemuFrameImpl(powerOffWhenClosed);
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 	}
 
 	@Override
-	public AmstradPcFrame displayInFrame(boolean exitOnClose) {
-		AmstradPcFrame frame = super.displayInFrame(exitOnClose);
+	public AmstradPcFrame displayInFrame(boolean powerOffWhenClosed) {
+		AmstradPcFrame frame = super.displayInFrame(powerOffWhenClosed);
 		getFrameBridge().setFrame(frame);
 		return frame;
 	}
@@ -155,8 +155,8 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 
 	private class JemuFrameImpl extends JemuFrame {
 
-		public JemuFrameImpl(boolean exitOnClose) {
-			super(JemuFacadeAmstradPc.this, "JavaCPC - Amstrad CPC Emulator", exitOnClose);
+		public JemuFrameImpl(boolean powerOffWhenClosed) {
+			super(JemuFacadeAmstradPc.this, "JavaCPC - Amstrad CPC Emulator", powerOffWhenClosed);
 		}
 
 		@Override

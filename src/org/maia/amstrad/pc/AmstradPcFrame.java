@@ -14,28 +14,35 @@ import javax.swing.JFrame;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.menu.AmstradMenuBar;
+import org.maia.util.GenericListenerList;
 
 public abstract class AmstradPcFrame extends JFrame
 		implements AmstradPcStateListener, WindowListener, WindowStateListener {
 
 	private AmstradPc amstradPc;
 
-	private boolean exitOnClose;
+	private boolean powerOffWhenClosed;
 
 	private boolean closing;
 
-	protected AmstradPcFrame(AmstradPc amstradPc, String title, boolean exitOnClose) {
+	private GenericListenerList<AmstradPcFrameListener> frameListeners;
+
+	protected AmstradPcFrame(AmstradPc amstradPc, String title, boolean powerOffWhenClosed) {
 		super(title);
 		this.amstradPc = amstradPc;
-		this.exitOnClose = exitOnClose;
+		this.powerOffWhenClosed = powerOffWhenClosed;
+		this.frameListeners = new GenericListenerList<AmstradPcFrameListener>();
+		setFocusable(false);
+		setAlwaysOnTop(amstradPc.getMonitor().isWindowAlwaysOnTop());
+		setIconImage(UIResources.cpcIcon.getImage());
+		if (powerOffWhenClosed) {
+			setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // handled by windowClosing()
+		} else {
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		}
 		amstradPc.addStateListener(this);
 		addWindowListener(this);
 		addWindowStateListener(this);
-		setFocusable(false);
-		setAlwaysOnTop(amstradPc.getMonitor().isWindowAlwaysOnTop());
-		setDefaultCloseOperation(exitOnClose ? JFrame.DO_NOTHING_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE); // see also
-																										// windowClosing()
-		setIconImage(UIResources.cpcIcon.getImage());
 		getContentPane().add(getContentComponent(), BorderLayout.CENTER);
 	}
 
@@ -47,7 +54,10 @@ public abstract class AmstradPcFrame extends JFrame
 	}
 
 	public void uninstallMenuBar() {
-		installMenuBar(null);
+		setJMenuBar(null);
+		if (isVisible()) {
+			pack();
+		}
 	}
 
 	public void centerOnScreen() {
@@ -125,7 +135,8 @@ public abstract class AmstradPcFrame extends JFrame
 	public synchronized void windowClosing(WindowEvent event) {
 		if (!isClosing()) {
 			setClosing(true);
-			if (!getAmstradPc().isTerminated() && isExitOnClose()) {
+			fireAmstradPcFrameClosed();
+			if (!getAmstradPc().isTerminated() && isPowerOffWhenClosed()) {
 				AmstradFactory.getInstance().getAmstradContext().powerOff(getAmstradPc());
 			}
 		}
@@ -159,6 +170,20 @@ public abstract class AmstradPcFrame extends JFrame
 		}
 	}
 
+	public void addFrameListener(AmstradPcFrameListener listener) {
+		getFrameListeners().addListener(listener);
+	}
+
+	public void removeFrameListener(AmstradPcFrameListener listener) {
+		getFrameListeners().removeListener(listener);
+	}
+
+	private void fireAmstradPcFrameClosed() {
+		for (AmstradPcFrameListener listener : getFrameListeners()) {
+			listener.amstradPcFrameClosed(this);
+		}
+	}
+
 	protected abstract Component getContentComponent();
 
 	public boolean isMenuBarInstalled() {
@@ -173,8 +198,8 @@ public abstract class AmstradPcFrame extends JFrame
 		return amstradPc;
 	}
 
-	public boolean isExitOnClose() {
-		return exitOnClose;
+	public boolean isPowerOffWhenClosed() {
+		return powerOffWhenClosed;
 	}
 
 	private boolean isClosing() {
@@ -183,6 +208,10 @@ public abstract class AmstradPcFrame extends JFrame
 
 	private void setClosing(boolean closing) {
 		this.closing = closing;
+	}
+
+	private GenericListenerList<AmstradPcFrameListener> getFrameListeners() {
+		return frameListeners;
 	}
 
 }

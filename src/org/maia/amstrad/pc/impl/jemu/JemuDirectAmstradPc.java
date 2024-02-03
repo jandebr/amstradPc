@@ -66,8 +66,8 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	}
 
 	@Override
-	protected AmstradPcFrame createFrame(boolean exitOnClose) {
-		return new JemuFrameImpl(exitOnClose);
+	protected AmstradPcFrame createFrame(boolean powerOffWhenClosed) {
+		return new JemuFrameImpl(powerOffWhenClosed);
 	}
 
 	@Override
@@ -231,8 +231,8 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		private VirtualKeyboardSidePanel virtualKeyboardSidePanel; // one of paddingComponents (can be null)
 
-		public JemuFrameImpl(boolean exitOnClose) {
-			super(JemuDirectAmstradPc.this, "Amstrad CPC Emulator", exitOnClose);
+		public JemuFrameImpl(boolean powerOffWhenClosed) {
+			super(JemuDirectAmstradPc.this, "Amstrad CPC Emulator", powerOffWhenClosed);
 			this.paddingComponents = new Vector<Component>(4);
 			setResizable(false);
 			updateBackground();
