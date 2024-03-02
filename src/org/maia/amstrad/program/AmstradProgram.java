@@ -165,6 +165,18 @@ public abstract class AmstradProgram implements Cloneable {
 		getFlags().add(flag);
 	}
 
+	public boolean isNoLaunch() {
+		return getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOLAUNCH);
+	}
+
+	public boolean isNoStage() {
+		return getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOSTAGE);
+	}
+
+	public boolean isHidden() {
+		return getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_HIDE);
+	}
+
 	public AmstradProgramType getProgramType() {
 		return programType;
 	}

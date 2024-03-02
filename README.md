@@ -2,7 +2,7 @@
 
 *Amstrad PC* -- A fork of the *JavaCPC* emulator with enhancements for playing a collection of Basic program files
 
-This software is 100% pure Java. It is created using the Java Development Kit (JDK) 9 and should be compatible with JRE/JDK 9 or higher
+The software is created using the Java Development Kit (JDK) 9 and is compatible with JRE/JDK 9 or higher
 
 There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the software
 
@@ -31,17 +31,17 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 - Onscreen popup menu
 - Joystick support including popular gamepads (Xbox, PS)
 - Instant loading and saving of Basic programs
-- Insights into Basic memory allocation
 - Integrated program browser
 - Quick access to program info
-- Basic IO against the host filesystem
 - Multiple run modes
-- Extend and integrate using pure Java code
-	- A clean API to *Amstrad PC*
-	- Customizable displays rendered with Java AWT
-	- Parser, compiler and decompiler for Locomotive Basic
+- Basic IO against the host filesystem
+- Insights into Basic memory allocation
+- Extend and integrate
+	- A clean API
+	- Customizable Java AWT displays
+	- Locomotive Basic parser, compiler and decompiler written in Java
 - Optimized fullscreen rendering
-- Many stability fixes
+- Stability fixes
 
 For more information see the [Features](https://github.com/jandebr/amstradPc/wiki/Features) documentation
 
@@ -51,10 +51,10 @@ For more information see the [Features](https://github.com/jandebr/amstradPc/wik
 
 ## Getting started
 
-Follow these steps to start using *Amstrad PC*
+To get started
 
 1. Download the project sources from [github](https://github.com/jandebr/amstradPc)
-2. From the parent directory, run `java -Djava.library.path=system/jinput -jar dist/amstradPc.jar` (using the provided [config file](Config-javacpc.ini) `javacpc.ini`)
+2. From the parent directory, run `java -Djava.library.path=system/jinput -jar dist/amstradPc.jar`
 
 Alternatively, one can distribute *Amstrad PC* to end user computers using [getdown](https://github.com/threerings/getdown) as detailed in the [distribution](https://github.com/jandebr/amstradPc/wiki/Distribute-using-getdown) documentation
 

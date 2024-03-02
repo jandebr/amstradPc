@@ -4,7 +4,6 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
 import org.maia.amstrad.program.AmstradProgramType;
 import org.maia.amstrad.program.load.AmstradProgramLoader;
 import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
@@ -50,7 +49,7 @@ public class ProgramRunMenuItem extends ProgramLaunchMenuItem {
 		AmstradProgram program = getProgram();
 		if (!AmstradProgramType.BASIC_PROGRAM.equals(program.getProgramType()))
 			return false;
-		if (program.getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOSTAGE))
+		if (program.isNoStage())
 			return false;
 		if (!getAmstradSettings().getBool(SETTING_ENABLE_BASIC_STAGING, true))
 			return false;

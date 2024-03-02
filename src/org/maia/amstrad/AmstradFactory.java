@@ -38,6 +38,7 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetedAmstradProgramRepository;
 import org.maia.amstrad.program.repo.file.BasicProgramFileRepository;
+import org.maia.amstrad.program.repo.filter.FilteredAmstradProgramRepository;
 import org.maia.amstrad.program.repo.rename.RenamingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.search.SearchingAmstradProgramRepository;
 import org.maia.amstrad.system.AmstradSystem;
@@ -176,6 +177,7 @@ public class AmstradFactory {
 	public AmstradProgramRepository createProgramRepository() {
 		AmstradProgramRepositoryConfiguration config = getAmstradContext().getProgramRepositoryConfiguration();
 		AmstradProgramRepository repository = new BasicProgramFileRepository(config.getRootFolder());
+		repository = new FilteredAmstradProgramRepository(repository);
 		if (config.isHideSequenceNumbers()) {
 			repository = RenamingAmstradProgramRepository.withSequenceNumbersHidden(repository);
 		}
