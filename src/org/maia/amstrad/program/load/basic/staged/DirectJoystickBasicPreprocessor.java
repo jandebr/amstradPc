@@ -41,14 +41,15 @@ import org.maia.util.SystemUtils;
  * <pre>
  * FOR a% = 1 TO 50: NEXT a%
  * </pre>
- * 
+ * <p>
  * The downside of the delay is that quick joystick movements may sporadically go by unnoticed and cause no action.
  * Finding the best delay is a tradeoff and challenged by different sources of variability
  * <ul>
  * <li>Variability in polling frequency. For example, action instructions consume additional time, slowing down the
  * polling frequency</li>
- * <li>Variability caused by asynchronous keyboard scanning, which also introduces a variable delay. Note that joystick
- * movements are mapped to keys and scanned 50 times per second by the CPC</li>
+ * <li>Variability caused by asynchronous keyboard scanning. Joystick movements are mapped to keys and scanned 50 times
+ * per second by the CPC. The scanning frequency does not align with the polling frequency, which also introduces a
+ * variable delay</li>
  * <li>Variability in emulated CPU clock speed, also considering the emulator is multi-threaded</li>
  * </ul>
  * These challenges represent real problems in a gaming context where speed and accuracy can decide the outcome of a
@@ -56,17 +57,17 @@ import org.maia.util.SystemUtils;
  * <p>
  * This preprocessor tries to overcome these challenges to some extent. In short,
  * <ul>
- * <li>Keyboard scanning (<code>JOY</code>) is replaced by a more direct (hence the name), near-instant joystick
- * integration (<code>PEEK</code>)</li>
- * <li>Quick joystick movements are <em>sticky</em> until they are checked in the program (or until a minimum idle time
+ * <li>Keyboard scanning (<code>JOY</code>) is replaced by a memory-mapped, near-instant joystick integration
+ * (<code>PEEK</code>)</li>
+ * <li>Quick joystick movements are <em>sticky</em> until they are checked in the program (or until a certain idle time
  * has passed)</li>
  * </ul>
  * <p>
  * This preprocessor will only act on those joysticks that are active at the time of staging as per
- * {@linkplain AmstradJoystick#isActive()}, so just before the program is run. See. Beware that direct joystick
- * operation during the program run is not compatible with alternative operation from the keyboard. Joysticks that are
- * inactive and become active while running the program, will be fully operational in the traditional way however do not
- * benefit from this preprocessor
+ * {@linkplain AmstradJoystick#isActive()}, so just before the program is run. Beware that direct joystick operation
+ * during the program run is not compatible with alternative operation from the keyboard. Joysticks that are inactive
+ * and become active while running the program, will be fully operational in the traditional way however do not benefit
+ * from this preprocessor
  * </p>
  * <p>
  * This preprocessor can be entirely disabled for a program when setting the flag
