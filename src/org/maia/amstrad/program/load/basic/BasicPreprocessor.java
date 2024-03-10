@@ -52,4 +52,9 @@ public abstract class BasicPreprocessor {
 		return false;
 	}
 
+	protected boolean isExceedingLineLimits(BasicLanguage language, BasicSourceTokenSequence sequence) {
+		int maxLength = BasicLanguageKit.forLanguage(language).getMaximumLineLengthCharacters();
+		return sequence.getSourceCode().length() > maxLength;
+	}
+
 }

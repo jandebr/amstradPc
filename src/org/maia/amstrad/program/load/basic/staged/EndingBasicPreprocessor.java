@@ -227,7 +227,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	}
 
-	private class EndingRuntimeListener extends StagedBasicProgramRuntimeListener {
+	private class EndingRuntimeListener extends StagedBasicProgramTrappedRuntimeListener {
 
 		public EndingRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
 			super(session, memoryTrapAddress);

@@ -161,7 +161,7 @@ public abstract class AmstradJoystick extends AmstradPcDevice {
 		return joystickEventListeners;
 	}
 
-	protected AmstradJoystickController getController() {
+	public AmstradJoystickController getController() {
 		return controller;
 	}
 

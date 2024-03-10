@@ -173,6 +173,10 @@ public abstract class AmstradProgram implements Cloneable {
 		return getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NOSTAGE);
 	}
 
+	public boolean isNoDirectJoystick() {
+		return getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_NODIRECTJOY);
+	}
+
 	public boolean isHidden() {
 		return getFlags().contains(AmstradProgramMetaDataConstants.AMD_FLAG_HIDE);
 	}

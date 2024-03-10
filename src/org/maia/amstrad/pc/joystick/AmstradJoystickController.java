@@ -4,8 +4,8 @@ import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.pc.joystick.AmstradJoystickEvent.EventType;
 import org.maia.amstrad.pc.joystick.keys.AmstradJoystickGamingAdapter;
+import org.maia.amstrad.pc.joystick.keys.AmstradJoystickKeyEvent;
 import org.maia.amstrad.pc.joystick.keys.AmstradJoystickMenuAdapter;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.keyboard.KeyEventTarget;
 import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboard;
 import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboardStateListener;
@@ -20,14 +20,17 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 
 	private AmstradJoystick joystick;
 
+	private AmstradJoystickMenuAdapter menuAdapter;
+
 	private AmstradJoystickGamingAdapter gamingAdapter;
 
-	private AmstradJoystickMenuAdapter menuAdapter;
+	private KeyEventTarget gamingKeyEventTarget;
 
 	public AmstradJoystickController(AmstradJoystick joystick) {
 		this.joystick = joystick;
-		this.gamingAdapter = new AmstradJoystickGamingAdapter();
 		this.menuAdapter = new AmstradJoystickMenuAdapter();
+		this.gamingAdapter = new AmstradJoystickGamingAdapter();
+		this.gamingKeyEventTarget = joystick.getAmstradPc().getKeyboard();
 		setAutoRepeatEnabled(determineAutoRepeatEnabled());
 		getMonitor().addMonitorListener(this);
 		getMonitor().addPopupMenuListener(this);
@@ -82,9 +85,9 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 
 	protected void handleEventForGaming(AmstradJoystickEvent event) {
 		if (isGamingMode()) {
-			KeyEvent keyEvent = getGamingAdapter().translateToKeyEvent(event);
+			AmstradJoystickKeyEvent keyEvent = getGamingAdapter().translateToKeyEvent(event);
 			if (keyEvent != null) {
-				dispatchKeyEvent(keyEvent, getKeyboard());
+				dispatchKeyEvent(keyEvent, getGamingKeyEventTarget());
 				event.consume();
 			}
 		}
@@ -98,7 +101,7 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 					popupMenu.showPopupMenu();
 					event.consume();
 				} else if (isPopupMenuShowing()) {
-					KeyEvent keyEvent = null;
+					AmstradJoystickKeyEvent keyEvent = null;
 					if (isPopupMenuTrigger(event)) {
 						keyEvent = getMenuAdapter().translateToKeyEvent(new AmstradJoystickEvent(getJoystick(),
 								AmstradJoystickCommand.CANCEL, event.getEventType()));
@@ -164,7 +167,7 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 		AmstradAlternativeDisplaySource displaySource = getMonitor().getCurrentAlternativeDisplaySource();
 		if (displaySource != null) {
 			if (isAutoRepeatSafeInMenus(event)) {
-				KeyEvent keyEvent = getMenuAdapter().translateToKeyEvent(event);
+				AmstradJoystickKeyEvent keyEvent = getMenuAdapter().translateToKeyEvent(event);
 				if (keyEvent != null) {
 					dispatchKeyEvent(keyEvent, displaySource);
 					event.consume();
@@ -173,7 +176,7 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 		}
 	}
 
-	protected void dispatchKeyEvent(KeyEvent keyEvent, KeyEventTarget target) {
+	protected void dispatchKeyEvent(AmstradJoystickKeyEvent keyEvent, KeyEventTarget target) {
 		if (keyEvent.getID() == KeyEvent.KEY_PRESSED) {
 			target.pressKey(keyEvent);
 		} else {
@@ -228,10 +231,6 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 		getJoystick().switchAutoRepeatEnabled(autoRepeat);
 	}
 
-	protected AmstradKeyboard getKeyboard() {
-		return getJoystick().getAmstradPc().getKeyboard();
-	}
-
 	protected AmstradVirtualKeyboard getVirtualKeyboard() {
 		return getJoystick().getAmstradPc().getVirtualKeyboard();
 	}
@@ -244,12 +243,20 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 		return joystick;
 	}
 
+	private AmstradJoystickMenuAdapter getMenuAdapter() {
+		return menuAdapter;
+	}
+
 	private AmstradJoystickGamingAdapter getGamingAdapter() {
 		return gamingAdapter;
 	}
 
-	private AmstradJoystickMenuAdapter getMenuAdapter() {
-		return menuAdapter;
+	public KeyEventTarget getGamingKeyEventTarget() {
+		return gamingKeyEventTarget;
+	}
+
+	public void setGamingKeyEventTarget(KeyEventTarget target) {
+		this.gamingKeyEventTarget = target;
 	}
 
 }

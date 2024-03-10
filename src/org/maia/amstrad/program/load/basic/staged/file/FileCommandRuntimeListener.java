@@ -6,9 +6,9 @@ import java.util.Vector;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
-import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramRuntimeListener;
+import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramTrappedRuntimeListener;
 
-public abstract class FileCommandRuntimeListener extends StagedBasicProgramRuntimeListener {
+public abstract class FileCommandRuntimeListener extends StagedBasicProgramTrappedRuntimeListener {
 
 	private BasicSourceCode sourceCode;
 

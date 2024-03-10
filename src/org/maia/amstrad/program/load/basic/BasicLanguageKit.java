@@ -9,6 +9,7 @@ import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
+import org.maia.amstrad.basic.locomotive.LocomotiveBasicRuntime;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCodeLine;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
@@ -52,6 +53,8 @@ public abstract class BasicLanguageKit {
 
 	public abstract BasicSourceToken createKeywordToken(String keyword) throws BasicSyntaxException;
 
+	public abstract int getMaximumLineLengthCharacters();
+
 	private static class LocomotiveBasicLanguageKit extends BasicLanguageKit {
 
 		public LocomotiveBasicLanguageKit() {
@@ -85,6 +88,11 @@ public abstract class BasicLanguageKit {
 		@Override
 		public BasicSourceToken createKeywordToken(String keyword) throws BasicSyntaxException {
 			return LocomotiveBasicSourceTokenFactory.getInstance().createBasicKeyword(keyword);
+		}
+
+		@Override
+		public int getMaximumLineLengthCharacters() {
+			return LocomotiveBasicRuntime.MAXIMUM_LINE_LENGTH_CHARACTERS;
 		}
 
 	}

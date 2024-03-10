@@ -286,6 +286,16 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	}
 
 	@Override
+	public AmstradDisplayOverlay getCustomDisplayOverlay() {
+		DisplayOverlay overlay = getJemuDisplay().getCustomDisplayOverlay();
+		if (overlay instanceof JemuDisplayOverlayBridge) {
+			return ((JemuDisplayOverlayBridge) overlay).getSource();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public void setCustomDisplayOverlay(AmstradDisplayOverlay overlay) {
 		synchronized (getAmstradPc()) {
 			if (overlay != null) {
@@ -485,7 +495,7 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 			getSource().dispose(displayComponent);
 		}
 
-		private AmstradDisplayOverlay getSource() {
+		public AmstradDisplayOverlay getSource() {
 			return source;
 		}
 

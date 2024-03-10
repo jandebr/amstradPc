@@ -139,7 +139,7 @@ public class EmulatorKeywordBasicPreprocessor extends StagedBasicPreprocessor im
 
 	}
 
-	private class EmulatorKeywordRuntimeListener extends StagedBasicProgramRuntimeListener {
+	private class EmulatorKeywordRuntimeListener extends StagedBasicProgramTrappedRuntimeListener {
 
 		public EmulatorKeywordRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
 			super(session, memoryTrapAddress);

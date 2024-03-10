@@ -18,6 +18,7 @@ import org.maia.amstrad.pc.AmstradPcPerformanceAdapter;
 import org.maia.amstrad.pc.AmstradPcStateListener;
 import org.maia.amstrad.pc.impl.MemoryTrapProcessor;
 import org.maia.amstrad.pc.impl.MemoryTrapTask;
+import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.memory.AmstradMemoryTrap;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
@@ -119,6 +120,8 @@ public abstract class JemuAmstradPc extends AmstradPc
 			if (silent)
 				Switches.FloppySound = false;
 			doStart();
+			getJoystick(AmstradJoystickID.JOYSTICK0); // init
+			getJoystick(AmstradJoystickID.JOYSTICK1); // init
 			getMemoryTrapProcessor().start();
 			if (Settings.getBoolean(SETTING_DISPLAY_BOOSTER, true))
 				getDisplayPerformanceBooster().start();

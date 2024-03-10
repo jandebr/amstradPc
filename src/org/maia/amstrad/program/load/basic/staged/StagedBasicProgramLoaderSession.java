@@ -325,7 +325,9 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 		public MacrosSnapshotScope(Set<StagedBasicMacro> macros) {
 			this.ranges = new Vector<BasicLineNumberRange>(macros.size());
 			for (StagedBasicMacro macro : macros) {
-				this.ranges.add(macro.getLineNumberRange());
+				if (macro.isDeclaredInSourceCode()) {
+					this.ranges.add(macro.getLineNumberRange());
+				}
 			}
 		}
 

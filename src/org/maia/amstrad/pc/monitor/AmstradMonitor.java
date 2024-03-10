@@ -161,6 +161,8 @@ public abstract class AmstradMonitor extends AmstradPcDevice {
 		return !isAlternativeDisplaySourceShowing();
 	}
 
+	public abstract AmstradDisplayOverlay getCustomDisplayOverlay();
+
 	public abstract void setCustomDisplayOverlay(AmstradDisplayOverlay overlay);
 
 	public abstract void resetCustomDisplayOverlay();
