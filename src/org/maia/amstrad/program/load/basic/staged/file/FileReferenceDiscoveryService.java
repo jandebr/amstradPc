@@ -2,6 +2,8 @@ package org.maia.amstrad.program.load.basic.staged.file;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -20,14 +22,12 @@ import org.maia.amstrad.program.load.basic.staged.file.DiscoveredFileReference.I
 
 public class FileReferenceDiscoveryService {
 
-	private AmstradPc amstradPc;
-
-	public FileReferenceDiscoveryService(AmstradPc amstradPc) {
-		this.amstradPc = amstradPc;
+	private FileReferenceDiscoveryService() {
 	}
 
-	public Collection<DiscoveredFileReference> discover(AmstradProgram program) throws AmstradProgramException {
-		BasicSourceCode sourceCode = new BasicProgramLoader(getAmstradPc()).retrieveSourceCode(program);
+	public static Collection<DiscoveredFileReference> discover(AmstradProgram program, AmstradPc amstradPc)
+			throws AmstradProgramException {
+		BasicSourceCode sourceCode = new BasicProgramLoader(amstradPc).retrieveSourceCode(program);
 		try {
 			return discover(sourceCode);
 		} catch (BasicException e) {
@@ -35,7 +35,7 @@ public class FileReferenceDiscoveryService {
 		}
 	}
 
-	public Collection<DiscoveredFileReference> discover(BasicSourceCode sourceCode) throws BasicException {
+	public static Collection<DiscoveredFileReference> discover(BasicSourceCode sourceCode) throws BasicException {
 		Collection<DiscoveredFileReference> references = new Vector<DiscoveredFileReference>();
 		LocomotiveBasicSourceTokenFactory stf = LocomotiveBasicSourceTokenFactory.getInstance();
 		BasicSourceToken LOAD = stf.createBasicKeyword("LOAD");
@@ -92,7 +92,20 @@ public class FileReferenceDiscoveryService {
 		return references;
 	}
 
-	private DiscoveredFileReference parseFileReference(BasicSourceCode sourceCode, int lineNumber,
+	public static List<DiscoveredFileReference> sortBySourceFilename(Collection<DiscoveredFileReference> references) {
+		List<DiscoveredFileReference> refs = new Vector<DiscoveredFileReference>(references);
+		Collections.sort(refs, new Comparator<DiscoveredFileReference>() {
+
+			@Override
+			public int compare(DiscoveredFileReference ref1, DiscoveredFileReference ref2) {
+				return ref1.getSourceFilenameWithoutFlags().compareTo(ref2.getSourceFilenameWithoutFlags());
+			}
+
+		});
+		return refs;
+	}
+
+	private static DiscoveredFileReference parseFileReference(BasicSourceCode sourceCode, int lineNumber,
 			BasicSourceTokenSequence instructionSequence, Instruction instruction) {
 		DiscoveredFileReference reference = null;
 		int i = instructionSequence.getFirstIndexOf(LiteralQuotedToken.class);
@@ -101,10 +114,6 @@ public class FileReferenceDiscoveryService {
 			reference = new DiscoveredFileReference(sourceCode, lineNumber, sourceFilename, instruction);
 		}
 		return reference;
-	}
-
-	private AmstradPc getAmstradPc() {
-		return amstradPc;
 	}
 
 }

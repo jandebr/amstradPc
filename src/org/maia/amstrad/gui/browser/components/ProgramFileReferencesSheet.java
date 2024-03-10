@@ -1,20 +1,16 @@
 package org.maia.amstrad.gui.browser.components;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Vector;
 
 import org.maia.amstrad.gui.components.ColoredTextLine;
 import org.maia.amstrad.gui.components.ColoredTextSpan;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
+import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.basic.staged.file.DiscoveredFileReference;
 import org.maia.amstrad.program.load.basic.staged.file.FileReferenceDiscoveryService;
 import org.maia.util.StringUtils;
-import org.maia.amstrad.program.AmstradProgramException;
 
 public class ProgramFileReferencesSheet extends ProgramSheet {
 
@@ -29,7 +25,7 @@ public class ProgramFileReferencesSheet extends ProgramSheet {
 	@Override
 	protected void populateSheet(int maxWidth, int bg) {
 		try {
-			List<DiscoveredFileReference> refs = getSortedFileReferences(getProgram());
+			List<DiscoveredFileReference> refs = getFileReferencesSortedBySourceFilename(getProgram());
 			String previousFilename = null;
 			for (int i = 0; i < refs.size(); i++) {
 				DiscoveredFileReference ref = refs.get(i);
@@ -57,23 +53,10 @@ public class ProgramFileReferencesSheet extends ProgramSheet {
 		}
 	}
 
-	private List<DiscoveredFileReference> getSortedFileReferences(AmstradProgram program)
+	private List<DiscoveredFileReference> getFileReferencesSortedBySourceFilename(AmstradProgram program)
 			throws AmstradProgramException {
-		List<DiscoveredFileReference> refs = new Vector<DiscoveredFileReference>(getFileReferences(program));
-		Collections.sort(refs, new Comparator<DiscoveredFileReference>() {
-
-			@Override
-			public int compare(DiscoveredFileReference ref1, DiscoveredFileReference ref2) {
-				return ref1.getSourceFilenameWithoutFlags().compareTo(ref2.getSourceFilenameWithoutFlags());
-			}
-
-		});
-		return refs;
-	}
-
-	private Collection<DiscoveredFileReference> getFileReferences(AmstradProgram program)
-			throws AmstradProgramException {
-		return new FileReferenceDiscoveryService(getAmstradPc()).discover(program);
+		return FileReferenceDiscoveryService
+				.sortBySourceFilename(FileReferenceDiscoveryService.discover(program, getAmstradPc()));
 	}
 
 	private AmstradPc getAmstradPc() {

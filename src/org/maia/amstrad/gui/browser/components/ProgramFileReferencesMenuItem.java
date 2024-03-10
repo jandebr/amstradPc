@@ -23,7 +23,7 @@ public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 	private void init() {
 		AmstradProgram program = getProgram();
 		try {
-			references = new FileReferenceDiscoveryService(getAmstradPc()).discover(program);
+			references = FileReferenceDiscoveryService.discover(program, getAmstradPc());
 			for (DiscoveredFileReference ref : references) {
 				if (program.lookupFileReference(ref.getSourceFilenameWithoutFlags()) == null) {
 					attention = true;

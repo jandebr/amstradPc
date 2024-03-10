@@ -59,30 +59,37 @@ public class DiscoveredFileReference {
 
 	public static enum Instruction {
 
-		LOAD("LOAD"),
+		LOAD("LOAD", true),
 
-		SAVE("SAVE"),
+		SAVE("SAVE", true),
 
-		OPEN_IN("OPENIN"),
+		OPEN_IN("OPENIN", false),
 
-		OPEN_OUT("OPENOUT"),
+		OPEN_OUT("OPENOUT", false),
 
-		RUN("RUN"),
+		RUN("RUN", true),
 
-		CHAIN("CHAIN"),
+		CHAIN("CHAIN", true),
 
-		CHAIN_MERGE("CHAIN MERGE"),
+		CHAIN_MERGE("CHAIN MERGE", true),
 
-		MERGE("MERGE");
+		MERGE("MERGE", true);
 
 		private String sourceForm;
 
-		private Instruction(String sourceForm) {
+		private boolean programReference;
+
+		private Instruction(String sourceForm, boolean programReference) {
 			this.sourceForm = sourceForm;
+			this.programReference = programReference;
 		}
 
 		public String getSourceForm() {
 			return sourceForm;
+		}
+
+		public boolean isProgramReference() {
+			return programReference;
 		}
 
 	}

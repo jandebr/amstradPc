@@ -43,7 +43,7 @@ public class BasicStagingTest {
 
 	public void discoverFileReferences(AmstradProgram program) throws AmstradProgramException {
 		AmstradPc amstradPc = AmstradFactory.getInstance().createAmstradPc();
-		Collection<DiscoveredFileReference> refs = new FileReferenceDiscoveryService(amstradPc).discover(program);
+		Collection<DiscoveredFileReference> refs = FileReferenceDiscoveryService.discover(program, amstradPc);
 		for (DiscoveredFileReference ref : refs) {
 			System.out.println(ref);
 		}

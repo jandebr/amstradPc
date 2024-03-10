@@ -30,8 +30,7 @@ public class UnsupportedFileCommandPreprocessor extends FileCommandBasicPreproce
 
 	@Override
 	protected void stage(BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) throws BasicException {
-		Collection<DiscoveredFileReference> references = new FileReferenceDiscoveryService(session.getAmstradPc())
-				.discover(sourceCode);
+		Collection<DiscoveredFileReference> references = FileReferenceDiscoveryService.discover(sourceCode);
 		if (!references.isEmpty()) {
 			DiscoveredFileReference reference = references.iterator().next();
 			throw new BasicException("Unsupported file instruction " + reference.getInstruction().getSourceForm()
