@@ -489,7 +489,7 @@ public class ProgramBrowserDisplaySource extends AmstradWindowDisplaySource {
 
 	private void handleShortcutKey(KeyEvent e) {
 		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_F1) {
+		if (keyCode == KeyEvent.VK_F1 && e.isControlDown()) {
 			// Info
 			if (Window.PROGRAM_INFO_MODAL.equals(getCurrentWindow())
 					|| Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow())) {
