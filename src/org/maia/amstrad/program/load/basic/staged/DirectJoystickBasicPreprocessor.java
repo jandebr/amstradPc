@@ -58,17 +58,15 @@ import org.maia.util.SystemUtils;
  * <ul>
  * <li>Keyboard scanning (<code>JOY</code>) is replaced by a more direct (hence the name), near-instant joystick
  * integration (<code>PEEK</code>)</li>
- * <li>Quick joystick movements are <em>sticky</em> until they are checked in the program (or after a minimum idle time
+ * <li>Quick joystick movements are <em>sticky</em> until they are checked in the program (or until a minimum idle time
  * has passed)</li>
  * </ul>
  * <p>
- * This preprocessor will only act on those joysticks that are active at the time of staging, so just before the program
- * is run. See {@linkplain AmstradJoystick#isActive()}. Beware that direct joystick operation during the program run is
- * not compatible with alternative operation from the keyboard.
- * </p>
- * <p>
- * Joysticks that are inactive and become active while running the program, will be fully operational in the traditional
- * way however do not benefit from this preprocessor
+ * This preprocessor will only act on those joysticks that are active at the time of staging as per
+ * {@linkplain AmstradJoystick#isActive()}, so just before the program is run. See. Beware that direct joystick
+ * operation during the program run is not compatible with alternative operation from the keyboard. Joysticks that are
+ * inactive and become active while running the program, will be fully operational in the traditional way however do not
+ * benefit from this preprocessor
  * </p>
  * <p>
  * This preprocessor can be entirely disabled for a program when setting the flag
