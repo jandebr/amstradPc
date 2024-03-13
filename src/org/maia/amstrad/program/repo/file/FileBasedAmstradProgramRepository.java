@@ -142,8 +142,9 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		File destination = null;
 		if (sourceFolder.isDirectory()) {
 			File[] files = sourceFolder.listFiles();
-			if (files.length == 1) {
-				File file = files[0];
+			int i = 0;
+			while (i < files.length && destination == null) {
+				File file = files[i++];
 				if (isLinkFile(file)) {
 					destination = readDestinationFolderInLinkFile(file);
 				}
