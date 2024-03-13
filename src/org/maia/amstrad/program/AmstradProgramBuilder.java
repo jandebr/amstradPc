@@ -129,6 +129,12 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		if (reader != null) {
 			Properties props = new Properties();
 			props.load(reader);
+			// Include first
+			String includePath = props.getProperty(AMD_INCLUDE);
+			if (includePath != null) {
+				loadAmstradMetaData(new File(relativePath, includePath));
+			}
+			// Set or override included metadata
 			AmstradProgramType programType = parseProgramTypeFromMetaData(props.getProperty(AMD_TYPE));
 			if (programType != null)
 				withProgramType(programType);
@@ -136,18 +142,42 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			if (basicLanguage != null)
 				withBasicLanguage(basicLanguage);
 			withProgramName(props.getProperty(AMD_NAME, getProgram().getProgramName()));
-			withAuthor(props.getProperty(AMD_AUTHOR));
-			withProductionYear(StringUtils.toInt(props.getProperty(AMD_YEAR), 0));
-			withNameOfTape(props.getProperty(AMD_TAPE));
-			withBlocksOnTape(StringUtils.toInt(props.getProperty(AMD_BLOCKS), 0));
-			withPreferredMonitorMode(AmstradMonitorMode.toMonitorMode(props.getProperty(AMD_MONITOR), null));
-			withProgramDescription(props.getProperty(AMD_DESCRIPTION));
-			withAuthoringInformation(props.getProperty(AMD_AUTHORING));
-			withUserControls(extractUserControlsFromMetaData(props));
-			withImages(extractProgramImagesFromMetaData(props, relativePath));
-			withCoverImage(extractCoverImageFromMetaData(props, relativePath));
-			withFileReferences(extractFileReferencesFromMetaData(props, relativePath));
-			withFlags(extractFlagsFromMetaData(props));
+			String author = props.getProperty(AMD_AUTHOR);
+			if (author != null)
+				withAuthor(author);
+			String year = props.getProperty(AMD_YEAR);
+			if (year != null)
+				withProductionYear(StringUtils.toInt(year, 0));
+			String tape = props.getProperty(AMD_TAPE);
+			if (tape != null)
+				withNameOfTape(tape);
+			String blocks = props.getProperty(AMD_BLOCKS);
+			if (blocks != null)
+				withBlocksOnTape(StringUtils.toInt(blocks, 0));
+			String monitor = props.getProperty(AMD_MONITOR);
+			if (monitor != null)
+				withPreferredMonitorMode(AmstradMonitorMode.toMonitorMode(monitor, null));
+			String description = props.getProperty(AMD_DESCRIPTION);
+			if (description != null)
+				withProgramDescription(description);
+			String authoring = props.getProperty(AMD_AUTHORING);
+			if (authoring != null)
+				withAuthoringInformation(authoring);
+			List<UserControl> controls = extractUserControlsFromMetaData(props);
+			if (!controls.isEmpty())
+				withUserControls(controls);
+			List<AmstradProgramImage> images = extractProgramImagesFromMetaData(props, relativePath);
+			if (!images.isEmpty())
+				withImages(images);
+			AmstradProgramImage cover = extractCoverImageFromMetaData(props, relativePath);
+			if (cover != null)
+				withCoverImage(cover);
+			List<FileReference> fileRefs = extractFileReferencesFromMetaData(props, relativePath);
+			if (!fileRefs.isEmpty())
+				withFileReferences(fileRefs);
+			List<String> flags = extractFlagsFromMetaData(props);
+			if (flags != null)
+				withFlags(flags);
 		}
 		return this;
 	}
@@ -237,15 +267,17 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 	}
 
 	private List<String> extractFlagsFromMetaData(Properties props) {
-		List<String> flags = new Vector<String>();
 		String value = props.getProperty(AMD_FLAGS);
 		if (value != null) {
+			List<String> flags = new Vector<String>();
 			StringTokenizer st = new StringTokenizer(value, ",");
 			while (st.hasMoreTokens()) {
 				flags.add(st.nextToken().trim());
 			}
+			return flags;
+		} else {
+			return null;
 		}
-		return flags;
 	}
 
 	public AmstradProgram build() {

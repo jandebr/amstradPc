@@ -1,6 +1,7 @@
 package org.maia.amstrad.program.repo.file;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -132,6 +133,42 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		return name.equals("cover.jpg") || name.equals("cover.png");
 	}
 
+	protected boolean isLinkFile(File file) {
+		String name = file.getName().toLowerCase();
+		return name.equals("link");
+	}
+
+	protected File getLinkedDestinationFolder(File sourceFolder) {
+		File destination = null;
+		if (sourceFolder.isDirectory()) {
+			File[] files = sourceFolder.listFiles();
+			if (files.length == 1) {
+				File file = files[0];
+				if (isLinkFile(file)) {
+					destination = readDestinationFolderInLinkFile(file);
+				}
+			}
+		}
+		return destination;
+	}
+
+	protected File readDestinationFolderInLinkFile(File linkFile) {
+		File destination = null;
+		try {
+			// path relative to the link file's location
+			String path = IOUtils.readTextFileContents(linkFile).toString();
+			int i = path.indexOf('\n');
+			if (i >= 0)
+				path = path.substring(0, i);
+			File folder = new File(linkFile.getParentFile(), path);
+			if (folder.exists() && folder.isDirectory()) {
+				destination = folder;
+			}
+		} catch (IOException e) {
+		}
+		return destination;
+	}
+
 	protected abstract AmstradProgram createProgram(String programName, File basicFile, File metadataFile);
 
 	@Override
@@ -156,7 +193,11 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		private File folder;
 
 		public FileBasedFolderNode(File folder) {
-			super(folder.getName());
+			this(folder.getName(), folder);
+		}
+
+		public FileBasedFolderNode(String name, File folder) {
+			super(name);
 			this.folder = folder;
 		}
 
@@ -172,26 +213,32 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 
 		@Override
 		protected List<Node> listChildNodes() {
+			File folder = getFolder();
 			List<FileBasedFolderNode> childFolderNodes = new Vector<FileBasedFolderNode>();
 			List<FileBasedProgramNode> childProgramNodes = new Vector<FileBasedProgramNode>();
-			if (isFolderPerProgram() && !containsSubFolders(getFolder())) {
-				File pf = selectProgramFileInFolder(getFolder());
+			if (isFolderPerProgram() && !containsSubFolders(folder)) {
+				File pf = selectProgramFileInFolder(folder);
 				if (pf != null) {
-					childProgramNodes.add(new FileBasedProgramNode(getFolder().getName(), pf));
+					childProgramNodes.add(new FileBasedProgramNode(folder.getName(), pf));
 				}
 			} else {
-				List<File> files = Arrays.asList(getFolder().listFiles());
+				List<File> files = Arrays.asList(folder.listFiles());
 				Collections.sort(files);
 				for (File file : files) {
 					if (isFolderPerProgram()) {
 						if (file.isDirectory()) {
+							String name = file.getName();
+							File linkedFolder = getLinkedDestinationFolder(file);
+							if (linkedFolder != null) {
+								file = linkedFolder;
+							}
 							if (!containsSubFolders(file)) {
 								File pf = selectProgramFileInFolder(file);
 								if (pf != null) {
-									childProgramNodes.add(new FileBasedProgramNode(file.getName(), pf));
+									childProgramNodes.add(new FileBasedProgramNode(name, pf));
 								}
 							} else {
-								childFolderNodes.add(new FileBasedFolderNode(file));
+								childFolderNodes.add(new FileBasedFolderNode(name, file));
 							}
 						}
 					} else {

@@ -2,6 +2,8 @@ package org.maia.amstrad.program;
 
 public interface AmstradProgramMetaDataConstants {
 
+	String AMD_INCLUDE = "INCLUDE";
+
 	String AMD_TYPE = "TYPE";
 
 	String AMD_TYPE_LOCOMOTIVE_BASIC_PROGRAM = "LOCOMOTIVE BASIC PROGRAM";
@@ -49,7 +51,7 @@ public interface AmstradProgramMetaDataConstants {
 	String AMD_FLAG_NOLAUNCH = "NO-LAUNCH";
 
 	String AMD_FLAG_NOSTAGE = "NO-STAGE";
-	
+
 	String AMD_FLAG_NODIRECTJOY = "NO-DIRECTJOY";
 
 }
