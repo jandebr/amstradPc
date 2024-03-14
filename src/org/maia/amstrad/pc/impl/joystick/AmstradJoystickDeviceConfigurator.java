@@ -154,7 +154,6 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 		if (configuration != null) {
 			try {
 				joystick = new InputControllerByConfigurationBuilder(configuration).buildJoystick();
-				joystick.setConcurrentlyFiringCommandsEnabled(false);
 			} catch (InputControllerException e) {
 				// input device may no longer be connected
 			}
