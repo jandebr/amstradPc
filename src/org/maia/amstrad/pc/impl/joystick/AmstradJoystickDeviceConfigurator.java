@@ -12,8 +12,6 @@ import javax.swing.JFrame;
 
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.io.inputdevice.InputDeviceFilter;
-import org.maia.io.inputdevice.InputEventGateway;
-import org.maia.io.inputdevice.InputFilter;
 import org.maia.io.inputdevice.controller.InputCommand;
 import org.maia.io.inputdevice.controller.InputCommandGroup;
 import org.maia.io.inputdevice.controller.InputControllerException;
@@ -28,7 +26,6 @@ import org.maia.io.inputdevice.controller.config.ia.JInteractiveBuilder;
 import org.maia.io.inputdevice.controller.config.ia.JInteractiveBuilderListener;
 import org.maia.io.inputdevice.controller.config.ia.RequiredInputCommands;
 import org.maia.io.inputdevice.impl.jinput.AxisInputFilter;
-import org.maia.io.inputdevice.impl.jinput.JInputEventSource;
 import org.maia.io.inputdevice.joystick.Joystick;
 import org.maia.io.inputdevice.joystick.JoystickCommand;
 
@@ -40,15 +37,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 
 	private boolean joystickActiveBeforeInteractiveSetup;
 
-	private static Map<AmstradJoystickCommand, JoystickCommand> joystickCommandMap;
-
-	static {
-		joystickCommandMap = new HashMap<AmstradJoystickCommand, JoystickCommand>();
-		// exclude slider inputs as they are very eventful
-		InputFilter inputFilter = AxisInputFilter.createExclusiveFilter(AxisInputFilter.SLIDERS);
-		JInputEventSource eventSource = new JInputEventSource(InputDeviceFilter.ACCEPT_ALL, inputFilter);
-		InputEventGateway.getInstance().switchEventSource(eventSource);
-	}
+	private static Map<AmstradJoystickCommand, JoystickCommand> joystickCommandMap = new HashMap<AmstradJoystickCommand, JoystickCommand>();
 
 	public AmstradJoystickDeviceConfigurator(AmstradJoystickDevice joystickDevice) {
 		this.joystickDevice = joystickDevice;
@@ -58,7 +47,8 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 
 	protected InteractiveBuilder createBuilder() {
 		final Set<JoystickCommand> requiredCommands = getRequiredCommands();
-		InteractiveBuilder builder = new InteractiveBuilder(createCommandGroup(), InputDeviceFilter.STICK_OR_GAMEPAD);
+		InteractiveBuilder builder = new InteractiveBuilder(createCommandGroup(), InputDeviceFilter.STICK_OR_GAMEPAD,
+				AxisInputFilter.createExplicitUserGestureFilter());
 		builder.withControllerType(InputControllerType.JOYSTICK).withControllerName(getJoystickName())
 				.withControls(new InteractiveBuilderControls() {
 
