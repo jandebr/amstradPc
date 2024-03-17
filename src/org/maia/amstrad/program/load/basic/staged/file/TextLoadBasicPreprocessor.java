@@ -93,12 +93,12 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(OPENIN);
 				while (i >= 0) {
-					// OPENIN => waitresume macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					OpeninCommand command = OpeninCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						// OPENIN => waitresume macro
 						int ref = listener.registerCommand(command).getReferenceNumber();
 						BasicSourceTokenSequence commandSeq = new BasicSourceTokenSequence();
 						commandSeq.append(listener.getTextBufferVariable(), stf.createOperator("="),
@@ -136,7 +136,6 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(INPUT);
 				while (i >= 0) {
-					// [LINE] INPUT #9 => waitresume macro
 					int k = sequence.getIndexPrecedingWhitespace(i - 1);
 					if (sequence.get(k).equals(LINE))
 						i = k;
@@ -145,6 +144,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 						j = sequence.size();
 					InputStreamCommand command = InputStreamCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						// [LINE] INPUT #9 => waitresume macro
 						BasicSourceTokenSequence commandSeq = new BasicSourceTokenSequence();
 						for (int argi = 0; argi < command.getArguments().size(); argi++) {
 							if (argi > 0)

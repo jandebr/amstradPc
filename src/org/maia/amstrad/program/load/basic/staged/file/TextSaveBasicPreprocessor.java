@@ -86,12 +86,12 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(OPENOUT);
 				while (i >= 0) {
-					// OPENOUT => waitresume macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					OpenoutCommand command = OpenoutCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						// OPENOUT => waitresume macro
 						int ref = listener.registerCommand(command).getReferenceNumber();
 						sequence.replaceRange(i, j, createWaitResumeMacroInvocationSequence(session, addrTrap, ref));
 					}
@@ -118,12 +118,12 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(PRINT);
 				while (i >= 0) {
-					// PRINT #9 => waitresume macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					PrintStreamCommand command = PrintStreamCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						// PRINT #9 => waitresume macro
 						BasicSourceTokenSequence commandSeq = new BasicSourceTokenSequence();
 						for (int argi = 0; argi < command.getArguments().size(); argi++) {
 							if (argi > 0)

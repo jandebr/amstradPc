@@ -101,12 +101,12 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 					int j = sequence.getIndexFollowingWhitespace(i + 1);
 					if (j >= 0) {
 						if (sequence.get(j).equals(MERGE)) {
-							// CHAIN MERGE => chain merge macro
 							j = sequence.getNextIndexOf(SEP, j + 1);
 							if (j < 0)
 								j = sequence.size();
 							ChainMergeCommand command = ChainMergeCommand.parseFrom(sequence.subSequence(i, j));
 							if (command != null) {
+								// CHAIN MERGE => chain merge macro
 								int ref = listener.registerCommand(command).getReferenceNumber();
 								sequence.replaceRange(i, j, createGotoMacroInvocationSequence(macro, addrTrap, ref));
 							}

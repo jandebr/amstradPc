@@ -70,12 +70,12 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(LOAD);
 				while (i >= 0) {
-					// LOAD => waitresume macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					BinaryLoadCommand command = BinaryLoadCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						// LOAD => waitresume macro
 						int ref = listener.registerCommand(command).getReferenceNumber();
 						sequence.replaceRange(i, j, createWaitResumeMacroInvocationSequence(session, addrTrap, ref));
 					}

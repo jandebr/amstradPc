@@ -64,12 +64,12 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(SAVE);
 				while (i >= 0) {
-					// SAVE => waitresume macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					BinarySaveCommand command = BinarySaveCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						// SAVE => waitresume macro
 						int ref = listener.registerCommand(command).getReferenceNumber();
 						sequence.replaceRange(i, j, createWaitResumeMacroInvocationSequence(session, addrTrap, ref));
 					}

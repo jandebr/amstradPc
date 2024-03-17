@@ -10,6 +10,8 @@ public interface ErrorOutCodes {
 
 	int ERR_CHAIN_RUN_FAILURE = 34;
 
+	int ERR_RUN_FAILURE = ERR_CHAIN_RUN_FAILURE;
+
 	int ERR_BINARY_LOAD_FAILURE = 35;
 
 	int ERR_BINARY_SAVE_FAILURE = 36;

@@ -20,6 +20,8 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
+import org.maia.amstrad.program.load.basic.staged.PreambleJumpingBasicPreprocessor.PreambleJumpingMacro;
+import org.maia.amstrad.program.load.basic.staged.PreambleLandingBasicPreprocessor.PreambleLandingMacro;
 import org.maia.amstrad.program.load.basic.staged.ResumableMacro;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoader;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
@@ -97,12 +99,12 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(instruction);
 				while (i >= 0) {
-					// CHAIN or RUN => chainrun macro
 					int j = sequence.getNextIndexOf(SEP, i + 1);
 					if (j < 0)
 						j = sequence.size();
 					ChainRunCommand command = ChainRunCommand.parseFrom(sequence.subSequence(i, j));
 					if (command != null) {
+						// CHAIN or RUN "file" => chainrun macro
 						int ref = listener.registerCommand(command).getReferenceNumber();
 						sequence.replaceRange(i, j, createGotoMacroInvocationSequence(macro, addrTrap, ref));
 					}
@@ -147,16 +149,19 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 																			// loads the chained program code)
 		chainedRuntime.run(StagedBasicProgramRuntime.RUN_ARG_CHAINRUN); // installs the new memory traps, nothing more
 		StagedBasicProgramLoaderSession chainedSession = loader.getLastSession();
-		BasicSourceCode sourceCode = chainedSession.getBasicRuntime().exportSourceCode();
-		int lnStart = sourceCode.getSmallestLineNumber();
+		ChainRunMacro macro = chainedSession.getMacroAdded(ChainRunMacro.class);
+		PreambleJumpingMacro jump = chainedSession.getMacroAdded(PreambleJumpingMacro.class);
+		PreambleLandingMacro land = chainedSession.getMacroAdded(PreambleLandingMacro.class);
+		int lnStart = land.getLineNumberFrom();
 		if (command.hasStartingLineNumber()) {
 			BasicLineNumberLinearMapping mapping = chainedSession.getOriginalToStagedLineNumberMapping();
 			if (mapping.isMapped(command.getStartingLineNumber())) {
 				lnStart = mapping.getNewLineNumber(command.getStartingLineNumber());
 			}
 		}
-		ChainRunMacro macro = chainedSession.getMacroAdded(ChainRunMacro.class);
-		substituteLineNumberReference(macro.getLineNumberTo(), lnStart, sourceCode);
+		BasicSourceCode sourceCode = chainedSession.getBasicRuntime().exportSourceCode();
+		substituteLineNumberReference(jump.getLineNumberFrom(), lnStart, sourceCode);
+		substituteLineNumberReference(macro.getLineNumberTo(), sourceCode.getSmallestLineNumber(), sourceCode);
 		resumeWithNewSourceCode(sourceCode, macro, chainedSession);
 	}
 

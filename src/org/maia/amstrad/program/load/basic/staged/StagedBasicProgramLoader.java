@@ -12,6 +12,7 @@ import org.maia.amstrad.program.load.basic.staged.file.BinaryLoadBasicPreprocess
 import org.maia.amstrad.program.load.basic.staged.file.BinarySaveBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.file.ChainMergeBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.file.ChainRunBasicPreprocessor;
+import org.maia.amstrad.program.load.basic.staged.file.RunBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.file.TextLoadBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.file.TextSaveBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.file.UnsupportedFileCommandPreprocessor;
@@ -48,6 +49,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(new WaitResumeBasicPreprocessor());
 		addPreprocessor(new ChainMergeBasicPreprocessor());
 		addPreprocessor(new ChainRunBasicPreprocessor());
+		addPreprocessor(new RunBasicPreprocessor()); // after chainrun (reuses macro)
 		addPreprocessor(new BinaryLoadBasicPreprocessor());
 		addPreprocessor(new BinarySaveBasicPreprocessor());
 		addPreprocessor(new TextLoadBasicPreprocessor());
