@@ -25,7 +25,6 @@ import org.maia.io.inputdevice.controller.config.ia.InteractiveBuilderControls;
 import org.maia.io.inputdevice.controller.config.ia.JInteractiveBuilder;
 import org.maia.io.inputdevice.controller.config.ia.JInteractiveBuilderListener;
 import org.maia.io.inputdevice.controller.config.ia.RequiredInputCommands;
-import org.maia.io.inputdevice.impl.jinput.AxisInputFilter;
 import org.maia.io.inputdevice.joystick.Joystick;
 import org.maia.io.inputdevice.joystick.JoystickCommand;
 
@@ -47,8 +46,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 
 	protected InteractiveBuilder createBuilder() {
 		final Set<JoystickCommand> requiredCommands = getRequiredCommands();
-		InteractiveBuilder builder = new InteractiveBuilder(createCommandGroup(), InputDeviceFilter.STICK_OR_GAMEPAD,
-				AxisInputFilter.createExplicitUserGestureFilter());
+		InteractiveBuilder builder = new InteractiveBuilder(createCommandGroup(), InputDeviceFilter.STICK_OR_GAMEPAD);
 		builder.withControllerType(InputControllerType.JOYSTICK).withControllerName(getJoystickName())
 				.withControls(new InteractiveBuilderControls() {
 
