@@ -92,6 +92,10 @@ public abstract class AmstradProgramRepository {
 			return name;
 		}
 
+		protected void setName(String name) {
+			this.name = name;
+		}
+
 		public AmstradProgramImage getCoverImage() {
 			if (coverImage == null && !coverImageVerified) {
 				coverImage = readCoverImage();

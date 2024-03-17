@@ -271,6 +271,7 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 		public FileBasedProgramNode(String name, File file) {
 			super(name);
 			this.file = file;
+			setName(readProgram().getProgramName()); // use name inside metadata file, if any
 		}
 
 		@Override
