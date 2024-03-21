@@ -136,6 +136,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 				BasicSourceTokenSequence sequence = line.parse();
 				int i = sequence.getFirstIndexOf(INPUT);
 				while (i >= 0) {
+					int ii = i;
 					int k = sequence.getIndexPrecedingWhitespace(i - 1);
 					if (sequence.get(k).equals(LINE))
 						i = k;
@@ -169,7 +170,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 						}
 						sequence.replaceRange(i, j, commandSeq);
 					}
-					i = sequence.getNextIndexOf(INPUT, i + 1);
+					i = sequence.getNextIndexOf(INPUT, ii + 1);
 				}
 				if (sequence.isModified()) {
 					addCodeLine(sourceCode, sequence);
