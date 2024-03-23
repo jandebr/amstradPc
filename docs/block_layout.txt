@@ -1,0 +1,64 @@
+<tape> ::= { <silence> <block> }
+
+<block> ::= <ones> <header-cue-in> <header> <zeros> <header-ending> <spacer> <ones> <payload-cue-in> <payload> <block-ending>
+
+<header-cue-in> ::= bit:0 , byte:44
+
+<header> ::= <program-name> <block-number> { byte }
+
+<program-name> ::= { byte }(16) zero-padded
+
+<block-number> ::= byte
+
+<header-ending> ::= { byte }
+
+<payload-cue-in> ::= bit:0 , byte:22
+
+<payload> ::= { <payload-chunk> }(1,8)
+
+<payload-chunk> ::= <payload-chunk-data> <payload-chunk-checksum>
+
+<payload-chunk-data> ::= { byte }(256)
+
+<payload-chunk-checksum> ::= { byte }(2)
+
+<block-ending> ::= <ones>
+
+<silence> ::= { sample:lowAmp }
+
+<spacer> ::= { sample:lowAmp }
+
+<ones> ::= { bit:1 }
+
+<zeros> ::= { bit:0 }
+
+
+PAYLOAD
+=======
+
+X series of (256 bytes followed by 2 checksum bytes)
+X is minimally 1 and maximally 8 per block
+
+The last series has padding of zeros within the 256 bytes
+
+Every line starts with : <line length> , <line number>
+<line length> is two bytes integer, little endian, and covers the line length, the line number, the line, and the line terminator 0x00
+<line number> is two bytes integer, little endian
+
+Every line ends with 0x00
+
+Colon statement seperator is 0x01 
+
+Commands are coded as one or two bytes
+
+Variables & arithmetic
+	Example: line 'PRINT name$' is encoded as [191] [3][0][0]nam[229]
+	Example: line 'a$ = "jan"' is encoded as [0][3][0][0][225] [239] "jan"
+	Example: line 'b$ = "bart"' is encoded as [0][3][0][0][226] [239] "bart"
+	Example: line 'a% = 123' is encoded as [0][2][0][0][225] [239] [25]{
+	Example: line 'a% = 1234' is encoded as [0][2][0][0][225] [239] [26][210][4]
+	Example: line 'z% = 12*5' is encoded as [0][2][0][0][250] [239] [25][12][246][19]
+	Example: line 'z% = 12*1' is encoded as [0][2][0][0][250] [239] [25][12][246][15]
+
+More info:
+http://www.cpcwiki.eu/index.php/Technical_information_about_Locomotive_BASIC#Structure_of_a_BASIC_program
