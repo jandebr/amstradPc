@@ -25,7 +25,6 @@ import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.program.load.basic.staged.EndingBasicCodeDisclosure;
 import org.maia.amstrad.tape.model.AudioTapeProgram;
 
-@SuppressWarnings("serial")
 public class AmstradPcPlugin {
 
 	private AmstradPc amstradPc;

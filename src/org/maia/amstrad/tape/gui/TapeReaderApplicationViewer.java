@@ -64,7 +64,6 @@ public class TapeReaderApplicationViewer extends Viewer {
 		return editor;
 	}
 
-	@SuppressWarnings("serial")
 	private class ReadAudioFileAction extends AbstractAction {
 
 		public ReadAudioFileAction() {
@@ -78,7 +77,6 @@ public class TapeReaderApplicationViewer extends Viewer {
 
 	}
 
-	@SuppressWarnings("serial")
 	private class QuitAction extends AbstractAction {
 
 		public QuitAction() {

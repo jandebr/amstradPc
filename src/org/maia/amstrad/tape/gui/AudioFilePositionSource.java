@@ -4,7 +4,6 @@ import javax.swing.JPanel;
 
 import org.maia.amstrad.tape.read.AudioFile;
 
-@SuppressWarnings("serial")
 public abstract class AudioFilePositionSource extends JPanel {
 
 	private AudioFile audioFile;

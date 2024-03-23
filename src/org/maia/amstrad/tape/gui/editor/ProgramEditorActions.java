@@ -13,7 +13,6 @@ import org.maia.swing.text.pte.PlainTextDocumentEditorActions;
 import org.maia.swing.text.pte.PlainTextDocumentEditorAdapter;
 import org.maia.swing.text.pte.PlainTextEditor;
 
-@SuppressWarnings("serial")
 public class ProgramEditorActions extends PlainTextDocumentEditorActions {
 
 	private Map<String, InsertTextAction> insertTextActions;

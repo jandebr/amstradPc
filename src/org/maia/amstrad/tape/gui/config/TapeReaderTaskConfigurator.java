@@ -46,7 +46,6 @@ import org.maia.swing.file.FolderInputField;
 import org.maia.swing.file.GenericFileInputField;
 import org.maia.swing.file.GenericFileInputFieldListener;
 
-@SuppressWarnings("serial")
 public class TapeReaderTaskConfigurator extends JPanel implements SelectionListener {
 
 	private TapeReaderTaskConfiguration state;

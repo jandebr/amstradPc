@@ -27,7 +27,6 @@ import org.maia.amstrad.tape.model.SourceCodePosition;
 import org.maia.amstrad.tape.model.SourceCodeRange;
 import org.maia.amstrad.tape.read.AudioFile;
 
-@SuppressWarnings("serial")
 public class CodeInspectorView extends JPanel implements SourceCodeView.SourceCodeCaretListener {
 
 	private AudioTapeProgram audioTapeProgram;

@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 
 import org.maia.amstrad.tape.model.profile.TapeSectionType;
 
-@SuppressWarnings("serial")
 public class AudioFileProfileLegendView extends JPanel {
 
 	private Map<TapeSectionType, Color> colorMap;

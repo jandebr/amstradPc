@@ -32,7 +32,6 @@ import org.maia.swing.text.pte.PlainTextDocumentException;
 import org.maia.swing.text.pte.PlainTextEditor;
 import org.maia.swing.text.pte.model.PlainTextDocument;
 
-@SuppressWarnings("serial")
 public class AudioTapeIndexToolBar extends Box implements IndexSelectionListener, AmstradPcListener {
 
 	private AudioTapeIndexView indexView;

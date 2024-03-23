@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import org.maia.amstrad.tape.model.AudioRange;
 import org.maia.amstrad.tape.read.AudioFile;
 
-@SuppressWarnings("serial")
 public class AudioFilePositionView extends JPanel implements MouseListener, MouseMotionListener, ComponentListener {
 
 	private AudioFile audioFile;

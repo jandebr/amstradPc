@@ -27,7 +27,6 @@ import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.tape.model.SourceCodePosition;
 import org.maia.amstrad.tape.model.SourceCodeRange;
 
-@SuppressWarnings("serial")
 public class SourceCodeView extends JPanel implements CaretListener {
 
 	private BasicSourceCode sourceCode;

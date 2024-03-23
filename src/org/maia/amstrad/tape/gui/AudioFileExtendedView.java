@@ -12,7 +12,6 @@ import javax.swing.JScrollPane;
 import org.maia.amstrad.tape.model.AudioRange;
 import org.maia.amstrad.tape.read.AudioFile;
 
-@SuppressWarnings("serial")
 public class AudioFileExtendedView extends JPanel {
 
 	private AudioFile audioFile;

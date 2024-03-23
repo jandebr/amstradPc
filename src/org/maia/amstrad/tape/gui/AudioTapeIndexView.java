@@ -20,7 +20,6 @@ import org.maia.amstrad.tape.model.AudioTapeIndex;
 import org.maia.amstrad.tape.model.AudioTapeProgram;
 import org.maia.amstrad.tape.model.profile.TapeProfile;
 
-@SuppressWarnings("serial")
 public class AudioTapeIndexView extends JPanel implements ListSelectionListener {
 
 	private AudioTapeIndex tapeIndex;

@@ -14,7 +14,6 @@ import org.maia.amstrad.tape.model.AudioTapeIndex;
 import org.maia.amstrad.tape.model.profile.TapeProfile;
 import org.maia.amstrad.tape.read.AudioFile;
 
-@SuppressWarnings("serial")
 public class AudioFileProfileExtendedView extends JPanel {
 
 	private AudioFile audioFile;

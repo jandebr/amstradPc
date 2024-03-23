@@ -9,7 +9,6 @@ import org.maia.amstrad.tape.gui.config.TapeReaderTaskConfigurator.StateListener
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialogOption;
 
-@SuppressWarnings("serial")
 public class TapeReaderTaskConfiguratorDialog extends ActionableDialog implements StateListener {
 
 	private static List<ActionableDialogOption> dialogOptions;

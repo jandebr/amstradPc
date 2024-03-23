@@ -22,7 +22,6 @@ import org.maia.amstrad.tape.model.profile.TapeSectionType;
 import org.maia.amstrad.tape.read.AudioFile;
 import org.maia.amstrad.tape.read.AudioFileSubsampler;
 
-@SuppressWarnings("serial")
 public class AudioFileProfileView extends AudioFilePositionSource implements MouseListener {
 
 	private TapeProfile displayProfile;

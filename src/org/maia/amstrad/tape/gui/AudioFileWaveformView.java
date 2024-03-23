@@ -17,7 +17,6 @@ import org.maia.amstrad.tape.model.AudioRange;
 import org.maia.amstrad.tape.model.Bit;
 import org.maia.amstrad.tape.read.AudioFile;
 
-@SuppressWarnings("serial")
 public class AudioFileWaveformView extends AudioFilePositionSource {
 
 	private AudioRange displayRange;

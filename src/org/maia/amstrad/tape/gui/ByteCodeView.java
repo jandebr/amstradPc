@@ -21,7 +21,6 @@ import javax.swing.text.StyledDocument;
 import org.maia.amstrad.tape.model.ByteCodeRange;
 import org.maia.amstrad.tape.model.ByteSequence;
 
-@SuppressWarnings("serial")
 public class ByteCodeView extends JPanel {
 
 	private ByteSequence byteCode;

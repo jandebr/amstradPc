@@ -14,7 +14,6 @@ import org.maia.amstrad.tape.model.AudioTapeIndex;
 import org.maia.amstrad.tape.model.AudioTapeProgram;
 import org.maia.amstrad.tape.model.profile.TapeSection;
 
-@SuppressWarnings("serial")
 public class AudioTapeIndexExtendedView extends JPanel
 		implements IndexSelectionListener, TapeSectionListener, ToolBarListener {
 

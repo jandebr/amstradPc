@@ -14,7 +14,6 @@ import org.maia.amstrad.tape.model.AudioRange;
 import org.maia.amstrad.tape.read.AudioFile;
 import org.maia.amstrad.tape.read.AudioFileSubsampler;
 
-@SuppressWarnings("serial")
 public class AudioFileView extends AudioFilePositionSource {
 
 	private short[] amplitudes;

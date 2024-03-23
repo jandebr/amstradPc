@@ -19,7 +19,6 @@ import org.maia.amstrad.tape.gui.config.TapeReaderTaskConfiguratorDialog;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialogAdapter;
 
-@SuppressWarnings("serial")
 public class TapeReaderApplicationView extends JPanel {
 
 	private File taskConfigurationFile;
