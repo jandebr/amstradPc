@@ -15,6 +15,7 @@ import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.BasicSyntaxException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
+import org.maia.amstrad.basic.locomotive.token.LineNumberReferenceToken;
 import org.maia.amstrad.basic.locomotive.token.NumericToken;
 import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
@@ -189,6 +190,9 @@ public class DirectJoystickBasicPreprocessor extends StagedBasicPreprocessor {
 										stf.createPositiveInteger16BitHexadecimal(macro.getCurrentValueAddress()),
 										stf.createLiteral(")"), stf.createInstructionSeparator());
 								int ins = sequence.getIndexFollowingWhitespace(command.getThenIndex() + 1 + lengthDiff);
+								if (sequence.get(ins) instanceof LineNumberReferenceToken) {
+									sequence.insert(ins, stf.createBasicKeyword("GOTO"), stf.createLiteral(" "));
+								}
 								sequence.insert(ins, insertSeq);
 								if (isExceedingLineLimits(language, sequence)) {
 									int ln = getNextAvailableLineNumber(sourceCode);
@@ -196,7 +200,7 @@ public class DirectJoystickBasicPreprocessor extends StagedBasicPreprocessor {
 									BasicSourceTokenSequence thenSeq = sequence.subSequence(k, sequence.size());
 									sequence.replaceRange(k, sequence.size(), stf.createBasicKeyword("GOSUB"),
 											stf.createLiteral(" "), stf.createLineNumberReference(ln));
-									thenSeq.insert(0, stf.createLineNumber(ln), stf.createLiteral(" "));
+									thenSeq.insert(0, stf.createLineNumber(ln));
 									thenSeq.append(stf.createInstructionSeparator(), stf.createBasicKeyword("RETURN"));
 									addCodeLine(sourceCode, thenSeq);
 								}
