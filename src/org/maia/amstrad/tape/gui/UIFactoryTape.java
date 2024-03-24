@@ -23,7 +23,7 @@ public class UIFactoryTape {
 	}
 
 	public static TapeReaderApplicationViewer createApplicationViewer(String[] args) throws IOException {
-		File taskConfigurationFile = new File("task.ini");
+		File taskConfigurationFile = new File("tapereader.ini");
 		TapeReaderApplicationView view = createApplicationView(taskConfigurationFile);
 		TapeReaderTaskConfigurationIO.applyStartupArguments(view.getTaskConfiguration(), args);
 		TapeReaderApplicationViewer viewer = new TapeReaderApplicationViewer(view);
