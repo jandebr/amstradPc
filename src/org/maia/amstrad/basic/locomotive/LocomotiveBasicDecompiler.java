@@ -103,6 +103,8 @@ public class LocomotiveBasicDecompiler implements BasicDecompiler, LocomotiveBas
 				// variable
 				nextWord(); // memory offset
 				CharSequence varName = nextSymbolicName();
+				if (printPreceding)
+					line.append(' '); // e.g., PRINTA$ -> PRINT A$
 				line.append(varName);
 				if (b == 0x02) {
 					line.append(IntegerTypedVariableToken.TYPE_INDICATOR); // integer variable

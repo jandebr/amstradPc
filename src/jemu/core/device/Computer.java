@@ -264,7 +264,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "resource" })
 	public void checkZip(String name) throws Exception {
 		InputStream result;
 
