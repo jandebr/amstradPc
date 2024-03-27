@@ -12,10 +12,10 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.tape.TapeReaderTask;
 import org.maia.amstrad.tape.config.TapeReaderTaskConfiguration;
 import org.maia.amstrad.tape.config.TapeReaderTaskConfigurationIO;
 import org.maia.amstrad.tape.gui.config.TapeReaderTaskConfiguratorDialog;
+import org.maia.amstrad.tape.task.TapeReaderTask;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialogAdapter;
 
