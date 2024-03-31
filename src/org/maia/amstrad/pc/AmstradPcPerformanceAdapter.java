@@ -17,4 +17,9 @@ public abstract class AmstradPcPerformanceAdapter implements AmstradPcPerformanc
 		// Subclasses can override this
 	}
 
+	@Override
+	public void turboModeChanged(AmstradPc amstradPc) {
+		// Subclasses can override this
+	}
+
 }

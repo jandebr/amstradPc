@@ -29,6 +29,8 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 
 	private double cpuThrottlingRatio;
 
+	private boolean turbo;
+
 	private List<String> lines;
 
 	private OperatingSystemMXBean osBean;
@@ -115,8 +117,9 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 		lines.add("MEM Basic: " + formatMemorySize(bUsed) + " used of " + formatMemorySize(bTotal));
 		lines.add("MEM Java: " + formatMemorySize(jUsed) + " used of " + formatMemorySize(jTotal)
 				+ (jMax < Long.MAX_VALUE ? " (max " + formatMemorySize(jMax) + ")" : ""));
-		lines.add("CPU: " + percentageFormat.format(getCpuLoad()) + " lag " + percentageFormat.format(cpuLaggingRatio)
-				+ " throttle " + percentageFormat.format(cpuThrottlingRatio));
+		lines.add("CPU: " + percentageFormat.format(getCpuLoad()) + (turbo ? " TURBO" : "") + " lag "
+				+ percentageFormat.format(cpuLaggingRatio) + " throttle "
+				+ percentageFormat.format(cpuThrottlingRatio));
 		lines.add("FPS: " + fps + " IPS: " + ips);
 		return lines;
 	}
@@ -144,6 +147,11 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 			int laggingSyncs, int throttledSyncs) {
 		cpuLaggingRatio = laggingSyncs / (double) timerSyncs;
 		cpuThrottlingRatio = throttledSyncs / (double) timerSyncs;
+	}
+
+	@Override
+	public void turboModeChanged(AmstradPc amstradPc) {
+		turbo = amstradPc.isTurboMode();
 	}
 
 	private double getCpuLoad() {

@@ -9,4 +9,6 @@ public interface AmstradPcPerformanceListener extends GenericListener {
 	void processorPerformanceUpdate(AmstradPc amstradPc, long timeIntervalMillis, int timerSyncs, int laggingSyncs,
 			int throttledSyncs);
 
+	void turboModeChanged(AmstradPc amstradPc);
+
 }

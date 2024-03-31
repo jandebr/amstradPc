@@ -61,6 +61,8 @@ public class AmstradPcActions {
 
 	private AudioAction audioAction;
 
+	private TurboAction turboAction;
+
 	private PauseResumeAction pauseResumeAction;
 
 	private RebootAction rebootAction;
@@ -200,6 +202,13 @@ public class AmstradPcActions {
 			audioAction = new AudioAction(getAmstradPc());
 		}
 		return audioAction;
+	}
+
+	public TurboAction getTurboAction() {
+		if (turboAction == null) {
+			turboAction = new TurboAction(getAmstradPc());
+		}
+		return turboAction;
 	}
 
 	public PauseResumeAction getPauseResumeAction() {

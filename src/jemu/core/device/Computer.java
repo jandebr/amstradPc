@@ -847,9 +847,9 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	protected void syncProcessor() {
-		syncProcessor(null,
-				(((getProcessor().getCycles() - startCycles) * 2000 / getProcessor().getCyclesPerSecond()) + 1) / 2,
-				200);
+		long deltaCycles = getProcessor().getCycles() - startCycles;
+		long count = ((deltaCycles * 2000 / getProcessor().getCyclesPerSecond()) + 1) / 2;
+		syncProcessor(null, count, 200);
 	}
 
 	protected void syncProcessor(ComputerTimer timer) {

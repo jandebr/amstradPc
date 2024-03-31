@@ -2223,6 +2223,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		this.display.requestFocus();
 		computer.reSync();
 	}
+	
+	public boolean isTurbo() {
+		return checkTurbo.getState();
+	}
 
 	public void setFloppy(final boolean value) {
 		floppyoutput = value;

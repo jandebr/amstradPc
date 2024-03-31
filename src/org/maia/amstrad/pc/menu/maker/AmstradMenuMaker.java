@@ -132,6 +132,7 @@ public abstract class AmstradMenuMaker {
 		menu.add(createAutoTypeFileMenuItem());
 		menu.add(createBreakEscapeMenuItem());
 		menu.add(new JSeparator());
+		menu.add(createTurboMenuItem());
 		menu.add(createPauseResumeMenuItem());
 		menu.add(createRebootMenuItem());
 		return updateMenuLookAndFeel(menu);
@@ -166,6 +167,10 @@ public abstract class AmstradMenuMaker {
 	protected JMenuItem createVirtualKeyboardMenuItem() {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getVirtualKeyboardAction()),
 				UIResources.virtualKeyboardIcon);
+	}
+
+	protected JMenuItem createTurboMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getTurboAction()));
 	}
 
 	protected JMenuItem createPauseResumeMenuItem() {

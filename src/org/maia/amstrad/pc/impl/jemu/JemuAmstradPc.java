@@ -145,6 +145,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 			Switches.FloppySound = false;
 		doReboot();
 		fireRebootingEvent();
+		fireTurboModeChanged();
 		if (waitUntilReady)
 			waitUntilBasicRuntimeReady();
 		if (silent)

@@ -141,6 +141,16 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 	}
 
 	@Override
+	public boolean isTurboMode() {
+		return getJemuInstance().isTurbo();
+	}
+
+	@Override
+	protected void changeTurboMode(boolean turbo) {
+		getJemuInstance().setTurbo(turbo);
+	}
+
+	@Override
 	protected Font getJemuDisplayFont() {
 		return getJemuInstance().getDisplay().getDisplayFont();
 	}

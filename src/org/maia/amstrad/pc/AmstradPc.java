@@ -184,6 +184,18 @@ public abstract class AmstradPc {
 		return false;
 	}
 
+	public abstract boolean isTurboMode();
+
+	public final void setTurboMode(boolean turbo) {
+		checkStartedNotTerminated();
+		if (turbo != isTurboMode()) {
+			changeTurboMode(turbo);
+			fireTurboModeChanged();
+		}
+	}
+
+	protected abstract void changeTurboMode(boolean turbo);
+
 	protected void checkStarted() {
 		if (!isStarted())
 			throw new IllegalStateException("This Amstrad PC has not been started");
@@ -259,6 +271,11 @@ public abstract class AmstradPc {
 			int throttledSyncs) {
 		for (AmstradPcPerformanceListener listener : getPerformanceListeners())
 			listener.processorPerformanceUpdate(this, timeIntervalMillis, timerSyncs, laggingSyncs, throttledSyncs);
+	}
+
+	protected void fireTurboModeChanged() {
+		for (AmstradPcPerformanceListener listener : getPerformanceListeners())
+			listener.turboModeChanged(this);
 	}
 
 	public boolean hasFrame() {

@@ -58,11 +58,30 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 	private KeyDispatcher keyDispatcher;
 
+	private static final int CPU_SPEED_NORMAL = 1;
+
+	private static final int CPU_SPEED_TURBO = 4;
+
 	public JemuDirectAmstradPc(Computer computer, Display display) {
 		this.computer = computer;
 		this.display = display;
 		this.keyDispatcher = new KeyDispatcher(display, computer);
 		Switches.FloppySound = Settings.getBoolean(Settings.FLOPPYSOUND, true);
+	}
+
+	@Override
+	public boolean isTurboMode() {
+		return Switches.turbo > CPU_SPEED_NORMAL;
+	}
+
+	@Override
+	protected void changeTurboMode(boolean turbo) {
+		if (turbo) {
+			Switches.turbo = CPU_SPEED_TURBO;
+		} else {
+			Switches.turbo = CPU_SPEED_NORMAL;
+		}
+		getComputer().reSync();
 	}
 
 	@Override
