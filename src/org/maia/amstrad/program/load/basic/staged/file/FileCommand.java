@@ -1,8 +1,9 @@
 package org.maia.amstrad.program.load.basic.staged.file;
 
 import org.maia.amstrad.basic.locomotive.token.LiteralQuotedToken;
+import org.maia.amstrad.program.load.basic.staged.StagedCommand;
 
-public abstract class FileCommand {
+public abstract class FileCommand extends StagedCommand {
 
 	private String sourceFilename;
 

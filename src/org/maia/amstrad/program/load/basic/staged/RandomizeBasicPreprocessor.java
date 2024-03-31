@@ -83,9 +83,9 @@ public class RandomizeBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 
 		@Override
-		protected RandomizeMacroHandler createMemoryTrapHandler() {
+		protected StagedBasicMacroHandler createMacroHandler(StagedCommandResolver resolver) {
 			RandomizeMacro macro = getSession().getMacroAdded(RandomizeMacro.class);
-			return new RandomizeMacroHandler(macro, getSession(), getRndSeedVariable());
+			return new RandomizeMacroHandler(macro, getSession(), resolver, getRndSeedVariable());
 		}
 
 		public UntypedVariableToken getRndSeedVariable() {
@@ -99,8 +99,8 @@ public class RandomizeBasicPreprocessor extends StagedBasicPreprocessor {
 		private UntypedVariableToken rndSeedVariable;
 
 		public RandomizeMacroHandler(RandomizeMacro macro, StagedBasicProgramLoaderSession session,
-				UntypedVariableToken rndSeedVariable) {
-			super(macro, session);
+				StagedCommandResolver resolver, UntypedVariableToken rndSeedVariable) {
+			super(macro, session, resolver);
 			this.rndSeedVariable = rndSeedVariable;
 		}
 

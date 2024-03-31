@@ -6,6 +6,7 @@ import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.basic.BasicSourceToken;
 import org.maia.amstrad.basic.BasicSourceTokenSequence;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
+import org.maia.amstrad.basic.locomotive.token.LiteralRemarkToken;
 
 /**
  * Saves bytes by removing remarks from source code
@@ -32,19 +33,31 @@ public class LocomotiveBasicRemarksMinifier extends LocomotiveBasicMinifier {
 				j = n;
 			int k = Math.min(i, j);
 			if (k < n) {
-				int s = sequence.getPreviousIndexOf(SEP, k - 1);
-				if (s >= 0)
-					k = s;
-				s = sequence.getIndexPrecedingWhitespace(k - 1);
-				if (s >= 0)
-					k = s + 1;
-				sequence.removeRange(k, n);
-				if (sequence.size() == 1 && sequence.startsWithLineNumber()) {
-					sequence.append(REM_SHORTHAND); // no empty numbered lines
+				boolean preserveRemark = false;
+				int ri = sequence.getNextIndexOf(LiteralRemarkToken.class, k);
+				if (ri >= 0) {
+					preserveRemark = isPreserveRemark((LiteralRemarkToken) sequence.get(ri));
 				}
-				updateLine(sourceCode, sequence);
+				if (!preserveRemark) {
+					int s = sequence.getPreviousIndexOf(SEP, k - 1);
+					if (s >= 0)
+						k = s;
+					s = sequence.getIndexPrecedingWhitespace(k - 1);
+					if (s >= 0)
+						k = s + 1;
+					sequence.removeRange(k, n);
+					if (sequence.size() == 1 && sequence.startsWithLineNumber()) {
+						sequence.append(REM_SHORTHAND); // no empty numbered lines
+					}
+					updateLine(sourceCode, sequence);
+				}
 			}
 		}
+	}
+
+	protected boolean isPreserveRemark(LiteralRemarkToken remark) {
+		// Subclasses may override
+		return false;
 	}
 
 }

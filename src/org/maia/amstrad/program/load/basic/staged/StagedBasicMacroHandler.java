@@ -8,9 +8,13 @@ public abstract class StagedBasicMacroHandler implements AmstradMemoryTrapHandle
 
 	private StagedBasicProgramLoaderSession session;
 
-	protected StagedBasicMacroHandler(StagedBasicMacro macro, StagedBasicProgramLoaderSession session) {
+	private StagedCommandResolver resolver;
+
+	protected StagedBasicMacroHandler(StagedBasicMacro macro, StagedBasicProgramLoaderSession session,
+			StagedCommandResolver resolver) {
 		this.macro = macro;
 		this.session = session;
+		this.resolver = resolver;
 	}
 
 	public StagedBasicMacro getMacro() {
@@ -19,6 +23,10 @@ public abstract class StagedBasicMacroHandler implements AmstradMemoryTrapHandle
 
 	public StagedBasicProgramLoaderSession getSession() {
 		return session;
+	}
+
+	public StagedCommandResolver getResolver() {
+		return resolver;
 	}
 
 }

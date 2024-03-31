@@ -6,9 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.maia.amstrad.basic.emulator.EmulatorBasicKeywords;
-
-public class LocomotiveBasicKeywords implements EmulatorBasicKeywords {
+public class LocomotiveBasicKeywords {
 
 	private Map<Integer, LocomotiveBasicKeyword> byteCodeMap;
 
@@ -41,7 +39,6 @@ public class LocomotiveBasicKeywords implements EmulatorBasicKeywords {
 		this.multiSymbolMap = new HashMap<String, Set<LocomotiveBasicKeyword>>(16);
 		loadBasicKeywords();
 		loadExtendedKeywords();
-		loadExtendedEmulatorKeywords();
 	}
 
 	private void loadBasicKeywords() {
@@ -211,11 +208,6 @@ public class LocomotiveBasicKeywords implements EmulatorBasicKeywords {
 		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7d, "TESTR"));
 		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7e, "COPYCHR$"));
 		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x7f, "VPOS"));
-	}
-
-	private void loadExtendedEmulatorKeywords() {
-		// Keywords not in the Basic standard that have a special function when run in the emulator
-		register(new LocomotiveBasicKeyword(EXTENDED_PREFIX_BYTE, (byte) 0x80, EmulatorBasicKeywords.REBOOT));
 	}
 
 	private void register(LocomotiveBasicKeyword keyword) {

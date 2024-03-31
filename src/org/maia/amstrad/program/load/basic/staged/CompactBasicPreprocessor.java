@@ -20,6 +20,7 @@ import org.maia.amstrad.basic.locomotive.minify.LocomotiveBasicRemarksMinifier;
 import org.maia.amstrad.basic.locomotive.minify.LocomotiveBasicVariableNameMinifier;
 import org.maia.amstrad.basic.locomotive.minify.LocomotiveBasicWhitespaceMinifier;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
+import org.maia.amstrad.basic.locomotive.token.LiteralRemarkToken;
 import org.maia.amstrad.program.load.basic.BasicPreprocessor;
 
 public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
@@ -83,7 +84,7 @@ public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 	private BasicMinifier createMinifier(int level, StagedBasicProgramLoaderSession session) {
 		BasicMinifierBatch batch = new BasicMinifierBatch();
 		if (level > LEVEL_NONE) {
-			batch.add(new LocomotiveBasicRemarksMinifier());
+			batch.add(new RemarksMinifierPreservingEmulatorCommands());
 		}
 		if (level > LEVEL_NONE + 1) {
 			batch.add(new LocomotiveBasicWhitespaceMinifier());
@@ -100,6 +101,19 @@ public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 
 	private AmstradSettings getAmstradSettings() {
 		return AmstradFactory.getInstance().getAmstradContext().getUserSettings();
+	}
+
+	private static class RemarksMinifierPreservingEmulatorCommands extends LocomotiveBasicRemarksMinifier {
+
+		public RemarksMinifierPreservingEmulatorCommands() {
+		}
+
+		@Override
+		protected boolean isPreserveRemark(LiteralRemarkToken remark) {
+			String str = remark.getSourceFragment().trim();
+			return str.startsWith(EmulatorCommandBasicPreprocessor.COMMAND_PREFIX);
+		}
+
 	}
 
 	private static class ReservedStagingLinesMinifier extends LocomotiveBasicLinesMinifier {

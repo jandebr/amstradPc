@@ -16,6 +16,7 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 
 public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
@@ -114,7 +115,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 
 		@Override
-		protected BinarySaveMacroHandler createMacroHandler(FileCommandResolver resolver) {
+		protected BinarySaveMacroHandler createMacroHandler(StagedCommandResolver resolver) {
 			WaitResumeMacro macro = getSession().getMacroAdded(WaitResumeMacro.class);
 			return new BinarySaveMacroHandler(macro, getSourceCode(), getSession(), resolver);
 		}
@@ -124,7 +125,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private class BinarySaveMacroHandler extends FileCommandMacroHandler {
 
 		public BinarySaveMacroHandler(WaitResumeMacro macro, BasicSourceCode sourceCode,
-				StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
+				StagedBasicProgramLoaderSession session, StagedCommandResolver resolver) {
 			super(macro, sourceCode, session, resolver);
 		}
 

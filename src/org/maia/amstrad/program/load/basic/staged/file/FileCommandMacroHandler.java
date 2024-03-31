@@ -12,28 +12,28 @@ import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicMacro;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicMacroHandler;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.load.basic.staged.StagedCommand;
+import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 
 public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	private BasicSourceCode sourceCode;
 
-	private FileCommandResolver resolver;
-
 	private AmstradProgram program;
 
 	protected FileCommandMacroHandler(StagedBasicMacro macro, BasicSourceCode sourceCode,
-			StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
-		super(macro, session);
+			StagedBasicProgramLoaderSession session, StagedCommandResolver resolver) {
+		super(macro, session, resolver);
 		this.sourceCode = sourceCode;
-		this.resolver = resolver;
 		this.program = session.getLastProgramInChain();
 	}
 
 	@Override
 	public void handleMemoryTrap(AmstradMemory memory, int memoryAddress, byte memoryValue) {
-		FileCommand command = getResolver().resolve(memoryValue);
-		if (command != null) {
-			execute(command, lookupFileReference(command));
+		StagedCommand command = getResolver().resolve(memoryValue);
+		if (command != null && command instanceof FileCommand) {
+			FileCommand fileCommand = (FileCommand) command;
+			execute(fileCommand, lookupFileReference(fileCommand));
 		}
 	}
 
@@ -68,10 +68,6 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	protected BasicSourceCode getSourceCode() {
 		return sourceCode;
-	}
-
-	private FileCommandResolver getResolver() {
-		return resolver;
 	}
 
 	private AmstradProgram getProgram() {

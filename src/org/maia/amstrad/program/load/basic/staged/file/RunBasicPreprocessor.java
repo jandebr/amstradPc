@@ -18,6 +18,7 @@ import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.basic.staged.PreambleJumpingBasicPreprocessor.PreambleJumpingMacro;
 import org.maia.amstrad.program.load.basic.staged.PreambleLandingBasicPreprocessor.PreambleLandingMacro;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.file.ChainRunBasicPreprocessor.ChainRunMacro;
 
 public class RunBasicPreprocessor extends FileCommandBasicPreprocessor {
@@ -113,7 +114,7 @@ public class RunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 
 		@Override
-		protected RunMacroHandler createMacroHandler(FileCommandResolver resolver) {
+		protected RunMacroHandler createMacroHandler(StagedCommandResolver resolver) {
 			ChainRunMacro macro = getSession().getMacroAdded(ChainRunMacro.class);
 			return new RunMacroHandler(macro, getSourceCode(), getSession(), resolver);
 		}
@@ -123,7 +124,7 @@ public class RunBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private class RunMacroHandler extends FileCommandMacroHandler {
 
 		public RunMacroHandler(ChainRunMacro macro, BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session,
-				FileCommandResolver resolver) {
+				StagedCommandResolver resolver) {
 			super(macro, sourceCode, session, resolver);
 		}
 

@@ -56,7 +56,7 @@ public class StagedBasicProgramLoader extends BasicPreprocessingProgramLoader {
 		addPreprocessor(new TextSaveBasicPreprocessor());
 		addPreprocessor(new UnsupportedFileCommandPreprocessor()); // after all file preprocesors
 		addPreprocessor(new DirectJoystickBasicPreprocessor());
-		addPreprocessor(new EmulatorKeywordBasicPreprocessor());
+		addPreprocessor(new EmulatorCommandBasicPreprocessor());
 		addPreprocessor(new EndingBasicPreprocessor());
 		addPreprocessor(new ErrorOutBasicPreprocessor());
 		addPreprocessor(new PreambleJumpingBasicPreprocessor());

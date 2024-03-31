@@ -22,8 +22,8 @@ public class BasicStagingTest {
 		File dir = new File("resources/test/staging");
 		AmstradFactory fac = AmstradFactory.getInstance();
 		BasicStagingTest test = new BasicStagingTest();
-		// test.run(fac.createBasicProgram(new File(dir, "random-4.bas")));
-		test.run(fac.createBasicDescribedProgram(new File(dir, "random-1.bas"), new File(dir, "random-1.amd")));
+		test.run(fac.createBasicProgram(new File(dir, "emulator.bas")));
+		// test.run(fac.createBasicDescribedProgram(new File(dir, "random-1.bas"), new File(dir, "random-1.amd")));
 		// test.discoverFileReferences(fac.createBasicProgram(new File(dir, "filerefs.bas")));
 	}
 

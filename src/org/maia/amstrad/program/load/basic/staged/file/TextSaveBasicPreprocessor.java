@@ -22,6 +22,7 @@ import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.load.basic.staged.file.PrintStreamCommand.Argument;
 
@@ -262,7 +263,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 
 		@Override
-		protected TextSaveMacroHandler createMacroHandler(FileCommandResolver resolver) {
+		protected TextSaveMacroHandler createMacroHandler(StagedCommandResolver resolver) {
 			WaitResumeMacro macro = getSession().getMacroAdded(WaitResumeMacro.class);
 			return new TextSaveMacroHandler(macro, getSourceCode(), getTextBufferVariable(), getSession(), resolver);
 		}
@@ -285,7 +286,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 		public TextSaveMacroHandler(WaitResumeMacro macro, BasicSourceCode sourceCode,
 				StringTypedVariableToken textBufferVariable, StagedBasicProgramLoaderSession session,
-				FileCommandResolver resolver) {
+				StagedCommandResolver resolver) {
 			super(macro, sourceCode, session, resolver);
 			this.textBufferVariable = textBufferVariable;
 		}

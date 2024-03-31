@@ -32,6 +32,7 @@ import org.maia.amstrad.program.load.basic.staged.ProgramBridgeBasicPreprocessor
 import org.maia.amstrad.program.load.basic.staged.ResumableMacro;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
+import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.StagedLineNumberMapping;
 
 public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
@@ -265,7 +266,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		}
 
 		@Override
-		protected ChainMergeMacroHandler createMacroHandler(FileCommandResolver resolver) {
+		protected ChainMergeMacroHandler createMacroHandler(StagedCommandResolver resolver) {
 			ChainMergeMacro macro = getSession().getMacroAdded(ChainMergeMacro.class);
 			return new ChainMergeMacroHandler(macro, getSourceCode(), getSession(), resolver);
 		}
@@ -275,7 +276,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	private class ChainMergeMacroHandler extends FileCommandMacroHandler {
 
 		public ChainMergeMacroHandler(ChainMergeMacro macro, BasicSourceCode sourceCode,
-				StagedBasicProgramLoaderSession session, FileCommandResolver resolver) {
+				StagedBasicProgramLoaderSession session, StagedCommandResolver resolver) {
 			super(macro, sourceCode, session, resolver);
 		}
 

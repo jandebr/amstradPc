@@ -248,17 +248,18 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 
 		@Override
-		protected EndingMacroHandler createMemoryTrapHandler() {
+		protected EndingMacroHandler createMacroHandler(StagedCommandResolver resolver) {
 			EndingMacro macro = getSession().getEndingMacro();
-			return new EndingMacroHandler(macro, getSession());
+			return new EndingMacroHandler(macro, getSession(), resolver);
 		}
 
 	}
 
 	private class EndingMacroHandler extends StagedBasicMacroHandler {
 
-		public EndingMacroHandler(EndingMacro macro, StagedBasicProgramLoaderSession session) {
-			super(macro, session);
+		public EndingMacroHandler(EndingMacro macro, StagedBasicProgramLoaderSession session,
+				StagedCommandResolver resolver) {
+			super(macro, session, resolver);
 		}
 
 		@Override
