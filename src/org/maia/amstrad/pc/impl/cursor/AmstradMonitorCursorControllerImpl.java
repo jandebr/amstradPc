@@ -95,7 +95,7 @@ public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 		if (!isCursorHidden()) {
 			setCursorHidden(true);
 			setCursorWhenActive(getDisplayComponent().getCursor()); // to restore to when back active
-			getDisplayComponent().setCursor(BLANK_CURSOR);
+			setCursorOnDisplayComponent(BLANK_CURSOR);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 	@Override
 	public synchronized void setCursor(Cursor cursor) {
 		if (!isCursorHidden() && cursor != getCursor()) {
-			getDisplayComponent().setCursor(cursor);
+			setCursorOnDisplayComponent(cursor);
 		}
 		setCursorWhenActive(cursor);
 	}
@@ -126,10 +126,20 @@ public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 		return cursorHidden;
 	}
 
+	private void setCursorOnDisplayComponent(final Cursor cursor) {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				getDisplayComponent().setCursor(cursor);
+			}
+		});
+	}
+
 	private synchronized void unhideCursor(boolean showAtLeastUntilActive) {
 		if (isCursorHidden()) {
 			setCursorHidden(false);
-			getDisplayComponent().setCursor(getCursorWhenActive());
+			setCursorOnDisplayComponent(getCursorWhenActive());
 			if (showAtLeastUntilActive) {
 				setLastCursorActivityTime(Long.MAX_VALUE);
 			} else {
