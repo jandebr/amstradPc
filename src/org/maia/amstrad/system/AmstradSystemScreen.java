@@ -45,6 +45,13 @@ public interface AmstradSystemScreen {
 	boolean isShowPause();
 
 	/**
+	 * Tells whether turbo mode is to be shown on screen
+	 * 
+	 * @return <code>true</code> iff turbo mode is to be shown
+	 */
+	boolean isShowTurbo();
+
+	/**
 	 * Tells whether control keys are to be shown on screen
 	 * 
 	 * @return <code>true</code> iff control keys are to be shown

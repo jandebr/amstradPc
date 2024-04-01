@@ -18,6 +18,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private boolean showPause;
 
+	private boolean showTurbo;
+
 	private boolean showControlKeys;
 
 	private boolean autohideControlKeys;
@@ -34,6 +36,7 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 		// Defaults
 		this.showMonitor = true;
 		this.showPause = true;
+		this.showTurbo = true;
 		this.showControlKeys = false;
 		this.autohideControlKeys = true;
 		this.showTapeActivity = true;
@@ -90,6 +93,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	public void setShowPause(boolean show) {
 		this.showPause = show;
+	}
+
+	@Override
+	public boolean isShowTurbo() {
+		return showTurbo;
+	}
+
+	public void setShowTurbo(boolean show) {
+		this.showTurbo = show;
 	}
 
 	@Override

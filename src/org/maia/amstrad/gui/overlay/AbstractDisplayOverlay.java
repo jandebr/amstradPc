@@ -25,7 +25,7 @@ public abstract class AbstractDisplayOverlay implements AmstradDisplayOverlay {
 
 	private double iconOutsideInnerAreaRatio;
 
-	private static double DEFAULT_ICON_OUTSIDE_INNER_AREA_RATIO = 0.3;
+	private static double DEFAULT_ICON_OUTSIDE_INNER_AREA_RATIO = 0.2;
 
 	private static float[] hsbComps = new float[3];
 

@@ -71,6 +71,7 @@ public class AmstradCarouselSystem extends AmstradSystem {
 	private AmstradSystemScreen createNativeScreen() {
 		AmstradSystemNativeScreen screen = new AmstradSystemNativeScreen(this);
 		screen.setPopupMenu(new ProgramPopupMenuMaker().createPopupMenu());
+		screen.setShowTurbo(false);
 		screen.setShowControlKeys(true); // with dynamic auto-hide
 		screen.setShowTapeActivity(false);
 		return screen;
@@ -84,6 +85,7 @@ public class AmstradCarouselSystem extends AmstradSystem {
 		screen.setPopupMenu(new ProgramCarouselPopupMenuMaker().createPopupMenu());
 		screen.setShowMonitor(false);
 		screen.setShowPause(false);
+		screen.setShowTurbo(false);
 		screen.setShowControlKeys(false);
 		return screen;
 	}

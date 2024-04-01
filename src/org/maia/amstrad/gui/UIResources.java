@@ -88,6 +88,10 @@ public class UIResources {
 
 	public static ImageIcon pauseSmallOverlayIcon = loadIcon("overlay/pause32.png");
 
+	public static ImageIcon turboOverlayIcon = loadIcon("overlay/turbo64.png");
+
+	public static ImageIcon turboSmallOverlayIcon = loadIcon("overlay/turbo32.png");
+
 	public static ImageIcon autotypeOverlayIcon = loadIcon("overlay/autotype64.png");
 
 	public static ImageIcon autotypeSmallOverlayIcon = loadIcon("overlay/autotype32.png");
