@@ -91,6 +91,7 @@ public abstract class AmstradPcFrame extends JFrame
 		setVisible(true);
 		deiconify();
 		toFront();
+		requestFocus();
 		getContentComponent().requestFocus();
 	}
 
