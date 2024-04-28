@@ -5,7 +5,7 @@ public interface AmstradSystemSettings {
 	/**
 	 * Tells whether to launch with an inventory of programs that can be run or played
 	 * 
-	 * @return <code>true</code> iff the program browser is centric
+	 * @return <code>true</code> iff program centric
 	 */
 	boolean isProgramCentric();
 
