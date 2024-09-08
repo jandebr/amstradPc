@@ -173,9 +173,11 @@ public abstract class AmstradContext {
 	}
 
 	public void setCurrentDirectory(File currentDirectory) {
-		if (!currentDirectory.isDirectory())
-			throw new IllegalArgumentException("The current directory must be a directory");
-		getUserSettings().set(SETTING_CURRENT_DIR, currentDirectory.getAbsolutePath());
+		if (currentDirectory != null) {
+			if (!currentDirectory.isDirectory())
+				throw new IllegalArgumentException("The current directory must be a directory");
+			getUserSettings().set(SETTING_CURRENT_DIR, currentDirectory.getAbsolutePath());
+		}
 	}
 
 	public File getProgramRepositoryRootFolder() {
