@@ -40,6 +40,10 @@ public abstract class AmstradSystem {
 		// Subclasses may extend this method
 	}
 
+	public final void launch() throws AmstradException {
+		launch(new String[0]);
+	}
+
 	public final void launch(String[] args) throws AmstradException {
 		System.out.println("Launching Amstrad system " + getName());
 		overrideUserSettingsBeforeLaunch();
