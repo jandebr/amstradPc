@@ -35,11 +35,7 @@ public abstract class AmstradPcFrame extends JFrame
 		setFocusable(false);
 		setAlwaysOnTop(amstradPc.getMonitor().isWindowAlwaysOnTop());
 		setIconImage(UIResources.cpcIcon.getImage());
-		if (powerOffWhenClosed) {
-			setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // handled by windowClosing()
-		} else {
-			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		}
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // handled inside windowClosing()
 		amstradPc.addStateListener(this);
 		addWindowListener(this);
 		addWindowStateListener(this);
@@ -137,9 +133,12 @@ public abstract class AmstradPcFrame extends JFrame
 		if (!isClosing()) {
 			setClosing(true);
 			fireAmstradPcFrameClosed();
-			if (!getAmstradPc().isTerminated() && isPowerOffWhenClosed()) {
-				AmstradFactory.getInstance().getAmstradContext().powerOff(getAmstradPc());
+			if (isPowerOffWhenClosed()) {
+				if (!getAmstradPc().isTerminated()) {
+					AmstradFactory.getInstance().getAmstradContext().powerOff(getAmstradPc());
+				}
 			}
+			dispose();
 		}
 	}
 
