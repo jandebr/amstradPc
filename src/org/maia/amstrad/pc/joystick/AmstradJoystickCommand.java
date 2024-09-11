@@ -2,21 +2,21 @@ package org.maia.amstrad.pc.joystick;
 
 public enum AmstradJoystickCommand {
 
-	UP("Up", "UP"),
+	UP("Up", "UP", "Move UP"),
 
-	DOWN("Down", "DOWN"),
+	DOWN("Down", "DOWN", "Move DOWN"),
 
-	LEFT("Left", "LEFT"),
+	LEFT("Left", "LEFT", "Move LEFT"),
 
-	RIGHT("Right", "RIGHT"),
+	RIGHT("Right", "RIGHT", "Move RIGHT"),
 
-	FIRE2("Fire 2", "FIRE2", "Also used to CONFIRM"),
+	FIRE2("Fire 2", "FIRE2", "The FIRE2 button. Also used to CONFIRM"),
 
-	FIRE1("Fire 1", "FIRE1", "Also used to CANCEL"),
+	FIRE1("Fire 1", "FIRE1", "The FIRE1 button. Also used to CANCEL"),
 
-	MENU("Menu", "MENU", "Brings up the menu. Suspends the running program"),
+	MENU("Menu", "MENU", "Brings up the menu"),
 
-	KEYBOARD("Keyboard", "KEYBOARD", "Brings up a virtual keyboard on screen");
+	KEYBOARD("Keyboard", "KEYBOARD", "Brings up the on-screen keyboard");
 
 	public static final AmstradJoystickCommand CONFIRM = FIRE2;
 
