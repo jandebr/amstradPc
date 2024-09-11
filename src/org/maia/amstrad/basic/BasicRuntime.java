@@ -197,7 +197,9 @@ public abstract class BasicRuntime {
 
 	public abstract int getHimem();
 
-	public abstract int getFreeMemory();
+	public final int getFreeMemory() {
+		return getTotalMemory() - getUsedMemory();
+	}
 
 	public abstract int getUsedMemory();
 

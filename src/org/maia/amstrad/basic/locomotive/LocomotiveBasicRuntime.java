@@ -239,13 +239,12 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	@Override
 	public int getHimem() {
-		return getMemory().readWord(ADDRESS_HIMEM_POINTER);
-	}
-
-	@Override
-	public int getFreeMemory() {
-		return getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER)
-				- getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER);
+		int himem = getMemory().readWord(ADDRESS_HIMEM_POINTER);
+		if (himem > 0 && himem <= INITIAL_HIMEM) {
+			return himem;
+		} else {
+			return INITIAL_HIMEM;
+		}
 	}
 
 	@Override
@@ -254,16 +253,31 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	public int getUsedMemoryForByteCode() {
-		return getMemory().readWord(ADDRESS_BYTECODE_END_POINTER) - ADDRESS_BYTECODE_START;
+		int end = getMemory().readWord(ADDRESS_BYTECODE_END_POINTER);
+		if (end >= ADDRESS_BYTECODE_START) {
+			return end - ADDRESS_BYTECODE_START;
+		} else {
+			return 0;
+		}
 	}
 
 	public int getUsedMemoryForVariables() {
-		return getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER)
-				- getMemory().readWord(ADDRESS_BYTECODE_END_POINTER);
+		int end = getMemory().readWord(ADDRESS_BYTECODE_END_POINTER);
+		if (end >= ADDRESS_BYTECODE_START) {
+			return getMemory().readWord(ADDRESS_VARIABLE_SPACE_END_POINTER) - end;
+		} else {
+			return 0;
+		}
 	}
 
 	public int getUsedMemoryForHeap() {
-		return getHimem() - getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
+		int heap = getMemory().readWord(ADDRESS_HEAP_SPACE_POINTER);
+		int himem = getHimem();
+		if (heap > 0 && heap <= himem) {
+			return himem - heap;
+		} else {
+			return 0;
+		}
 	}
 
 	public int getReservedMemory() {
