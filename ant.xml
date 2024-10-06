@@ -37,6 +37,7 @@
 		</jar>
 		<copy todir="dist/staging/${distribution.id}/images">
 			<fileset dir="resources/images/launcher" />
+			<fileset dir="resources/images/icons" />
 		</copy>
 		<copy todir="dist/staging/${distribution.id}/${distribution.programbase}">
 			<fileset dir="${program-repo.source}" />

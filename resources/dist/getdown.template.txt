@@ -23,6 +23,8 @@ resource = images/launcher-background.png
 resource = images/launcher-error.png
 resource = images/launcher-icon.png
 resource = images/splash.png
+resource = images/amstrad.ico
+resource = images/amstrad-green.ico
 
 # System resources
 uresource = system/system.jar
