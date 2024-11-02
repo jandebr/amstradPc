@@ -1,7 +1,7 @@
 package org.maia.amstrad.system;
 
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
-import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.tape.AmstradTape;
 
 public interface AmstradSystemScreen {
@@ -13,15 +13,15 @@ public interface AmstradSystemScreen {
 	String getScreenIdentifier();
 
 	/**
-	 * Returns the custom display source
+	 * Returns the type of custom display source this screen is showing
 	 * 
-	 * @return The custom display source, or <code>null</code> when this screen is either <em>native</em> or
+	 * @return The custom display source type, or <code>null</code> when this screen is either <em>native</em> or
 	 *         <em>unknown</em>
 	 * 
 	 * @see #isNativeScreen()
 	 * @see #isUnknownScreen()
 	 */
-	AmstradAlternativeDisplaySource getCustomDisplaySource();
+	AmstradAlternativeDisplaySourceType getCustomDisplaySourceType();
 
 	/**
 	 * Returns the popup menu for this screen, if any

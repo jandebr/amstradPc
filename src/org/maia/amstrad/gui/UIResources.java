@@ -12,10 +12,10 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.AudioAction;
 import org.maia.amstrad.pc.action.MonitorFullscreenAction;
 import org.maia.amstrad.pc.action.PauseResumeAction;
+import org.maia.amstrad.pc.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.VirtualKeyboardAction;
 
 public class UIResources {

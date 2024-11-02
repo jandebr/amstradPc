@@ -1,18 +1,18 @@
 package org.maia.amstrad.system.impl.screen;
 
-import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.system.AmstradSystem;
 
 public class AmstradSystemCustomScreen extends AmstradSystemAbstractScreen {
 
-	private AmstradAlternativeDisplaySource customDisplaySource;
+	private AmstradAlternativeDisplaySourceType customDisplaySourceType;
 
 	public AmstradSystemCustomScreen(String screenIdentifier, AmstradSystem amstradSystem,
-			AmstradAlternativeDisplaySource customDisplaySource) {
+			AmstradAlternativeDisplaySourceType customDisplaySourceType) {
 		super(screenIdentifier, amstradSystem);
-		if (customDisplaySource == null)
-			throw new NullPointerException("Custom display source is null");
-		this.customDisplaySource = customDisplaySource;
+		if (customDisplaySourceType == null)
+			throw new NullPointerException("Custom display source type is null");
+		this.customDisplaySourceType = customDisplaySourceType;
 	}
 
 	@Override
@@ -26,8 +26,8 @@ public class AmstradSystemCustomScreen extends AmstradSystemAbstractScreen {
 	}
 
 	@Override
-	public AmstradAlternativeDisplaySource getCustomDisplaySource() {
-		return customDisplaySource;
+	public AmstradAlternativeDisplaySourceType getCustomDisplaySourceType() {
+		return customDisplaySourceType;
 	}
 
 }

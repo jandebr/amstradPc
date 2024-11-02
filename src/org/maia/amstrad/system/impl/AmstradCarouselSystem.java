@@ -6,7 +6,6 @@ import javax.swing.JSeparator;
 
 import org.maia.amstrad.AmstradException;
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.gui.carousel.ProgramCarouselDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
@@ -14,6 +13,7 @@ import org.maia.amstrad.pc.menu.maker.AmstradMenuEmulatedLookAndFeel;
 import org.maia.amstrad.pc.menu.maker.AmstradPopupMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemScreen;
 import org.maia.amstrad.system.AmstradSystemScreenSet;
@@ -78,10 +78,8 @@ public class AmstradCarouselSystem extends AmstradSystem {
 	}
 
 	private AmstradSystemScreen createProgramCarouselScreen() {
-		ProgramCarouselDisplaySource displaySource = getAmstradPc().getActions().getProgramCarouselAction()
-				.getDisplaySource();
 		AmstradSystemCustomScreen screen = new AmstradSystemCustomScreen(PROGRAM_CAROUSEL_SCREEN_ID, this,
-				displaySource);
+				AmstradAlternativeDisplaySourceType.PROGRAM_CAROUSEL);
 		screen.setPopupMenu(new ProgramCarouselPopupMenuMaker().createPopupMenu());
 		screen.setShowMonitor(false);
 		screen.setShowPause(false);

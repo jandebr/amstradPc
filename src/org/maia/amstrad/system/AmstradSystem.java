@@ -147,7 +147,7 @@ public abstract class AmstradSystem {
 
 	protected boolean isMatchingCustomScreen(AmstradSystemScreen customScreen,
 			AmstradAlternativeDisplaySource displaySource) {
-		return customScreen.getCustomDisplaySource().getType().equals(displaySource.getType());
+		return customScreen.getCustomDisplaySourceType().equals(displaySource.getType());
 	}
 
 	public AmstradSettings getUserSettings() {

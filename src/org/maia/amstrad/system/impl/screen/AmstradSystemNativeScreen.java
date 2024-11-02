@@ -1,6 +1,6 @@
 package org.maia.amstrad.system.impl.screen;
 
-import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.system.AmstradSystem;
 
 public class AmstradSystemNativeScreen extends AmstradSystemAbstractScreen {
@@ -39,7 +39,7 @@ public class AmstradSystemNativeScreen extends AmstradSystemAbstractScreen {
 	}
 
 	@Override
-	public final AmstradAlternativeDisplaySource getCustomDisplaySource() {
+	public final AmstradAlternativeDisplaySourceType getCustomDisplaySourceType() {
 		return null;
 	}
 

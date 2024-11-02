@@ -1,21 +1,21 @@
-package org.maia.amstrad.gui.colors;
+package org.maia.amstrad.pc.action;
 
 import java.awt.event.ActionEvent;
 
+import org.maia.amstrad.gui.memory.BasicMemoryDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 
-public class AmstradSystemColorsDisplayAction extends AmstradPcAction {
+public class BasicMemoryDisplayAction extends AmstradPcAction {
 
-	private AmstradSystemColorsDisplaySource displaySource;
+	private BasicMemoryDisplaySource displaySource;
 
-	private static String NAME_OPEN = "Show Amstrad colors";
+	private static String NAME_OPEN = "Show Basic memory";
 
-	private static String NAME_CLOSE = "Hide Amstrad colors";
+	private static String NAME_CLOSE = "Hide Basic memory";
 
-	public AmstradSystemColorsDisplayAction(AmstradPc amstradPc) {
+	public BasicMemoryDisplayAction(AmstradPc amstradPc) {
 		super(amstradPc, "");
 		updateName();
 		amstradPc.getMonitor().addMonitorListener(this);
@@ -23,24 +23,24 @@ public class AmstradSystemColorsDisplayAction extends AmstradPcAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		toggleSystemColors();
+		toggleBasicMemory();
 	}
 
-	public void toggleSystemColors() {
+	public void toggleBasicMemory() {
 		if (NAME_OPEN.equals(getName())) {
-			showSystemColors();
+			showBasicMemory();
 		} else {
-			hideSystemColors();
+			hideBasicMemory();
 		}
 	}
 
-	public void showSystemColors() {
+	public void showBasicMemory() {
 		if (isEnabled()) {
 			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
 		}
 	}
 
-	public void hideSystemColors() {
+	public void hideBasicMemory() {
 		if (isEnabled()) {
 			getAmstradPc().getMonitor().resetDisplaySource();
 		}
@@ -53,22 +53,22 @@ public class AmstradSystemColorsDisplayAction extends AmstradPcAction {
 	}
 
 	private void updateName() {
-		if (isSystemColorsShowing()) {
+		if (isBasicMemoryShowing()) {
 			changeName(NAME_CLOSE);
 		} else {
 			changeName(NAME_OPEN);
 		}
 	}
 
-	public boolean isSystemColorsShowing() {
+	public boolean isBasicMemoryShowing() {
 		AmstradAlternativeDisplaySource altDisplaySource = getAmstradPc().getMonitor()
 				.getCurrentAlternativeDisplaySource();
-		return altDisplaySource != null && altDisplaySource instanceof AmstradSystemColorsDisplaySource;
+		return altDisplaySource != null && altDisplaySource instanceof BasicMemoryDisplaySource;
 	}
 
-	private AmstradSystemColorsDisplaySource getDisplaySource() {
+	private BasicMemoryDisplaySource getDisplaySource() {
 		if (displaySource == null) {
-			displaySource = new AmstradSystemColorsDisplaySource(getAmstradPc());
+			displaySource = new BasicMemoryDisplaySource(getAmstradPc());
 		}
 		return displaySource;
 	}

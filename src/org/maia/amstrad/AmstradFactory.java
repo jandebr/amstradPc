@@ -6,9 +6,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserAction;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.carousel.ProgramCarouselAction;
 import org.maia.amstrad.gui.carousel.ProgramCarouselDisplaySource;
 import org.maia.amstrad.gui.overlay.AutotypeDisplayOverlay;
 import org.maia.amstrad.gui.overlay.ControlKeysDisplayOverlay;
@@ -19,6 +17,8 @@ import org.maia.amstrad.gui.overlay.TapeDisplayOverlay;
 import org.maia.amstrad.gui.overlay.TurboDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
+import org.maia.amstrad.pc.action.ProgramBrowserAction;
+import org.maia.amstrad.pc.action.ProgramCarouselAction;
 import org.maia.amstrad.pc.impl.cursor.AmstradMonitorCursorControllerImpl;
 import org.maia.amstrad.pc.impl.jemu.JemuDirectAmstradPc;
 import org.maia.amstrad.pc.impl.jemu.JemuFacadeAmstradPc;

@@ -1,11 +1,12 @@
-package org.maia.amstrad.gui.browser;
+package org.maia.amstrad.pc.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.browser.ProgramBrowserListener;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.program.AmstradProgram;

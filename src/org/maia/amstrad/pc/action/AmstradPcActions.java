@@ -3,12 +3,6 @@ package org.maia.amstrad.pc.action;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserAction;
-import org.maia.amstrad.gui.browser.ProgramBrowserSetupAction;
-import org.maia.amstrad.gui.browser.ProgramInfoAction;
-import org.maia.amstrad.gui.carousel.ProgramCarouselAction;
-import org.maia.amstrad.gui.colors.AmstradSystemColorsDisplayAction;
-import org.maia.amstrad.gui.memory.BasicMemoryDisplayAction;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;

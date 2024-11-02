@@ -1,8 +1,7 @@
-package org.maia.amstrad.gui.browser;
+package org.maia.amstrad.pc.action;
 
 import java.awt.event.KeyEvent;
 
-import org.maia.amstrad.pc.action.ActionableDialogAction;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfigurator;

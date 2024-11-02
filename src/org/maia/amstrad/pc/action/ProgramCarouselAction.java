@@ -1,11 +1,11 @@
-package org.maia.amstrad.gui.carousel;
+package org.maia.amstrad.pc.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.gui.carousel.ProgramCarouselDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
