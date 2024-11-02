@@ -9,7 +9,7 @@ public class ProgramInfoMenuItem extends ProgramMenuItem {
 	@Override
 	public void execute() {
 		if (isEnabled()) {
-			getBrowser().openProgramInfoModalWindow(getProgram());
+			getBrowserDisplaySource().openProgramInfoModalWindow(getProgram());
 		}
 	}
 

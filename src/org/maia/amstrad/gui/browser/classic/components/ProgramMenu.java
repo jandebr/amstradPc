@@ -9,7 +9,7 @@ import org.maia.amstrad.program.AmstradProgram;
 
 public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
-	private ClassicProgramBrowserDisplaySource browser;
+	private ClassicProgramBrowserDisplaySource browserDisplaySource;
 
 	private AmstradProgram program;
 
@@ -17,13 +17,14 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
 	private static int DEFAULT_MAX_ITEMS_SHOWING = 7;
 
-	public ProgramMenu(ClassicProgramBrowserDisplaySource browser, AmstradProgram program) {
-		this(browser, program, DEFAULT_MAX_ITEMS_SHOWING);
+	public ProgramMenu(ClassicProgramBrowserDisplaySource browserDisplaySource, AmstradProgram program) {
+		this(browserDisplaySource, program, DEFAULT_MAX_ITEMS_SHOWING);
 	}
 
-	public ProgramMenu(ClassicProgramBrowserDisplaySource browser, AmstradProgram program, int maxItemsShowing) {
+	public ProgramMenu(ClassicProgramBrowserDisplaySource browserDisplaySource, AmstradProgram program,
+			int maxItemsShowing) {
 		super(maxItemsShowing);
-		this.browser = browser;
+		this.browserDisplaySource = browserDisplaySource;
 		this.program = program;
 		this.menuItems = new Vector<ProgramMenuItem>();
 		populateMenu();
@@ -31,12 +32,12 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
 	private void populateMenu() {
 		addMenuItem(new ProgramRunMenuItem(this));
-		if (getBrowser().getSystemSettings().isProgramSourceCodeAccessible()) {
+		if (getBrowserDisplaySource().getSystemSettings().isProgramSourceCodeAccessible()) {
 			addMenuItem(new ProgramLoadMenuItem(this));
 		}
 		addMenuItem(new ProgramInfoMenuItem(this));
 		addMenuItem(new ProgramImagesMenuItem(this));
-		if (getBrowser().getSystemSettings().isProgramAuthoringToolsAvailable()) {
+		if (getBrowserDisplaySource().getSystemSettings().isProgramAuthoringToolsAvailable()) {
 			addMenuItem(new ProgramFileReferencesMenuItem(this));
 		}
 		addMenuItem(new ProgramCloseMenuItem(this));
@@ -79,8 +80,8 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 		return item;
 	}
 
-	public ClassicProgramBrowserDisplaySource getBrowser() {
-		return browser;
+	public ClassicProgramBrowserDisplaySource getBrowserDisplaySource() {
+		return browserDisplaySource;
 	}
 
 	public AmstradProgram getProgram() {

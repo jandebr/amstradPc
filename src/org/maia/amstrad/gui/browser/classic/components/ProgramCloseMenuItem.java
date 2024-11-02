@@ -8,7 +8,7 @@ public class ProgramCloseMenuItem extends ProgramMenuItem {
 
 	@Override
 	public void execute() {
-		getBrowser().closeModalWindow();
+		getBrowserDisplaySource().closeModalWindow();
 	}
 
 }

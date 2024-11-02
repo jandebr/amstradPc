@@ -5,22 +5,20 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.ProgramBrowserListener;
-import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAbstractDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.util.GenericListenerList;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 
 public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplaySource
 		implements ProgramBrowserDisplaySource {
 
-	private GenericListenerList<ProgramBrowserListener> browserListeners;
+	private AmstradProgramBrowser programBrowser;
 
-	public CarouselProgramBrowserDisplaySource(AmstradPc amstradPc) {
-		super(amstradPc);
-		this.browserListeners = new GenericListenerList<ProgramBrowserListener>();
+	public CarouselProgramBrowserDisplaySource(AmstradProgramBrowser programBrowser) {
+		super(programBrowser.getAmstradPc());
+		this.programBrowser = programBrowser;
 	}
 
 	@Override
@@ -35,29 +33,15 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	protected void renderContent(Graphics2D g, int width, int height) {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, width, height);
+		g.setColor(Color.WHITE);
+		g.drawString("Under construction", 100, 100);
 		// TODO
 	}
 
 	@Override
-	public void addListener(ProgramBrowserListener listener) {
-		getBrowserListeners().addListener(listener);
-	}
-
-	@Override
-	public void removeListener(ProgramBrowserListener listener) {
-		getBrowserListeners().removeListener(listener);
-	}
-
-	private void notifyProgramLoaded(AmstradProgram program) {
-		for (ProgramBrowserListener listener : getBrowserListeners()) {
-			listener.programLoadedFromBrowser(this, program);
-		}
-	}
-
-	private void notifyProgramRun(AmstradProgram program) {
-		for (ProgramBrowserListener listener : getBrowserListeners()) {
-			listener.programRunFromBrowser(this, program);
-		}
+	public AmstradProgram getCurrentProgram() {
+		// TODO
+		return null;
 	}
 
 	@Override
@@ -70,8 +54,9 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 		return true;
 	}
 
-	private GenericListenerList<ProgramBrowserListener> getBrowserListeners() {
-		return browserListeners;
+	@Override
+	public AmstradProgramBrowser getProgramBrowser() {
+		return programBrowser;
 	}
 
 }

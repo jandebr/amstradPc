@@ -6,9 +6,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.classic.ClassicProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.browser.classic.ClassicProgramInfoDisplaySource;
 import org.maia.amstrad.gui.overlay.AutotypeDisplayOverlay;
 import org.maia.amstrad.gui.overlay.ControlKeysDisplayOverlay;
 import org.maia.amstrad.gui.overlay.PauseDisplayOverlay;
@@ -36,6 +34,9 @@ import org.maia.amstrad.program.AmstradPcSnapshotFile;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
+import org.maia.amstrad.program.browser.impl.ClassicAmstradProgramBrowser;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetedAmstradProgramRepository;
@@ -194,17 +195,25 @@ public class AmstradFactory {
 		return repository;
 	}
 
-	public ProgramBrowserDisplaySource createClassicProgramBrowserDisplaySource(AmstradPc amstradPc) {
+	public AmstradProgramBrowser createProgramBrowser(AmstradPc amstradPc) {
+		AmstradProgramBrowser browser = null;
 		AmstradProgramRepository repository = createProgramRepository();
-		return ClassicProgramBrowserDisplaySource.createProgramRepositoryBrowser(amstradPc, repository);
+		String browserStyle = getAmstradContext().getUserSettings()
+				.get(AmstradContext.SETTING_PROGRAM_BROWSER_STYLE, ClassicAmstradProgramBrowser.STYLE_NAME).trim();
+		if (browserStyle.equalsIgnoreCase(ClassicAmstradProgramBrowser.STYLE_NAME)) {
+			browser = new ClassicAmstradProgramBrowser(amstradPc, repository);
+		} else if (browserStyle.equalsIgnoreCase(CarouselAmstradProgramBrowser.STYLE_NAME)) {
+			browser = new CarouselAmstradProgramBrowser(amstradPc, repository);
+		} else {
+			// default (Classic)
+			browser = new ClassicAmstradProgramBrowser(amstradPc, repository);
+		}
+		return browser;
 	}
 
-	public ProgramBrowserDisplaySource createCarouselProgramBrowserDisplaySource(AmstradPc amstradPc) {
-		return new CarouselProgramBrowserDisplaySource(amstradPc);
-	}
-
-	public ClassicProgramBrowserDisplaySource createProgramInfo(AmstradPc amstradPc, AmstradProgram program) {
-		return ClassicProgramBrowserDisplaySource.createProgramInfo(amstradPc, program);
+	public ClassicProgramInfoDisplaySource createProgramInfoDisplaySource(AmstradPc amstradPc, AmstradProgram program) {
+		AmstradProgramBrowser programBrowser = getAmstradContext().getProgramBrowser(amstradPc);
+		return new ClassicProgramInfoDisplaySource(programBrowser, program);
 	}
 
 	public AmstradPcSnapshotFile createCpcSnapshotProgram(File snapshotFile) {
@@ -284,6 +293,16 @@ public class AmstradFactory {
 		@Override
 		public PrintStream getConsoleErrorStream() {
 			return consoleErrorStream;
+		}
+
+		@Override
+		public AmstradProgramBrowser getProgramBrowser(AmstradPc amstradPc) {
+			AmstradProgramBrowser browser = null;
+			ProgramBrowserAction browserAction = amstradPc.getActions().getProgramBrowserAction();
+			if (browserAction != null) {
+				browser = browserAction.getProgramBrowser();
+			}
+			return browser;
 		}
 
 		@Override

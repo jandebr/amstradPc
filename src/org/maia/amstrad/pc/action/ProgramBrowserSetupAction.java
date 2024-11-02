@@ -2,23 +2,23 @@ package org.maia.amstrad.pc.action;
 
 import java.awt.event.KeyEvent;
 
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfigurator;
 import org.maia.swing.dialog.ActionableDialog;
 
 public class ProgramBrowserSetupAction extends ActionableDialogAction {
 
-	private ProgramBrowserAction browserAction;
-
-	public ProgramBrowserSetupAction(ProgramBrowserAction browserAction) {
-		this(browserAction, "Setup program browser...");
+	public ProgramBrowserSetupAction(AmstradPc amstradPc) {
+		this(amstradPc, "Setup program browser...");
 	}
 
-	public ProgramBrowserSetupAction(ProgramBrowserAction browserAction, String name) {
-		super(browserAction.getAmstradPc(), name);
-		this.browserAction = browserAction;
-		getAmstradPc().getKeyboard().addKeyboardListener(this);
+	public ProgramBrowserSetupAction(AmstradPc amstradPc, String name) {
+		super(amstradPc, name);
+		amstradPc.getKeyboard().addKeyboardListener(this);
 	}
 
 	@Override
@@ -37,7 +37,8 @@ public class ProgramBrowserSetupAction extends ActionableDialogAction {
 		AmstradProgramRepositoryConfiguration cfg = ((AmstradProgramRepositoryConfigurator) dialog.getMainComponent())
 				.getState();
 		getAmstradContext().setProgramRepositoryConfiguration(cfg);
-		getBrowserAction().reset();
+		AmstradProgramBrowser updatedBrowser = AmstradFactory.getInstance().createProgramBrowser(getAmstradPc());
+		getBrowserAction().reset(updatedBrowser);
 	}
 
 	@Override
@@ -47,7 +48,7 @@ public class ProgramBrowserSetupAction extends ActionableDialogAction {
 	}
 
 	private ProgramBrowserAction getBrowserAction() {
-		return browserAction;
+		return getAmstradPc().getActions().getProgramBrowserAction();
 	}
 
 }

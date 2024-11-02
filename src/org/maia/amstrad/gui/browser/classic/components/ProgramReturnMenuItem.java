@@ -8,7 +8,7 @@ public class ProgramReturnMenuItem extends ProgramMenuItem {
 
 	@Override
 	public void execute() {
-		getBrowser().close();
+		getBrowserDisplaySource().close();
 	}
 
 }

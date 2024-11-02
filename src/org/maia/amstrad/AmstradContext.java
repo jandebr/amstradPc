@@ -8,6 +8,7 @@ import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 import org.maia.amstrad.system.AmstradSystem;
@@ -38,6 +39,8 @@ public abstract class AmstradContext {
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED = "program_repo.file.dir-managed";
 
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED_CLEANUP = "program_repo.file.dir-managed.cleanup.enable";
+
+	public static final String SETTING_PROGRAM_BROWSER_STYLE = "program_browser.style";
 
 	private static final String SETTING_LOWPERFORMANCE = "lowperformance";
 
@@ -101,6 +104,8 @@ public abstract class AmstradContext {
 	public abstract PrintStream getConsoleOutputStream();
 
 	public abstract PrintStream getConsoleErrorStream();
+
+	public abstract AmstradProgramBrowser getProgramBrowser(AmstradPc amstradPc);
 
 	public abstract void showProgramBrowser(AmstradPc amstradPc);
 

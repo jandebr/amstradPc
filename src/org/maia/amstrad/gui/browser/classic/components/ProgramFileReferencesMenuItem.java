@@ -39,7 +39,7 @@ public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 	@Override
 	public void execute() {
 		if (isEnabled()) {
-			getBrowser().openProgramFileReferencesModalWindow(getProgram());
+			getBrowserDisplaySource().openProgramFileReferencesModalWindow(getProgram());
 		}
 	}
 

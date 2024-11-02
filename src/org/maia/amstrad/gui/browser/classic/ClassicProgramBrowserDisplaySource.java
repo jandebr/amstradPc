@@ -9,7 +9,6 @@ import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.ProgramBrowserListener;
 import org.maia.amstrad.gui.browser.classic.components.FolderItemList;
 import org.maia.amstrad.gui.browser.classic.components.ProgramFileReferencesSheet;
 import org.maia.amstrad.gui.browser.classic.components.ProgramImageGallery;
@@ -19,23 +18,21 @@ import org.maia.amstrad.gui.browser.classic.components.ProgramMenuItem;
 import org.maia.amstrad.gui.browser.classic.components.ProgramRunMenuItem;
 import org.maia.amstrad.gui.browser.classic.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.classic.components.StackedFolderItemList;
-import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.amstrad.program.image.AmstradProgramImage;
-import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.system.AmstradSystemSettings;
-import org.maia.util.GenericListenerList;
 import org.maia.util.StringUtils;
 
 public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySource
 		implements ProgramBrowserDisplaySource {
 
-	private AmstradProgramRepository programRepository;
+	private AmstradProgramBrowser programBrowser;
 
 	private StackedFolderItemList stackedFolderItemList;
 
@@ -48,8 +45,6 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	private ProgramImageGallery programImageGallery;
 
 	private ProgramFileReferencesSheet programFileReferencesSheet;
-
-	private GenericListenerList<ProgramBrowserListener> browserListeners;
 
 	private ClassicProgramBrowserTheme theme;
 
@@ -65,28 +60,18 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	public static int SYMBOL_CODE_HOME = 177;
 
-	private ClassicProgramBrowserDisplaySource(AmstradPc amstradPc, String windowTitle, Window initialWindow) {
-		super(amstradPc, windowTitle);
+	public ClassicProgramBrowserDisplaySource(AmstradProgramBrowser programBrowser) {
+		this(programBrowser, "Program  Browser", Window.MAIN);
+		setStackedFolderItemList(createStackedFolderItemList(20));
+	}
+
+	protected ClassicProgramBrowserDisplaySource(AmstradProgramBrowser programBrowser, String windowTitle,
+			Window initialWindow) {
+		super(programBrowser.getAmstradPc(), windowTitle);
+		this.programBrowser = programBrowser;
 		this.currentWindow = initialWindow;
-		this.browserListeners = new GenericListenerList<ProgramBrowserListener>();
 		setTheme(new ClassicProgramBrowserThemeFromSettings());
 		setRestoreMonitorSettingsOnDispose(!isStandaloneInfo()); // as this source may switch to COLOR
-	}
-
-	public static ClassicProgramBrowserDisplaySource createProgramRepositoryBrowser(AmstradPc amstradPc,
-			AmstradProgramRepository programRepository) {
-		ClassicProgramBrowserDisplaySource ds = new ClassicProgramBrowserDisplaySource(amstradPc, "Program  Browser",
-				Window.MAIN);
-		ds.setProgramRepository(programRepository);
-		ds.setStackedFolderItemList(ds.createStackedFolderItemList(20));
-		return ds;
-	}
-
-	public static ClassicProgramBrowserDisplaySource createProgramInfo(AmstradPc amstradPc, AmstradProgram program) {
-		ClassicProgramBrowserDisplaySource ds = new ClassicProgramBrowserDisplaySource(amstradPc,
-				program.getProgramName(), Window.PROGRAM_INFO_STANDALONE);
-		ds.setProgramInfoSheet(ds.createProgramInfoSheet(program));
-		return ds;
 	}
 
 	@Override
@@ -573,37 +558,15 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		setCurrentWindow(Window.PROGRAM_FILE_REFERENCES_MODAL);
 	}
 
-	@Override
-	public void addListener(ProgramBrowserListener listener) {
-		getBrowserListeners().addListener(listener);
-	}
-
-	@Override
-	public void removeListener(ProgramBrowserListener listener) {
-		getBrowserListeners().removeListener(listener);
-	}
-
-	public void notifyProgramLoaded(AmstradProgram program) {
-		for (ProgramBrowserListener listener : getBrowserListeners()) {
-			listener.programLoadedFromBrowser(this, program);
-		}
-	}
-
-	public void notifyProgramRun(AmstradProgram program) {
-		for (ProgramBrowserListener listener : getBrowserListeners()) {
-			listener.programRunFromBrowser(this, program);
-		}
-	}
-
 	private StackedFolderItemList createStackedFolderItemList(int maxItemsShowing) {
-		return new StackedFolderItemList(getProgramRepository(), maxItemsShowing);
+		return new StackedFolderItemList(getProgramBrowser().getProgramRepository(), maxItemsShowing);
 	}
 
 	private ProgramMenu createProgramMenu(AmstradProgram program) {
 		return new ProgramMenu(this, program);
 	}
 
-	private ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {
+	protected ProgramInfoSheet createProgramInfoSheet(AmstradProgram program) {
 		ProgramInfoSheet sheet = new ProgramInfoSheet(program, 18, 30, getTheme().getModalWindowBackgroundInk());
 		if (program.getPreferredMonitorMode() != null) {
 			sheet.browseOneItemDown();
@@ -640,6 +603,7 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		return getStackedFolderItemList().peek().getSelectedItem();
 	}
 
+	@Override
 	public AmstradProgram getCurrentProgram() {
 		AmstradProgram program = null;
 		if (isStandaloneInfo()) {
@@ -661,12 +625,9 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 			return AmstradAlternativeDisplaySourceType.PROGRAM_BROWSER;
 	}
 
-	public AmstradProgramRepository getProgramRepository() {
-		return programRepository;
-	}
-
-	private void setProgramRepository(AmstradProgramRepository programRepository) {
-		this.programRepository = programRepository;
+	@Override
+	public AmstradProgramBrowser getProgramBrowser() {
+		return programBrowser;
 	}
 
 	private StackedFolderItemList getStackedFolderItemList() {
@@ -693,11 +654,11 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		this.programMenu = programMenu;
 	}
 
-	private ProgramInfoSheet getProgramInfoSheet() {
+	protected ProgramInfoSheet getProgramInfoSheet() {
 		return programInfoSheet;
 	}
 
-	private void setProgramInfoSheet(ProgramInfoSheet programInfoSheet) {
+	protected void setProgramInfoSheet(ProgramInfoSheet programInfoSheet) {
 		this.programInfoSheet = programInfoSheet;
 	}
 
@@ -733,10 +694,6 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
-	private GenericListenerList<ProgramBrowserListener> getBrowserListeners() {
-		return browserListeners;
-	}
-
 	public ClassicProgramBrowserTheme getTheme() {
 		return theme;
 	}
@@ -753,7 +710,7 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		this.programInfoShortcutActive = shortcutActive;
 	}
 
-	private static enum Window {
+	protected static enum Window {
 
 		MAIN,
 

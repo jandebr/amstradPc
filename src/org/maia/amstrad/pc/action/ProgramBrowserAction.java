@@ -4,19 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.ProgramBrowserListener;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.util.GenericListenerList;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserListener;
 
-public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrowserListener {
+public class ProgramBrowserAction extends AmstradPcAction implements AmstradProgramBrowserListener {
 
-	private ProgramBrowserDisplaySource displaySource;
-
-	private GenericListenerList<ProgramBrowserListener> browserListeners;
+	private AmstradProgramBrowser programBrowser;
 
 	private String nameToOpen;
 
@@ -27,13 +24,17 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	private boolean resumeAfterBrowser;
 
 	public ProgramBrowserAction(AmstradPc amstradPc) {
-		super(amstradPc, "");
-		this.browserListeners = new GenericListenerList<ProgramBrowserListener>();
+		this(AmstradFactory.getInstance().createProgramBrowser(amstradPc));
+	}
+
+	public ProgramBrowserAction(AmstradProgramBrowser programBrowser) {
+		super(programBrowser.getAmstradPc(), "");
 		this.nameToOpen = getSystemSettings().isProgramCentric() ? "Program browser" : "Open program browser";
 		this.nameToClose = getSystemSettings().isProgramCentric() ? "Basic" : "Close program browser";
+		updateProgramBrowser(programBrowser);
 		updateName();
-		amstradPc.getMonitor().addMonitorListener(this);
-		amstradPc.getKeyboard().addKeyboardListener(this);
+		getAmstradPc().getMonitor().addMonitorListener(this);
+		getAmstradPc().getKeyboard().addKeyboardListener(this);
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 
 	public void showProgramBrowser() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
+			getAmstradPc().getMonitor().swapDisplaySource(getProgramBrowser().getDisplaySource());
 		}
 	}
 
@@ -72,10 +73,10 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		}
 	}
 
-	public void reset() {
-		invalidateDisplaySource();
+	public void reset(AmstradProgramBrowser programBrowser) {
+		updateProgramBrowser(programBrowser);
 		if (isProgramBrowserShowing()) {
-			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
+			getAmstradPc().getMonitor().swapDisplaySource(getProgramBrowser().getDisplaySource());
 		}
 	}
 
@@ -100,12 +101,48 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 		}
 	}
 
+	@Override
+	public void programLoadedFromBrowser(AmstradProgramBrowser programBrowser, AmstradProgram program) {
+		getInfoAction().updateProgram(program);
+	}
+
+	@Override
+	public void programRunFromBrowser(AmstradProgramBrowser programBrowser, AmstradProgram program) {
+		getInfoAction().updateProgram(program);
+	}
+
 	private void updateName() {
 		if (isProgramBrowserShowing()) {
 			changeName(getNameToClose());
 		} else {
 			changeName(getNameToOpen());
 		}
+	}
+
+	private synchronized void updateProgramBrowser(AmstradProgramBrowser programBrowser) {
+		if (getProgramBrowser() != null) {
+			getProgramBrowser().removeListener(this);
+		}
+		setProgramBrowser(programBrowser);
+		if (programBrowser != null) {
+			programBrowser.addListener(this);
+		}
+	}
+
+	public boolean isProgramBrowserShowing() {
+		return getAmstradContext().isProgramBrowserShowing(getAmstradPc());
+	}
+
+	public AmstradProgramBrowser getProgramBrowser() {
+		return programBrowser;
+	}
+
+	private void setProgramBrowser(AmstradProgramBrowser programBrowser) {
+		this.programBrowser = programBrowser;
+	}
+
+	private ProgramInfoAction getInfoAction() {
+		return getAmstradPc().getActions().getProgramInfoAction();
 	}
 
 	public String getNameToOpen() {
@@ -124,51 +161,6 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 	public void setNameToClose(String nameToClose) {
 		this.nameToClose = nameToClose;
 		updateName();
-	}
-
-	public boolean isProgramBrowserShowing() {
-		return getAmstradContext().isProgramBrowserShowing(getAmstradPc());
-	}
-
-	public void addListener(ProgramBrowserListener listener) {
-		getBrowserListeners().addListener(listener);
-	}
-
-	public void removeListener(ProgramBrowserListener listener) {
-		getBrowserListeners().removeListener(listener);
-	}
-
-	@Override
-	public void programLoadedFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
-		for (ProgramBrowserListener listener : getBrowserListeners()) {
-			listener.programLoadedFromBrowser(displaySource, program);
-		}
-	}
-
-	@Override
-	public void programRunFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
-		for (ProgramBrowserListener listener : getBrowserListeners()) {
-			listener.programRunFromBrowser(displaySource, program);
-		}
-	}
-
-	private void invalidateDisplaySource() {
-		if (displaySource != null) {
-			displaySource.removeListener(this);
-			displaySource = null;
-		}
-	}
-
-	public ProgramBrowserDisplaySource getDisplaySource() {
-		if (displaySource == null) {
-			displaySource = AmstradFactory.getInstance().createClassicProgramBrowserDisplaySource(getAmstradPc());
-			displaySource.addListener(this);
-		}
-		return displaySource;
-	}
-
-	private GenericListenerList<ProgramBrowserListener> getBrowserListeners() {
-		return browserListeners;
 	}
 
 }

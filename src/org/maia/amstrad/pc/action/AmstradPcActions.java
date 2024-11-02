@@ -116,14 +116,14 @@ public class AmstradPcActions {
 
 	public ProgramBrowserSetupAction getProgramBrowserSetupAction() {
 		if (programBrowserSetupAction == null) {
-			programBrowserSetupAction = new ProgramBrowserSetupAction(getProgramBrowserAction());
+			programBrowserSetupAction = new ProgramBrowserSetupAction(getAmstradPc());
 		}
 		return programBrowserSetupAction;
 	}
 
 	public ProgramInfoAction getProgramInfoAction() {
 		if (programInfoAction == null) {
-			programInfoAction = new ProgramInfoAction(getProgramBrowserAction());
+			programInfoAction = new ProgramInfoAction(getAmstradPc());
 		}
 		return programInfoAction;
 	}

@@ -31,11 +31,11 @@ public abstract class ProgramMenuItem implements ScrollableItem {
 	}
 
 	protected AmstradPc getAmstradPc() {
-		return getBrowser().getAmstradPc();
+		return getBrowserDisplaySource().getAmstradPc();
 	}
 
-	protected ClassicProgramBrowserDisplaySource getBrowser() {
-		return getMenu().getBrowser();
+	protected ClassicProgramBrowserDisplaySource getBrowserDisplaySource() {
+		return getMenu().getBrowserDisplaySource();
 	}
 
 	public AmstradProgram getProgram() {

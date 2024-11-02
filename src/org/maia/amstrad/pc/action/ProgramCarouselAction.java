@@ -4,14 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserListener;
 
-public class ProgramCarouselAction extends AmstradPcAction {
+public class ProgramCarouselAction extends AmstradPcAction implements AmstradProgramBrowserListener {
 
-	private ProgramBrowserDisplaySource displaySource;
+	private AmstradProgramBrowser programBrowser;
 
 	private String nameToOpen;
 
@@ -22,12 +24,17 @@ public class ProgramCarouselAction extends AmstradPcAction {
 	private boolean resumeAfterCarousel;
 
 	public ProgramCarouselAction(AmstradPc amstradPc) {
-		super(amstradPc, "");
+		this(AmstradFactory.getInstance().createProgramBrowser(amstradPc));
+	}
+
+	public ProgramCarouselAction(AmstradProgramBrowser programBrowser) {
+		super(programBrowser.getAmstradPc(), "");
 		this.nameToOpen = getSystemSettings().isProgramCentric() ? "Program carousel" : "Open program carousel";
 		this.nameToClose = getSystemSettings().isProgramCentric() ? "Basic" : "Close program carousel";
+		updateProgramBrowser(programBrowser);
 		updateName();
-		amstradPc.getMonitor().addMonitorListener(this);
-		amstradPc.getKeyboard().addKeyboardListener(this);
+		getAmstradPc().getMonitor().addMonitorListener(this);
+		getAmstradPc().getKeyboard().addKeyboardListener(this);
 	}
 
 	@Override
@@ -56,7 +63,7 @@ public class ProgramCarouselAction extends AmstradPcAction {
 
 	public void showProgramCarousel() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
+			getAmstradPc().getMonitor().swapDisplaySource(getProgramBrowser().getDisplaySource());
 		}
 	}
 
@@ -87,12 +94,48 @@ public class ProgramCarouselAction extends AmstradPcAction {
 		}
 	}
 
+	@Override
+	public void programLoadedFromBrowser(AmstradProgramBrowser programBrowser, AmstradProgram program) {
+		getInfoAction().updateProgram(program);
+	}
+
+	@Override
+	public void programRunFromBrowser(AmstradProgramBrowser programBrowser, AmstradProgram program) {
+		getInfoAction().updateProgram(program);
+	}
+
 	private void updateName() {
 		if (isProgramCarouselShowing()) {
 			changeName(getNameToClose());
 		} else {
 			changeName(getNameToOpen());
 		}
+	}
+
+	private synchronized void updateProgramBrowser(AmstradProgramBrowser programBrowser) {
+		if (getProgramBrowser() != null) {
+			getProgramBrowser().removeListener(this);
+		}
+		setProgramBrowser(programBrowser);
+		if (programBrowser != null) {
+			programBrowser.addListener(this);
+		}
+	}
+
+	public boolean isProgramCarouselShowing() {
+		return getAmstradContext().isProgramCarouselShowing(getAmstradPc());
+	}
+
+	public AmstradProgramBrowser getProgramBrowser() {
+		return programBrowser;
+	}
+
+	private void setProgramBrowser(AmstradProgramBrowser programBrowser) {
+		this.programBrowser = programBrowser;
+	}
+
+	private ProgramInfoAction getInfoAction() {
+		return getAmstradPc().getActions().getProgramInfoAction();
 	}
 
 	public String getNameToOpen() {
@@ -111,17 +154,6 @@ public class ProgramCarouselAction extends AmstradPcAction {
 	public void setNameToClose(String nameToClose) {
 		this.nameToClose = nameToClose;
 		updateName();
-	}
-
-	public boolean isProgramCarouselShowing() {
-		return getAmstradContext().isProgramCarouselShowing(getAmstradPc());
-	}
-
-	public ProgramBrowserDisplaySource getDisplaySource() {
-		if (displaySource == null) {
-			displaySource = AmstradFactory.getInstance().createCarouselProgramBrowserDisplaySource(getAmstradPc());
-		}
-		return displaySource;
 	}
 
 }

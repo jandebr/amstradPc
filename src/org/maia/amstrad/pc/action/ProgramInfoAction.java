@@ -4,19 +4,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.ProgramBrowserListener;
-import org.maia.amstrad.gui.browser.classic.ClassicProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.browser.classic.ClassicProgramInfoDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.program.AmstradProgram;
 
-public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowserListener {
+public class ProgramInfoAction extends AmstradPcAction {
 
 	private AmstradProgram program;
 
-	private ClassicProgramBrowserDisplaySource displaySource;
+	private ClassicProgramInfoDisplaySource displaySource;
 
 	private boolean infoMode;
 
@@ -28,30 +26,23 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 
 	public static String KEY_TRIGGER_TEXT = "Ctrl F1";
 
-	public ProgramInfoAction(ProgramBrowserAction browserAction) {
-		super(browserAction.getAmstradPc(), "");
-		browserAction.addListener(this);
-		getAmstradPc().addStateListener(this);
-		getAmstradPc().getMonitor().addMonitorListener(this);
-		getAmstradPc().getKeyboard().addKeyboardListener(this);
+	public ProgramInfoAction(AmstradPc amstradPc) {
+		super(amstradPc, "");
+		amstradPc.addStateListener(this);
+		amstradPc.getMonitor().addMonitorListener(this);
+		amstradPc.getKeyboard().addKeyboardListener(this);
 		updateName();
-		setEnabled(false);
+		clearProgram();
 	}
 
-	@Override
-	public void programLoadedFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
-		updateProgram(program);
-	}
-
-	@Override
-	public void programRunFromBrowser(ProgramBrowserDisplaySource displaySource, AmstradProgram program) {
-		updateProgram(program);
+	public final void clearProgram() {
+		updateProgram(null);
 	}
 
 	public void updateProgram(AmstradProgram program) {
 		if (program != null && program.hasDescriptiveInfo()) {
 			setProgram(program);
-			setDisplaySource(AmstradFactory.getInstance().createProgramInfo(getAmstradPc(), program));
+			setDisplaySource(AmstradFactory.getInstance().createProgramInfoDisplaySource(getAmstradPc(), program));
 			setEnabled(true);
 		} else {
 			setEnabled(false);
@@ -122,7 +113,7 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 	@Override
 	public void amstradPcRebooting(AmstradPc amstradPc) {
 		super.amstradPcRebooting(amstradPc);
-		updateProgram(null);
+		clearProgram();
 		if (isProgramInfoShowing()) {
 			resumeAfterInfoMode = false;
 			hideProgramInfo();
@@ -149,11 +140,11 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 		this.program = program;
 	}
 
-	private ClassicProgramBrowserDisplaySource getDisplaySource() {
+	private ClassicProgramInfoDisplaySource getDisplaySource() {
 		return displaySource;
 	}
 
-	private void setDisplaySource(ClassicProgramBrowserDisplaySource displaySource) {
+	private void setDisplaySource(ClassicProgramInfoDisplaySource displaySource) {
 		this.displaySource = displaySource;
 	}
 

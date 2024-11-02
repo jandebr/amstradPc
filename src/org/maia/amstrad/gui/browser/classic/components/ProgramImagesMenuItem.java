@@ -9,7 +9,7 @@ public class ProgramImagesMenuItem extends ProgramMenuItem {
 	@Override
 	public void execute() {
 		if (isEnabled()) {
-			getBrowser().openProgramImageGalleryModalWindow(getProgram());
+			getBrowserDisplaySource().openProgramImageGalleryModalWindow(getProgram());
 		}
 	}
 

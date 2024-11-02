@@ -13,7 +13,7 @@ public class ProgramLoadMenuItem extends ProgramLaunchMenuItem {
 	protected void launchProgram() throws AmstradProgramException {
 		AmstradProgram program = getProgram();
 		getProgramLoader().load(program);
-		getBrowser().notifyProgramLoaded(program);
+		getBrowserDisplaySource().getProgramBrowser().fireProgramLoaded(program);
 	}
 
 }
