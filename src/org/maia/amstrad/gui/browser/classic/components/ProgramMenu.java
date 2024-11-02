@@ -1,15 +1,15 @@
-package org.maia.amstrad.gui.browser.components;
+package org.maia.amstrad.gui.browser.classic.components;
 
 import java.util.List;
 import java.util.Vector;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.browser.classic.ClassicProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.program.AmstradProgram;
 
 public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
-	private ProgramBrowserDisplaySource browser;
+	private ClassicProgramBrowserDisplaySource browser;
 
 	private AmstradProgram program;
 
@@ -17,11 +17,11 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 
 	private static int DEFAULT_MAX_ITEMS_SHOWING = 7;
 
-	public ProgramMenu(ProgramBrowserDisplaySource browser, AmstradProgram program) {
+	public ProgramMenu(ClassicProgramBrowserDisplaySource browser, AmstradProgram program) {
 		this(browser, program, DEFAULT_MAX_ITEMS_SHOWING);
 	}
 
-	public ProgramMenu(ProgramBrowserDisplaySource browser, AmstradProgram program, int maxItemsShowing) {
+	public ProgramMenu(ClassicProgramBrowserDisplaySource browser, AmstradProgram program, int maxItemsShowing) {
 		super(maxItemsShowing);
 		this.browser = browser;
 		this.program = program;
@@ -79,7 +79,7 @@ public class ProgramMenu extends ScrollableItemList<ProgramMenuItem> {
 		return item;
 	}
 
-	public ProgramBrowserDisplaySource getBrowser() {
+	public ClassicProgramBrowserDisplaySource getBrowser() {
 		return browser;
 	}
 

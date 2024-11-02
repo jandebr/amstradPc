@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.carousel.ProgramCarouselDisplaySource;
+import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.browser.classic.ClassicProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.overlay.AutotypeDisplayOverlay;
 import org.maia.amstrad.gui.overlay.ControlKeysDisplayOverlay;
 import org.maia.amstrad.gui.overlay.PauseDisplayOverlay;
@@ -193,17 +194,17 @@ public class AmstradFactory {
 		return repository;
 	}
 
-	public ProgramBrowserDisplaySource createProgramRepositoryBrowser(AmstradPc amstradPc) {
+	public ProgramBrowserDisplaySource createClassicProgramBrowserDisplaySource(AmstradPc amstradPc) {
 		AmstradProgramRepository repository = createProgramRepository();
-		return ProgramBrowserDisplaySource.createProgramRepositoryBrowser(amstradPc, repository);
+		return ClassicProgramBrowserDisplaySource.createProgramRepositoryBrowser(amstradPc, repository);
 	}
 
-	public ProgramBrowserDisplaySource createProgramInfo(AmstradPc amstradPc, AmstradProgram program) {
-		return ProgramBrowserDisplaySource.createProgramInfo(amstradPc, program);
+	public ProgramBrowserDisplaySource createCarouselProgramBrowserDisplaySource(AmstradPc amstradPc) {
+		return new CarouselProgramBrowserDisplaySource(amstradPc);
 	}
 
-	public ProgramCarouselDisplaySource createProgramCarousel(AmstradPc amstradPc) {
-		return new ProgramCarouselDisplaySource(amstradPc);
+	public ClassicProgramBrowserDisplaySource createProgramInfo(AmstradPc amstradPc, AmstradProgram program) {
+		return ClassicProgramBrowserDisplaySource.createProgramInfo(amstradPc, program);
 	}
 
 	public AmstradPcSnapshotFile createCpcSnapshotProgram(File snapshotFile) {

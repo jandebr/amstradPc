@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.browser.components;
+package org.maia.amstrad.gui.browser.classic.components;
 
 public class ProgramImagesMenuItem extends ProgramMenuItem {
 

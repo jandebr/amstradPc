@@ -1,6 +1,6 @@
-package org.maia.amstrad.gui.browser;
+package org.maia.amstrad.gui.browser.classic;
 
-public interface ProgramBrowserTheme {
+public interface ClassicProgramBrowserTheme {
 
 	int getMainWindowBorderInk();
 

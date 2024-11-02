@@ -1,9 +1,9 @@
-package org.maia.amstrad.gui.browser;
+package org.maia.amstrad.gui.browser.classic;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 
-public class ProgramBrowserThemeFromSettings implements ProgramBrowserTheme {
+public class ClassicProgramBrowserThemeFromSettings implements ClassicProgramBrowserTheme {
 
 	private static final String SETTING_PREFIX = "program_browser.theme.";
 
@@ -35,7 +35,7 @@ public class ProgramBrowserThemeFromSettings implements ProgramBrowserTheme {
 
 	private static final String SETTING_EXTENT_HINT_INK = SETTING_PREFIX + "extent_hint.ink";
 
-	public ProgramBrowserThemeFromSettings() {
+	public ClassicProgramBrowserThemeFromSettings() {
 	}
 
 	@Override

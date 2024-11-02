@@ -161,7 +161,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements ProgramBrow
 
 	public ProgramBrowserDisplaySource getDisplaySource() {
 		if (displaySource == null) {
-			displaySource = AmstradFactory.getInstance().createProgramRepositoryBrowser(getAmstradPc());
+			displaySource = AmstradFactory.getInstance().createClassicProgramBrowserDisplaySource(getAmstradPc());
 			displaySource.addListener(this);
 		}
 		return displaySource;

@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.browser.components;
+package org.maia.amstrad.gui.browser.classic.components;
 
 import org.maia.amstrad.gui.components.ScrollableItemList;
 import org.maia.amstrad.program.AmstradProgram;

@@ -4,14 +4,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.gui.carousel.ProgramCarouselDisplaySource;
+import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 
 public class ProgramCarouselAction extends AmstradPcAction {
 
-	private ProgramCarouselDisplaySource displaySource;
+	private ProgramBrowserDisplaySource displaySource;
 
 	private String nameToOpen;
 
@@ -117,9 +117,9 @@ public class ProgramCarouselAction extends AmstradPcAction {
 		return getAmstradContext().isProgramCarouselShowing(getAmstradPc());
 	}
 
-	public ProgramCarouselDisplaySource getDisplaySource() {
+	public ProgramBrowserDisplaySource getDisplaySource() {
 		if (displaySource == null) {
-			displaySource = AmstradFactory.getInstance().createProgramCarousel(getAmstradPc());
+			displaySource = AmstradFactory.getInstance().createCarouselProgramBrowserDisplaySource(getAmstradPc());
 		}
 		return displaySource;
 	}

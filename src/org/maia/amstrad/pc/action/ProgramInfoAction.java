@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.ProgramBrowserListener;
+import org.maia.amstrad.gui.browser.classic.ClassicProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
@@ -15,7 +16,7 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 
 	private AmstradProgram program;
 
-	private ProgramBrowserDisplaySource displaySource;
+	private ClassicProgramBrowserDisplaySource displaySource;
 
 	private boolean infoMode;
 
@@ -148,11 +149,11 @@ public class ProgramInfoAction extends AmstradPcAction implements ProgramBrowser
 		this.program = program;
 	}
 
-	private ProgramBrowserDisplaySource getDisplaySource() {
+	private ClassicProgramBrowserDisplaySource getDisplaySource() {
 		return displaySource;
 	}
 
-	private void setDisplaySource(ProgramBrowserDisplaySource displaySource) {
+	private void setDisplaySource(ClassicProgramBrowserDisplaySource displaySource) {
 		this.displaySource = displaySource;
 	}
 
