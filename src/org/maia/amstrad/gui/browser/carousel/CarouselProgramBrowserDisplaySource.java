@@ -46,7 +46,7 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 
 	@Override
 	public AmstradAlternativeDisplaySourceType getType() {
-		return AmstradAlternativeDisplaySourceType.PROGRAM_CAROUSEL;
+		return AmstradAlternativeDisplaySourceType.PROGRAM_BROWSER;
 	}
 
 	@Override

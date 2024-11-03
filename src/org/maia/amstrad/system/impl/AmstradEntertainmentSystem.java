@@ -72,7 +72,8 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		AmstradSystemNativeScreen screen = new AmstradSystemNativeScreen(this);
 		screen.setPopupMenu(new ProgramPopupMenuMaker().createPopupMenu());
 		screen.setShowTurbo(false);
-		screen.setShowControlKeys(true); // with dynamic auto-hide
+		screen.setShowControlKeys(true);
+		screen.setAutohideControlKeys(true);
 		screen.setShowTapeActivity(false);
 		return screen;
 	}
@@ -81,9 +82,10 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		AmstradSystemCustomScreen screen = new AmstradSystemCustomScreen(PROGRAM_BROWSER_SCREEN_ID, this,
 				AmstradAlternativeDisplaySourceType.PROGRAM_BROWSER);
 		screen.setPopupMenu(new ProgramBrowserPopupMenuMaker().createPopupMenu());
+		screen.setShowMonitor(getProgramBrowser().isShowMonitor());
 		screen.setShowPause(false);
 		screen.setShowTurbo(false);
-		screen.setShowControlKeys(true);
+		screen.setShowControlKeys(getProgramBrowser().isShowControlKeys());
 		screen.setAutohideControlKeys(false);
 		return screen;
 	}

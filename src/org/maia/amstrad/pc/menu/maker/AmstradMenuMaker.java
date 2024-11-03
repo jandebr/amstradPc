@@ -82,12 +82,6 @@ public abstract class AmstradMenuMaker {
 		return updateMenuItemLookAndFeel(item, UIResources.infoIcon);
 	}
 
-	protected JMenuItem createProgramCarouselMenuItem() {
-		JMenuItem item = new JMenuItem(getActions().getProgramCarouselAction());
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item);
-	}
-
 	protected JMenuItem createLoadBasicSourceFileMenuItem() {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getLoadBasicSourceFileAction()));
 	}

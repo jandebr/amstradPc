@@ -19,8 +19,6 @@ public class AmstradPcActions {
 
 	private ProgramInfoAction programInfoAction;
 
-	private ProgramCarouselAction programCarouselAction;
-
 	private LoadBasicSourceFileAction loadBasicSourceFileAction;
 
 	private LoadBasicBinaryFileAction loadBasicBinaryFileAction;
@@ -126,13 +124,6 @@ public class AmstradPcActions {
 			programInfoAction = new ProgramInfoAction(getAmstradPc());
 		}
 		return programInfoAction;
-	}
-
-	public ProgramCarouselAction getProgramCarouselAction() {
-		if (programCarouselAction == null) {
-			programCarouselAction = new ProgramCarouselAction(getAmstradPc());
-		}
-		return programCarouselAction;
 	}
 
 	public LoadBasicSourceFileAction getLoadBasicSourceFileAction() {

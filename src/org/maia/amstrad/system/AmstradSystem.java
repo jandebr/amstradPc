@@ -10,6 +10,7 @@ import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.amstrad.system.impl.logs.AmstradSystemJemuLogs;
 import org.maia.amstrad.system.impl.screen.AmstradSystemScreenSetImpl;
 import org.maia.amstrad.system.impl.terminate.AmstradSystemCoreTermination;
@@ -148,6 +149,10 @@ public abstract class AmstradSystem {
 	protected boolean isMatchingCustomScreen(AmstradSystemScreen customScreen,
 			AmstradAlternativeDisplaySource displaySource) {
 		return customScreen.getCustomDisplaySourceType().equals(displaySource.getType());
+	}
+
+	public AmstradProgramBrowser getProgramBrowser() {
+		return getAmstradContext().getProgramBrowser(getAmstradPc());
 	}
 
 	public AmstradSettings getUserSettings() {

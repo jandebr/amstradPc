@@ -49,6 +49,10 @@ public abstract class AmstradProgramBrowser {
 		return getDisplaySource().getCurrentProgram();
 	}
 
+	public abstract boolean isShowMonitor();
+
+	public abstract boolean isShowControlKeys();
+
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}

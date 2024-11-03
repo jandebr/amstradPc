@@ -17,7 +17,6 @@ import org.maia.amstrad.gui.overlay.TurboDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.ProgramBrowserAction;
-import org.maia.amstrad.pc.action.ProgramCarouselAction;
 import org.maia.amstrad.pc.impl.cursor.AmstradMonitorCursorControllerImpl;
 import org.maia.amstrad.pc.impl.jemu.JemuDirectAmstradPc;
 import org.maia.amstrad.pc.impl.jemu.JemuFacadeAmstradPc;
@@ -45,7 +44,6 @@ import org.maia.amstrad.program.repo.filter.FilteredAmstradProgramRepository;
 import org.maia.amstrad.program.repo.rename.RenamingAmstradProgramRepository;
 import org.maia.amstrad.program.repo.search.SearchingAmstradProgramRepository;
 import org.maia.amstrad.system.AmstradSystem;
-import org.maia.amstrad.system.impl.AmstradCarouselSystem;
 import org.maia.amstrad.system.impl.AmstradDesktopSystem;
 import org.maia.amstrad.system.impl.AmstradEntertainmentSystem;
 import org.maia.amstrad.system.impl.AmstradJavaCpcSystem;
@@ -91,8 +89,6 @@ public class AmstradFactory {
 			system = new AmstradDesktopSystem();
 		} else if (systemName.equalsIgnoreCase(AmstradEntertainmentSystem.NAME)) {
 			system = new AmstradEntertainmentSystem();
-		} else if (systemName.equalsIgnoreCase(AmstradCarouselSystem.NAME)) {
-			system = new AmstradCarouselSystem();
 		} else if (systemName.equalsIgnoreCase(AmstradJavaCpcSystem.NAME)) {
 			system = new AmstradJavaCpcSystem();
 		} else {
@@ -311,16 +307,6 @@ public class AmstradFactory {
 				ProgramBrowserAction browserAction = amstradPc.getActions().getProgramBrowserAction();
 				if (browserAction != null) {
 					browserAction.showProgramBrowser();
-				}
-			}
-		}
-
-		@Override
-		public void showProgramCarousel(AmstradPc amstradPc) {
-			if (!isProgramCarouselShowing(amstradPc)) {
-				ProgramCarouselAction carouselAction = amstradPc.getActions().getProgramCarouselAction();
-				if (carouselAction != null) {
-					carouselAction.showProgramCarousel();
 				}
 			}
 		}

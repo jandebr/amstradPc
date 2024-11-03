@@ -19,4 +19,14 @@ public class ClassicAmstradProgramBrowser extends AmstradProgramBrowser {
 		return new ClassicProgramBrowserDisplaySource(this);
 	}
 
+	@Override
+	public boolean isShowMonitor() {
+		return true;
+	}
+
+	@Override
+	public boolean isShowControlKeys() {
+		return true;
+	}
+
 }

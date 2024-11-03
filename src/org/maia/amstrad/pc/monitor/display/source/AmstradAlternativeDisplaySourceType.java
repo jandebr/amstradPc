@@ -6,8 +6,6 @@ public enum AmstradAlternativeDisplaySourceType {
 
 	PROGRAM_STANDALONE_INFO,
 
-	PROGRAM_CAROUSEL,
-
 	IMAGE,
 
 	TERMINATION,

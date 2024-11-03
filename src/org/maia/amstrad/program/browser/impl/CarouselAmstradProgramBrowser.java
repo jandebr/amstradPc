@@ -19,4 +19,14 @@ public class CarouselAmstradProgramBrowser extends AmstradProgramBrowser {
 		return new CarouselProgramBrowserDisplaySource(this);
 	}
 
+	@Override
+	public boolean isShowMonitor() {
+		return false;
+	}
+
+	@Override
+	public boolean isShowControlKeys() {
+		return false;
+	}
+
 }

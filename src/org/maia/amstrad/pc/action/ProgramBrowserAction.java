@@ -76,7 +76,9 @@ public class ProgramBrowserAction extends AmstradPcAction implements AmstradProg
 	public void reset(AmstradProgramBrowser programBrowser) {
 		updateProgramBrowser(programBrowser);
 		if (isProgramBrowserShowing()) {
+			boolean origResumeAfterBrowser = resumeAfterBrowser;
 			getAmstradPc().getMonitor().swapDisplaySource(getProgramBrowser().getDisplaySource());
+			resumeAfterBrowser = origResumeAfterBrowser;
 		}
 	}
 
