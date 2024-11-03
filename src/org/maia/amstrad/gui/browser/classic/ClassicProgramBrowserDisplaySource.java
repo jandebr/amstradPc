@@ -50,9 +50,9 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	private boolean programInfoShortcutActive;
 
-	private static final String SETTING_SHOW_COVER_IMAGES = "program_browser.cover_images.show";
+	private static final String SETTING_SHOW_COVER_IMAGES = "program_browser.classic.cover_images.show";
 
-	private static final String SETTING_SHOW_MINI_INFO = "program_browser.mini_info.show";
+	private static final String SETTING_SHOW_MINI_INFO = "program_browser.classic.mini_info.show";
 
 	private static final int LABEL_WIDTH = 18;
 

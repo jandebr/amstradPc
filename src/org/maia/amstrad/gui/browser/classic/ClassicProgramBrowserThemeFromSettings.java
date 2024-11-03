@@ -5,7 +5,7 @@ import org.maia.amstrad.AmstradSettings;
 
 public class ClassicProgramBrowserThemeFromSettings implements ClassicProgramBrowserTheme {
 
-	private static final String SETTING_PREFIX = "program_browser.theme.";
+	private static final String SETTING_PREFIX = "program_browser.classic.theme.";
 
 	private static final String SETTING_MAIN_WINDOW_BORDER_INK = SETTING_PREFIX + "window.main.border.ink";
 
