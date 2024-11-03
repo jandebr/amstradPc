@@ -47,5 +47,8 @@ jvmarg = -Djavacpc-ini-read=javacpc.ini
 jvmarg = -Djavacpc-ini-write=javacpc.ini
 jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
 desktop.jvmarg = -Djavacpc.mode=DESKTOP
+desktop.jvmarg = -Djavacpc.program_browser.style=Classic
 entertainment.jvmarg = -Djavacpc.mode=ENTERTAINMENT
+entertainment.jvmarg = -Djavacpc.program_browser.style=Classic
 javacpc.jvmarg = -Djavacpc.mode=JAVACPC
+javacpc.jvmarg = -Djavacpc.program_browser.style=Classic

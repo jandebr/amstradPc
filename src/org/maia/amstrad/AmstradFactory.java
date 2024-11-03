@@ -34,6 +34,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
 import org.maia.amstrad.program.browser.impl.ClassicAmstradProgramBrowser;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
@@ -194,15 +195,11 @@ public class AmstradFactory {
 	public AmstradProgramBrowser createProgramBrowser(AmstradPc amstradPc) {
 		AmstradProgramBrowser browser = null;
 		AmstradProgramRepository repository = createProgramRepository();
-		String browserStyle = getAmstradContext().getUserSettings()
-				.get(AmstradContext.SETTING_PROGRAM_BROWSER_STYLE, ClassicAmstradProgramBrowser.STYLE_NAME).trim();
-		if (browserStyle.equalsIgnoreCase(ClassicAmstradProgramBrowser.STYLE_NAME)) {
+		AmstradProgramBrowserStyle browserStyle = getAmstradContext().getProgramBrowserStyle();
+		if (AmstradProgramBrowserStyle.CLASSIC.equals(browserStyle)) {
 			browser = new ClassicAmstradProgramBrowser(amstradPc, repository);
-		} else if (browserStyle.equalsIgnoreCase(CarouselAmstradProgramBrowser.STYLE_NAME)) {
+		} else if (AmstradProgramBrowserStyle.CAROUSEL.equals(browserStyle)) {
 			browser = new CarouselAmstradProgramBrowser(amstradPc, repository);
-		} else {
-			// default (Classic)
-			browser = new ClassicAmstradProgramBrowser(amstradPc, repository);
 		}
 		return browser;
 	}

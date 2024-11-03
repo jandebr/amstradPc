@@ -9,6 +9,8 @@ import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
+import org.maia.amstrad.program.browser.config.AmstradProgramBrowserConfiguration;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
 import org.maia.amstrad.system.AmstradSystem;
@@ -53,6 +55,8 @@ public abstract class AmstradContext {
 	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
 
 	private static final String SYSTEM_PROPERTY_VERSION = "javacpc-version";
+
+	public static AmstradProgramBrowserStyle defaultProgramBrowserStyle = AmstradProgramBrowserStyle.CLASSIC;
 
 	protected AmstradContext() {
 	}
@@ -213,6 +217,33 @@ public abstract class AmstradContext {
 		settings.set(SETTING_PROGRAM_REPO_SEARCH_STRING, configuration.getSearchString());
 		settings.setBool(SETTING_PROGRAM_REPO_FACETED, configuration.isFaceted());
 		settings.set(SETTING_PROGRAM_REPO_FACETS, FacetFactory.getInstance().toExternalForm(configuration.getFacets()));
+	}
+
+	public AmstradProgramBrowserStyle getProgramBrowserStyle() {
+		String styleName = getUserSettings().get(SETTING_PROGRAM_BROWSER_STYLE,
+				defaultProgramBrowserStyle.getDisplayName());
+		AmstradProgramBrowserStyle style = AmstradProgramBrowserStyle.forDisplayNameIgnoreCase(styleName);
+		if (style != null) {
+			return style;
+		} else {
+			return defaultProgramBrowserStyle;
+		}
+	}
+
+	public void setProgramBrowserStyle(AmstradProgramBrowserStyle style) {
+		getUserSettings().set(SETTING_PROGRAM_BROWSER_STYLE, style.getDisplayName());
+	}
+
+	public AmstradProgramBrowserConfiguration getProgramBrowserConfiguration() {
+		AmstradProgramBrowserConfiguration configuration = new AmstradProgramBrowserConfiguration(
+				getProgramRepositoryConfiguration());
+		configuration.setStyle(getProgramBrowserStyle());
+		return configuration;
+	}
+
+	public void setProgramBrowserConfiguration(AmstradProgramBrowserConfiguration configuration) {
+		setProgramRepositoryConfiguration(configuration.getRepositoryConfiguration());
+		setProgramBrowserStyle(configuration.getStyle());
 	}
 
 	public File getManagedProgramRepositoryRootFolder() {

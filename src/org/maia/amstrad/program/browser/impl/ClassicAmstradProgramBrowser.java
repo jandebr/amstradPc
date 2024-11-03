@@ -8,8 +8,6 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository;
 
 public class ClassicAmstradProgramBrowser extends AmstradProgramBrowser {
 
-	public static final String STYLE_NAME = "Classic";
-
 	public ClassicAmstradProgramBrowser(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
 		super(amstradPc, programRepository);
 	}

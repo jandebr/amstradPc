@@ -6,8 +6,8 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
-import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
-import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfigurator;
+import org.maia.amstrad.program.browser.config.AmstradProgramBrowserConfiguration;
+import org.maia.amstrad.program.browser.config.AmstradProgramBrowserConfigurator;
 import org.maia.swing.dialog.ActionableDialog;
 
 public class ProgramBrowserSetupAction extends ActionableDialogAction {
@@ -34,17 +34,17 @@ public class ProgramBrowserSetupAction extends ActionableDialogAction {
 
 	@Override
 	public void dialogConfirmed(ActionableDialog dialog) {
-		AmstradProgramRepositoryConfiguration cfg = ((AmstradProgramRepositoryConfigurator) dialog.getMainComponent())
+		AmstradProgramBrowserConfiguration cfg = ((AmstradProgramBrowserConfigurator) dialog.getMainComponent())
 				.getState();
-		getAmstradContext().setProgramRepositoryConfiguration(cfg);
+		getAmstradContext().setProgramBrowserConfiguration(cfg);
 		AmstradProgramBrowser updatedBrowser = AmstradFactory.getInstance().createProgramBrowser(getAmstradPc());
 		getBrowserAction().reset(updatedBrowser);
 	}
 
 	@Override
 	protected ActionableDialog createDialog() {
-		AmstradProgramRepositoryConfiguration cfg = getAmstradContext().getProgramRepositoryConfiguration();
-		return AmstradProgramRepositoryConfigurator.createDialog(getAmstradPc().getFrame(), cfg);
+		AmstradProgramBrowserConfiguration cfg = getAmstradContext().getProgramBrowserConfiguration();
+		return AmstradProgramBrowserConfigurator.createDialog(getAmstradPc().getFrame(), cfg);
 	}
 
 	private ProgramBrowserAction getBrowserAction() {

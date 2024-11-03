@@ -8,8 +8,6 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository;
 
 public class CarouselAmstradProgramBrowser extends AmstradProgramBrowser {
 
-	public static final String STYLE_NAME = "Carousel";
-
 	public CarouselAmstradProgramBrowser(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
 		super(amstradPc, programRepository);
 	}
