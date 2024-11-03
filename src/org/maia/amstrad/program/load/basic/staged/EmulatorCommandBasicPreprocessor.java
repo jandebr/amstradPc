@@ -13,6 +13,7 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceTokenFactory;
 import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralRemarkToken;
 import org.maia.amstrad.pc.memory.AmstradMemory;
+import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 
 public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
@@ -114,6 +115,10 @@ public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
 
 	private class EmulatorCommandRuntimeListener extends StagedBasicProgramTrappedRuntimeListener {
 
+		private boolean initialTurboMode;
+
+		private boolean turboEnabledByCommand;
+
 		public EmulatorCommandRuntimeListener(StagedBasicProgramLoaderSession session, int memoryTrapAddress) {
 			super(session, memoryTrapAddress);
 		}
@@ -122,6 +127,38 @@ public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
 		protected StagedBasicMacroHandler createMacroHandler(StagedCommandResolver resolver) {
 			EmulatorCommandMacro macro = getSession().getMacroAdded(EmulatorCommandMacro.class);
 			return new EmulatorCommandMacroHandler(macro, getSession(), resolver);
+		}
+
+		@Override
+		public void amstradProgramIsAboutToRun(AmstradProgramRuntime programRuntime) {
+			super.amstradProgramIsAboutToRun(programRuntime);
+			setInitialTurboMode(programRuntime.getAmstradPc().isTurboMode()); // remember turbo mode at start
+		}
+
+		@Override
+		public void amstradProgramIsDisposed(AmstradProgramRuntime programRuntime, boolean programRemainsLoaded) {
+			super.amstradProgramIsDisposed(programRuntime, programRemainsLoaded);
+			if (isTurboEnabledByCommand()) {
+				// restore initial turbo mode (e.g., break between turbo ON and OFF commands)
+				programRuntime.getAmstradPc().setTurboMode(isInitialTurboMode());
+				System.out.println("Restored turbo mode: " + isInitialTurboMode());
+			}
+		}
+
+		private boolean isInitialTurboMode() {
+			return initialTurboMode;
+		}
+
+		private void setInitialTurboMode(boolean initialTurboMode) {
+			this.initialTurboMode = initialTurboMode;
+		}
+
+		public boolean isTurboEnabledByCommand() {
+			return turboEnabledByCommand;
+		}
+
+		public void setTurboEnabledByCommand(boolean enabled) {
+			this.turboEnabledByCommand = enabled;
 		}
 
 	}
@@ -191,6 +228,7 @@ public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
 		@Override
 		public void execute(StagedBasicProgramLoaderSession session) {
 			session.getAmstradPc().setTurboMode(true);
+			session.getMacroAdded(EmulatorCommandMacro.class).getListener().setTurboEnabledByCommand(true);
 			resumeRun(session);
 		}
 
@@ -209,6 +247,7 @@ public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
 		@Override
 		public void execute(StagedBasicProgramLoaderSession session) {
 			session.getAmstradPc().setTurboMode(false);
+			session.getMacroAdded(EmulatorCommandMacro.class).getListener().setTurboEnabledByCommand(false);
 			resumeRun(session);
 		}
 
