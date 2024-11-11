@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="AmstradPc" basedir="." default="distribute">
+<project name="AmstradPc" basedir="." default="buildWar">
 	<taskdef name="getdown-dot-text" classname="org.maia.amstrad.util.getdown.GetdownDotTextGeneratorTask">
 		<classpath>
 			<pathelement location="lib/amstradPc-ant.jar" />
@@ -13,7 +13,14 @@
 		</classpath>
 	</taskdef>
 
-	<target name="package">
+	<taskdef name="tomcat-deploy" classname="org.apache.catalina.ant.DeployTask">
+		<classpath>
+			<path location="${libraries.home}/ant/tomcat/catalina-ant.jar" />
+			<path location="${libraries.home}/ant/tomcat/catalina.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="buildJar">
 		<jar destfile="dist/amstradPc.jar">
 			<manifest>
 				<attribute name="Main-Class" value="org.maia.amstrad.AmstradMain" />
@@ -26,7 +33,7 @@
 		</jar>
 	</target>
 
-	<target name="stage" depends="package">
+	<target name="stageWar" depends="buildJar">
 		<delete dir="dist/staging" />
 		<mkdir dir="dist/staging/${distribution.id}" />
 		<copy todir="dist/staging/${distribution.id}">
@@ -46,7 +53,7 @@
 		<getdown-digest appdir="dist/staging/${distribution.id}" />
 	</target>
 
-	<target name="distribute" depends="stage">
+	<target name="buildWar" depends="stageWar">
 		<war destfile="dist/amstradpc.war" webxml="resources/dist/web.xml">
 			<fileset dir="docs">
 				<include name="javadoc/**/*" />
@@ -55,4 +62,12 @@
 		</war>
 		<delete dir="dist/staging" />
 	</target>
+
+	<target name="deployWar">
+		<tomcat-deploy url="${tomcat-url}" username="${tomcat-username}" password="${tomcat-password}" path="/amstradpc" update="true" war="file:dist/amstradpc.war" />
+	</target>
+
+	<target name="buildAndDeployWar" depends="buildWar, deployWar">
+	</target>
+
 </project>
