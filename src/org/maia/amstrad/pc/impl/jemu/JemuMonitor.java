@@ -16,6 +16,7 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayOverlay;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
+import org.maia.util.SystemUtils;
 
 import jemu.settings.Settings;
 import jemu.ui.Display;
@@ -370,19 +371,29 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 	private class AutonomousDisplayRenderer extends Thread {
 
+		private int maximumFps;
+
 		private boolean stop;
 
 		public AutonomousDisplayRenderer() {
+			this(Integer.parseInt(Settings.get(Settings.DISPLAY_RENDER_MAXFPS, "50")));
+		}
+
+		public AutonomousDisplayRenderer(int maximumFps) {
 			super("AutonomousDisplayRenderer");
+			this.maximumFps = maximumFps;
 			setDaemon(true);
 		}
 
 		@Override
 		public void run() {
 			System.out.println("Autonomous display render thread started");
+			long frameTimeMs = 1000L / getMaximumFps();
 			final Display display = getJemuDisplay();
 			while (!isStopped()) {
+				long t0 = System.currentTimeMillis();
 				display.updateImage(true);
+				SystemUtils.sleep(frameTimeMs - (System.currentTimeMillis() - t0));
 			}
 			System.out.println("Autonomous display render thread stopped");
 		}
@@ -393,6 +404,10 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 		public boolean isStopped() {
 			return stop;
+		}
+
+		public int getMaximumFps() {
+			return maximumFps;
 		}
 
 	}

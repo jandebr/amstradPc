@@ -110,7 +110,7 @@ public class Settings {
 	public static final String ALLOW_BILINEAR_LOWPERFORMANCE = "lowperformance.allow_bilinear";
 
 	public static final String DISPLAY_RENDER_DELEGATE = "display.render.delegate";
-	public static final String DISPLAY_RENDER_CANVAS_MAXFPS = "display.render.canvas.maxfps";
+	public static final String DISPLAY_RENDER_MAXFPS = "display.render.maxfps";
 	public static final String DISPLAY_RENDER_CANVAS_KEYFRAME_INTERVAL = "display.render.canvas.keyframe_interval";
 	public static final String DISPLAY_RENDER_CANVAS_LOG = "display.render.canvas.log";
 

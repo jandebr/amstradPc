@@ -170,7 +170,7 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 
 	private void startRenderThread() {
 		if (getRenderThread() == null) {
-			int maximumFps = Integer.parseInt(Settings.get(Settings.DISPLAY_RENDER_CANVAS_MAXFPS, "50"));
+			int maximumFps = Integer.parseInt(Settings.get(Settings.DISPLAY_RENDER_MAXFPS, "50"));
 			int fullCanvasUpdateSecondInterval = Integer
 					.parseInt(Settings.get(Settings.DISPLAY_RENDER_CANVAS_KEYFRAME_INTERVAL, "0"));
 			RenderThread rt = new RenderThread(maximumFps, fullCanvasUpdateSecondInterval);
