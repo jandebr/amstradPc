@@ -67,7 +67,6 @@ public class AmstradDesktopSystem extends AmstradSystem {
 	private AmstradSystemScreen createUnknownScreen() {
 		AmstradSystemUnknownScreen screen = new AmstradSystemUnknownScreen(this);
 		screen.setPopupMenu(createPopupMenu());
-		screen.setShowPause(false);
 		screen.setShowControlKeys(false);
 		return screen;
 	}

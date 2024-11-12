@@ -68,7 +68,7 @@ public class ProgramBrowserAction extends AmstradPcAction implements AmstradProg
 	}
 
 	public void closeProgramBrowser() {
-		if (isEnabled()) {
+		if (isEnabled() && !getSystemSettings().isProgramCentric()) {
 			getProgramBrowser().getDisplaySource().close();
 		}
 	}
