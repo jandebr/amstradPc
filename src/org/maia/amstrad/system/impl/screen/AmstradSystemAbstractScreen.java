@@ -14,17 +14,17 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private AmstradPopupMenu popupMenu;
 
-	private boolean showMonitor;
+	private boolean showMonitor = true;
 
-	private boolean showPause;
+	private boolean showPause = true;
 
-	private boolean showTurbo;
+	private boolean showTurbo = true;
 
-	private boolean showControlKeys;
+	private boolean showControlKeys = true;
 
-	private boolean autohideControlKeys;
+	private boolean autohideControlKeys = true;
 
-	private boolean showTapeActivity;
+	private boolean showTapeActivity = true;
 
 	protected AmstradSystemAbstractScreen(String screenIdentifier, AmstradSystem amstradSystem) {
 		if (screenIdentifier == null)
@@ -33,13 +33,6 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 			throw new NullPointerException("Amstrad system is null");
 		this.screenIdentifier = screenIdentifier;
 		this.amstradSystem = amstradSystem;
-		// Defaults
-		this.showMonitor = true;
-		this.showPause = true;
-		this.showTurbo = true;
-		this.showControlKeys = false;
-		this.autohideControlKeys = true;
-		this.showTapeActivity = true;
 	}
 
 	@Override

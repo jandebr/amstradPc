@@ -39,7 +39,9 @@ public class AmstradSystemScreenSetImpl implements AmstradSystemScreenSet {
 	}
 
 	protected AmstradSystemScreen createDefaultNativeScreen() {
-		return new AmstradSystemNativeScreen(getAmstradSystem());
+		AmstradSystemNativeScreen screen = new AmstradSystemNativeScreen(getAmstradSystem());
+		screen.setShowControlKeys(false);
+		return screen;
 	}
 
 	@Override
@@ -55,7 +57,9 @@ public class AmstradSystemScreenSetImpl implements AmstradSystemScreenSet {
 	}
 
 	protected AmstradSystemScreen createDefaultUnknownScreen() {
-		return new AmstradSystemUnknownScreen(getAmstradSystem());
+		AmstradSystemUnknownScreen screen = new AmstradSystemUnknownScreen(getAmstradSystem());
+		screen.setShowControlKeys(false);
+		return screen;
 	}
 
 	@Override

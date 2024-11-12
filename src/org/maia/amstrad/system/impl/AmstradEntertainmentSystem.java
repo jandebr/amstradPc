@@ -72,8 +72,6 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		AmstradSystemNativeScreen screen = new AmstradSystemNativeScreen(this);
 		screen.setPopupMenu(new ProgramPopupMenuMaker().createPopupMenu());
 		screen.setShowTurbo(false);
-		screen.setShowControlKeys(true);
-		screen.setAutohideControlKeys(true);
 		screen.setShowTapeActivity(false);
 		return screen;
 	}

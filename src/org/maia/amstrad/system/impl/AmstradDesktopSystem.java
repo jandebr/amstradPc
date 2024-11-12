@@ -60,13 +60,15 @@ public class AmstradDesktopSystem extends AmstradSystem {
 	private AmstradSystemScreen createNativeScreen() {
 		AmstradSystemNativeScreen screen = new AmstradSystemNativeScreen(this);
 		screen.setPopupMenu(createPopupMenu());
+		screen.setShowControlKeys(false);
 		return screen;
 	}
 
 	private AmstradSystemScreen createUnknownScreen() {
 		AmstradSystemUnknownScreen screen = new AmstradSystemUnknownScreen(this);
 		screen.setPopupMenu(createPopupMenu());
-		screen.setAutohideControlKeys(false);
+		screen.setShowPause(false);
+		screen.setShowControlKeys(false);
 		return screen;
 	}
 
