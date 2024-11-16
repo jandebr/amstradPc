@@ -1,106 +1,27 @@
 package org.maia.amstrad.pc.action;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
-import org.maia.amstrad.pc.monitor.AmstradMonitor;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.amstrad.program.browser.AmstradProgramBrowserListener;
 
-public class ProgramBrowserAction extends AmstradPcAction implements AmstradProgramBrowserListener {
+public class ProgramBrowserAction extends ToggleDisplaySourceAction implements AmstradProgramBrowserListener {
 
 	private AmstradProgramBrowser programBrowser;
-
-	private String nameToOpen;
-
-	private String nameToClose;
-
-	private boolean browserMode;
-
-	private boolean resumeAfterBrowser;
 
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		this(AmstradFactory.getInstance().createProgramBrowser(amstradPc));
 	}
 
 	public ProgramBrowserAction(AmstradProgramBrowser programBrowser) {
-		super(programBrowser.getAmstradPc(), "");
-		this.nameToOpen = getSystemSettings().isProgramCentric() ? "Program browser" : "Open program browser";
-		this.nameToClose = getSystemSettings().isProgramCentric() ? "Basic" : "Close program browser";
+		super(programBrowser.getAmstradPc(), new ToggleActionKey(KeyEvent.VK_B, CTRL_KEY_MODIFIER));
+		setNameToOpen(getSystemSettings().isProgramCentric() ? "Program browser" : "Open program browser");
+		setNameToClose(getSystemSettings().isProgramCentric() ? "Basic" : "Close program browser");
 		updateProgramBrowser(programBrowser);
-		updateName();
-		getAmstradPc().getMonitor().addMonitorListener(this);
-		getAmstradPc().getKeyboard().addKeyboardListener(this);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		toggleProgramBrowser();
-	}
-
-	@Override
-	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
-		super.amstradKeyboardEventDispatched(event);
-		if (!isTriggeredByMenuKeyBindings()) {
-			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_B && event.isControlDown()
-					&& !event.isShiftDown()) {
-				toggleProgramBrowser();
-			}
-		}
-	}
-
-	public void toggleProgramBrowser() {
-		if (getNameToOpen().equals(getName())) {
-			showProgramBrowser();
-		} else {
-			closeProgramBrowser();
-		}
-	}
-
-	public void showProgramBrowser() {
-		if (isEnabled()) {
-			getAmstradPc().getMonitor().swapDisplaySource(getProgramBrowser().getDisplaySource());
-		}
-	}
-
-	public void closeProgramBrowser() {
-		if (isEnabled() && !getSystemSettings().isProgramCentric()) {
-			getProgramBrowser().getDisplaySource().close();
-		}
-	}
-
-	public void reset(AmstradProgramBrowser programBrowser) {
-		updateProgramBrowser(programBrowser);
-		if (isProgramBrowserShowing()) {
-			boolean origResumeAfterBrowser = resumeAfterBrowser;
-			getAmstradPc().getMonitor().swapDisplaySource(getProgramBrowser().getDisplaySource());
-			resumeAfterBrowser = origResumeAfterBrowser;
-		}
-	}
-
-	@Override
-	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
-		super.amstradDisplaySourceChanged(monitor);
-		updateName();
-		if (isProgramBrowserShowing()) {
-			browserMode = true; // enter browser
-			resumeAfterBrowser = !getAmstradPc().isPaused();
-			if (resumeAfterBrowser) {
-				getAmstradPc().pause(); // pause
-			}
-		} else {
-			if (monitor.isPrimaryDisplaySourceShowing() && browserMode) {
-				// exiting browser
-				if (resumeAfterBrowser && getAmstradPc().isPaused()) {
-					monitor.getAmstradPc().resume(); // auto-resume
-				}
-			}
-			browserMode = false;
-		}
 	}
 
 	@Override
@@ -113,15 +34,20 @@ public class ProgramBrowserAction extends AmstradPcAction implements AmstradProg
 		getInfoAction().updateProgram(program);
 	}
 
-	private void updateName() {
-		if (isProgramBrowserShowing()) {
-			changeName(getNameToClose());
-		} else {
-			changeName(getNameToOpen());
-		}
+	public void showProgramBrowser() {
+		showDisplaySource(false);
 	}
 
-	private synchronized void updateProgramBrowser(AmstradProgramBrowser programBrowser) {
+	public void closeProgramBrowser() {
+		closeDisplaySource(false);
+	}
+
+	public synchronized void reset(AmstradProgramBrowser programBrowser) {
+		updateProgramBrowser(programBrowser);
+		updateDisplaySource();
+	}
+
+	private void updateProgramBrowser(AmstradProgramBrowser programBrowser) {
 		if (getProgramBrowser() != null) {
 			getProgramBrowser().removeListener(this);
 		}
@@ -131,8 +57,25 @@ public class ProgramBrowserAction extends AmstradPcAction implements AmstradProg
 		}
 	}
 
+	@Override
+	protected boolean canCloseDisplaySource(boolean invokedByKeyEvent) {
+		if (invokedByKeyEvent && getSystemSettings().isProgramCentric())
+			return false;
+		return super.canCloseDisplaySource(invokedByKeyEvent);
+	}
+
+	@Override
+	protected boolean isDisplaySourceShowing() {
+		return isProgramBrowserShowing();
+	}
+
 	public boolean isProgramBrowserShowing() {
 		return getAmstradContext().isProgramBrowserShowing(getAmstradPc());
+	}
+
+	@Override
+	protected AmstradAlternativeDisplaySource getDisplaySource() {
+		return getProgramBrowser().getDisplaySource();
 	}
 
 	public AmstradProgramBrowser getProgramBrowser() {
@@ -145,24 +88,6 @@ public class ProgramBrowserAction extends AmstradPcAction implements AmstradProg
 
 	private ProgramInfoAction getInfoAction() {
 		return getAmstradPc().getActions().getProgramInfoAction();
-	}
-
-	public String getNameToOpen() {
-		return nameToOpen;
-	}
-
-	public void setNameToOpen(String nameToOpen) {
-		this.nameToOpen = nameToOpen;
-		updateName();
-	}
-
-	public String getNameToClose() {
-		return nameToClose;
-	}
-
-	public void setNameToClose(String nameToClose) {
-		this.nameToClose = nameToClose;
-		updateName();
 	}
 
 }

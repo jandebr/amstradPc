@@ -29,6 +29,8 @@ public abstract class AmstradSystem {
 
 	private AmstradSystemScreen currentScreen;
 
+	private boolean autoResumeOnReturnToNativeScreen;
+
 	protected AmstradSystem() {
 		this.systemLogs = createSystemLogs();
 		this.amstradPc = createAmstradPc();
@@ -79,6 +81,7 @@ public abstract class AmstradSystem {
 	protected void notifyScreenChange(AmstradSystemScreen previousScreen, AmstradSystemScreen currentScreen) {
 		updateScreenMonitorVisibility(currentScreen);
 		updateScreenPopupMenu(previousScreen, currentScreen);
+		handleAutoPauseResume(previousScreen, currentScreen);
 		// Subclasses may extend this method
 	}
 
@@ -99,6 +102,23 @@ public abstract class AmstradSystem {
 			AmstradPopupMenu popupMenu = currentScreen.getPopupMenu();
 			if (popupMenu != null) {
 				popupMenu.install();
+			}
+		}
+	}
+
+	private void handleAutoPauseResume(AmstradSystemScreen previousScreen, AmstradSystemScreen currentScreen) {
+		if (currentScreen.isNativeScreen()) {
+			if (autoResumeOnReturnToNativeScreen && getAmstradPc().isPaused()) {
+				System.out.println("Auto resume");
+				getAmstradPc().resume();
+			}
+			autoResumeOnReturnToNativeScreen = false;
+		} else if (!autoResumeOnReturnToNativeScreen) {
+			AmstradAlternativeDisplaySource ds = getAmstradPc().getMonitor().getCurrentAlternativeDisplaySource();
+			autoResumeOnReturnToNativeScreen = ds != null && ds.isAutoPauseResume() && !getAmstradPc().isPaused();
+			if (autoResumeOnReturnToNativeScreen) {
+				System.out.println("Auto pause");
+				getAmstradPc().pause();
 			}
 		}
 	}

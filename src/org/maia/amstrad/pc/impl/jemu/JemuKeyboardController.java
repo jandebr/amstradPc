@@ -43,6 +43,7 @@ public abstract class JemuKeyboardController extends AmstradKeyboardAdapter
 		}
 	}
 
+	@Override
 	public synchronized final void resetKeyModifiers() {
 		lastKeyModifiers = 0;
 		doResetKeyModifiers();

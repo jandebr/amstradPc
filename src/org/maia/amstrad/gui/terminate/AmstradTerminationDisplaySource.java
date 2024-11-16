@@ -45,6 +45,7 @@ public class AmstradTerminationDisplaySource extends AmstradEmulatedDisplaySourc
 	public AmstradTerminationDisplaySource(AmstradPc amstradPc, String message) {
 		super(amstradPc);
 		this.message = message;
+		setAutoPauseResume(true);
 	}
 
 	@Override

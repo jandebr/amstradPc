@@ -36,13 +36,13 @@ public class BasicMemoryDisplayAction extends AmstradPcAction {
 
 	public void showBasicMemory() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
+			getDisplaySource().show();
 		}
 	}
 
 	public void hideBasicMemory() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().resetDisplaySource();
+			getDisplaySource().close();
 		}
 	}
 

@@ -19,6 +19,7 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	public CarouselProgramBrowserDisplaySource(AmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
+		setAutoPauseResume(true);
 	}
 
 	@Override

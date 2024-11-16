@@ -28,7 +28,7 @@ public class AmstradSystemNativeScreen extends AmstradSystemAbstractScreen {
 		if (autohideControlKeysOverride) {
 			return super.isAutohideControlKeys();
 		} else {
-			return !getAmstradSystem().getAmstradPc().getBasicRuntime().isDirectModus();
+			return !getAmstradSystem().getAmstradPc().getBasicRuntime().isDirectModus(); // default behavior
 		}
 	}
 

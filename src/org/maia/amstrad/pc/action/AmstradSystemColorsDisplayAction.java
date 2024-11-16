@@ -36,13 +36,13 @@ public class AmstradSystemColorsDisplayAction extends AmstradPcAction {
 
 	public void showSystemColors() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
+			getDisplaySource().show();
 		}
 	}
 
 	public void hideSystemColors() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().resetDisplaySource();
+			getDisplaySource().close();
 		}
 	}
 

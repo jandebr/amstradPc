@@ -72,6 +72,7 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		this.currentWindow = initialWindow;
 		setTheme(new ClassicProgramBrowserThemeFromSettings());
 		setRestoreMonitorSettingsOnDispose(!isStandaloneInfo()); // as this source may switch to COLOR
+		setAutoPauseResume(true);
 	}
 
 	@Override

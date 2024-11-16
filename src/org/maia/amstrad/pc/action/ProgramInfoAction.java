@@ -79,15 +79,14 @@ public class ProgramInfoAction extends AmstradPcAction {
 	public void showProgramInfo() {
 		if (isEnabled()) {
 			resumeAfterInfoMode = !getAmstradPc().isPaused();
-			getAmstradPc().pause(); // auto-pause
 			getDisplaySource().setBackdropImage(getAmstradPc().getMonitor().makeScreenshot(false));
-			getAmstradPc().getMonitor().swapDisplaySource(getDisplaySource());
+			getDisplaySource().show(); // will auto pause the AmstradPc
 		}
 	}
 
 	public void hideProgramInfo() {
 		if (isEnabled()) {
-			getAmstradPc().getMonitor().resetDisplaySource();
+			getDisplaySource().close();
 		}
 	}
 

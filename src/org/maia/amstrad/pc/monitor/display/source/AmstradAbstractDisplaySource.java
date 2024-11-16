@@ -28,6 +28,8 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 
 	private boolean restoreMonitorSettingsOnDispose;
 
+	private boolean autoPauseResume;
+
 	protected AmstradAbstractDisplaySource(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 		setRestoreMonitorSettingsOnDispose(false);
@@ -62,17 +64,35 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 	}
 
 	/**
+	 * Shows this display source
+	 * <p>
+	 * The default behavior is to swap the AmstradPc monitor to this alternative display source. Consequently, this
+	 * display source will get initialized.
+	 * </p>
+	 * 
+	 * @see AmstradMonitor#swapDisplaySource(AmstradAlternativeDisplaySource)
+	 * @see #init(JComponent, AmstradGraphicsContext)
+	 * @see #close()
+	 */
+	@Override
+	public void show() {
+		getAmstradPc().getMonitor().swapDisplaySource(this); // will invoke this.init()
+	}
+
+	/**
 	 * Closes this display source
 	 * <p>
-	 * The default behavior is to turn back to the primary display source. This display source will then get disposed
-	 * until it is swapped back in.
+	 * The default behavior is to reset the AmstradPc monitor to the primary display source. Consequently, this display
+	 * source will get disposed. A closed display source preserves state and can be shown again.
 	 * </p>
 	 * 
 	 * @see AmstradMonitor#resetDisplaySource()
-	 * @see AmstradMonitor#swapDisplaySource(AmstradAlternativeDisplaySource)
+	 * @see #dispose(JComponent)
+	 * @see #show()
 	 */
+	@Override
 	public void close() {
-		getAmstradPc().getMonitor().resetDisplaySource(); // will invoke dispose()
+		getAmstradPc().getMonitor().resetDisplaySource(); // will invoke this.dispose()
 	}
 
 	public final synchronized void acquireKeyboard() {
@@ -222,6 +242,15 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 
 	public void setRestoreMonitorSettingsOnDispose(boolean restore) {
 		this.restoreMonitorSettingsOnDispose = restore;
+	}
+
+	@Override
+	public boolean isAutoPauseResume() {
+		return autoPauseResume;
+	}
+
+	public void setAutoPauseResume(boolean autoPauseResume) {
+		this.autoPauseResume = autoPauseResume;
 	}
 
 }

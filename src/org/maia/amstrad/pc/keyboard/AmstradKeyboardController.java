@@ -4,4 +4,6 @@ public interface AmstradKeyboardController {
 
 	void sendKeyboardEventsToComputer(boolean sendToComputer);
 
+	void resetKeyModifiers();
+	
 }
