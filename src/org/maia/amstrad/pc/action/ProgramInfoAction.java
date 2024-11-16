@@ -1,37 +1,25 @@
 package org.maia.amstrad.pc.action;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.classic.ClassicProgramInfoDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.program.AmstradProgram;
 
-public class ProgramInfoAction extends AmstradPcAction {
+public class ProgramInfoAction extends ToggleDisplaySourceAction {
 
 	private AmstradProgram program;
 
 	private ClassicProgramInfoDisplaySource displaySource;
 
-	private boolean infoMode;
-
-	private boolean resumeAfterInfoMode;
-
-	private static String NAME_OPEN = "Show program info";
-
-	private static String NAME_CLOSE = "Hide program info";
-
 	public static String KEY_TRIGGER_TEXT = "Ctrl F1";
 
 	public ProgramInfoAction(AmstradPc amstradPc) {
-		super(amstradPc, "");
+		super(amstradPc, "Show program info", "Hide program info",
+				new ToggleActionKey(KeyEvent.VK_F1, CTRL_KEY_MODIFIER));
 		amstradPc.addStateListener(this);
-		amstradPc.getMonitor().addMonitorListener(this);
-		amstradPc.getKeyboard().addKeyboardListener(this);
-		updateName();
 		clearProgram();
 	}
 
@@ -52,83 +40,48 @@ public class ProgramInfoAction extends AmstradPcAction {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent event) {
-		toggleProgramInfo();
-	}
-
-	@Override
-	public void amstradKeyboardEventDispatched(AmstradKeyboardEvent event) {
-		super.amstradKeyboardEventDispatched(event);
-		if (!isTriggeredByMenuKeyBindings()) {
-			if (event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_F1 && event.isControlDown()) {
-				toggleProgramInfo();
-			}
-		}
-	}
-
-	public void toggleProgramInfo() {
-		if (isEnabled()) {
-			if (NAME_OPEN.equals(getName())) {
-				showProgramInfo();
-			} else {
-				hideProgramInfo();
-			}
-		}
-	}
-
-	public void showProgramInfo() {
-		if (isEnabled()) {
-			resumeAfterInfoMode = !getAmstradPc().isPaused();
-			getDisplaySource().setBackdropImage(getAmstradPc().getMonitor().makeScreenshot(false));
-			getDisplaySource().show(); // will auto pause the AmstradPc
-		}
-	}
-
-	public void hideProgramInfo() {
-		if (isEnabled()) {
-			getDisplaySource().close();
-		}
-	}
-
-	@Override
 	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
 		super.amstradDisplaySourceChanged(monitor);
-		updateName();
-		if (isProgramInfoShowing()) {
-			infoMode = true; // enter info screen
-		} else {
+		if (!isProgramInfoShowing()) {
 			if (monitor.isPrimaryDisplaySourceShowing()) {
-				if (infoMode && resumeAfterInfoMode) {
-					monitor.getAmstradPc().resume(); // auto-resume
-				}
 				setEnabled(getDisplaySource() != null);
 			} else {
 				setEnabled(false);
 			}
-			infoMode = false;
 		}
 	}
 
 	@Override
 	public void amstradPcRebooting(AmstradPc amstradPc) {
 		super.amstradPcRebooting(amstradPc);
-		clearProgram();
 		if (isProgramInfoShowing()) {
-			resumeAfterInfoMode = false;
-			hideProgramInfo();
+			doCloseDisplaySource();
 		}
+		clearProgram();
 	}
 
-	private void updateName() {
-		if (isProgramInfoShowing()) {
-			changeName(NAME_CLOSE);
-		} else {
-			changeName(NAME_OPEN);
-		}
+	@Override
+	protected void doShowDisplaySource() {
+		getDisplaySource().setBackdropImage(getAmstradPc().getMonitor().makeScreenshot(false));
+		super.doShowDisplaySource();
+	}
+
+	@Override
+	protected boolean isDisplaySourceShowing() {
+		return isProgramInfoShowing();
 	}
 
 	public boolean isProgramInfoShowing() {
 		return getAmstradContext().isProgramStandaloneInfoShowing(getAmstradPc());
+	}
+
+	@Override
+	protected ClassicProgramInfoDisplaySource getDisplaySource() {
+		return displaySource;
+	}
+
+	private void setDisplaySource(ClassicProgramInfoDisplaySource displaySource) {
+		this.displaySource = displaySource;
 	}
 
 	public AmstradProgram getProgram() {
@@ -137,14 +90,6 @@ public class ProgramInfoAction extends AmstradPcAction {
 
 	private void setProgram(AmstradProgram program) {
 		this.program = program;
-	}
-
-	private ClassicProgramInfoDisplaySource getDisplaySource() {
-		return displaySource;
-	}
-
-	private void setDisplaySource(ClassicProgramInfoDisplaySource displaySource) {
-		this.displaySource = displaySource;
 	}
 
 }

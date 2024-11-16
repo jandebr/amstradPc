@@ -1,63 +1,20 @@
 package org.maia.amstrad.pc.action;
 
-import java.awt.event.ActionEvent;
-
 import org.maia.amstrad.gui.colors.AmstradSystemColorsDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 
-public class AmstradSystemColorsDisplayAction extends AmstradPcAction {
+public class AmstradSystemColorsDisplayAction extends ToggleDisplaySourceAction {
 
 	private AmstradSystemColorsDisplaySource displaySource;
 
-	private static String NAME_OPEN = "Show Amstrad colors";
-
-	private static String NAME_CLOSE = "Hide Amstrad colors";
-
 	public AmstradSystemColorsDisplayAction(AmstradPc amstradPc) {
-		super(amstradPc, "");
-		updateName();
-		amstradPc.getMonitor().addMonitorListener(this);
+		super(amstradPc, "Show Amstrad colors", "Hide Amstrad colors");
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent event) {
-		toggleSystemColors();
-	}
-
-	public void toggleSystemColors() {
-		if (NAME_OPEN.equals(getName())) {
-			showSystemColors();
-		} else {
-			hideSystemColors();
-		}
-	}
-
-	public void showSystemColors() {
-		if (isEnabled()) {
-			getDisplaySource().show();
-		}
-	}
-
-	public void hideSystemColors() {
-		if (isEnabled()) {
-			getDisplaySource().close();
-		}
-	}
-
-	@Override
-	public void amstradDisplaySourceChanged(AmstradMonitor monitor) {
-		super.amstradDisplaySourceChanged(monitor);
-		updateName();
-	}
-
-	private void updateName() {
-		if (isSystemColorsShowing()) {
-			changeName(NAME_CLOSE);
-		} else {
-			changeName(NAME_OPEN);
-		}
+	protected boolean isDisplaySourceShowing() {
+		return isSystemColorsShowing();
 	}
 
 	public boolean isSystemColorsShowing() {
@@ -66,7 +23,8 @@ public class AmstradSystemColorsDisplayAction extends AmstradPcAction {
 		return altDisplaySource != null && altDisplaySource instanceof AmstradSystemColorsDisplaySource;
 	}
 
-	private AmstradSystemColorsDisplaySource getDisplaySource() {
+	@Override
+	protected AmstradSystemColorsDisplaySource getDisplaySource() {
 		if (displaySource == null) {
 			displaySource = new AmstradSystemColorsDisplaySource(getAmstradPc());
 		}

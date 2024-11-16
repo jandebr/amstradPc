@@ -3,8 +3,8 @@ package org.maia.amstrad.pc.action;
 import java.awt.event.KeyEvent;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.amstrad.program.browser.AmstradProgramBrowserListener;
@@ -74,7 +74,7 @@ public class ProgramBrowserAction extends ToggleDisplaySourceAction implements A
 	}
 
 	@Override
-	protected AmstradAlternativeDisplaySource getDisplaySource() {
+	protected ProgramBrowserDisplaySource getDisplaySource() {
 		return getProgramBrowser().getDisplaySource();
 	}
 

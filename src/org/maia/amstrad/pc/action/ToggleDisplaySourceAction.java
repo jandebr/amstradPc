@@ -139,6 +139,8 @@ public abstract class ToggleDisplaySourceAction extends AmstradPcAction {
 	private boolean canToggleDisplaySource(boolean invokedByKeyEvent) {
 		if (!isEnabled())
 			return false;
+		if (getDisplaySource() == null)
+			return false;
 		if (invokedByKeyEvent && suppressToggleUntilKeyModifierRelease)
 			return false;
 		return true;
