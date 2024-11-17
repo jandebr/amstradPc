@@ -33,7 +33,6 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 
 	protected AmstradAbstractDisplaySource(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
-		setRestoreMonitorSettingsOnDispose(false);
 	}
 
 	@Override

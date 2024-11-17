@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import javax.swing.JComponent;
+
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAbstractDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
@@ -19,7 +22,14 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	public CarouselProgramBrowserDisplaySource(AmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
+		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 		setAutoPauseResume(true);
+	}
+
+	@Override
+	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
+		super.init(displayComponent, graphicsContext);
+		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 	}
 
 	@Override

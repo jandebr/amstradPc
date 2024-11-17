@@ -18,6 +18,7 @@ import org.maia.amstrad.system.AmstradSystemScreen;
 import org.maia.amstrad.system.AmstradSystemScreenSet;
 import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.amstrad.system.impl.screen.AmstradSystemNativeScreen;
+import org.maia.amstrad.system.impl.screen.AmstradSystemProgramBrowserScreen;
 import org.maia.amstrad.system.impl.screen.AmstradSystemScreenSetImpl;
 import org.maia.amstrad.system.impl.screen.AmstradSystemUnknownScreen;
 
@@ -53,12 +54,20 @@ public class AmstradDesktopSystem extends AmstradSystem {
 	protected AmstradSystemScreenSet createScreenSet() {
 		AmstradSystemScreenSetImpl screenSet = new AmstradSystemScreenSetImpl(this);
 		screenSet.setNativeScreen(createNativeScreen());
+		screenSet.addCustomScreen(createProgramBrowserScreen());
 		screenSet.setUnknownScreen(createUnknownScreen());
 		return screenSet;
 	}
 
 	private AmstradSystemScreen createNativeScreen() {
 		AmstradSystemNativeScreen screen = new AmstradSystemNativeScreen(this);
+		screen.setPopupMenu(createPopupMenu());
+		screen.setShowControlKeys(false);
+		return screen;
+	}
+
+	private AmstradSystemScreen createProgramBrowserScreen() {
+		AmstradSystemProgramBrowserScreen screen = new AmstradSystemProgramBrowserScreen(this);
 		screen.setPopupMenu(createPopupMenu());
 		screen.setShowControlKeys(false);
 		return screen;

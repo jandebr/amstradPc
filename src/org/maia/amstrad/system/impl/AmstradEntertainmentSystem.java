@@ -13,14 +13,13 @@ import org.maia.amstrad.pc.menu.maker.AmstradMenuEmulatedLookAndFeel;
 import org.maia.amstrad.pc.menu.maker.AmstradPopupMenuMaker;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
-import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemScreen;
 import org.maia.amstrad.system.AmstradSystemScreenSet;
 import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.amstrad.system.AmstradSystemTermination;
-import org.maia.amstrad.system.impl.screen.AmstradSystemCustomScreen;
 import org.maia.amstrad.system.impl.screen.AmstradSystemNativeScreen;
+import org.maia.amstrad.system.impl.screen.AmstradSystemProgramBrowserScreen;
 import org.maia.amstrad.system.impl.screen.AmstradSystemScreenSetImpl;
 import org.maia.amstrad.system.impl.terminate.AmstradSystemAnimatedTermination;
 
@@ -29,8 +28,6 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 	public static final String NAME = "ENTERTAINMENT";
 
 	public static final AmstradSystemSettings SETTINGS = new EntertainmentSystemSettings();
-
-	private static final String PROGRAM_BROWSER_SCREEN_ID = "PROGRAM_BROWSER";
 
 	public AmstradEntertainmentSystem() {
 	}
@@ -77,14 +74,10 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 	}
 
 	private AmstradSystemScreen createProgramBrowserScreen() {
-		AmstradSystemCustomScreen screen = new AmstradSystemCustomScreen(PROGRAM_BROWSER_SCREEN_ID, this,
-				AmstradAlternativeDisplaySourceType.PROGRAM_BROWSER);
+		AmstradSystemProgramBrowserScreen screen = new AmstradSystemProgramBrowserScreen(this);
 		screen.setPopupMenu(new ProgramBrowserPopupMenuMaker().createPopupMenu());
-		screen.setShowMonitor(getProgramBrowser().isShowMonitor());
 		screen.setShowPause(false);
 		screen.setShowTurbo(false);
-		screen.setShowControlKeys(getProgramBrowser().isShowControlKeys());
-		screen.setAutohideControlKeys(false);
 		return screen;
 	}
 
