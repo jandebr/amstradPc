@@ -3,9 +3,13 @@ package org.maia.amstrad.gui.browser.carousel;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
 
+import org.maia.amstrad.AmstradContext;
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
@@ -13,6 +17,7 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAbstractDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.system.AmstradSystemSettings;
 
 public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplaySource
 		implements ProgramBrowserDisplaySource {
@@ -50,6 +55,17 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	}
 
 	@Override
+	protected void keyboardKeyPressed(KeyEvent e) {
+		super.keyboardKeyPressed(e);
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_ESCAPE) {
+			if (!getSystemSettings().isProgramCentric()) {
+				close();
+			}
+		}
+	}
+
+	@Override
 	public AmstradProgram getCurrentProgram() {
 		// TODO
 		return null;
@@ -63,6 +79,18 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	@Override
 	public boolean isStretchToFullscreen() {
 		return true;
+	}
+
+	private AmstradSettings getUserSettings() {
+		return getAmstradContext().getUserSettings();
+	}
+
+	public AmstradSystemSettings getSystemSettings() {
+		return getAmstradContext().getSystemSettings();
+	}
+
+	private AmstradContext getAmstradContext() {
+		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
 	@Override
