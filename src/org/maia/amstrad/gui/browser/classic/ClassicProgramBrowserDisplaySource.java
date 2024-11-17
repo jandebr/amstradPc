@@ -18,6 +18,7 @@ import org.maia.amstrad.gui.browser.classic.components.ProgramMenuItem;
 import org.maia.amstrad.gui.browser.classic.components.ProgramRunMenuItem;
 import org.maia.amstrad.gui.browser.classic.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.classic.components.StackedFolderItemList;
+import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
@@ -386,6 +387,11 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		if (isFocusOnHomeButton(canvas)) {
 			home();
 		}
+	}
+
+	@Override
+	public boolean isAutoRepeatAccepted(AmstradJoystickCommand command) {
+		return AmstradJoystickCommand.UP.equals(command) || AmstradJoystickCommand.DOWN.equals(command);
 	}
 
 	@Override

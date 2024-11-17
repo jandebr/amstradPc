@@ -33,8 +33,12 @@ public class AmstradJoystickEvent {
 		setConsumed(true);
 	}
 
+	public boolean isFiredByAutoRepeat() {
+		return EventType.FIRED_AUTO_REPEAT.equals(getEventType());
+	}
+
 	public boolean isFired() {
-		return EventType.FIRED.equals(getEventType()) || EventType.FIRED_AUTO_REPEAT.equals(getEventType());
+		return EventType.FIRED.equals(getEventType()) || isFiredByAutoRepeat();
 	}
 
 	public boolean isReleased() {

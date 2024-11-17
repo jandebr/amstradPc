@@ -10,6 +10,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
@@ -103,6 +104,11 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 	public final synchronized void releaseKeyboard() {
 		setCatchKeyboardEvents(false);
 		getKeyboardController().sendKeyboardEventsToComputer(true);
+	}
+
+	@Override
+	public boolean isAutoRepeatAccepted(AmstradJoystickCommand command) {
+		return true; // Subclasses may restrict autorepeat from joystick
 	}
 
 	@Override

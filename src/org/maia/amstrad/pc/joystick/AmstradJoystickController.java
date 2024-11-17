@@ -2,7 +2,6 @@ package org.maia.amstrad.pc.joystick;
 
 import java.awt.event.KeyEvent;
 
-import org.maia.amstrad.pc.joystick.AmstradJoystickEvent.EventType;
 import org.maia.amstrad.pc.joystick.keys.AmstradJoystickGamingAdapter;
 import org.maia.amstrad.pc.joystick.keys.AmstradJoystickKeyEvent;
 import org.maia.amstrad.pc.joystick.keys.AmstradJoystickMenuAdapter;
@@ -166,7 +165,7 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 	protected void handleEventForAlternativeDisplaySource(AmstradJoystickEvent event) {
 		AmstradAlternativeDisplaySource displaySource = getMonitor().getCurrentAlternativeDisplaySource();
 		if (displaySource != null) {
-			if (isAutoRepeatSafeInMenus(event)) {
+			if (!event.isFiredByAutoRepeat() || displaySource.isAutoRepeatAccepted(event.getCommand())) {
 				AmstradJoystickKeyEvent keyEvent = getMenuAdapter().translateToKeyEvent(event);
 				if (keyEvent != null) {
 					dispatchKeyEvent(keyEvent, displaySource);
@@ -205,7 +204,7 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 	}
 
 	protected boolean isAutoRepeatSafeInMenus(AmstradJoystickEvent event) {
-		if (EventType.FIRED_AUTO_REPEAT.equals(event.getEventType())) {
+		if (event.isFiredByAutoRepeat()) {
 			AmstradJoystickCommand command = event.getCommand();
 			return AmstradJoystickCommand.UP.equals(command) || AmstradJoystickCommand.DOWN.equals(command);
 		} else {
