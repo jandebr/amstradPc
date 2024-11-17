@@ -5,9 +5,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
-import org.maia.amstrad.AmstradContext;
-import org.maia.amstrad.AmstradFactory;
-import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.classic.components.FolderItemList;
 import org.maia.amstrad.gui.browser.classic.components.ProgramFileReferencesSheet;
@@ -633,6 +630,11 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	}
 
 	@Override
+	public AmstradSystemSettings getSystemSettings() {
+		return super.getSystemSettings();
+	}
+
+	@Override
 	public AmstradProgramBrowser getProgramBrowser() {
 		return programBrowser;
 	}
@@ -687,18 +689,6 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	public boolean isStandaloneInfo() {
 		return Window.PROGRAM_INFO_STANDALONE.equals(getCurrentWindow());
-	}
-
-	private AmstradSettings getUserSettings() {
-		return getAmstradContext().getUserSettings();
-	}
-
-	public AmstradSystemSettings getSystemSettings() {
-		return getAmstradContext().getSystemSettings();
-	}
-
-	private AmstradContext getAmstradContext() {
-		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
 	public ClassicProgramBrowserTheme getTheme() {

@@ -9,12 +9,16 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JComponent;
 
+import org.maia.amstrad.AmstradContext;
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.amstrad.system.AmstradSystemSettings;
 
 public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 		implements AmstradAlternativeDisplaySource, MouseListener, MouseMotionListener {
@@ -210,6 +214,18 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 
 	private AmstradMonitorCursorController getCursorController() {
 		return getAmstradPc().getMonitor().getCursorController();
+	}
+
+	protected AmstradSettings getUserSettings() {
+		return getAmstradContext().getUserSettings();
+	}
+
+	protected AmstradSystemSettings getSystemSettings() {
+		return getAmstradContext().getSystemSettings();
+	}
+
+	protected AmstradContext getAmstradContext() {
+		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
 	public AmstradPc getAmstradPc() {
