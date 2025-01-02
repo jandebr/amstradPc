@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -12,9 +11,6 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.lang.reflect.InvocationTargetException;
-
-import javax.swing.SwingUtilities;
 
 import org.maia.util.SystemUtils;
 
@@ -331,20 +327,10 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 		}
 
 		private void renderFrame() {
-			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-
-					@Override
-					public void run() {
-						if (hasSecondaryDisplaySource()) {
-							renderSecondaryDisplaySource();
-						} else {
-							renderPrimaryDisplaySource();
-						}
-						Toolkit.getDefaultToolkit().sync();
-					}
-				});
-			} catch (InvocationTargetException | InterruptedException e) {
+			if (hasSecondaryDisplaySource()) {
+				renderSecondaryDisplaySource();
+			} else {
+				renderPrimaryDisplaySource();
 			}
 		}
 

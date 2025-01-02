@@ -7,6 +7,10 @@ import java.awt.Graphics2D;
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.SwingUtilities;
 
 /**
  * This abstract class is responsible for rendering a <code>Display</code> onto a <code>Graphics</code> context
@@ -58,7 +62,17 @@ public abstract class DisplayRenderDelegate {
 
 	protected void repaintDisplayImmediately() {
 		if (isDisplayShowing()) {
-			getDisplay().paintImmediately(getImageRect());
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+
+					@Override
+					public void run() {
+						getDisplay().paintImmediately(getImageRect());
+						Toolkit.getDefaultToolkit().sync();
+					}
+				});
+			} catch (InvocationTargetException | InterruptedException e) {
+			}
 		}
 	}
 
