@@ -209,6 +209,7 @@ public class Display extends JComponent {
 
 	public Display(DisplayRenderDelegate renderDelegate) {
 		this.renderDelegate = renderDelegate;
+		setOpaque(true);
 		setDoubleBuffered(renderDelegate.isDoubleBufferingEnabled());
 		setupDisplayOverlays();
 		displayPaintListeners = new Vector<DisplayPaintListener>();

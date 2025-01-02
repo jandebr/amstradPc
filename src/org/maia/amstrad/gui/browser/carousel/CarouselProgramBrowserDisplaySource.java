@@ -20,6 +20,8 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 
 	private AmstradProgramBrowser programBrowser;
 
+	private boolean firstRenderAfterInit;
+
 	public CarouselProgramBrowserDisplaySource(AmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
@@ -31,6 +33,7 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		super.init(displayComponent, graphicsContext);
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
+		setFirstRenderAfterInit(true);
 	}
 
 	@Override
@@ -40,13 +43,18 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 		Graphics2D g = (Graphics2D) display.create(displayBounds.x, displayBounds.y, width, height);
 		renderContent(g, width, height);
 		g.dispose();
+		setFirstRenderAfterInit(false);
 	}
 
 	protected void renderContent(Graphics2D g, int width, int height) {
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, width, height);
+		if (isFirstRenderAfterInit()) {
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, width, height);
+		} else {
+			// TODO overlay prevent burnin
+		}
 		g.setColor(Color.WHITE);
-		g.drawString("Under construction", 100, 100);
+		g.drawString("Under construction", 100, 200);
 		// TODO
 	}
 
@@ -80,6 +88,14 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	@Override
 	public AmstradProgramBrowser getProgramBrowser() {
 		return programBrowser;
+	}
+
+	protected boolean isFirstRenderAfterInit() {
+		return firstRenderAfterInit;
+	}
+
+	private void setFirstRenderAfterInit(boolean firstRender) {
+		this.firstRenderAfterInit = firstRender;
 	}
 
 }
