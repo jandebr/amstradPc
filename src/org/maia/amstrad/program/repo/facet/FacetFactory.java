@@ -10,7 +10,7 @@ import javax.swing.Icon;
 
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.swing.util.SwingUtils;
+import org.maia.swing.util.ImageUtils;
 
 public class FacetFactory {
 
@@ -80,7 +80,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return SwingUtils.getIcon(ICON_PATH + "author24.png");
+			return ImageUtils.getIcon(ICON_PATH + "author24.png");
 		}
 
 		@Override
@@ -102,7 +102,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return SwingUtils.getIcon(ICON_PATH + "year24.png");
+			return ImageUtils.getIcon(ICON_PATH + "year24.png");
 		}
 
 		@Override
@@ -125,7 +125,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return SwingUtils.getIcon(ICON_PATH + "tape24.png");
+			return ImageUtils.getIcon(ICON_PATH + "tape24.png");
 		}
 
 		@Override
@@ -147,7 +147,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return SwingUtils.getIcon(ICON_PATH + "blocks24.png");
+			return ImageUtils.getIcon(ICON_PATH + "blocks24.png");
 		}
 
 		@Override
@@ -170,7 +170,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return SwingUtils.getIcon(ICON_PATH + "monitor24.png");
+			return ImageUtils.getIcon(ICON_PATH + "monitor24.png");
 		}
 
 		@Override

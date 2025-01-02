@@ -40,12 +40,12 @@ public class ClassicProgramBrowserThemeFromSettings implements ClassicProgramBro
 
 	@Override
 	public int getMainWindowBorderInk() {
-		return getInkSetting(SETTING_MAIN_WINDOW_BORDER_INK, 0);
+		return getInkSetting(SETTING_MAIN_WINDOW_BORDER_INK, 1);
 	}
 
 	@Override
 	public int getMainWindowBackgroundInk() {
-		return getInkSetting(SETTING_MAIN_WINDOW_BACKGROUND_INK, 0);
+		return getInkSetting(SETTING_MAIN_WINDOW_BACKGROUND_INK, 1);
 	}
 
 	@Override
