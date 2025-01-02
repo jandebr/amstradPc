@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -11,6 +12,11 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.SwingUtilities;
+
+import org.maia.util.SystemUtils;
 
 import jemu.settings.Settings;
 
@@ -315,31 +321,36 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 		public void run() {
 			log("Display render thread started");
 			long frameTimeMs = 1000L / getMaximumFps();
+			long frameTimeNanos = frameTimeMs * 1000000L;
 			while (!isStopped()) {
-				long t0 = System.currentTimeMillis();
+				long t0 = System.nanoTime();
 				renderFrame();
-				long sleepTimeMs = frameTimeMs - (System.currentTimeMillis() - t0);
-				if (sleepTimeMs > 0L) {
-					try {
-						Thread.sleep(sleepTimeMs);
-					} catch (InterruptedException e) {
-					}
-				}
+				SystemUtils.sleepNanos(frameTimeNanos - (System.nanoTime() - t0));
 			}
 			log("Display render thread stopped");
 		}
 
 		private void renderFrame() {
-			if (hasSecondaryDisplaySource()) {
-				renderSecondaryDisplaySource();
-			} else {
-				renderPrimaryDisplaySource();
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+
+					@Override
+					public void run() {
+						if (hasSecondaryDisplaySource()) {
+							renderSecondaryDisplaySource();
+						} else {
+							renderPrimaryDisplaySource();
+						}
+						Toolkit.getDefaultToolkit().sync();
+					}
+				});
+			} catch (InvocationTargetException | InterruptedException e) {
 			}
 		}
 
 		private void renderSecondaryDisplaySource() {
 			setImageToPaint(null);
-			repaintDisplay(true);
+			repaintDisplayImmediately();
 		}
 
 		private void renderPrimaryDisplaySource() {
@@ -370,7 +381,7 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 					canvasState.update(paintState, fullUpdate);
 					setImageToPaint(canvasState.getCanvas());
 				}
-				repaintDisplay(true);
+				repaintDisplayImmediately();
 			}
 		}
 

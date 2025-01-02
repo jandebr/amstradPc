@@ -389,11 +389,12 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 		public void run() {
 			System.out.println("Autonomous display render thread started");
 			long frameTimeMs = 1000L / getMaximumFps();
+			long frameTimeNanos = frameTimeMs * 1000000L;
 			final Display display = getJemuDisplay();
 			while (!isStopped()) {
-				long t0 = System.currentTimeMillis();
+				long t0 = System.nanoTime();
 				display.updateImage(true);
-				SystemUtils.sleep(frameTimeMs - (System.currentTimeMillis() - t0));
+				SystemUtils.sleepNanos(frameTimeNanos - (System.nanoTime() - t0));
 			}
 			System.out.println("Autonomous display render thread stopped");
 		}

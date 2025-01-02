@@ -56,13 +56,20 @@ public abstract class DisplayRenderDelegate {
 
 	public abstract void paintDisplayOffscreen(Graphics g, boolean monitorEffect);
 
+	protected void repaintDisplayImmediately() {
+		if (isDisplayShowing()) {
+			getDisplay().paintImmediately(getImageRect());
+		}
+	}
+
 	protected void repaintDisplay(boolean wait) {
 		if (isDisplayShowing()) {
 			setPainted(false);
 			Rectangle imageRect = getImageRect();
 			getDisplay().repaint(0, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
-			if (wait)
+			if (wait) {
 				waitPainted();
+			}
 		}
 	}
 
