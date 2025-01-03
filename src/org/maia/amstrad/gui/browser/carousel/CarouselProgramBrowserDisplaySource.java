@@ -2,7 +2,6 @@ package org.maia.amstrad.gui.browser.carousel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
@@ -17,6 +16,7 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourc
 import org.maia.amstrad.pc.monitor.display.source.AmstradAwtDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.swing.FillMode;
 
 public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource {
@@ -49,9 +49,10 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 	}
 
 	@Override
-	protected void addElements() {
-		addElement(createLabel("Full", new Color(100, 100, 120)), BorderLayout.WEST);
-		addElementPaintingIncrementally(createLabel("Incremental", new Color(0, 0, 255, 1)), BorderLayout.CENTER);
+	protected void buildUI() {
+		add(createLabel("Full", new Color(100, 100, 120)), BorderLayout.WEST);
+		add(forIncrementalPainting(createLabel("Incremental", new Color(0, 0, 255, 1)), FillMode.FIT),
+				BorderLayout.CENTER);
 	}
 
 	private JLabel createLabel(String text, Color bg) {

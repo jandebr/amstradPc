@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.monitor.display.source;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
@@ -10,6 +11,8 @@ import javax.swing.JComponent;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.swing.FillMode;
+import org.maia.swing.HorizontalAlignment;
+import org.maia.swing.VerticalAlignment;
 import org.maia.swing.util.BackBufferedComponent;
 
 public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySource {
@@ -23,17 +26,17 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 	@Override
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		super.init(displayComponent, graphicsContext);
-		getDisplayComponent().setLayout(createLayoutManager());
-		addElements();
-		getDisplayComponent().validate();
+		setLayout(createLayoutManager());
+		buildUI();
+		validate();
 	}
 
 	@Override
 	public void dispose(JComponent displayComponent) {
 		super.dispose(displayComponent);
-		getDisplayComponent().removeAll();
-		getDisplayComponent().setLayout(null);
-		getDisplayComponent().validate();
+		removeAll();
+		setLayout(null);
+		validate();
 	}
 
 	@Override
@@ -48,7 +51,7 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 
 	protected void renderContent(Graphics2D g, int width, int height) {
 		paintBackground(g, width, height);
-		paintElements(g);
+		paintAddedComponents(g);
 	}
 
 	private void paintBackground(Graphics2D g, int width, int height) {
@@ -56,47 +59,74 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		g.fillRect(0, 0, width, height);
 	}
 
-	private void paintElements(Graphics2D g) {
+	private void paintAddedComponents(Graphics2D g) {
 		getDisplayComponent().paintComponents(g);
 	}
 
 	protected abstract LayoutManager createLayoutManager();
 
-	protected abstract void addElements();
+	protected abstract void buildUI();
 
-	protected DisplayElement addElement(JComponent component) {
-		return addElement(component, -1);
+	protected void validate() {
+		getDisplayComponent().validate();
 	}
 
-	protected DisplayElement addElement(JComponent component, int index) {
-		return addElement(component, null, index);
+	protected void add(Component component) {
+		add(component, -1);
 	}
 
-	protected DisplayElement addElement(JComponent component, Object constraints) {
-		return addElement(component, constraints, -1);
+	protected void add(Component component, int index) {
+		add(component, null, index);
 	}
 
-	protected DisplayElement addElement(JComponent component, Object constraints, int index) {
+	protected void add(Component component, Object constraints) {
+		add(component, constraints, -1);
+	}
+
+	protected void add(Component component, Object constraints, int index) {
 		getDisplayComponent().add(component, constraints, index);
-		return new DisplayElementImpl(component);
 	}
 
-	protected DisplayElement addElementPaintingIncrementally(JComponent component) {
-		return addElementPaintingIncrementally(component, -1);
+	protected void remove(Component component) {
+		getDisplayComponent().remove(component);
 	}
 
-	protected DisplayElement addElementPaintingIncrementally(JComponent component, int index) {
-		return addElementPaintingIncrementally(component, null, index);
+	protected void remove(int index) {
+		getDisplayComponent().remove(index);
 	}
 
-	protected DisplayElement addElementPaintingIncrementally(JComponent component, Object constraints) {
-		return addElementPaintingIncrementally(component, constraints, -1);
+	protected void removeAll() {
+		getDisplayComponent().removeAll();
 	}
 
-	protected DisplayElement addElementPaintingIncrementally(JComponent component, Object constraints, int index) {
-		BackBufferedComponent bbc = new BackBufferedComponent(component);
-		bbc.setFillMode(FillMode.FIT); // TODO
-		return addElement(bbc, constraints, index);
+	protected JComponent forIncrementalPainting(JComponent component) {
+		return new BackBufferedComponent(component);
+	}
+
+	protected JComponent forIncrementalPainting(JComponent component, FillMode fillMode) {
+		BackBufferedComponent bbc = (BackBufferedComponent) forIncrementalPainting(component);
+		bbc.setFillMode(fillMode);
+		return bbc;
+	}
+
+	protected JComponent forIncrementalPainting(JComponent component, HorizontalAlignment horizontalAlignment,
+			VerticalAlignment verticalAlignment) {
+		BackBufferedComponent bbc = (BackBufferedComponent) forIncrementalPainting(component);
+		bbc.setHorizontalAlignment(horizontalAlignment);
+		bbc.setVerticalAlignment(verticalAlignment);
+		return bbc;
+	}
+
+	protected JComponent forIncrementalPainting(JComponent component, FillMode fillMode,
+			HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+		BackBufferedComponent bbc = (BackBufferedComponent) forIncrementalPainting(component, horizontalAlignment,
+				verticalAlignment);
+		bbc.setFillMode(fillMode);
+		return bbc;
+	}
+
+	private void setLayout(LayoutManager mgr) {
+		getDisplayComponent().setLayout(mgr);
 	}
 
 	public Color getBackground() {
@@ -105,31 +135,6 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 
 	public void setBackground(Color background) {
 		this.background = background;
-	}
-
-	protected static interface DisplayElement {
-
-		Rectangle getBounds();
-
-	}
-
-	private static class DisplayElementImpl implements DisplayElement {
-
-		private JComponent component;
-
-		public DisplayElementImpl(JComponent component) {
-			this.component = component;
-		}
-
-		@Override
-		public Rectangle getBounds() {
-			return getComponent().getBounds();
-		}
-
-		public JComponent getComponent() {
-			return component;
-		}
-
 	}
 
 }
