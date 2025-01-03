@@ -99,28 +99,28 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		getDisplayComponent().removeAll();
 	}
 
-	protected JComponent forIncrementalPainting(JComponent component) {
+	protected JComponent suitableForIncrementalPainting(JComponent component) {
 		return new BackBufferedComponent(component);
 	}
 
-	protected JComponent forIncrementalPainting(JComponent component, FillMode fillMode) {
-		BackBufferedComponent bbc = (BackBufferedComponent) forIncrementalPainting(component);
+	protected JComponent suitableForIncrementalPainting(JComponent component, FillMode fillMode) {
+		BackBufferedComponent bbc = (BackBufferedComponent) suitableForIncrementalPainting(component);
 		bbc.setFillMode(fillMode);
 		return bbc;
 	}
 
-	protected JComponent forIncrementalPainting(JComponent component, HorizontalAlignment horizontalAlignment,
+	protected JComponent suitableForIncrementalPainting(JComponent component, HorizontalAlignment horizontalAlignment,
 			VerticalAlignment verticalAlignment) {
-		BackBufferedComponent bbc = (BackBufferedComponent) forIncrementalPainting(component);
+		BackBufferedComponent bbc = (BackBufferedComponent) suitableForIncrementalPainting(component);
 		bbc.setHorizontalAlignment(horizontalAlignment);
 		bbc.setVerticalAlignment(verticalAlignment);
 		return bbc;
 	}
 
-	protected JComponent forIncrementalPainting(JComponent component, FillMode fillMode,
+	protected JComponent suitableForIncrementalPainting(JComponent component, FillMode fillMode,
 			HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
-		BackBufferedComponent bbc = (BackBufferedComponent) forIncrementalPainting(component, horizontalAlignment,
-				verticalAlignment);
+		BackBufferedComponent bbc = (BackBufferedComponent) suitableForIncrementalPainting(component,
+				horizontalAlignment, verticalAlignment);
 		bbc.setFillMode(fillMode);
 		return bbc;
 	}

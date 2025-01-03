@@ -51,7 +51,7 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 	@Override
 	protected void buildUI() {
 		add(createLabel("Full", new Color(100, 100, 120)), BorderLayout.WEST);
-		add(forIncrementalPainting(createLabel("Incremental", new Color(0, 0, 255, 1)), FillMode.FIT),
+		add(suitableForIncrementalPainting(createLabel("Incremental", new Color(0, 0, 255, 1)), FillMode.FIT),
 				BorderLayout.CENTER);
 	}
 
