@@ -1,26 +1,27 @@
 package org.maia.amstrad.gui.browser.carousel;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
-import org.maia.amstrad.pc.monitor.display.source.AmstradAbstractDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
+import org.maia.amstrad.pc.monitor.display.source.AmstradAwtDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 
-public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplaySource
+public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource {
 
 	private AmstradProgramBrowser programBrowser;
-
-	private boolean firstRenderAfterInit;
 
 	public CarouselProgramBrowserDisplaySource(AmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
@@ -33,29 +34,34 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		super.init(displayComponent, graphicsContext);
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
-		setFirstRenderAfterInit(true);
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D display, Rectangle displayBounds, AmstradGraphicsContext graphicsContext) {
-		int width = displayBounds.width;
-		int height = displayBounds.height;
-		Graphics2D g = (Graphics2D) display.create(displayBounds.x, displayBounds.y, width, height);
-		renderContent(g, width, height);
-		g.dispose();
-		setFirstRenderAfterInit(false);
+	protected void renderContent(Graphics2D g, int width, int height) {
+		super.renderContent(g, width, height);
+		g.setColor(Color.WHITE);
+		g.drawString("Under construction", 100, 100);
 	}
 
-	protected void renderContent(Graphics2D g, int width, int height) {
-		if (isFirstRenderAfterInit()) {
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, width, height);
-		} else {
-			// TODO overlay prevent burnin
-		}
-		g.setColor(Color.WHITE);
-		g.drawString("Under construction", 100, 200);
-		// TODO
+	@Override
+	protected LayoutManager createLayoutManager() {
+		return new BorderLayout();
+	}
+
+	@Override
+	protected void addElements() {
+		addElement(createLabel("Full", new Color(100, 100, 120)), BorderLayout.WEST);
+		addElementPaintingIncrementally(createLabel("Incremental", new Color(0, 0, 255, 1)), BorderLayout.CENTER);
+	}
+
+	private JLabel createLabel(String text, Color bg) {
+		JLabel label = new JLabel(text);
+		label.setOpaque(true);
+		label.setBackground(bg);
+		label.setForeground(Color.YELLOW);
+		label.setFont(label.getFont().deriveFont(40f));
+		label.setSize(label.getPreferredSize());
+		return label;
 	}
 
 	@Override
@@ -88,14 +94,6 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAbstractDisplayS
 	@Override
 	public AmstradProgramBrowser getProgramBrowser() {
 		return programBrowser;
-	}
-
-	protected boolean isFirstRenderAfterInit() {
-		return firstRenderAfterInit;
-	}
-
-	private void setFirstRenderAfterInit(boolean firstRender) {
-		this.firstRenderAfterInit = firstRender;
 	}
 
 }

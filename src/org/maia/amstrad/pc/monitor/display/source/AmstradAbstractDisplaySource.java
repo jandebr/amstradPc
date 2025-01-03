@@ -228,6 +228,10 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 		return AmstradFactory.getInstance().getAmstradContext();
 	}
 
+	protected JComponent getDisplayComponent() {
+		return getAmstradPc().getMonitor().getDisplayComponent();
+	}
+
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}

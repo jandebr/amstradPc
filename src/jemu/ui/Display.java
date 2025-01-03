@@ -426,7 +426,7 @@ public class Display extends JComponent {
 	}
 
 	@Override
-	public void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics g) {
 		if (imageWidth > 0 && imageHeight > 0) {
 			if (showfps >= 1)
 				doTouchFPS();
@@ -454,6 +454,11 @@ public class Display extends JComponent {
 		setPainted(true);
 		notifyDisplayGotPainted();
 		updatePerformanceMonitoring();
+	}
+
+	@Override
+	protected void paintChildren(Graphics g) {
+		// should NOT paint any child components
 	}
 
 	public BufferedImage getImage(boolean monitorEffect) {
