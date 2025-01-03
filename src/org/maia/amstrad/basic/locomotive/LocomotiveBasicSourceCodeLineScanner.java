@@ -182,8 +182,14 @@ public class LocomotiveBasicSourceCodeLineScanner extends BasicSourceCodeLineSca
 
 	private LiteralDataToken scanLiteralDataToken() throws BasicSyntaxException {
 		int p0 = getPosition();
-		while (!atEndOfText() && getCurrentChar() != InstructionSeparatorToken.SEPARATOR)
+		boolean insideQuote = false;
+		while (!atEndOfText()) {
+			if (getCurrentChar() == LiteralQuotedToken.QUOTE)
+				insideQuote = !insideQuote;
+			if (getCurrentChar() == InstructionSeparatorToken.SEPARATOR && !insideQuote)
+				break;
 			advancePosition();
+		}
 		return getSourceTokenFactory().createLiteralData(subText(p0, getPosition()));
 	}
 

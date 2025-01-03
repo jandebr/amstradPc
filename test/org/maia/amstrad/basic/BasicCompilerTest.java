@@ -29,7 +29,7 @@ public class BasicCompilerTest {
 		File dir = new File("resources/test/compiler");
 		PrintWriter out = new PrintWriter(new File(dir, "outcome.txt"));
 		testFilesInDirectory(dir, amstradPc, compiler, out);
-		// testFile(new File(dir, "test-file.bas"), amstradPc, compiler, out);
+		// testFile(new File(dir, "test-data.bas"), amstradPc, compiler, out);
 		out.close();
 		amstradPc.terminate();
 	}
