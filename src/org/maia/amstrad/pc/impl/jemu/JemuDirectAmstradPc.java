@@ -553,18 +553,22 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		@Override
 		protected void applyFullscreen() {
 			Settings.setBoolean(Settings.FULLSCREEN, true);
-			updateDisplaySize();
+			updateDisplaySize(isStretchedToFullscreen());
 			if (hasFrame()) {
 				Dimension screenSize = AmstradPcFrame.getScreenSize();
+				Dimension displaySize = getDisplay().getSize();
 				JemuFrameImpl frame = getFrame();
 				boolean visible = frame.isVisible();
-				setMenuBarWhenWindowed(frame.getInstalledMenuBar()); // remember
-				frame.uninstallMenuBar();
+				setMenuBarWhenWindowed(frame.getInstalledMenuBar()); // remember for later, when windowed
+				frame.uninstallMenuBar(); // issue: may alter the display size (via call to pack)
 				frame.dispose();
 				frame.setUndecorated(true);
 				frame.setLocation(0, 0);
 				frame.setSize(screenSize.width, screenSize.height);
-				frame.addPaddingAroundDisplay();
+				getDisplay().setSize(displaySize); // fix: restore the display size
+				if (!isStretchedToFullscreen()) {
+					frame.addPaddingAroundDisplay();
+				}
 				frame.setVisible(visible); // displayable after dispose()
 			}
 			getDisplay().requestFocus();
@@ -573,7 +577,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		@Override
 		protected void applyWindowed() {
 			Settings.setBoolean(Settings.FULLSCREEN, false);
-			updateDisplaySize();
+			updateDisplaySize(isStretchedToFullscreen());
 			if (hasFrame()) {
 				int frameX = Integer.parseInt(Settings.get(Settings.FRAMEX, "0"));
 				int frameY = Integer.parseInt(Settings.get(Settings.FRAMEY, "0"));
@@ -590,7 +594,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 			getDisplay().requestFocus();
 		}
 
-		protected void updateDisplaySize() {
+		protected void updateDisplaySize(boolean stretchToFullscreen) {
 			boolean fullSizeGateArray = isFullGateArray();
 			Computer computer = getComputer();
 			computer.setLarge(fullSizeGateArray);
@@ -602,8 +606,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 			int height = display.getScaledHeight();
 			if (isFullscreen()) {
 				Dimension screenSize = AmstradPcFrame.getScreenSize();
-				AmstradAlternativeDisplaySource currentDs = getCurrentAlternativeDisplaySource();
-				if (currentDs != null && currentDs.isStretchToFullscreen()) {
+				if (stretchToFullscreen) {
 					width = screenSize.width;
 					height = screenSize.height;
 				} else {
@@ -619,30 +622,29 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		@Override
 		protected void doSwapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
-			AmstradAlternativeDisplaySource currentDs = getCurrentAlternativeDisplaySource();
-			boolean oldStretching = currentDs != null ? currentDs.isStretchToFullscreen() : false;
+			boolean oldStretching = isStretchedToFullscreen();
 			boolean newStretching = displaySource.isStretchToFullscreen();
-			super.doSwapDisplaySource(displaySource);
-			updateStretching(oldStretching, newStretching);
+			if (isFullscreen() && oldStretching && !newStretching) {
+				updateDisplaySize(false);
+				super.doSwapDisplaySource(displaySource);
+				getFrame().addPaddingAroundDisplay();
+			} else if (isFullscreen() && !oldStretching && newStretching) {
+				getFrame().removePaddingAroundDisplay();
+				updateDisplaySize(true);
+				super.doSwapDisplaySource(displaySource);
+			} else {
+				super.doSwapDisplaySource(displaySource);
+			}
 		}
 
 		@Override
 		protected void doResetDisplaySource() {
-			AmstradAlternativeDisplaySource currentDs = getCurrentAlternativeDisplaySource();
-			boolean oldStretching = currentDs != null ? currentDs.isStretchToFullscreen() : false;
-			super.doResetDisplaySource();
-			updateStretching(oldStretching, false);
-		}
-
-		private void updateStretching(boolean oldStretching, boolean newStretching) {
-			if (isFullscreen()) {
-				if (oldStretching && !newStretching) {
-					updateDisplaySize();
-					getFrame().addPaddingAroundDisplay();
-				} else if (!oldStretching && newStretching) {
-					updateDisplaySize();
-					getFrame().removePaddingAroundDisplay();
-				}
+			if (isFullscreen() && isStretchedToFullscreen()) {
+				super.doResetDisplaySource();
+				updateDisplaySize(false);
+				getFrame().addPaddingAroundDisplay();
+			} else {
+				super.doResetDisplaySource();
 			}
 		}
 
@@ -754,6 +756,11 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		private JemuFrameImpl getFrame() {
 			return (JemuFrameImpl) JemuDirectAmstradPc.this.getFrame();
+		}
+
+		protected boolean isStretchedToFullscreen() {
+			AmstradAlternativeDisplaySource currentDs = getCurrentAlternativeDisplaySource();
+			return currentDs != null ? currentDs.isStretchToFullscreen() : false;
 		}
 
 		protected AmstradMenuBar getMenuBarWhenWindowed() {

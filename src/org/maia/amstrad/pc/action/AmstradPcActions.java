@@ -17,6 +17,8 @@ public class AmstradPcActions {
 
 	private ProgramBrowserSetupAction programBrowserSetupAction;
 
+	private ProgramBrowserResetAction programBrowserResetAction;
+
 	private ProgramInfoAction programInfoAction;
 
 	private LoadBasicSourceFileAction loadBasicSourceFileAction;
@@ -117,6 +119,13 @@ public class AmstradPcActions {
 			programBrowserSetupAction = new ProgramBrowserSetupAction(getAmstradPc());
 		}
 		return programBrowserSetupAction;
+	}
+
+	public ProgramBrowserResetAction getProgramBrowserResetAction() {
+		if (programBrowserResetAction == null) {
+			programBrowserResetAction = new ProgramBrowserResetAction(getAmstradPc());
+		}
+		return programBrowserResetAction;
 	}
 
 	public ProgramInfoAction getProgramInfoAction() {

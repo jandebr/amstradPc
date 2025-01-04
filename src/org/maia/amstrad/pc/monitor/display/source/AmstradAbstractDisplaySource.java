@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.monitor.display.source;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -226,6 +227,10 @@ public abstract class AmstradAbstractDisplaySource extends KeyAdapter
 
 	protected AmstradContext getAmstradContext() {
 		return AmstradFactory.getInstance().getAmstradContext();
+	}
+
+	protected Dimension getDisplaySize() {
+		return getDisplayComponent().getSize();
 	}
 
 	protected JComponent getDisplayComponent() {

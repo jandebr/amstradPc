@@ -6,6 +6,11 @@ import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 
 public interface ProgramBrowserDisplaySource extends AmstradAlternativeDisplaySource {
 
+	/**
+	 * Re-initializes the state of the program browser display
+	 */
+	void reset();
+
 	AmstradProgramBrowser getProgramBrowser();
 
 	AmstradProgram getCurrentProgram();

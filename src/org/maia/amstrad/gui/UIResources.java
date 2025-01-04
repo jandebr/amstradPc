@@ -32,6 +32,8 @@ public class UIResources {
 
 	public static ImageIcon browserSetupIcon = loadIcon("browser-setup32.png");
 
+	public static ImageIcon browserResetIcon = loadIcon("browser-reset32.png");
+
 	public static ImageIcon settingsIcon = loadIcon("settings32.png");
 
 	public static ImageIcon joystickIcon = loadIcon("joystick32.png");

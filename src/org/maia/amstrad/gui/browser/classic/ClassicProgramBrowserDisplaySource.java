@@ -382,7 +382,7 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
 		super.mouseClickedOnCanvas(canvas, canvasPosition);
 		if (isFocusOnHomeButton(canvas)) {
-			home();
+			reset();
 		}
 	}
 
@@ -431,7 +431,7 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 				close();
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
-			home();
+			reset();
 		}
 	}
 
@@ -542,7 +542,8 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		}
 	}
 
-	public void home() {
+	@Override
+	public void reset() {
 		getStackedFolderItemList().reset();
 	}
 

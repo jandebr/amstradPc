@@ -74,7 +74,7 @@ public class ProgramBrowserAction extends ToggleDisplaySourceAction implements A
 	}
 
 	@Override
-	protected ProgramBrowserDisplaySource getDisplaySource() {
+	public ProgramBrowserDisplaySource getDisplaySource() {
 		return getProgramBrowser().getDisplaySource();
 	}
 

@@ -130,6 +130,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		@Override
 		protected AmstradPopupMenu doCreateMenu() {
 			AmstradPopupMenu popupMenu = new AmstradPopupMenu(getAmstradPc());
+			popupMenu.add(createProgramBrowserResetMenuItem());
 			popupMenu.add(createAudioMenuItem());
 			popupMenu.add(createJoystickMenu());
 			popupMenu.add(createMonitorEffectsMenu());

@@ -122,7 +122,9 @@ public class AmstradDesktopSystem extends AmstradSystem {
 			AmstradPopupMenu popupMenu = new AmstradPopupMenu(getAmstradPc());
 			popupMenu.add(createProgramBrowserMenuItem());
 			popupMenu.add(createProgramBrowserSetupMenuItem());
+			popupMenu.add(createProgramBrowserResetMenuItem());
 			popupMenu.add(createProgramInfoMenuItem());
+			popupMenu.add(new JSeparator());
 			popupMenu.add(createAudioMenuItem());
 			popupMenu.add(createVirtualKeyboardMenuItem());
 			popupMenu.add(createJoystickMenu());

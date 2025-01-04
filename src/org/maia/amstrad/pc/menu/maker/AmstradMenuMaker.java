@@ -49,6 +49,7 @@ public abstract class AmstradMenuMaker {
 		JMenu menu = new JMenu("File");
 		menu.add(createProgramBrowserMenuItem());
 		menu.add(createProgramBrowserSetupMenuItem());
+		menu.add(createProgramBrowserResetMenuItem());
 		menu.add(createProgramInfoMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createLoadBasicSourceFileMenuItem());
@@ -74,6 +75,11 @@ public abstract class AmstradMenuMaker {
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		return updateMenuItemLookAndFeel(item, UIResources.browserSetupIcon);
+	}
+
+	protected JMenuItem createProgramBrowserResetMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getProgramBrowserResetAction()),
+				UIResources.browserResetIcon);
 	}
 
 	protected JMenuItem createProgramInfoMenuItem() {

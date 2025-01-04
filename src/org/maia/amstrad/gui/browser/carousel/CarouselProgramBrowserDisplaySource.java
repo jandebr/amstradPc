@@ -18,6 +18,11 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.swing.FillMode;
 
+/**
+ * TODO invoke {@link AmstradProgramBrowser#fireProgramLoaded(AmstradProgram)}
+ * 
+ * TODO invoke {@link AmstradProgramBrowser#fireProgramRun(AmstradProgram)}
+ */
 public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource {
 
@@ -50,6 +55,7 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 
 	@Override
 	protected void buildUI() {
+		System.out.println("** Display Size: " + getDisplaySize());
 		add(createLabel("Full", new Color(100, 100, 120)), BorderLayout.WEST);
 		add(suitableForIncrementalPainting(createLabel("Incremental", new Color(0, 0, 255, 1)), FillMode.FIT),
 				BorderLayout.CENTER);
@@ -74,6 +80,12 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 				close();
 			}
 		}
+	}
+
+	@Override
+	public void reset() {
+		getProgramBrowser().getProgramRepository().refresh();
+		// TODO visual refresh
 	}
 
 	@Override
