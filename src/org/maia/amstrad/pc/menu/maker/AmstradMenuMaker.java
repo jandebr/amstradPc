@@ -215,6 +215,7 @@ public abstract class AmstradMenuMaker {
 		menu.add(createMonitorFullscreenMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createScreenshotMenuItem());
+		menu.add(createScreenshotWithoutBorderMenuItem());
 		menu.add(createScreenshotWithMonitorEffectMenuItem());
 		return updateMenuLookAndFeel(menu);
 	}
@@ -225,10 +226,16 @@ public abstract class AmstradMenuMaker {
 		return updateMenuItemLookAndFeel(item, UIResources.screenshotIcon);
 	}
 
-	protected JMenuItem createScreenshotWithMonitorEffectMenuItem() {
-		JMenuItem item = new JMenuItem(getActions().getScreenshotWithMonitorEffectAction());
+	protected JMenuItem createScreenshotWithoutBorderMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getScreenshotWithoutBorderAction());
 		item.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+		return updateMenuItemLookAndFeel(item, UIResources.screenshotWithoutBorderIcon);
+	}
+
+	protected JMenuItem createScreenshotWithMonitorEffectMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getScreenshotWithMonitorEffectAction());
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, InputEvent.CTRL_DOWN_MASK));
 		return updateMenuItemLookAndFeel(item, UIResources.screenshotWithMonitorIcon);
 	}
 

@@ -65,6 +65,8 @@ public class AmstradPcActions {
 
 	private ScreenshotAction screenshotAction;
 
+	private ScreenshotWithoutBorderAction screenshotWithoutBorderAction;
+
 	private ScreenshotWithMonitorEffectAction screenshotWithMonitorEffectAction;
 
 	private MonitorModeAction monitorModeColorAction;
@@ -245,6 +247,13 @@ public class AmstradPcActions {
 			screenshotAction = new ScreenshotAction(getAmstradPc());
 		}
 		return screenshotAction;
+	}
+
+	public ScreenshotWithoutBorderAction getScreenshotWithoutBorderAction() {
+		if (screenshotWithoutBorderAction == null) {
+			screenshotWithoutBorderAction = new ScreenshotWithoutBorderAction(getAmstradPc());
+		}
+		return screenshotWithoutBorderAction;
 	}
 
 	public ScreenshotWithMonitorEffectAction getScreenshotWithMonitorEffectAction() {

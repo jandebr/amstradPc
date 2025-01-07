@@ -15,7 +15,7 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 public class ScreenshotAction extends FileChooserAction {
 
 	public ScreenshotAction(AmstradPc amstradPc) {
-		this(amstradPc, "Capture screen image...");
+		this(amstradPc, "Capture frame...");
 	}
 
 	public ScreenshotAction(AmstradPc amstradPc, String name) {
@@ -44,7 +44,7 @@ public class ScreenshotAction extends FileChooserAction {
 	}
 
 	private void makeScreenshot() {
-		BufferedImage image = getAmstradPc().getMonitor().makeScreenshot(includeMonitorEffect());
+		BufferedImage image = captureImage();
 		int returnValue = getFileChooser().showSaveDialog(getDisplayComponent());
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			updateCurrentDirectoryFromSelectedFile();
@@ -58,6 +58,10 @@ public class ScreenshotAction extends FileChooserAction {
 		}
 	}
 
+	protected BufferedImage captureImage() {
+		return getAmstradPc().getMonitor().makeScreenshot(false);
+	}
+
 	@Override
 	protected JFileChooser buildFileChooser(File currentDirectory) {
 		JFileChooser fileChooser = new JFileChooser(currentDirectory);
@@ -65,10 +69,6 @@ public class ScreenshotAction extends FileChooserAction {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Screenshot files (*.png)", "png");
 		fileChooser.setFileFilter(filter);
 		return fileChooser;
-	}
-
-	protected boolean includeMonitorEffect() {
-		return false;
 	}
 
 }
