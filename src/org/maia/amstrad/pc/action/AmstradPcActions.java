@@ -63,7 +63,7 @@ public class AmstradPcActions {
 
 	/* Monitor actions */
 
-	private ScreenshotAction screenshotAction;
+	private ScreenshotWithBorderAction screenshotWithBorderAction;
 
 	private ScreenshotWithoutBorderAction screenshotWithoutBorderAction;
 
@@ -242,11 +242,11 @@ public class AmstradPcActions {
 		return amstradSystemColorsDisplayAction;
 	}
 
-	public ScreenshotAction getScreenshotAction() {
-		if (screenshotAction == null) {
-			screenshotAction = new ScreenshotAction(getAmstradPc());
+	public ScreenshotAction getScreenshotWithBorderAction() {
+		if (screenshotWithBorderAction == null) {
+			screenshotWithBorderAction = new ScreenshotWithBorderAction(getAmstradPc());
 		}
-		return screenshotAction;
+		return screenshotWithBorderAction;
 	}
 
 	public ScreenshotWithoutBorderAction getScreenshotWithoutBorderAction() {

@@ -23,7 +23,6 @@ import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.AmstradProgramLoader;
 import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
-import org.maia.swing.dialog.ActionableDialog;
 import org.maia.util.GenericListenerList;
 
 public abstract class AmstradPc {
@@ -60,10 +59,6 @@ public abstract class AmstradPc {
 	}
 
 	protected abstract AmstradPcFrame createFrame(boolean powerOffWhenClosed);
-
-	public void showActionableDialog(ActionableDialog dialog) {
-		dialog.setVisible(true);
-	}
 
 	public void launch(AmstradProgram program) throws AmstradProgramException {
 		checkNotTerminated();

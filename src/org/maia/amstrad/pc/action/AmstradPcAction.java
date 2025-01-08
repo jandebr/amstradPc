@@ -45,6 +45,10 @@ public abstract class AmstradPcAction extends AbstractAction
 		new Thread(task).start();
 	}
 
+	protected void resetKeyModifiers() {
+		getAmstradPc().getKeyboard().getController().resetKeyModifiers();
+	}
+
 	protected void setToolTipText(String text) {
 		putValue(Action.SHORT_DESCRIPTION, text);
 	}

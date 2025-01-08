@@ -24,9 +24,6 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.amstrad.program.AmstradPcSnapshotFile;
-import org.maia.swing.dialog.ActionableDialog;
-import org.maia.swing.dialog.ActionableDialogListener;
-import org.maia.swing.dialog.ActionableDialogOption;
 import org.maia.util.SystemUtils;
 
 import jemu.core.device.Computer;
@@ -178,12 +175,6 @@ public abstract class JemuAmstradPc extends AmstradPc
 		SystemUtils.sleep(1000L); // making sure "ready" turns false first
 		getBasicRuntime().waitUntilReady(8000L);
 		System.out.println("Basic runtime is Ready");
-	}
-
-	@Override
-	public void showActionableDialog(ActionableDialog dialog) {
-		dialog.addListener(new ActionableDialogHandler());
-		super.showActionableDialog(dialog);
 	}
 
 	@Override
@@ -531,40 +522,6 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 		public void setPrimaryDisplaySourceResolution(Dimension resolution) {
 			primaryDisplaySourceResolution = resolution;
-		}
-
-	}
-
-	private class ActionableDialogHandler implements ActionableDialogListener {
-
-		public ActionableDialogHandler() {
-		}
-
-		@Override
-		public void dialogButtonClicked(ActionableDialog dialog, ActionableDialogOption dialogOption) {
-			if (dialogOption.isClosingDialog()) {
-				resetKeyModifiers();
-			}
-		}
-
-		@Override
-		public void dialogCancelled(ActionableDialog dialog) {
-		}
-
-		@Override
-		public void dialogConfirmed(ActionableDialog dialog) {
-		}
-
-		@Override
-		public void dialogClosed(ActionableDialog dialog) {
-			resetKeyModifiers();
-		}
-
-		private void resetKeyModifiers() {
-			// A dialog catches key events when in focus. When the dialog is invoked by a key combination involving
-			// modifiers, this may leave the JEMU instance and JEMU computer in an obsolete key modifier state causing
-			// artefacts when resuming focus. To prevent this, we reset modifiers when a dialog is closed.
-			getKeyboard().getController().resetKeyModifiers();
 		}
 
 	}

@@ -1,7 +1,6 @@
 package org.maia.amstrad.pc.action;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -12,13 +11,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 
-public class ScreenshotAction extends FileChooserAction {
+public abstract class ScreenshotAction extends FileChooserAction {
 
-	public ScreenshotAction(AmstradPc amstradPc) {
-		this(amstradPc, "Capture frame...");
-	}
-
-	public ScreenshotAction(AmstradPc amstradPc, String name) {
+	protected ScreenshotAction(AmstradPc amstradPc, String name) {
 		super(amstradPc, name);
 		amstradPc.getKeyboard().addKeyboardListener(this);
 	}
@@ -38,10 +33,7 @@ public class ScreenshotAction extends FileChooserAction {
 		}
 	}
 
-	protected boolean invokeOn(AmstradKeyboardEvent event) {
-		return event.isKeyPressed() && event.getKeyCode() == KeyEvent.VK_I && event.isControlDown()
-				&& !event.isShiftDown();
-	}
+	protected abstract boolean invokeOn(AmstradKeyboardEvent keyEvent);
 
 	private void makeScreenshot() {
 		BufferedImage image = captureImage();
@@ -58,9 +50,7 @@ public class ScreenshotAction extends FileChooserAction {
 		}
 	}
 
-	protected BufferedImage captureImage() {
-		return getAmstradPc().getMonitor().makeScreenshot(false);
-	}
+	protected abstract BufferedImage captureImage();
 
 	@Override
 	protected JFileChooser buildFileChooser(File currentDirectory) {

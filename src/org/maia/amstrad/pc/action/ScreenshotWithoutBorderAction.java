@@ -12,7 +12,7 @@ import org.maia.swing.util.ImageUtils;
 public class ScreenshotWithoutBorderAction extends ScreenshotAction {
 
 	public ScreenshotWithoutBorderAction(AmstradPc amstradPc) {
-		this(amstradPc, "Capture frame borderless...");
+		this(amstradPc, "Capture graphics area...");
 	}
 
 	public ScreenshotWithoutBorderAction(AmstradPc amstradPc, String name) {
@@ -21,13 +21,13 @@ public class ScreenshotWithoutBorderAction extends ScreenshotAction {
 
 	@Override
 	protected boolean invokeOn(AmstradKeyboardEvent keyEvent) {
-		return keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_I && keyEvent.isControlDown()
-				&& keyEvent.isShiftDown();
+		return keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_J && keyEvent.isControlDown()
+				&& !keyEvent.isShiftDown();
 	}
 
 	@Override
 	protected BufferedImage captureImage() {
-		BufferedImage image = super.captureImage();
+		BufferedImage image = getAmstradPc().getMonitor().makeScreenshot(false);
 		Insets borderInsets = getBorderInsets(ImageUtils.getSize(image));
 		return ImageUtils.cropSides(image, borderInsets);
 	}
@@ -37,7 +37,7 @@ public class ScreenshotWithoutBorderAction extends ScreenshotAction {
 		double frameHeight = frameSize.getHeight();
 		int left = (int) Math.round(64.0 / 768 * frameWidth);
 		int right = left;
-		int top = (int) Math.round(79.6 / 544 * frameHeight);
+		int top = (int) Math.round(80.0 / 544 * frameHeight);
 		int bottom = (int) Math.round(64.0 / 544 * frameHeight);
 		return new Insets(top, left, bottom, right);
 	}

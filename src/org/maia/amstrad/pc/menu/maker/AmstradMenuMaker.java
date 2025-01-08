@@ -214,29 +214,35 @@ public abstract class AmstradMenuMaker {
 		menu.add(createMonitorSizeMenu());
 		menu.add(createMonitorFullscreenMenuItem());
 		menu.add(new JSeparator());
-		menu.add(createScreenshotMenuItem());
-		menu.add(createScreenshotWithoutBorderMenuItem());
-		menu.add(createScreenshotWithMonitorEffectMenuItem());
+		menu.add(createMonitorScreenCaptureMenu());
 		return updateMenuLookAndFeel(menu);
 	}
 
-	protected JMenuItem createScreenshotMenuItem() {
-		JMenuItem item = new JMenuItem(getActions().getScreenshotAction());
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item, UIResources.screenshotIcon);
+	protected JMenu createMonitorScreenCaptureMenu() {
+		JMenu menu = new JMenu("Screen capture");
+		menu.add(createScreenshotWithBorderMenuItem());
+		menu.add(createScreenshotWithMonitorEffectMenuItem());
+		menu.add(createScreenshotWithoutBorderMenuItem());
+		return updateMenuLookAndFeel(menu, UIResources.screenshotIcon);
 	}
 
-	protected JMenuItem createScreenshotWithoutBorderMenuItem() {
-		JMenuItem item = new JMenuItem(getActions().getScreenshotWithoutBorderAction());
-		item.setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		return updateMenuItemLookAndFeel(item, UIResources.screenshotWithoutBorderIcon);
+	protected JMenuItem createScreenshotWithBorderMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getScreenshotWithBorderAction());
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK));
+		return updateMenuItemLookAndFeel(item, UIResources.screenshotWithBorderIcon);
 	}
 
 	protected JMenuItem createScreenshotWithMonitorEffectMenuItem() {
 		JMenuItem item = new JMenuItem(getActions().getScreenshotWithMonitorEffectAction());
-		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, InputEvent.CTRL_DOWN_MASK));
+		item.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		return updateMenuItemLookAndFeel(item, UIResources.screenshotWithMonitorIcon);
+	}
+
+	protected JMenuItem createScreenshotWithoutBorderMenuItem() {
+		JMenuItem item = new JMenuItem(getActions().getScreenshotWithoutBorderAction());
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, InputEvent.CTRL_DOWN_MASK));
+		return updateMenuItemLookAndFeel(item, UIResources.screenshotWithoutBorderIcon);
 	}
 
 	protected JMenu createMonitorModeMenu() {

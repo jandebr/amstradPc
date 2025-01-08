@@ -9,7 +9,7 @@ import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 public class ScreenshotWithMonitorEffectAction extends ScreenshotAction {
 
 	public ScreenshotWithMonitorEffectAction(AmstradPc amstradPc) {
-		this(amstradPc, "Capture monitor...");
+		this(amstradPc, "Capture display with monitor...");
 	}
 
 	public ScreenshotWithMonitorEffectAction(AmstradPc amstradPc, String name) {
@@ -18,8 +18,8 @@ public class ScreenshotWithMonitorEffectAction extends ScreenshotAction {
 
 	@Override
 	protected boolean invokeOn(AmstradKeyboardEvent keyEvent) {
-		return keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_J && keyEvent.isControlDown()
-				&& !keyEvent.isShiftDown();
+		return keyEvent.isKeyPressed() && keyEvent.getKeyCode() == KeyEvent.VK_I && keyEvent.isControlDown()
+				&& keyEvent.isShiftDown();
 	}
 
 	@Override

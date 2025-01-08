@@ -66,6 +66,8 @@ public class UIResources {
 
 	public static ImageIcon screenshotIcon = loadIcon("photo32.png");
 
+	public static ImageIcon screenshotWithBorderIcon = loadIcon("photo-border32.png");
+
 	public static ImageIcon screenshotWithoutBorderIcon = loadIcon("photo-noborder32.png");
 
 	public static ImageIcon screenshotWithMonitorIcon = loadIcon("photo-monitor32.png");

@@ -23,7 +23,7 @@ public abstract class ActionableDialogAction extends AmstradPcAction implements 
 			setEnabled(false);
 			ActionableDialog dialog = createDialog();
 			dialog.addListener(this);
-			getAmstradPc().showActionableDialog(dialog);
+			dialog.setVisible(true);
 		}
 	}
 
@@ -46,6 +46,10 @@ public abstract class ActionableDialogAction extends AmstradPcAction implements 
 
 	@Override
 	public void dialogClosed(ActionableDialog dialog) {
+		// A dialog catches key events when in focus. When the dialog is invoked by a key combination involving
+		// modifiers, this may leave the JEMU instance and JEMU computer in an obsolete key modifier state causing
+		// artefacts when resuming focus. To prevent this, we reset modifiers when a dialog is closed.
+		resetKeyModifiers();
 		setEnabled(true);
 	}
 
