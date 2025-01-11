@@ -74,12 +74,14 @@ public abstract class AmstradSystem {
 
 	protected void notifyInitialScreen(AmstradSystemScreen currentScreen) {
 		updateScreenMonitorVisibility(currentScreen);
+		updateScreenMonitorResizability(currentScreen);
 		updateScreenPopupMenu(null, currentScreen);
 		// Subclasses may extend this method
 	}
 
 	protected void notifyScreenChange(AmstradSystemScreen previousScreen, AmstradSystemScreen currentScreen) {
 		updateScreenMonitorVisibility(currentScreen);
+		updateScreenMonitorResizability(currentScreen);
 		updateScreenPopupMenu(previousScreen, currentScreen);
 		handleAutoPauseResume(previousScreen, currentScreen);
 		// Subclasses may extend this method
@@ -89,6 +91,14 @@ public abstract class AmstradSystem {
 		boolean visible = currentScreen.isShowMonitor();
 		getAmstradPc().getMonitor().setMonitorEffect(visible);
 		getAmstradPc().getActions().getMonitorEffectAction().setEnabled(visible);
+	}
+
+	private void updateScreenMonitorResizability(AmstradSystemScreen currentScreen) {
+		boolean resizable = currentScreen.isMonitorResizable();
+		getAmstradPc().getActions().getMonitorFullscreenAction().setEnabled(resizable);
+		getAmstradPc().getActions().getMonitorSingleSizeAction().setEnabled(resizable);
+		getAmstradPc().getActions().getMonitorDoubleSizeAction().setEnabled(resizable);
+		getAmstradPc().getActions().getMonitorTripleSizeAction().setEnabled(resizable);
 	}
 
 	private void updateScreenPopupMenu(AmstradSystemScreen previousScreen, AmstradSystemScreen currentScreen) {

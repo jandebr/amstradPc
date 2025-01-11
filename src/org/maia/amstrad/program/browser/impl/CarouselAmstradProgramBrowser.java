@@ -27,4 +27,9 @@ public class CarouselAmstradProgramBrowser extends AmstradProgramBrowser {
 		return false;
 	}
 
+	@Override
+	public boolean isMonitorResizable() {
+		return false;
+	}
+
 }

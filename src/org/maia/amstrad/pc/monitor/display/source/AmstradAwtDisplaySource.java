@@ -10,10 +10,6 @@ import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
-import org.maia.swing.FillMode;
-import org.maia.swing.HorizontalAlignment;
-import org.maia.swing.VerticalAlignment;
-import org.maia.swing.util.BackBufferedComponent;
 
 public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySource {
 
@@ -97,32 +93,6 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 
 	protected void removeAll() {
 		getDisplayComponent().removeAll();
-	}
-
-	protected JComponent suitableForIncrementalPainting(JComponent component) {
-		return new BackBufferedComponent(component);
-	}
-
-	protected JComponent suitableForIncrementalPainting(JComponent component, FillMode fillMode) {
-		BackBufferedComponent bbc = (BackBufferedComponent) suitableForIncrementalPainting(component);
-		bbc.setFillMode(fillMode);
-		return bbc;
-	}
-
-	protected JComponent suitableForIncrementalPainting(JComponent component, HorizontalAlignment horizontalAlignment,
-			VerticalAlignment verticalAlignment) {
-		BackBufferedComponent bbc = (BackBufferedComponent) suitableForIncrementalPainting(component);
-		bbc.setHorizontalAlignment(horizontalAlignment);
-		bbc.setVerticalAlignment(verticalAlignment);
-		return bbc;
-	}
-
-	protected JComponent suitableForIncrementalPainting(JComponent component, FillMode fillMode,
-			HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
-		BackBufferedComponent bbc = (BackBufferedComponent) suitableForIncrementalPainting(component,
-				horizontalAlignment, verticalAlignment);
-		bbc.setFillMode(fillMode);
-		return bbc;
 	}
 
 	private void setLayout(LayoutManager mgr) {

@@ -53,6 +53,8 @@ public abstract class AmstradProgramBrowser {
 
 	public abstract boolean isShowControlKeys();
 
+	public abstract boolean isMonitorResizable();
+
 	public AmstradPc getAmstradPc() {
 		return amstradPc;
 	}

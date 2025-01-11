@@ -16,6 +16,7 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourc
 import org.maia.amstrad.pc.monitor.display.source.AmstradAwtDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.swing.BackBufferedComponent;
 import org.maia.swing.FillMode;
 
 /**
@@ -57,18 +58,24 @@ public class CarouselProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 	protected void buildUI() {
 		System.out.println("** Display Size: " + getDisplaySize());
 		add(createLabel("Full", new Color(100, 100, 120)), BorderLayout.WEST);
-		add(suitableForIncrementalPainting(createLabel("Incremental", new Color(0, 0, 255, 1)), FillMode.FIT),
-				BorderLayout.CENTER);
+		add(createIncrementalLabel("Incremental", new Color(0, 0, 255, 1), FillMode.FIT), BorderLayout.CENTER);
 	}
 
-	private JLabel createLabel(String text, Color bg) {
+	private JComponent createLabel(String text, Color bg) {
 		JLabel label = new JLabel(text);
 		label.setOpaque(true);
 		label.setBackground(bg);
 		label.setForeground(Color.YELLOW);
 		label.setFont(label.getFont().deriveFont(40f));
-		label.setSize(label.getPreferredSize());
 		return label;
+	}
+
+	private JComponent createIncrementalLabel(String text, Color bg, FillMode fillMode) {
+		JComponent label = createLabel(text, bg);
+		label.setSize(label.getPreferredSize());
+		BackBufferedComponent comp = new BackBufferedComponent(label);
+		comp.setFillMode(fillMode);
+		return comp;
 	}
 
 	@Override

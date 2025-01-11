@@ -16,6 +16,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private boolean showMonitor = true;
 
+	private boolean monitorResizable = true;
+
 	private boolean showPause = true;
 
 	private boolean showTurbo = true;
@@ -77,6 +79,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	public void setShowMonitor(boolean show) {
 		this.showMonitor = show;
+	}
+
+	@Override
+	public boolean isMonitorResizable() {
+		return monitorResizable;
+	}
+
+	public void setMonitorResizable(boolean resizable) {
+		this.monitorResizable = resizable;
 	}
 
 	@Override

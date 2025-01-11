@@ -38,6 +38,13 @@ public interface AmstradSystemScreen {
 	boolean isShowMonitor();
 
 	/**
+	 * Tells whether the monitor size can be adjusted in this screen
+	 * 
+	 * @return <code>true</code> iff the monitor can be resized
+	 */
+	boolean isMonitorResizable();
+
+	/**
 	 * Tells whether the paused state is to be shown on screen
 	 * 
 	 * @return <code>true</code> iff paused state is to be shown

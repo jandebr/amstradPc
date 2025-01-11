@@ -27,4 +27,9 @@ public class ClassicAmstradProgramBrowser extends AmstradProgramBrowser {
 		return true;
 	}
 
+	@Override
+	public boolean isMonitorResizable() {
+		return true;
+	}
+
 }
