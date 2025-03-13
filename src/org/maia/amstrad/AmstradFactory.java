@@ -178,7 +178,7 @@ public class AmstradFactory {
 	public AmstradProgramRepository createProgramRepository() {
 		AmstradProgramRepositoryConfiguration config = getAmstradContext().getProgramRepositoryConfiguration();
 		AmstradProgramRepository repository = new BasicProgramFileRepository(config.getRootFolder());
-		repository = new FilteredAmstradProgramRepository(repository);
+		repository = new FilteredAmstradProgramRepository(repository); // filters out hidden programs
 		if (config.isHideSequenceNumbers()) {
 			repository = RenamingAmstradProgramRepository.withSequenceNumbersHidden(repository);
 		}

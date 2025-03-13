@@ -20,7 +20,7 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 
 	private RenamingAmstradProgramRepository(AmstradProgramRepository sourceRepository) {
 		super(sourceRepository);
-		this.rootNode = new RenamingFolderNode(sourceRepository.getRootNode()); // no rename of root node
+		this.rootNode = new RenamingFolderNode(null, sourceRepository.getRootNode()); // no rename of root node
 	}
 
 	public static RenamingAmstradProgramRepository withSequenceNumbersHidden(
@@ -47,12 +47,12 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 
 		private FolderNode delegate;
 
-		public RenamingFolderNode(FolderNode delegate) {
-			this(delegate.getName(), delegate);
+		public RenamingFolderNode(RenamingFolderNode parent, FolderNode delegate) {
+			this(delegate.getName(), parent, delegate);
 		}
 
-		public RenamingFolderNode(String name, FolderNode delegate) {
-			super(name);
+		public RenamingFolderNode(String name, RenamingFolderNode parent, FolderNode delegate) {
+			super(name, parent);
 			this.delegate = delegate;
 		}
 
@@ -73,8 +73,8 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 					if (!modifiedName.isEmpty())
 						name = modifiedName;
 				}
-				Node childNode = node.isFolder() ? new RenamingFolderNode(name, node.asFolder())
-						: new RenamingProgramNode(name, node.asProgram());
+				Node childNode = node.isFolder() ? new RenamingFolderNode(name, this, node.asFolder())
+						: new RenamingProgramNode(name, this, node.asProgram());
 				childNodes.add(childNode);
 			}
 			return childNodes;
@@ -109,8 +109,8 @@ public class RenamingAmstradProgramRepository extends DelegatingAmstradProgramRe
 
 		private ProgramNode delegate;
 
-		public RenamingProgramNode(String name, ProgramNode delegate) {
-			super(name);
+		public RenamingProgramNode(String name, RenamingFolderNode parent, ProgramNode delegate) {
+			super(name, parent);
 			this.delegate = delegate;
 		}
 

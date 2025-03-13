@@ -28,7 +28,7 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 	protected FileBasedAmstradProgramRepository(File rootFolder, boolean folderPerProgram) {
 		if (!rootFolder.isDirectory())
 			throw new IllegalArgumentException("The root folder must be a directory");
-		setRootNode(new FileBasedFolderNode(rootFolder));
+		setRootNode(new FileBasedFolderNode(null, rootFolder));
 		setFolderPerProgram(folderPerProgram);
 	}
 
@@ -193,12 +193,12 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 
 		private File folder;
 
-		public FileBasedFolderNode(File folder) {
-			this(folder.getName(), folder);
+		public FileBasedFolderNode(FileBasedFolderNode parent, File folder) {
+			this(folder.getName(), parent, folder);
 		}
 
-		public FileBasedFolderNode(String name, File folder) {
-			super(name);
+		public FileBasedFolderNode(String name, FileBasedFolderNode parent, File folder) {
+			super(name, parent);
 			this.folder = folder;
 		}
 
@@ -220,7 +220,7 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 			if (isFolderPerProgram() && !containsSubFolders(folder)) {
 				File pf = selectProgramFileInFolder(folder);
 				if (pf != null) {
-					childProgramNodes.add(new FileBasedProgramNode(folder.getName(), pf));
+					childProgramNodes.add(new FileBasedProgramNode(folder.getName(), this, pf));
 				}
 			} else {
 				List<File> files = Arrays.asList(folder.listFiles());
@@ -236,17 +236,17 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 							if (!containsSubFolders(file)) {
 								File pf = selectProgramFileInFolder(file);
 								if (pf != null) {
-									childProgramNodes.add(new FileBasedProgramNode(name, pf));
+									childProgramNodes.add(new FileBasedProgramNode(name, this, pf));
 								}
 							} else {
-								childFolderNodes.add(new FileBasedFolderNode(name, file));
+								childFolderNodes.add(new FileBasedFolderNode(name, this, file));
 							}
 						}
 					} else {
 						if (file.isDirectory()) {
-							childFolderNodes.add(new FileBasedFolderNode(file));
+							childFolderNodes.add(new FileBasedFolderNode(this, file));
 						} else if (isProgramFile(file)) {
-							childProgramNodes.add(new FileBasedProgramNode(file.getName(), file));
+							childProgramNodes.add(new FileBasedProgramNode(file.getName(), this, file));
 						}
 					}
 				}
@@ -268,8 +268,8 @@ public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRe
 
 		private File file;
 
-		public FileBasedProgramNode(String name, File file) {
-			super(name);
+		public FileBasedProgramNode(String name, FileBasedFolderNode parent, File file) {
+			super(name, parent);
 			this.file = file;
 			setName(readProgram().getProgramName()); // use name inside metadata file, if any
 		}

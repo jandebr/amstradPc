@@ -49,12 +49,15 @@ public abstract class AmstradProgramRepository {
 
 		private String name;
 
+		private FolderNode parent;
+
 		private AmstradProgramImage coverImage;
 
 		private boolean coverImageVerified;
 
-		protected Node(String name) {
+		protected Node(String name, FolderNode parent) {
 			this.name = name;
+			this.parent = parent;
 		}
 
 		@Override
@@ -96,6 +99,14 @@ public abstract class AmstradProgramRepository {
 			this.name = name;
 		}
 
+		public boolean isRoot() {
+			return getParent() == null;
+		}
+
+		public FolderNode getParent() {
+			return parent;
+		}
+
 		public AmstradProgramImage getCoverImage() {
 			if (coverImage == null && !coverImageVerified) {
 				coverImage = readCoverImage();
@@ -112,8 +123,8 @@ public abstract class AmstradProgramRepository {
 
 		private List<Node> childNodes;
 
-		protected FolderNode(String name) {
-			super(name);
+		protected FolderNode(String name, FolderNode parent) {
+			super(name, parent);
 		}
 
 		@Override
@@ -157,8 +168,8 @@ public abstract class AmstradProgramRepository {
 
 	public static abstract class ProgramNode extends Node {
 
-		protected ProgramNode(String name) {
-			super(name);
+		protected ProgramNode(String name, FolderNode parent) {
+			super(name, parent);
 		}
 
 		@Override

@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
@@ -41,6 +42,10 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		int width = displayBounds.width;
 		int height = displayBounds.height;
 		Graphics2D g = (Graphics2D) display.create(displayBounds.x, displayBounds.y, width, height);
+		if (!getAmstradContext().isLowPerformance()) {
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		}
 		renderContent(g, width, height);
 		g.dispose();
 	}
@@ -84,7 +89,9 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 	}
 
 	protected void remove(Component component) {
-		getDisplayComponent().remove(component);
+		if (component != null) {
+			getDisplayComponent().remove(component);
+		}
 	}
 
 	protected void remove(int index) {
@@ -95,8 +102,12 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		getDisplayComponent().removeAll();
 	}
 
-	private void setLayout(LayoutManager mgr) {
-		getDisplayComponent().setLayout(mgr);
+	protected LayoutManager getLayout() {
+		return getDisplayComponent().getLayout();
+	}
+
+	private void setLayout(LayoutManager layout) {
+		getDisplayComponent().setLayout(layout);
 	}
 
 	public Color getBackground() {

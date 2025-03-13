@@ -3,6 +3,7 @@ package org.maia.amstrad.program.repo.filter;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
@@ -13,7 +14,7 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 
 	public FilteredAmstradProgramRepository(AmstradProgramRepository sourceRepository) {
 		super(sourceRepository);
-		this.rootNode = new FilteredFolderNode(sourceRepository.getRootNode());
+		this.rootNode = new FilteredFolderNode(null, sourceRepository.getRootNode());
 	}
 
 	@Override
@@ -25,12 +26,8 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 
 		private FolderNode delegate;
 
-		public FilteredFolderNode(FolderNode delegate) {
-			this(delegate.getName(), delegate);
-		}
-
-		public FilteredFolderNode(String name, FolderNode delegate) {
-			super(name);
+		public FilteredFolderNode(FilteredFolderNode parent, FolderNode delegate) {
+			super(delegate.getName(), parent);
 			this.delegate = delegate;
 		}
 
@@ -45,10 +42,10 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 			List<Node> filteredNodes = new Vector<Node>(delegateChildNodes.size());
 			for (Node node : delegateChildNodes) {
 				if (node.isFolder()) {
-					filteredNodes.add(new FilteredFolderNode(node.asFolder()));
+					filteredNodes.add(new FilteredFolderNode(this, node.asFolder()));
 				} else {
 					if (!node.asProgram().getProgram().isHidden()) {
-						filteredNodes.add(node);
+						filteredNodes.add(new FilteredProgramNode(this, node.asProgram()));
 					}
 				}
 			}
@@ -56,6 +53,26 @@ public class FilteredAmstradProgramRepository extends DelegatingAmstradProgramRe
 		}
 
 		private FolderNode getDelegate() {
+			return delegate;
+		}
+
+	}
+
+	private class FilteredProgramNode extends ProgramNode {
+
+		private ProgramNode delegate;
+
+		public FilteredProgramNode(FilteredFolderNode parent, ProgramNode delegate) {
+			super(delegate.getName(), parent);
+			this.delegate = delegate;
+		}
+
+		@Override
+		protected AmstradProgram readProgram() {
+			return getDelegate().getProgram();
+		}
+
+		private ProgramNode getDelegate() {
 			return delegate;
 		}
 

@@ -23,6 +23,11 @@ public class CarouselAmstradProgramBrowser extends AmstradProgramBrowser {
 	}
 
 	@Override
+	public boolean isShowPause() {
+		return false;
+	}
+
+	@Override
 	public boolean isShowControlKeys() {
 		return false;
 	}

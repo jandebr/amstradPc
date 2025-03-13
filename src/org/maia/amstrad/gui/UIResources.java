@@ -110,7 +110,7 @@ public class UIResources {
 
 	public static ImageIcon tapeWriteOverlayIcon = loadIcon("overlay/record22.png");
 
-	private static ImageIcon loadIcon(String resourceName) {
+	public static ImageIcon loadIcon(String resourceName) {
 		ImageIcon icon = null;
 		try {
 			InputStream in = UIResources.class.getResourceAsStream("icons/" + resourceName);

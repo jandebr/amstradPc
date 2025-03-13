@@ -15,6 +15,8 @@ import org.maia.amstrad.gui.browser.classic.components.ProgramMenuItem;
 import org.maia.amstrad.gui.browser.classic.components.ProgramRunMenuItem;
 import org.maia.amstrad.gui.browser.classic.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.classic.components.StackedFolderItemList;
+import org.maia.amstrad.gui.browser.classic.theme.ClassicProgramBrowserTheme;
+import org.maia.amstrad.gui.browser.classic.theme.ClassicProgramBrowserThemeFromSettings;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;

@@ -3,6 +3,7 @@ package org.maia.amstrad.program.repo.search;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.DelegatingAmstradProgramRepository;
@@ -18,7 +19,7 @@ public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramR
 
 	private SearchingAmstradProgramRepository(AmstradProgramRepository sourceRepository) {
 		super(sourceRepository);
-		this.rootNode = new SearchingFolderNode(sourceRepository.getRootNode());
+		this.rootNode = new SearchingFolderNode(null, sourceRepository.getRootNode());
 	}
 
 	public static SearchingAmstradProgramRepository withSearchByProgramName(AmstradProgramRepository sourceRepository,
@@ -54,12 +55,12 @@ public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramR
 
 		private FolderNode delegate;
 
-		public SearchingFolderNode(FolderNode delegate) {
-			this(delegate.getName(), delegate);
+		public SearchingFolderNode(SearchingFolderNode parent, FolderNode delegate) {
+			this(delegate.getName(), parent, delegate);
 		}
 
-		public SearchingFolderNode(String name, FolderNode delegate) {
-			super(name);
+		public SearchingFolderNode(String name, SearchingFolderNode parent, FolderNode delegate) {
+			super(name, parent);
 			this.delegate = delegate;
 		}
 
@@ -81,7 +82,7 @@ public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramR
 					collectMatchingNodesRecursively(node.asFolder(), matchingNodes);
 				} else if (node.isProgram()) {
 					if (isMatching(node.asProgram())) {
-						matchingNodes.add(node);
+						matchingNodes.add(new SearchingProgramNode(this, node.asProgram()));
 					}
 				}
 			}
@@ -98,6 +99,26 @@ public class SearchingAmstradProgramRepository extends DelegatingAmstradProgramR
 		}
 
 		private FolderNode getDelegate() {
+			return delegate;
+		}
+
+	}
+
+	private class SearchingProgramNode extends ProgramNode {
+
+		private ProgramNode delegate;
+
+		public SearchingProgramNode(SearchingFolderNode parent, ProgramNode delegate) {
+			super(delegate.getName(), parent);
+			this.delegate = delegate;
+		}
+
+		@Override
+		protected AmstradProgram readProgram() {
+			return getDelegate().getProgram();
+		}
+
+		private ProgramNode getDelegate() {
 			return delegate;
 		}
 

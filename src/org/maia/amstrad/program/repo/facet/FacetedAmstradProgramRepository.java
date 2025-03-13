@@ -34,7 +34,7 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 		this.index = new HashMap<Facet, Map<String, Set<FacetedProgramNode>>>();
 		this.allProgramNodes = new HashSet<FacetedProgramNode>(100);
 		populateIndex(getSourceRepository().getRootNode());
-		this.rootNode = new FacetedFolderNode("ROOT", getAllProgramNodes(), getFacets());
+		this.rootNode = new FacetedFolderNode("ROOT", null, getAllProgramNodes(), getFacets());
 	}
 
 	private void populateIndex(FolderNode node) {
@@ -49,7 +49,7 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 
 	private void addToIndex(ProgramNode node) {
 		AmstradProgram program = node.getProgram();
-		FacetedProgramNode indexNode = new FacetedProgramNode(node.getName(), node);
+		FacetedProgramNode indexNode = new FacetedProgramNode(node.getName(), null, node);
 		FacetList facets = getFacets();
 		for (int i = 0; i < facets.size(); i++) {
 			Facet facet = facets.getFacet(i);
@@ -102,8 +102,9 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 
 		private FacetList subFacets;
 
-		public FacetedFolderNode(String name, Set<FacetedProgramNode> programNodesInScope, FacetList subFacets) {
-			super(name);
+		public FacetedFolderNode(String name, FacetedFolderNode parent, Set<FacetedProgramNode> programNodesInScope,
+				FacetList subFacets) {
+			super(name, parent);
 			this.programNodesInScope = programNodesInScope;
 			this.subFacets = subFacets;
 		}
@@ -123,7 +124,10 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 		}
 
 		private List<Node> listLeafProgramNodesInOrder() {
-			List<Node> leafNodes = new Vector<Node>(getProgramNodesInScope());
+			List<Node> leafNodes = new Vector<Node>(getProgramNodesInScope().size());
+			for (FacetedProgramNode node : getProgramNodesInScope()) {
+				leafNodes.add(new FacetedProgramNode(node.getName(), this, node.getSourceNode()));
+			}
 			Collections.sort(leafNodes, new NodeSorter());
 			return leafNodes;
 		}
@@ -139,7 +143,7 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 						getProgramNodesInScope());
 				childProgramNodesInScope.retainAll(facetIndex.get(facetValue));
 				if (!childProgramNodesInScope.isEmpty()) {
-					childNodes.add(new FacetedFolderNode(facetValue, childProgramNodesInScope, childFacets));
+					childNodes.add(new FacetedFolderNode(facetValue, this, childProgramNodesInScope, childFacets));
 				}
 			}
 			return childNodes;
@@ -163,8 +167,8 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 
 		private ProgramNode sourceNode;
 
-		public FacetedProgramNode(String name, ProgramNode sourceNode) {
-			super(name);
+		public FacetedProgramNode(String name, FacetedFolderNode parent, ProgramNode sourceNode) {
+			super(name, parent);
 			this.sourceNode = sourceNode;
 		}
 
@@ -173,7 +177,7 @@ public class FacetedAmstradProgramRepository extends DelegatingAmstradProgramRep
 			return getSourceNode().getProgram();
 		}
 
-		private ProgramNode getSourceNode() {
+		protected ProgramNode getSourceNode() {
 			return sourceNode;
 		}
 

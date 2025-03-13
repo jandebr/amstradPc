@@ -23,6 +23,11 @@ public class ClassicAmstradProgramBrowser extends AmstradProgramBrowser {
 	}
 
 	@Override
+	public boolean isShowPause() {
+		return true;
+	}
+
+	@Override
 	public boolean isShowControlKeys() {
 		return true;
 	}

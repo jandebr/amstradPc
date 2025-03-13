@@ -9,6 +9,8 @@ public class AmstradSystemProgramBrowserScreen extends AmstradSystemCustomScreen
 
 	private boolean monitorResizableOverride;
 
+	private boolean showPauseOverride;
+
 	private boolean showControlKeysOverride;
 
 	private static final String SCREEN_ID = "PROGRAM_BROWSER";
@@ -46,6 +48,21 @@ public class AmstradSystemProgramBrowserScreen extends AmstradSystemCustomScreen
 	public void setMonitorResizable(boolean resizable) {
 		super.setMonitorResizable(resizable);
 		monitorResizableOverride = true;
+	}
+
+	@Override
+	public boolean isShowPause() {
+		if (showPauseOverride) {
+			return super.isShowPause();
+		} else {
+			return getAmstradSystem().getProgramBrowser().isShowPause();
+		}
+	}
+
+	@Override
+	public void setShowPause(boolean show) {
+		super.setShowPause(show);
+		showPauseOverride = true;
 	}
 
 	@Override
