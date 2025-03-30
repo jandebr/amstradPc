@@ -21,7 +21,7 @@ public class CarouselBreadcrumb extends SlidingItemListComponent {
 		this.itemMaker = itemMaker;
 	}
 
-	public synchronized void populateAccordingTo(CarouselComponent comp) {
+	public synchronized void syncWith(CarouselComponent comp) {
 		removeAllItems();
 		populateAncestorsUpTo(comp.getFolderNode());
 		moveToLastItem();

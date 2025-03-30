@@ -33,7 +33,7 @@ import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.compose.DirectionalFocusManager.Direction;
 import org.maia.swing.compose.DirectionalFocusManager.FocusListener;
 
-public abstract class CarouselProgramBrowserCoreDisplaySource extends AmstradAwtDisplaySource
+public abstract class CarouselSkeletonProgramBrowserDisplaySource extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource, CarouselHost {
 
 	private CarouselAmstradProgramBrowser programBrowser;
@@ -52,7 +52,7 @@ public abstract class CarouselProgramBrowserCoreDisplaySource extends AmstradAwt
 
 	private Node lastVisitedNode;
 
-	protected CarouselProgramBrowserCoreDisplaySource(CarouselAmstradProgramBrowser programBrowser) {
+	protected CarouselSkeletonProgramBrowserDisplaySource(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
 		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
@@ -63,7 +63,7 @@ public abstract class CarouselProgramBrowserCoreDisplaySource extends AmstradAwt
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		setTheme(new CarouselProgramBrowserDefaultTheme(graphicsContext));
 		setBackground(getTheme().getBackgroundColor());
-		super.init(displayComponent, graphicsContext);
+		super.init(displayComponent, graphicsContext); // invokes buildUI()
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		setFocusManager(createFocusManager());
 		initFocusManager(getFocusManager());
@@ -314,8 +314,8 @@ public abstract class CarouselProgramBrowserCoreDisplaySource extends AmstradAwt
 
 	protected void enterFolder(FolderNode folderNode, Node childNodeInFocus) {
 		getCarouselComponent().populateFolderContents(folderNode, childNodeInFocus);
-		getCarouselBreadcrumb().populateAccordingTo(getCarouselComponent());
 		getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
+		getCarouselBreadcrumb().syncWith(getCarouselComponent());
 		changeFocusToCarousel();
 	}
 

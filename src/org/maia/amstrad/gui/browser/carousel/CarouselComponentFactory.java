@@ -206,7 +206,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		comp.setShade(SlidingShadeFactory.createGradientShadeRelativeLength(comp, 0.15));
 		comp.setSlidingCursor(
 				SlidingCursorFactory.createSolidOutlineCursor(getTheme().getCarouselCursorColor(), 6, 1, true));
-		comp.setSlidingDynamics(SlidingDynamicsFactory.createAdaptiveSpeedDynamics(comp, 0.002, 1.5, 0.5));
+		comp.setSlidingDynamics(SlidingDynamicsFactory.createAdaptiveSpeedDynamics(comp, 0.004, 1.5, 0.5));
 		comp.setSteadyLandingMinimumTimeDelayMillis(100L);
 		comp.setRepaintClientDriven(true);
 		return comp;
