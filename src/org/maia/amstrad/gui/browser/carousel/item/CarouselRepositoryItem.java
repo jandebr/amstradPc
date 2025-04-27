@@ -1,9 +1,10 @@
-package org.maia.amstrad.gui.browser.carousel;
+package org.maia.amstrad.gui.browser.carousel.item;
 
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 
+import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 
 public abstract class CarouselRepositoryItem extends CarouselItem {

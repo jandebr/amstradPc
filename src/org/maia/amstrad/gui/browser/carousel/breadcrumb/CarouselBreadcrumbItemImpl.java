@@ -1,9 +1,10 @@
-package org.maia.amstrad.gui.browser.carousel;
+package org.maia.amstrad.gui.browser.carousel.breadcrumb;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 
+import org.maia.amstrad.gui.browser.carousel.CarouselHost;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.swing.animate.itemslide.SlidingItemComponentAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;

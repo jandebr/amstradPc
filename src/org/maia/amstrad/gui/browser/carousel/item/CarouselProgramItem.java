@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.browser.carousel;
+package org.maia.amstrad.gui.browser.carousel.item;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
 
+import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.swing.util.ImageUtils;
@@ -15,7 +16,7 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	private boolean previousRunFailed;
 
 	private static Image coverImage = ImageUtils
-			.readFromResource("org/maia/amstrad/gui/browser/carousel/image/woody.png");
+			.readFromResource("org/maia/amstrad/gui/browser/carousel/item/woody.png");
 
 	public CarouselProgramItem(ProgramNode programNode, CarouselComponent carouselComponent, Dimension size,
 			Insets margin, Font font) {

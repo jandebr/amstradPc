@@ -10,6 +10,11 @@ import javax.swing.JComponent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
+import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
+import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselRepositoryItem;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserDefaultTheme;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
@@ -33,7 +38,7 @@ import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.compose.DirectionalFocusManager.Direction;
 import org.maia.swing.compose.DirectionalFocusManager.FocusListener;
 
-public abstract class CarouselSkeletonProgramBrowserDisplaySource extends AmstradAwtDisplaySource
+public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource, CarouselHost {
 
 	private CarouselAmstradProgramBrowser programBrowser;
@@ -52,7 +57,7 @@ public abstract class CarouselSkeletonProgramBrowserDisplaySource extends Amstra
 
 	private Node lastVisitedNode;
 
-	protected CarouselSkeletonProgramBrowserDisplaySource(CarouselAmstradProgramBrowser programBrowser) {
+	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
 		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR

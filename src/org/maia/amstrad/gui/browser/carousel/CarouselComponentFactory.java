@@ -14,6 +14,10 @@ import javax.swing.JComponent;
 
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
+import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
+import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
+import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItemImpl;
+import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItemMaker;
 import org.maia.amstrad.gui.browser.carousel.caption.FolderCaptionComponent;
 import org.maia.amstrad.gui.browser.carousel.caption.ProgramCaptionComponent;
 import org.maia.amstrad.gui.browser.carousel.info.FolderInfoSection;
@@ -22,6 +26,11 @@ import org.maia.amstrad.gui.browser.carousel.info.InfoSection;
 import org.maia.amstrad.gui.browser.carousel.info.ProgramAuthoringInfoSection;
 import org.maia.amstrad.gui.browser.carousel.info.ProgramControlsInfoSection;
 import org.maia.amstrad.gui.browser.carousel.info.ProgramDescriptionInfoSection;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselEmptyItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselItemMaker;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
@@ -42,6 +51,7 @@ import org.maia.swing.animate.textslide.SlidingTextLabel;
 import org.maia.swing.image.GradientImageFactory;
 import org.maia.swing.image.GradientImageFactory.GradientFunction;
 import org.maia.swing.text.TextLabel;
+import org.maia.swing.text.VerticalTextAlignment;
 import org.maia.swing.util.ColorUtils;
 import org.maia.swing.util.ImageUtils;
 import org.maia.util.StringUtils;
@@ -58,17 +68,21 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	}
 
 	public SlidingTextLabel createHeadingComponent(Node node) {
+		String text = node.getName();
 		int width = getLayout().getHeadingBounds().width;
 		int height = getLayout().getHeadingBounds().height;
 		if (!hasImageShow(node)) {
 			// avoid sliding when there is space
 			width = getLayout().getHeadingBounds().union(getLayout().getPreviewBounds()).width;
 		}
-		Dimension size = new Dimension(width, height);
 		Font font = getTheme().getHeadingFont();
-		float fontSize = TextLabel.getFontSizeForLineHeight(font, size.height);
-		SlidingTextLabel label = SlidingTextLabel.createLine(node.getName(), font.deriveFont(fontSize), size.width,
-				HorizontalAlignment.LEFT, getTheme().getBackgroundColor(), getTheme().getHeadingColor());
+		float fontSize = TextLabel.getFontSizeForLineHeight(font, height);
+		float fontSizeFitWidth = TextLabel.getFontSizeForLineWidth(font, text, width);
+		if (fontSizeFitWidth < fontSize && fontSizeFitWidth >= fontSize * 0.8f)
+			fontSize = fontSizeFitWidth;
+		SlidingTextLabel label = SlidingTextLabel.createSized(text, font.deriveFont(fontSize),
+				new Dimension(width, height), getTheme().getBackgroundColor(), getTheme().getHeadingColor(),
+				HorizontalAlignment.LEFT, VerticalTextAlignment.BASELINE);
 		label.setSlidingSpeed(20.0);
 		label.setSuspensionAtEndsMillis(1000L);
 		label.setRepaintClientDriven(true);

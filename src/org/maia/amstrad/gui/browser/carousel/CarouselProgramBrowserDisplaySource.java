@@ -17,7 +17,7 @@ import org.maia.swing.animate.imageslide.show.SlidingImageShow;
 import org.maia.swing.animate.textslide.SlidingTextLabel;
 import org.maia.swing.compose.DirectionalFocusManager.Direction;
 
-public class CarouselProgramBrowserDisplaySource extends CarouselSkeletonProgramBrowserDisplaySource {
+public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserDisplaySourceSkeleton {
 
 	private SlidingTextLabel headingComponent;
 

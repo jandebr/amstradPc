@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.browser.carousel;
+package org.maia.amstrad.gui.browser.carousel.item;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,6 +9,8 @@ import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 
+import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
+import org.maia.amstrad.gui.browser.carousel.CarouselHost;
 import org.maia.swing.FillMode;
 import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;

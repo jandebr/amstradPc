@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
 
+import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselItemMaker;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.swing.animate.itemslide.SlidingCursorMovement;
