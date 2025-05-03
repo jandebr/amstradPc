@@ -19,6 +19,14 @@ public interface CarouselProgramBrowserTheme {
 
 	Color getCaptionConjunctionColor();
 
+	float getCaptionTextScale();
+
+	float getInfoIconUnselectedScale();
+
+	Color getInfoIconUnselectedBackgroundColor();
+
+	Color getInfoIconSelectedBackgroundColor();
+
 	int getInfoPreferredLinesInView();
 
 	int getInfoInterParagraphSpacing();

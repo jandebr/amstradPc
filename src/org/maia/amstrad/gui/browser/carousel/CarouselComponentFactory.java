@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
@@ -36,7 +37,6 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.swing.FillMode;
 import org.maia.swing.HorizontalAlignment;
 import org.maia.swing.VerticalAlignment;
 import org.maia.swing.animate.imageslide.show.SlidingImageShow;
@@ -69,24 +69,29 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	public SlidingTextLabel createHeadingComponent(Node node) {
 		String text = node.getName();
-		int width = getLayout().getHeadingBounds().width;
-		int height = getLayout().getHeadingBounds().height;
-		if (!hasImageShow(node)) {
-			// avoid sliding when there is space
-			width = getLayout().getHeadingBounds().union(getLayout().getPreviewBounds()).width;
-		}
+		Dimension size = extendHorizontallyAcrossImageShow(getLayout().getHeadingBounds(), node);
 		Font font = getTheme().getHeadingFont();
-		float fontSize = TextLabel.getFontSizeForLineHeight(font, height);
-		float fontSizeFitWidth = TextLabel.getFontSizeForLineWidth(font, text, width);
+		float fontSize = TextLabel.getFontSizeForLineHeight(font, size.height);
+		float fontSizeFitWidth = TextLabel.getFontSizeForLineWidth(font, text, size.width);
 		if (fontSizeFitWidth < fontSize && fontSizeFitWidth >= fontSize * 0.8f)
 			fontSize = fontSizeFitWidth;
-		SlidingTextLabel label = SlidingTextLabel.createSized(text, font.deriveFont(fontSize),
-				new Dimension(width, height), getTheme().getBackgroundColor(), getTheme().getHeadingColor(),
-				HorizontalAlignment.LEFT, VerticalTextAlignment.BASELINE);
+		SlidingTextLabel label = SlidingTextLabel.createSized(text, font.deriveFont(fontSize), size,
+				getTheme().getBackgroundColor(), getTheme().getHeadingColor(), HorizontalAlignment.LEFT,
+				VerticalTextAlignment.BASELINE);
 		label.setSlidingSpeed(20.0);
 		label.setSuspensionAtEndsMillis(1000L);
 		label.setRepaintClientDriven(true);
 		return label;
+	}
+
+	private Dimension extendHorizontallyAcrossImageShow(Rectangle bounds, Node node) {
+		int width = bounds.width;
+		int height = bounds.height;
+		if (!hasImageShow(node)) {
+			// extend when there is space
+			width = bounds.union(getLayout().getPreviewBounds()).width;
+		}
+		return new Dimension(width, height);
 	}
 
 	public List<InfoSection> createInfoSectionsForNode(Node node) {
@@ -98,6 +103,9 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 			addInfoSection(sections, createProgramAuthoringSection(program));
 		} else if (node.isFolder()) {
 			addInfoSection(sections, createFolderInfoSection(node.asFolder()));
+		}
+		if (!sections.isEmpty()) {
+			sections.get(0).getIcon().setSelected(true);
 		}
 		return sections;
 	}
@@ -111,9 +119,8 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	private InfoSection createProgramDescriptionSection(AmstradProgram program) {
 		InfoSection section = null;
 		if (ProgramDescriptionInfoSection.hasInfo(program)) {
-			InfoIcon icon = createInfoIcon("description-bright32.png", Color.BLACK, "description-dark32.png",
-					Color.ORANGE);
-			section = new ProgramDescriptionInfoSection(icon, this, program);
+			InfoIcon icon = createInfoIcon("description-gray32.png", "description32.png");
+			section = new ProgramDescriptionInfoSection(icon, getTheme(), getLayout(), program);
 		}
 		return section;
 	}
@@ -121,8 +128,8 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	private InfoSection createProgramControlsSection(AmstradProgram program) {
 		InfoSection section = null;
 		if (ProgramControlsInfoSection.hasInfo(program)) {
-			InfoIcon icon = createInfoIcon("controls-bright32.png", Color.BLACK, "controls-dark32.png", Color.ORANGE);
-			section = new ProgramControlsInfoSection(icon, this, program);
+			InfoIcon icon = createInfoIcon("controls-gray32.png", "controls32.png");
+			section = new ProgramControlsInfoSection(icon, getTheme(), getLayout(), program);
 		}
 		return section;
 	}
@@ -130,8 +137,8 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	private InfoSection createProgramAuthoringSection(AmstradProgram program) {
 		InfoSection section = null;
 		if (ProgramAuthoringInfoSection.hasInfo(program)) {
-			InfoIcon icon = createInfoIcon("authoring-bright32.png", Color.BLACK, "authoring-dark32.png", Color.ORANGE);
-			section = new ProgramAuthoringInfoSection(icon, this, program);
+			InfoIcon icon = createInfoIcon("authoring-gray32.png", "authoring32.png");
+			section = new ProgramAuthoringInfoSection(icon, getTheme(), getLayout(), program);
 		}
 		return section;
 	}
@@ -139,33 +146,36 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	private InfoSection createFolderInfoSection(FolderNode folder) {
 		InfoSection section = null;
 		if (FolderInfoSection.hasInfo(folder)) {
-			InfoIcon icon = createInfoIcon("description-bright32.png", Color.BLACK, "description-dark32.png",
-					Color.ORANGE);
-			section = new FolderInfoSection(icon, this, folder);
+			InfoIcon icon = createInfoIcon("description-gray32.png", "description32.png");
+			section = new FolderInfoSection(icon, getTheme(), getLayout(), folder);
 		}
 		return section;
 	}
 
-	private InfoIcon createInfoIcon(String unselectedImagePath, Color unselectedBackground, String selectedImagePath,
-			Color selectedBackground) {
-		int height = getLayout().getCaptionBounds().height;
-		Dimension size = new Dimension(height, height);
+	private InfoIcon createInfoIcon(String unselectedImagePath, String selectedImagePath) {
 		Image unselectedImage = UIResources.loadIcon("browser/" + unselectedImagePath).getImage();
 		Image selectedImage = UIResources.loadIcon("browser/" + selectedImagePath).getImage();
-		InfoIcon icon = new InfoIcon(unselectedImage, unselectedBackground, selectedImage, selectedBackground);
-		icon.setFillMode(FillMode.FIT);
-		icon.setPreferredSize(size);
-		icon.setMinimumSize(size);
-		icon.setMaximumSize(size);
-		return icon;
+		return createInfoIcon(unselectedImage, selectedImage);
+	}
+
+	private InfoIcon createInfoIcon(Image unselectedImage, Image selectedImage) {
+		Color unselectedBackground = getTheme().getInfoIconUnselectedBackgroundColor();
+		Color selectedBackground = getTheme().getInfoIconSelectedBackgroundColor();
+		int fullSize = getLayout().getCaptionBounds().height;
+		int reducedSize = Math.round(fullSize * getTheme().getInfoIconUnselectedScale());
+		Dimension unselectedSize = new Dimension(reducedSize, reducedSize);
+		Dimension selectedSize = new Dimension(fullSize, fullSize);
+		return new InfoIcon(unselectedImage, unselectedBackground, unselectedSize, selectedImage, selectedBackground,
+				selectedSize);
 	}
 
 	public JComponent createCaptionComponent(Node node, List<InfoSection> infoSections) {
+		Dimension size = extendHorizontallyAcrossImageShow(getLayout().getCaptionBounds(), node);
 		if (node.isProgram()) {
 			AmstradProgram program = node.asProgram().getProgram();
-			return new ProgramCaptionComponent(this, program, infoSections);
+			return new ProgramCaptionComponent(size, getTheme(), program, infoSections);
 		} else if (node.isFolder()) {
-			return new FolderCaptionComponent(this, node.asFolder());
+			return new FolderCaptionComponent(size, getTheme(), node.asFolder());
 		} else {
 			return null;
 		}
@@ -206,8 +216,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		BufferedImage bottom = ImageUtils.addPadding(
 				GradientImageFactory.createBottomToTopGradientImage(new Dimension(w, th), c1, c2, function),
 				new Insets(h - th, 0, 0, 0), c2);
-		BufferedImage base = ImageUtils.createImage(size, new Color(0, 0, 0, 50));
-		return ImageUtils.combineByTransparency(base, ImageUtils.combineByTransparency(left, bottom));
+		return ImageUtils.combineByTransparency(left, bottom);
 	}
 
 	public CarouselComponent createCarouselComponent(CarouselHost host) {

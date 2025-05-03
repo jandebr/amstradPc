@@ -6,7 +6,6 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselComponentFactory;
 import org.maia.amstrad.gui.browser.carousel.CarouselLayoutManager;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
@@ -15,13 +14,16 @@ import org.maia.swing.animate.itemslide.outline.SolidFillOutlineRenderer;
 
 public abstract class CarouselInfoSection extends InfoSection implements SlidingInfoSection {
 
-	private CarouselComponentFactory factory;
+	private CarouselProgramBrowserTheme theme;
+
+	private CarouselLayoutManager layout;
 
 	private SlidingItemListComponent infoComponent;
 
-	protected CarouselInfoSection(InfoIcon icon, CarouselComponentFactory factory) {
+	protected CarouselInfoSection(InfoIcon icon, CarouselProgramBrowserTheme theme, CarouselLayoutManager layout) {
 		super(icon);
-		this.factory = factory;
+		this.theme = theme;
+		this.layout = layout;
 	}
 
 	@Override
@@ -65,15 +67,11 @@ public abstract class CarouselInfoSection extends InfoSection implements Sliding
 	}
 
 	protected CarouselProgramBrowserTheme getTheme() {
-		return getFactory().getTheme();
+		return theme;
 	}
 
 	protected CarouselLayoutManager getLayout() {
-		return getFactory().getLayout();
-	}
-
-	protected CarouselComponentFactory getFactory() {
-		return factory;
+		return layout;
 	}
 
 }

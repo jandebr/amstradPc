@@ -58,9 +58,9 @@ public class CarouselLayoutManager extends BandedLayoutManager implements Layout
 		Band detailBand = northBand.addSubBand(createVerticalContainerBand(0.45f, VerticalAlignment.TOP));
 		Band previewBand = northBand.addSubBand(createVerticalContainerBand(0.55f, VerticalAlignment.TOP));
 		Band headingBand = detailBand.addSubBand(createHorizontalContainerBand(0.2f));
-		Band captionExtBand = detailBand.addSubBand(createHorizontalContainerBand(0.08f));
-		Band captionBand = captionExtBand.addSubBand(createHorizontalContainerBand(0.98f));
-		Band captionSpacerBand = captionExtBand.addSubBand(createFlexibleSpacerBand(0.02f));
+		Band captionParentBand = detailBand.addSubBand(createHorizontalContainerBand(0.08f));
+		Band captionBand = captionParentBand.addSubBand(createHorizontalContainerBand(0.98f));
+		Band captionSpacerBand = captionParentBand.addSubBand(createFlexibleSpacerBand(0.02f));
 		detailBand.addSubBand(createMinimumSpacerBand(0.02f, 8));
 		Band infoSectionBand = detailBand.addSubBand(createHorizontalContainerBand(0.7f));
 		Band infoBand = infoSectionBand.addSubBand(createHorizontalContainerBand(0.98f));
@@ -98,7 +98,7 @@ public class CarouselLayoutManager extends BandedLayoutManager implements Layout
 		if (HEADING.equals(name)) {
 			comp.setLocation(getHeadingBounds().getLocation());
 		} else if (CAPTION.equals(name)) {
-			comp.setBounds(getCaptionBounds());
+			comp.setLocation(getCaptionBounds().getLocation());
 		} else if (INFO.equals(name)) {
 			comp.setLocation(getInfoBounds().getLocation());
 		} else if (INFO_OUTLINE.equals(name)) {

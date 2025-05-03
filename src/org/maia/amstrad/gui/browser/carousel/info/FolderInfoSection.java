@@ -1,6 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel.info;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselComponentFactory;
+import org.maia.amstrad.gui.browser.carousel.CarouselLayoutManager;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
@@ -10,8 +10,9 @@ public class FolderInfoSection extends CarouselInfoSection {
 
 	private FolderNode folder;
 
-	public FolderInfoSection(InfoIcon icon, CarouselComponentFactory factory, FolderNode folder) {
-		super(icon, factory);
+	public FolderInfoSection(InfoIcon icon, CarouselProgramBrowserTheme theme, CarouselLayoutManager layout,
+			FolderNode folder) {
+		super(icon, theme, layout);
 		this.folder = folder;
 	}
 

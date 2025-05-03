@@ -5,7 +5,7 @@ import java.awt.Font;
 
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
-public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowserTheme {
+public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowserTheme, CarouselDefaultColorPalette {
 
 	private AmstradGraphicsContext graphicsContext;
 
@@ -13,13 +13,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	private static Font carouselFont = Font.decode("Century-PLAIN-24");
 
-	private static Color COLOR_EARTH_1 = new Color(26, 22, 20);
-
-	private static Color COLOR_EARTH_2 = new Color(65, 53, 46);
-
-	private static Color COLOR_EARTH_3 = new Color(91, 67, 52);
-
-	private static Color COLOR_EARTH_4 = new Color(186, 148, 120);
+	private static Font breadcrumbFont = carouselFont;
 
 	public CarouselProgramBrowserDefaultTheme(AmstradGraphicsContext graphicsContext) {
 		this.graphicsContext = graphicsContext;
@@ -27,7 +21,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getBackgroundColor() {
-		return Color.BLACK;
+		return COLOR_2;
 	}
 
 	@Override
@@ -37,12 +31,12 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getHeadingFont() {
-		return getDefaultFont();
+		return getDefaultFont().deriveFont(Font.BOLD);
 	}
 
 	@Override
 	public Color getHeadingColor() {
-		return Color.WHITE;
+		return COLOR_1;
 	}
 
 	@Override
@@ -52,12 +46,32 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getCaptionColor() {
-		return COLOR_EARTH_4;
+		return COLOR_7;
 	}
 
 	@Override
 	public Color getCaptionConjunctionColor() {
-		return COLOR_EARTH_3;
+		return COLOR_8;
+	}
+
+	@Override
+	public float getCaptionTextScale() {
+		return 0.8f;
+	}
+
+	@Override
+	public float getInfoIconUnselectedScale() {
+		return 0.7f;
+	}
+
+	@Override
+	public Color getInfoIconUnselectedBackgroundColor() {
+		return getBackgroundColor();
+	}
+
+	@Override
+	public Color getInfoIconSelectedBackgroundColor() {
+		return getBackgroundColor();
 	}
 
 	@Override
@@ -92,17 +106,17 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getInfoOutlineBorderColor() {
-		return COLOR_EARTH_2;
+		return getOutlineBorderColor();
 	}
 
 	@Override
 	public Color getInfoOutlineCursorBorderColor() {
-		return COLOR_EARTH_2;
+		return getOutlineCursorBorderColor();
 	}
 
 	@Override
 	public Color getInfoOutlineCursorFillColor() {
-		return COLOR_EARTH_3;
+		return getOutlineCursorFillColor();
 	}
 
 	@Override
@@ -112,7 +126,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getProgramDescriptionColor() {
-		return Color.WHITE;
+		return COLOR_12;
 	}
 
 	@Override
@@ -122,7 +136,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getProgramControlHeadingColor() {
-		return new Color(222, 193, 164);
+		return COLOR_11;
 	}
 
 	@Override
@@ -132,7 +146,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getProgramControlKeyColor() {
-		return new Color(252, 127, 3);
+		return COLOR_10;
 	}
 
 	@Override
@@ -142,7 +156,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getProgramControlDescriptionColor() {
-		return new Color(255, 177, 99);
+		return COLOR_9;
 	}
 
 	@Override
@@ -152,7 +166,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getProgramAuthoringColor() {
-		return Color.WHITE;
+		return COLOR_12;
 	}
 
 	@Override
@@ -162,7 +176,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getProgramAuthoringKeyColor() {
-		return new Color(56, 99, 34);
+		return COLOR_17;
 	}
 
 	@Override
@@ -172,27 +186,27 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getProgramAuthoringValueColor() {
-		return new Color(146, 242, 97);
+		return COLOR_16;
 	}
 
 	@Override
 	public Font getFolderInfoSubfolderFont() {
-		return getGraphicsContext().getSystemFont();
+		return getFolderInfoFont();
 	}
 
 	@Override
 	public Color getFolderInfoSubfolderColor() {
-		return new Color(119, 113, 176);
+		return COLOR_13;
 	}
 
 	@Override
 	public Font getFolderInfoProgramFont() {
-		return getGraphicsContext().getSystemFont();
+		return getFolderInfoFont();
 	}
 
 	@Override
 	public Color getFolderInfoProgramColor() {
-		return new Color(184, 178, 237);
+		return COLOR_12;
 	}
 
 	@Override
@@ -202,47 +216,67 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getCarouselCursorColor() {
-		return Color.YELLOW;
+		return getCursorColor();
 	}
 
 	@Override
 	public Color getCarouselOutlineBorderColor() {
-		return COLOR_EARTH_1;
+		return getOutlineBorderColor();
 	}
 
 	@Override
 	public Color getCarouselOutlineCursorBorderColor() {
-		return COLOR_EARTH_1;
+		return getOutlineCursorBorderColor();
 	}
 
 	@Override
 	public Color getCarouselOutlineCursorFillColor() {
-		return COLOR_EARTH_1;
+		return getOutlineCursorFillColor();
 	}
 
 	@Override
 	public Font getBreadcrumbFont() {
-		return getCarouselFont();
+		return breadcrumbFont;
 	}
 
 	@Override
 	public Color getBreadcrumbCursorColor() {
-		return COLOR_EARTH_1;
+		return getCursorColor();
 	}
 
 	@Override
 	public Color getBreadcrumbFolderColor() {
-		return COLOR_EARTH_2;
+		return COLOR_5;
 	}
 
 	@Override
 	public Color getBreadcrumbSelectedFolderColor() {
-		return Color.WHITE;
+		return COLOR_15;
 	}
 
 	@Override
 	public Color getBreadcrumbSeparatorColor() {
-		return COLOR_EARTH_1;
+		return COLOR_4;
+	}
+
+	protected Color getCursorColor() {
+		return COLOR_14;
+	}
+
+	protected Color getOutlineBorderColor() {
+		return COLOR_3;
+	}
+
+	protected Color getOutlineCursorBorderColor() {
+		return COLOR_4;
+	}
+
+	protected Color getOutlineCursorFillColor() {
+		return COLOR_5;
+	}
+
+	protected Font getFolderInfoFont() {
+		return getGraphicsContext().getSystemFont();
 	}
 
 	private AmstradGraphicsContext getGraphicsContext() {

@@ -36,9 +36,10 @@ public abstract class CarouselItem implements SlidingItem {
 	}
 
 	protected TextLabel createLabel() {
-		TextLabel label = TextLabel.createSizedLabel(getTitle(), getFont(), getSize());
+		TextLabel label = TextLabel.createSizedLabel(getTitle(), getFont(), new Dimension(getWidth(null), 40));
 		label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 		label.setFillMode(FillMode.FIT_DOWNSCALE);
+		label.setBackground(new Color(0, 0, 0, 200));
 		label.setForeground(Color.WHITE);
 		return label;
 	}
@@ -53,10 +54,8 @@ public abstract class CarouselItem implements SlidingItem {
 		} else {
 			g.setColor(getBackgroundColor());
 			g.fillRect(0, 0, w, h);
-			// g.setColor(getBackgroundColor().brighter());
-			// g.drawRect(0, 0, w - 1, h - 1);
-			// getLabel().paint(g);
 		}
+		getLabel().paint(g);
 	}
 
 	public abstract void execute();

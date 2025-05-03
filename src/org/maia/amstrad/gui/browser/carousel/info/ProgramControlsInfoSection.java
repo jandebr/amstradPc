@@ -2,7 +2,7 @@ package org.maia.amstrad.gui.browser.carousel.info;
 
 import java.util.List;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselComponentFactory;
+import org.maia.amstrad.gui.browser.carousel.CarouselLayoutManager;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgram.UserControl;
@@ -14,8 +14,9 @@ public class ProgramControlsInfoSection extends ProgramInfoSection {
 
 	public static String defaultHeading = "User controls";
 
-	public ProgramControlsInfoSection(InfoIcon icon, CarouselComponentFactory factory, AmstradProgram program) {
-		super(icon, factory, program);
+	public ProgramControlsInfoSection(InfoIcon icon, CarouselProgramBrowserTheme theme, CarouselLayoutManager layout,
+			AmstradProgram program) {
+		super(icon, theme, layout, program);
 	}
 
 	public static boolean hasInfo(AmstradProgram program) {

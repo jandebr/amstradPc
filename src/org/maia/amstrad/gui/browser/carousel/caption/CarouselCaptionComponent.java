@@ -3,14 +3,10 @@ package org.maia.amstrad.gui.browser.carousel.caption;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselComponentFactory;
-import org.maia.amstrad.gui.browser.carousel.info.InfoSection;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.swing.HorizontalAlignment;
 import org.maia.swing.text.TextLabel;
@@ -20,29 +16,21 @@ import org.maia.util.StringUtils;
 
 public abstract class CarouselCaptionComponent extends Box {
 
-	private CarouselComponentFactory factory;
+	private Dimension captionSize;
 
-	protected CarouselCaptionComponent(CarouselComponentFactory factory) {
+	private CarouselProgramBrowserTheme theme;
+
+	protected CarouselCaptionComponent(Dimension captionSize, CarouselProgramBrowserTheme theme) {
 		super(BoxLayout.X_AXIS);
-		this.factory = factory;
-	}
-
-	protected JComponent buildInfoIconsPanel(List<InfoSection> infoSections) {
-		Box box = Box.createHorizontalBox();
-		int iconSpacing = Math.max(Math.min(getCaptionHeight() / 6, 8), 2);
-		for (int i = 0; i < infoSections.size(); i++) {
-			if (i > 0) {
-				box.add(Box.createHorizontalStrut(iconSpacing));
-			}
-			box.add(infoSections.get(i).getIcon());
-		}
-		return box;
+		this.captionSize = captionSize;
+		this.theme = theme;
 	}
 
 	protected TextLabel buildTextElement(String text, Color textColor, Font baseFont) {
 		TextLabel element = null;
 		if (!StringUtils.isEmpty(text)) {
-			Font font = baseFont.deriveFont(TextLabel.getFontSizeForLineHeight(baseFont, getCaptionHeight()));
+			int height = Math.round(getCaptionHeight() * getTheme().getCaptionTextScale());
+			Font font = baseFont.deriveFont(TextLabel.getFontSizeForLineHeight(baseFont, height));
 			element = TextLabel.createLineLabel(text, font, HorizontalAlignment.LEFT);
 			element.setBackground(getTheme().getBackgroundColor());
 			element.setForeground(textColor);
@@ -108,15 +96,11 @@ public abstract class CarouselCaptionComponent extends Box {
 	}
 
 	protected Dimension getCaptionSize() {
-		return getFactory().getLayout().getCaptionBounds().getSize();
+		return captionSize;
 	}
 
 	protected CarouselProgramBrowserTheme getTheme() {
-		return getFactory().getTheme();
-	}
-
-	protected CarouselComponentFactory getFactory() {
-		return factory;
+		return theme;
 	}
 
 }
