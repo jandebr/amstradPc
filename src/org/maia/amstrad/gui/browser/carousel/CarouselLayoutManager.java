@@ -7,8 +7,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 
-import org.maia.swing.VerticalAlignment;
-import org.maia.swing.compose.BandedLayoutManager;
+import org.maia.swing.layout.BandedLayoutManager;
+import org.maia.swing.layout.VerticalAlignment;
 
 public class CarouselLayoutManager extends BandedLayoutManager implements LayoutManager {
 

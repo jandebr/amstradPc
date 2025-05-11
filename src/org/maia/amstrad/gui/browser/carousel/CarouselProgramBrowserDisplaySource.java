@@ -15,7 +15,7 @@ import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.swing.animate.imageslide.show.SlidingImageShow;
 import org.maia.swing.animate.textslide.SlidingTextLabel;
-import org.maia.swing.compose.DirectionalFocusManager.Direction;
+import org.maia.swing.DirectionalFocusManager.Direction;
 
 public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserDisplaySourceSkeleton {
 

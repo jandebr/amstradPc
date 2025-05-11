@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 
-import org.maia.swing.FillMode;
+import org.maia.swing.layout.FillMode;
 import org.maia.swing.image.ImageComponent;
-import org.maia.swing.util.ImageUtils;
-import org.maia.swing.util.SwingUtils;
+import org.maia.swing.image.ImageUtils;
+import org.maia.swing.SwingUtils;
 
 public class InfoIcon extends ImageComponent {
 

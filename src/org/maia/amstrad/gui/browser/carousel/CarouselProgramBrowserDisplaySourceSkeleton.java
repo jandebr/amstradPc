@@ -35,8 +35,8 @@ import org.maia.swing.animate.itemslide.SlidingCursor;
 import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
-import org.maia.swing.compose.DirectionalFocusManager.Direction;
-import org.maia.swing.compose.DirectionalFocusManager.FocusListener;
+import org.maia.swing.DirectionalFocusManager.Direction;
+import org.maia.swing.DirectionalFocusManager.FocusListener;
 
 public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource, CarouselHost {

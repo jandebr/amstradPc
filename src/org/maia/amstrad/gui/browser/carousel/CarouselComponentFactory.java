@@ -37,8 +37,8 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
-import org.maia.swing.HorizontalAlignment;
-import org.maia.swing.VerticalAlignment;
+import org.maia.swing.layout.HorizontalAlignment;
+import org.maia.swing.layout.VerticalAlignment;
 import org.maia.swing.animate.imageslide.show.SlidingImageShow;
 import org.maia.swing.animate.imageslide.show.SlidingImageShowBuilder;
 import org.maia.swing.animate.itemslide.SlidingCursorMovement;
@@ -52,8 +52,8 @@ import org.maia.swing.image.GradientImageFactory;
 import org.maia.swing.image.GradientImageFactory.GradientFunction;
 import org.maia.swing.text.TextLabel;
 import org.maia.swing.text.VerticalTextAlignment;
-import org.maia.swing.util.ColorUtils;
-import org.maia.swing.util.ImageUtils;
+import org.maia.swing.ColorUtils;
+import org.maia.swing.image.ImageUtils;
 import org.maia.util.StringUtils;
 
 public class CarouselComponentFactory implements CarouselItemMaker, CarouselBreadcrumbItemMaker {

@@ -7,7 +7,7 @@ import java.awt.Image;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
-import org.maia.swing.util.ImageUtils;
+import org.maia.swing.image.ImageUtils;
 
 public class CarouselEmptyItem extends CarouselItem {
 

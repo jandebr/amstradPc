@@ -8,10 +8,10 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
-import org.maia.swing.HorizontalAlignment;
+import org.maia.swing.layout.HorizontalAlignment;
 import org.maia.swing.text.TextLabel;
 import org.maia.swing.text.TextLabel.TextOverflowMode;
-import org.maia.swing.util.SwingUtils;
+import org.maia.swing.SwingUtils;
 import org.maia.util.StringUtils;
 
 public abstract class CarouselCaptionComponent extends Box {

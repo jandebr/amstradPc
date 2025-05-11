@@ -11,7 +11,7 @@ import javax.swing.BorderFactory;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.CarouselHost;
-import org.maia.swing.FillMode;
+import org.maia.swing.layout.FillMode;
 import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.text.TextLabel;

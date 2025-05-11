@@ -10,7 +10,7 @@ import javax.swing.Icon;
 
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.swing.util.ImageUtils;
+import org.maia.swing.image.ImageUtils;
 
 public class FacetFactory {
 
