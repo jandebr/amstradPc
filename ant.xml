@@ -26,9 +26,10 @@
 				<attribute name="Main-Class" value="org.maia.amstrad.AmstradMain" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
-			<zipfileset src="lib/maiaSwing.jar" />
 			<zipfileset src="lib/maiaUtils.jar" />
+			<zipfileset src="lib/maiaSwing.jar" />
 			<zipfileset src="lib/maiaInputDevice.jar" />
+			<zipfileset src="lib/maia2d.jar" />
 			<fileset dir="bin" />
 		</jar>
 	</target>

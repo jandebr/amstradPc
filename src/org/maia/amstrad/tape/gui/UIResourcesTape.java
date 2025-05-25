@@ -2,7 +2,6 @@ package org.maia.amstrad.tape.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.net.URL;
 import java.text.NumberFormat;
 
 import javax.swing.Icon;
@@ -158,8 +157,7 @@ public class UIResourcesTape {
 	}
 
 	private static Icon loadIcon(String resourceName) {
-		URL url = UIResourcesTape.class.getResource("icons/" + resourceName);
-		return new ImageIcon(url);
+		return new ImageIcon(UIResourcesTape.class.getResource("icons/" + resourceName));
 	}
 
 }

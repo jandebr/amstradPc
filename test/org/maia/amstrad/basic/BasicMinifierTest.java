@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.basic.locomotive.minify.LocomotiveBasicMinifierFactory;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public class BasicMinifierTest {
 

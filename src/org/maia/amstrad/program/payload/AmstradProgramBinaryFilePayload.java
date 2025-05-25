@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public class AmstradProgramBinaryFilePayload extends AmstradProgramBinaryPayload {
 

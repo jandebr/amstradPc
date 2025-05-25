@@ -12,9 +12,9 @@ public interface CarouselDefaultColorPalette {
 
 	Color COLOR_3 = new Color(24, 58, 80);
 
-	Color COLOR_4 = new Color(68, 99, 117);
+	Color COLOR_4 = new Color(37, 76, 101);
 
-	Color COLOR_5 = new Color(106, 152, 179);
+	Color COLOR_5 = new Color(68, 99, 117);
 
 	Color COLOR_6 = new Color(140, 157, 168);
 
@@ -39,5 +39,5 @@ public interface CarouselDefaultColorPalette {
 	Color COLOR_16 = new Color(125, 255, 102);
 
 	Color COLOR_17 = new Color(58, 133, 45);
-
+	
 }

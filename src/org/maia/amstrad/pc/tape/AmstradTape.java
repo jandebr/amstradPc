@@ -10,10 +10,10 @@ import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.basic.BasicSourceCode;
-import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.io.util.IOUtils;
+import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.util.GenericListenerList;
+import org.maia.util.io.IOUtils;
 
 public abstract class AmstradTape extends AmstradPcDevice {
 

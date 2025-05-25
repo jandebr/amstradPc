@@ -7,10 +7,10 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 
-import org.maia.swing.layout.BandedLayoutManager;
+import org.maia.swing.layout.BandedLayout;
 import org.maia.swing.layout.VerticalAlignment;
 
-public class CarouselLayoutManager extends BandedLayoutManager implements LayoutManager {
+public class CarouselLayoutManager extends BandedLayout implements LayoutManager {
 
 	private Dimension displaySize;
 

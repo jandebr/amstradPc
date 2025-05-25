@@ -256,7 +256,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getBreadcrumbSeparatorColor() {
-		return COLOR_4;
+		return COLOR_3;
 	}
 
 	protected Color getCursorColor() {
@@ -272,7 +272,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 	}
 
 	protected Color getOutlineCursorFillColor() {
-		return COLOR_5;
+		return COLOR_3;
 	}
 
 	protected Font getFolderInfoFont() {

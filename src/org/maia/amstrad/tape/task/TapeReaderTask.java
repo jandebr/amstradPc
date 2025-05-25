@@ -36,7 +36,7 @@ import org.maia.amstrad.tape.read.ScopedAudioTapeInputStream;
 import org.maia.amstrad.tape.read.TapeReader;
 import org.maia.amstrad.tape.read.TapeReaderListener;
 import org.maia.amstrad.tape.write.TapeProgramMetaDataWriter;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 /**
  * Task that reconstructs programs from an Amstrad audio tape file

@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcDevice;
-import org.maia.io.util.IOUtils;
 import org.maia.util.GenericListenerList;
+import org.maia.util.io.IOUtils;
 
 public abstract class AmstradKeyboard extends AmstradPcDevice implements KeyEventTarget {
 

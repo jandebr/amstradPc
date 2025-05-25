@@ -8,7 +8,7 @@ import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
-import org.maia.swing.image.ImageUtils;
+import org.maia.graphics2d.image.ImageUtils;
 
 public class CarouselFolderItem extends CarouselRepositoryItem {
 

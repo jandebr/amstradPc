@@ -7,7 +7,7 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.tape.AmstradTape;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public class JemuTape extends AmstradTape {
 

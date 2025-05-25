@@ -9,7 +9,7 @@ import org.maia.amstrad.basic.BasicException;
 import org.maia.amstrad.basic.BasicSourceCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicDecompiler;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public class PartialSourceCodeRestorer {
 

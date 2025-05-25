@@ -12,7 +12,7 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.image.AmstradProgramImageSourcedByFile;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public abstract class FileBasedAmstradProgramRepository extends AmstradProgramRepository {
 

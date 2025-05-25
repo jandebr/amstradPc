@@ -16,13 +16,18 @@ import org.maia.amstrad.program.repo.facet.FacetFactory;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.amstrad.system.impl.AmstradDesktopSystem;
+import org.maia.graphics2d.image.pool.ImagePool;
 import org.maia.util.SystemUtils;
 
 public abstract class AmstradContext {
 
 	private AmstradSystem amstradSystem;
 
+	private ImagePool sharedImagePool;
+
 	public static final String SETTING_AMSTRAD_SYSTEM = "mode";
+
+	private static final String SETTING_IMAGE_CACHE_CAPACITY = "images.cache_capacity";
 
 	private static final String SETTING_CURRENT_DIR = "current_dir";
 
@@ -165,6 +170,14 @@ public abstract class AmstradContext {
 	public abstract boolean isBasicProtectiveMode(AmstradPc amstradPc);
 
 	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
+
+	public ImagePool getSharedImagePool() {
+		if (sharedImagePool == null) {
+			int capacity = Integer.parseInt(getUserSettings().get(SETTING_IMAGE_CACHE_CAPACITY, "20"));
+			sharedImagePool = new ImagePool("shared", capacity);
+		}
+		return sharedImagePool;
+	}
 
 	public File getCurrentDirectory() {
 		String dir = getUserSettings().get(SETTING_CURRENT_DIR, null);

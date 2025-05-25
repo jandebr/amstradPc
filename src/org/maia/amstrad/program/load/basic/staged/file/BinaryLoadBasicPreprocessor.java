@@ -21,7 +21,7 @@ import org.maia.amstrad.program.AmstradProgram.FileReference;
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSession;
 import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor implements LocomotiveBasicMemoryMap {
 

@@ -31,12 +31,12 @@ import org.maia.amstrad.program.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.swing.DirectionalFocusManager.Direction;
+import org.maia.swing.DirectionalFocusManager.FocusListener;
 import org.maia.swing.animate.itemslide.SlidingCursor;
 import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
-import org.maia.swing.DirectionalFocusManager.Direction;
-import org.maia.swing.DirectionalFocusManager.FocusListener;
 
 public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource, CarouselHost {
@@ -504,8 +504,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		}
 
 		@Override
-		public void notifyItemSelectionChanged(SlidingItemListComponent component, SlidingItem selectedItem,
-				int selectedItemIndex) {
+		public synchronized void notifyItemSelectionChanged(SlidingItemListComponent component,
+				SlidingItem selectedItem, int selectedItemIndex) {
 			if (isLanded()) {
 				setLanded(false);
 				notifyCursorLeftRepositoryNode();
@@ -517,7 +517,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		}
 
 		@Override
-		public void notifyItemSelectionLanded(SlidingItemListComponent component, SlidingItem selectedItem,
+		public synchronized void notifyItemSelectionLanded(SlidingItemListComponent component, SlidingItem selectedItem,
 				int selectedItemIndex) {
 			if (selectedItem instanceof CarouselRepositoryItem) {
 				setLanded(true);

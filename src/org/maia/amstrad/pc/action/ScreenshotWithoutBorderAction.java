@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
-import org.maia.swing.image.ImageUtils;
+import org.maia.graphics2d.image.ImageUtils;
 
 public class ScreenshotWithoutBorderAction extends ScreenshotAction {
 

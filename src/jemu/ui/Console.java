@@ -28,7 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
 import org.maia.amstrad.AmstradFactory;
-import org.maia.io.util.MultiplexOutputStream;
+import org.maia.util.io.MultiplexOutputStream;
 
 import jemu.settings.Settings;
 

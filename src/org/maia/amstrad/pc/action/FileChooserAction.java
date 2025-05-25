@@ -7,7 +7,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public abstract class FileChooserAction extends AmstradPcAction {
 

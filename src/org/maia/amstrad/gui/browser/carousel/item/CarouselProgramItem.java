@@ -9,7 +9,7 @@ import java.awt.Insets;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
-import org.maia.swing.image.ImageUtils;
+import org.maia.graphics2d.image.ImageUtils;
 
 public class CarouselProgramItem extends CarouselRepositoryItem {
 

@@ -14,8 +14,8 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicCompiler;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicSourceCode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
-import org.maia.io.util.IOUtils;
 import org.maia.util.SystemUtils;
+import org.maia.util.io.IOUtils;
 
 public class BasicCompilerTest {
 

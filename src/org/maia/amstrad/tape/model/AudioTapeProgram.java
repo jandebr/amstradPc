@@ -13,7 +13,7 @@ import org.maia.amstrad.tape.decorate.BytecodeAudioDecorator;
 import org.maia.amstrad.tape.decorate.SourcecodeBytecodeDecorator;
 import org.maia.amstrad.tape.model.profile.TapeProfile;
 import org.maia.amstrad.tape.read.AudioFile;
-import org.maia.io.util.IOUtils;
+import org.maia.util.io.IOUtils;
 
 public class AudioTapeProgram extends TapeProgram {
 
