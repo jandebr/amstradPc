@@ -193,6 +193,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 				builder.withImageOverlay(createImageShowOverlay(size));
 				for (AmstradProgramImage image : images) {
 					builder.addImage(image.getImage());
+					image.disposeImage(); // free up image pool
 				}
 				show = builder.build();
 			}

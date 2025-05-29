@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.browser.classic;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -17,6 +18,13 @@ import org.maia.amstrad.gui.browser.classic.components.ProgramSheet;
 import org.maia.amstrad.gui.browser.classic.components.StackedFolderItemList;
 import org.maia.amstrad.gui.browser.classic.theme.ClassicProgramBrowserTheme;
 import org.maia.amstrad.gui.browser.classic.theme.ClassicProgramBrowserThemeFromSettings;
+import org.maia.amstrad.gui.covers.AmstradCoverImage;
+import org.maia.amstrad.gui.covers.AmstradFolderCoverImage;
+import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
+import org.maia.amstrad.gui.covers.AmstradProgramCoverImage;
+import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.repo.RepositoryFolderCoverImageProducer;
+import org.maia.amstrad.gui.covers.repo.RepositoryProgramCoverImageProducer;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayCanvas;
@@ -48,6 +56,10 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	private ClassicProgramBrowserTheme theme;
 
+	private AmstradProgramCoverImageProducer programCoverImageProducer;
+
+	private AmstradFolderCoverImageProducer folderCoverImageProducer;
+
 	private boolean programInfoShortcutActive;
 
 	private static final String SETTING_SHOW_COVER_IMAGES = "program_browser.classic.cover_images.show";
@@ -78,12 +90,19 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
+		initCoverImageProducers(canvas);
 		if (!isStandaloneInfo()) {
 			getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		}
 		canvas.border(getTheme().getMainWindowBorderInk()).paper(getTheme().getMainWindowBackgroundInk());
 		canvas.symbol(SYMBOL_CODE_MONITOR, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon
 		canvas.symbol(SYMBOL_CODE_HOME, 24, 60, 126, 255, 126, 110, 110, 124); // home icon
+	}
+
+	protected void initCoverImageProducers(AmstradDisplayCanvas canvas) {
+		Dimension imageSize = canvas.getTextAreaBoundsOnCanvas(1, 3, 20, 25).getSize();
+		setProgramCoverImageProducer(new RepositoryProgramCoverImageProducer(imageSize));
+		setFolderCoverImageProducer(new RepositoryFolderCoverImageProducer(imageSize));
 	}
 
 	@Override
@@ -133,13 +152,14 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	private void renderStack(StackedFolderItemList stack, AmstradDisplayCanvas canvas) {
 		Image image = getCurrentCoverImage(); // may be null when not yet available
+		boolean noImage = image == null;
 		// left side
 		if (image != null && stack.size() > 1) {
 			renderImageCenterFit(image, canvas, canvas.getTextAreaBoundsOnCanvas(1, 3, 20, 25));
 		} else {
 			FolderItemList itemList = stack.peek(stack.size() > 1 ? 1 : 0);
 			renderFolderItemList(itemList, 2, 4, stack.size() == 1,
-					canShowMiniInfo() && (!hasCurrentCoverImage() || getCurrentNode().isFolder()), canvas);
+					canShowMiniInfo() && (noImage || getCurrentNode().isFolder()), canvas);
 			if (stack.size() > 2) {
 				renderStackLeftExtentHint(stack, 2, 4, canvas);
 			}
@@ -147,7 +167,7 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		// right side
 		if (stack.size() > 1) {
 			FolderItemList itemList = stack.peek();
-			renderFolderItemList(itemList, 22, 4, true, canShowMiniInfo() && !hasCurrentCoverImage(), canvas);
+			renderFolderItemList(itemList, 22, 4, true, canShowMiniInfo() && noImage, canvas);
 		} else if (image != null) {
 			renderImageCenterFit(image, canvas, canvas.getTextAreaBoundsOnCanvas(21, 3, 40, 25));
 		}
@@ -589,21 +609,23 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		}
 	}
 
-	private boolean hasCurrentCoverImage() {
-		if (getUserSettings().getBool(SETTING_SHOW_COVER_IMAGES, true)) {
-			Node node = getCurrentNode();
-			return node != null && node.getCoverImage() != null;
-		} else {
-			return false;
-		}
-	}
-
 	private Image getCurrentCoverImage() {
-		if (hasCurrentCoverImage()) {
-			return getCurrentNode().getCoverImage().requestImage();
-		} else {
-			return null;
+		Image image = null;
+		if (getUserSettings().getBool(SETTING_SHOW_COVER_IMAGES, true)) {
+			AmstradCoverImage imageProxy = null;
+			Node node = getCurrentNode();
+			if (node != null) {
+				if (node.isProgram()) {
+					imageProxy = new AmstradProgramCoverImage(node.asProgram(), getProgramCoverImageProducer());
+				} else if (node.isFolder()) {
+					imageProxy = new AmstradFolderCoverImage(node.asFolder(), getFolderCoverImageProducer());
+				}
+			}
+			if (imageProxy != null) {
+				image = imageProxy.requestImage();
+			}
 		}
+		return image;
 	}
 
 	private Node getCurrentNode() {
@@ -700,6 +722,22 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	public void setTheme(ClassicProgramBrowserTheme theme) {
 		this.theme = theme;
+	}
+
+	public AmstradProgramCoverImageProducer getProgramCoverImageProducer() {
+		return programCoverImageProducer;
+	}
+
+	public void setProgramCoverImageProducer(AmstradProgramCoverImageProducer imageProducer) {
+		this.programCoverImageProducer = imageProducer;
+	}
+
+	public AmstradFolderCoverImageProducer getFolderCoverImageProducer() {
+		return folderCoverImageProducer;
+	}
+
+	public void setFolderCoverImageProducer(AmstradFolderCoverImageProducer imageProducer) {
+		this.folderCoverImageProducer = imageProducer;
 	}
 
 	private boolean isProgramInfoShortcutActive() {

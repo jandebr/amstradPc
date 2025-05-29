@@ -43,6 +43,7 @@ public abstract class AmstradProgramRepository {
 	public void refresh() {
 		programCache.clear();
 		getRootNode().refresh();
+		AmstradFactory.getInstance().getAmstradContext().clearImagePools();
 	}
 
 	public static abstract class Node implements ScrollableItem {

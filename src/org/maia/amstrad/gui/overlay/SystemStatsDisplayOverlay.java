@@ -11,11 +11,14 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcPerformanceListener;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.graphics2d.image.pool.ImagePool;
+import org.maia.util.SystemUtils;
 
 import com.sun.management.OperatingSystemMXBean;
 
@@ -106,17 +109,18 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 	}
 
 	private List<String> produceStatLines() {
-		Runtime jrt = Runtime.getRuntime();
-		long jTotal = jrt.totalMemory();
-		long jUsed = jTotal - jrt.freeMemory();
-		long jMax = jrt.maxMemory();
+		long jTotal = SystemUtils.getTotalMemoryInBytes();
+		long jUsed = SystemUtils.getUsedMemoryInBytes();
+		long jMax = SystemUtils.getMaxMemoryInBytes();
 		BasicRuntime brt = getAmstracPc().getBasicRuntime();
 		long bTotal = brt.getTotalMemory();
 		long bUsed = brt.getUsedMemory();
+		ImagePool iPool = AmstradFactory.getInstance().getAmstradContext().getSharedImagePool();
 		lines.clear();
 		lines.add("MEM Basic: " + formatMemorySize(bUsed) + " used of " + formatMemorySize(bTotal));
 		lines.add("MEM Java: " + formatMemorySize(jUsed) + " used of " + formatMemorySize(jTotal)
 				+ (jMax < Long.MAX_VALUE ? " (max " + formatMemorySize(jMax) + ")" : ""));
+		lines.add("IMG: " + iPool.getSize() + " cached (max " + iPool.getCapacity() + ")");
 		lines.add("CPU: " + percentageFormat.format(getCpuLoad()) + (turbo ? " TURBO" : "") + " lag "
 				+ percentageFormat.format(cpuLaggingRatio) + " throttle "
 				+ percentageFormat.format(cpuThrottlingRatio));

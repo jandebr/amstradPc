@@ -18,10 +18,14 @@ public abstract class AmstradCoverImage extends AbstractPooledImage {
 	}
 
 	private static String createImageIdentifierFor(Node node, AmstradCoverImageProducer imageProducer) {
+		return "image.node@" + imageProducer.getClass().getSimpleName() + "[" + createNodePathString(node) + "]";
+	}
+
+	private static String createNodePathString(Node node) {
 		if (node.isRoot()) {
-			return "COVER-IMAGE-" + imageProducer.getClass().getName();
+			return "$";
 		} else {
-			return createImageIdentifierFor(node.getParent(), imageProducer) + "|:|" + node.getName();
+			return createNodePathString(node.getParent()) + "|:|" + node.getName();
 		}
 	}
 

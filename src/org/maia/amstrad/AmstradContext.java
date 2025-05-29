@@ -171,6 +171,10 @@ public abstract class AmstradContext {
 
 	public abstract void setBasicProtectiveMode(AmstradPc amstradPc, boolean protective);
 
+	public void clearImagePools() {
+		getSharedImagePool().clear();
+	}
+
 	public ImagePool getSharedImagePool() {
 		if (sharedImagePool == null) {
 			int capacity = Integer.parseInt(getUserSettings().get(SETTING_IMAGE_CACHE_CAPACITY, "20"));
