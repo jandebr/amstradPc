@@ -209,7 +209,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		int w = size.width, h = size.height;
 		int tw = Math.max(w / 4, 8), th = Math.max(h / 4, 8);
 		Color c1 = getTheme().getBackgroundColor();
-		Color c2 = ColorUtils.setTransparency(c1, 1.0);
+		Color c2 = ColorUtils.setTransparency(c1, 1f);
 		GradientFunction function = GradientImageFactory.createSigmoidGradientFunction();
 		BufferedImage left = ImageUtils.addPadding(
 				GradientImageFactory.createLeftToRightGradientImage(new Dimension(tw, h), c1, c2, function),
