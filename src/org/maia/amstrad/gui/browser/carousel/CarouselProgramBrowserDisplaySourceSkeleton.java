@@ -17,6 +17,8 @@ import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselRepositoryItem;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserDefaultTheme;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
+import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
+import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
@@ -45,6 +47,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private CarouselProgramBrowserTheme theme;
 
+	private AmstradProgramCoverImageProducer programCoverImageProducer;
+
+	private AmstradFolderCoverImageProducer folderCoverImageProducer;
+
 	private CarouselFocusManager focusManager;
 
 	private CarouselComponentFactory componentFactory;
@@ -66,19 +72,64 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
-		setTheme(new CarouselProgramBrowserDefaultTheme(graphicsContext));
+		setTheme(createTheme(graphicsContext));
 		setBackground(getTheme().getBackgroundColor());
 		super.init(displayComponent, graphicsContext); // invokes buildUI()
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		setFocusManager(createFocusManager());
-		initFocusManager(getFocusManager());
+		initFocusManager();
 		notifyCursorLeftRepositoryNode();
 		initCarousel();
+	}
+
+	protected CarouselProgramBrowserTheme createTheme(AmstradGraphicsContext graphicsContext) {
+		return new CarouselProgramBrowserDefaultTheme(graphicsContext);
 	}
 
 	@Override
 	protected LayoutManager createLayoutManager() {
 		return new CarouselLayoutManager(getDisplaySize());
+	}
+
+	@Override
+	protected void buildUI() {
+		setProgramCoverImageProducer(createProgramCoverImageProducer());
+		setFolderCoverImageProducer(createFolderCoverImageProducer());
+		setComponentFactory(createComponentFactory());
+		buildCarousel();
+		buildCarouselOutline();
+		buildCarouselBreadcrumb();
+	}
+
+	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer() {
+		return null; // TODO
+	}
+
+	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer() {
+		return null; // TODO
+	}
+
+	protected CarouselComponentFactory createComponentFactory() {
+		return new CarouselComponentFactory(getTheme(), getLayout());
+	}
+
+	private void buildCarousel() {
+		CarouselComponent comp = getComponentFactory().createCarouselComponent(this);
+		comp.addListener(new CarouselComponentItemTracker());
+		add(comp.getUI(), CarouselLayoutManager.CAROUSEL);
+		setCarouselComponent(comp);
+	}
+
+	private void buildCarouselOutline() {
+		CarouselOutline outline = getComponentFactory().createCarouselOutline(getCarouselComponent());
+		add(outline, CarouselLayoutManager.CAROUSEL_OUTLINE);
+		setCarouselOutline(outline);
+	}
+
+	private void buildCarouselBreadcrumb() {
+		CarouselBreadcrumb breadcrumb = getComponentFactory().createCarouselBreadcrumb(this);
+		add(breadcrumb.getUI(), CarouselLayoutManager.CAROUSEL_BREADCRUMB);
+		setCarouselBreadcrumb(breadcrumb);
 	}
 
 	protected CarouselFocusManager createFocusManager() {
@@ -88,43 +139,9 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		return focusManager;
 	}
 
-	protected CarouselComponentFactory createComponentFactory() {
-		return new CarouselComponentFactory(getTheme(), getLayout());
-	}
-
-	@Override
-	protected void buildUI() {
-		setComponentFactory(createComponentFactory());
-		buildUI(getComponentFactory());
-	}
-
-	protected void buildUI(CarouselComponentFactory factory) {
-		buildCarousel(factory);
-		buildCarouselOutline(factory);
-		buildCarouselBreadcrumb(factory);
-	}
-
-	private void buildCarousel(CarouselComponentFactory factory) {
-		CarouselComponent comp = factory.createCarouselComponent(this);
-		comp.addListener(new CarouselComponentItemTracker());
-		add(comp.getUI(), CarouselLayoutManager.CAROUSEL);
-		setCarouselComponent(comp);
-	}
-
-	private void buildCarouselOutline(CarouselComponentFactory factory) {
-		CarouselOutline outline = factory.createCarouselOutline(getCarouselComponent());
-		add(outline, CarouselLayoutManager.CAROUSEL_OUTLINE);
-		setCarouselOutline(outline);
-	}
-
-	private void buildCarouselBreadcrumb(CarouselComponentFactory factory) {
-		CarouselBreadcrumb breadcrumb = factory.createCarouselBreadcrumb(this);
-		add(breadcrumb.getUI(), CarouselLayoutManager.CAROUSEL_BREADCRUMB);
-		setCarouselBreadcrumb(breadcrumb);
-	}
-
-	protected void initFocusManager(CarouselFocusManager focusManager) {
+	protected void initFocusManager() {
 		Component carousel = getCarouselComponent().getUI();
+		CarouselFocusManager focusManager = getFocusManager();
 		focusManager.addFocusTransferBidirectional(carousel, Direction.DOWN, getCarouselBreadcrumb().getUI());
 		focusManager.clearFocusOwner();
 	}
@@ -446,6 +463,22 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	public void setTheme(CarouselProgramBrowserTheme theme) {
 		this.theme = theme;
+	}
+
+	public AmstradProgramCoverImageProducer getProgramCoverImageProducer() {
+		return programCoverImageProducer;
+	}
+
+	private void setProgramCoverImageProducer(AmstradProgramCoverImageProducer imageProducer) {
+		this.programCoverImageProducer = imageProducer;
+	}
+
+	public AmstradFolderCoverImageProducer getFolderCoverImageProducer() {
+		return folderCoverImageProducer;
+	}
+
+	private void setFolderCoverImageProducer(AmstradFolderCoverImageProducer imageProducer) {
+		this.folderCoverImageProducer = imageProducer;
 	}
 
 	protected CarouselFocusManager getFocusManager() {

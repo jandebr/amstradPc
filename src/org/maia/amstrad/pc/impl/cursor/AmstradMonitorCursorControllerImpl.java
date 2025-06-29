@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
+import org.maia.graphics2d.image.ImageUtils;
 import org.maia.util.SystemUtils;
 
 public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
@@ -41,7 +42,7 @@ public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 	public static long STARTUP_ACTIVITY_MASK_DURATION_MILLIS = 1000L; // 1 second
 
 	static {
-		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage cursorImg = ImageUtils.createImage(16, 16);
 		BLANK_CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
 	}
 

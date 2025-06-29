@@ -1,0 +1,136 @@
+package org.maia.amstrad.gui.covers.cassette;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+import org.maia.amstrad.gui.UIResources;
+import org.maia.amstrad.gui.covers.util.Randomizer;
+import org.maia.graphics2d.image.ImageUtils;
+import org.maia.swing.layout.FillMode;
+import org.maia.swing.text.TextLabel;
+
+public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
+
+	public static Dimension CANONICAL_SIZE = new Dimension(330, 600);
+
+	private Rectangle cassettePosterRegion = new Rectangle(16, 13, 300, 480);
+
+	private Rectangle titleBounds;
+
+	private Color titleBackground = new Color(0, 0, 0, 220);
+
+	public ClosedCassetteCoverImageMaker(String title) {
+		this(title, 1.0);
+	}
+
+	public ClosedCassetteCoverImageMaker(String title, double scaleFactor) {
+		this(title, new Randomizer(), scaleFactor);
+	}
+
+	public ClosedCassetteCoverImageMaker(String title, Randomizer randomizer, double scaleFactor) {
+		super(title, randomizer, UIResources.loadImage("covers/cassette-closed-330x512.png"),
+				UIResources.loadImage("covers/cassette-closed-gloss-a-330x348.png"),
+				UIResources.loadImage("covers/cassette-texture-300x480.png"), scaleFactor);
+		addCassetteGlossImage(UIResources.loadImage("covers/cassette-closed-gloss-b-330x348.png"));
+		addCassetteGlossImage(UIResources.loadImage("covers/cassette-closed-gloss-c-330x348.png"));
+	}
+
+	@Override
+	protected void paintTitleOnPoster(BufferedImage poster, String title) {
+		int posterWidth = ImageUtils.getWidth(poster);
+		int posterHeight = ImageUtils.getHeight(poster);
+		Rectangle titleBounds = drawTitleBounds(posterWidth, posterHeight);
+		setTitleBounds(titleBounds);
+		int padX = Math.max(posterWidth / 50, 2);
+		int padY = Math.max(posterHeight / 50, 2);
+		Insets padding = new Insets(padY, padX, padY, padX);
+		TextLabel label = TextLabel.createSizedLabel(title, getTitleFont(), new Dimension(
+				titleBounds.width - padding.left - padding.right, titleBounds.height - padding.top - padding.bottom));
+		label.setForeground(getTitleColor());
+		label.setFillMode(FillMode.FIT);
+		Graphics2D g = poster.createGraphics();
+		g.translate(titleBounds.x, titleBounds.y);
+		g.setColor(getTitleBackground());
+		g.fillRect(0, 0, titleBounds.width, titleBounds.height);
+		g.translate(padding.left, padding.top);
+		label.paint(g);
+		g.dispose();
+	}
+
+	protected Rectangle drawTitleBounds(int posterWidth, int posterHeight) {
+		int titleWidth = posterWidth;
+		int titleHeight = Math.max(posterHeight / 8, Math.min(20, posterHeight));
+		int y0 = 0;
+		if (drawBoolean()) {
+			// center
+			y0 = (posterHeight - titleHeight) / 2;
+		} else if (drawBoolean()) {
+			// random upper
+			int yMin = titleHeight / 2;
+			int yMax = Math.max(posterHeight / 4 - titleHeight, yMin);
+			y0 = drawIntegerNumber(yMin, yMax);
+		} else {
+			// top
+			y0 = 0;
+		}
+		return new Rectangle(0, y0, titleWidth, titleHeight);
+	}
+
+	@Override
+	protected void projectFrontImageOnCassette(BufferedImage front, EmbeddedCassetteImage embeddedCassette) {
+		Rectangle frontBounds = scaleRectangle(getCassettePosterRegion());
+		Graphics2D g = embeddedCassette.getImage().createGraphics();
+		g.translate(embeddedCassette.getImagePadding().left, embeddedCassette.getImagePadding().top);
+		g.drawImage(front, frontBounds.x, frontBounds.y, frontBounds.width, frontBounds.height, null);
+		g.dispose();
+	}
+
+	@Override
+	protected int getGlossVerticalTranslation(BufferedImage gloss, int cassetteHeight) {
+		Rectangle titleBounds = getTitleBounds();
+		int glossHeight = ImageUtils.getHeight(gloss);
+		int dy = 0;
+		int dyMin = -glossHeight / 2;
+		int dyMax = cassetteHeight - glossHeight / 2;
+		int attempts = 0;
+		boolean overExposedTitle;
+		do {
+			overExposedTitle = false;
+			dy = drawIntegerNumber(dyMin, dyMax);
+			if (titleBounds != null) {
+				int xg = titleBounds.x + titleBounds.width / 2;
+				int yg = titleBounds.y + titleBounds.height / 2 - dy;
+				if (yg >= 0 && yg < glossHeight) {
+					float g = (gloss.getRGB(xg, yg) >>> 24) / 128f;
+					overExposedTitle = g >= 0.5f;
+				}
+			}
+		} while (overExposedTitle && ++attempts < 5);
+		return dy;
+	}
+
+	private Rectangle getCassettePosterRegion() {
+		return cassettePosterRegion;
+	}
+
+	private Rectangle getTitleBounds() {
+		return titleBounds;
+	}
+
+	private void setTitleBounds(Rectangle titleBounds) {
+		this.titleBounds = titleBounds;
+	}
+
+	public Color getTitleBackground() {
+		return titleBackground;
+	}
+
+	public void setTitleBackground(Color titleBackground) {
+		this.titleBackground = titleBackground;
+	}
+
+}

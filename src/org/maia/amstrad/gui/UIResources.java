@@ -2,10 +2,9 @@ package org.maia.amstrad.gui;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -17,6 +16,7 @@ import org.maia.amstrad.pc.action.MonitorFullscreenAction;
 import org.maia.amstrad.pc.action.PauseResumeAction;
 import org.maia.amstrad.pc.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.VirtualKeyboardAction;
+import org.maia.graphics2d.image.ImageUtils;
 
 public class UIResources {
 
@@ -112,14 +112,15 @@ public class UIResources {
 
 	public static ImageIcon loadIcon(String resourceName) {
 		ImageIcon icon = null;
-		try {
-			InputStream in = UIResources.class.getResourceAsStream("icons/" + resourceName);
-			icon = new ImageIcon(ImageIO.read(in));
-			in.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		Image image = loadImage("icons/" + resourceName);
+		if (image != null) {
+			icon = new ImageIcon(image);
 		}
 		return icon;
+	}
+
+	public static BufferedImage loadImage(String resourceName) {
+		return ImageUtils.readFromStream(UIResources.class.getResourceAsStream("images/" + resourceName));
 	}
 
 	private static class ButtonStateIcon implements Icon {

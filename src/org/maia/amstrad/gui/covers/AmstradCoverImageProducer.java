@@ -31,6 +31,16 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 		this.backgroundColor = backgroundColor;
 	}
 
+	protected String getProducerIdentifier() {
+		StringBuilder sb = new StringBuilder(64);
+		sb.append(getClass().getSimpleName());
+		sb.append('_').append(getImageSize().width).append('x').append(getImageSize().height);
+		if (getBackgroundColor() != null) {
+			sb.append('_').append(getBackgroundColor().getRGB());
+		}
+		return sb.toString();
+	}
+
 	protected Image getCoverImageFromRepository(Node node) {
 		Image image = null;
 		AmstradProgramImage imageProxy = node.getCoverImage();
@@ -42,6 +52,10 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 	}
 
 	protected Image frameImageToSize(Image image) {
+		return frameImageToSize(image, FillMode.FIT);
+	}
+
+	protected Image frameImageToSize(Image image, FillMode fillMode) {
 		Color bg = getBackgroundColor();
 		Dimension targetSize = getImageSize();
 		Dimension sourceSize = ImageUtils.getSize(image);
@@ -55,7 +69,7 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 		InnerRegionLayout layout = new InnerRegionLayout(targetSize, sourceSize);
 		layout.setHorizontalAlignment(HorizontalAlignment.CENTER);
 		layout.setVerticalAlignment(VerticalAlignment.CENTER);
-		layout.setFillMode(FillMode.FIT_DOWNSCALE);
+		layout.setFillMode(fillMode);
 		Rectangle bounds = layout.getInnerRegionLayoutBounds();
 		BufferedImage framedImage = ImageUtils.createImage(targetSize, bg);
 		Graphics2D g2 = framedImage.createGraphics();

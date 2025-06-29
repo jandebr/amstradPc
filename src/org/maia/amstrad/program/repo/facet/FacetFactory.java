@@ -8,17 +8,15 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 
+import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.graphics2d.image.ImageUtils;
 
 public class FacetFactory {
 
 	private Collection<Facet> allFacets;
 
 	private static FacetFactory instance;
-
-	private static final String ICON_PATH = "org/maia/amstrad/gui/icons/facet/";
 
 	private FacetFactory() {
 	}
@@ -80,7 +78,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return ImageUtils.getIcon(ICON_PATH + "author24.png");
+			return UIResources.loadIcon("facet/author24.png");
 		}
 
 		@Override
@@ -102,7 +100,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return ImageUtils.getIcon(ICON_PATH + "year24.png");
+			return UIResources.loadIcon("facet/year24.png");
 		}
 
 		@Override
@@ -125,7 +123,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return ImageUtils.getIcon(ICON_PATH + "tape24.png");
+			return UIResources.loadIcon("facet/tape24.png");
 		}
 
 		@Override
@@ -147,7 +145,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return ImageUtils.getIcon(ICON_PATH + "blocks24.png");
+			return UIResources.loadIcon("facet/blocks24.png");
 		}
 
 		@Override
@@ -170,7 +168,7 @@ public class FacetFactory {
 
 		@Override
 		public Icon getIcon() {
-			return ImageUtils.getIcon(ICON_PATH + "monitor24.png");
+			return UIResources.loadIcon("facet/monitor24.png");
 		}
 
 		@Override

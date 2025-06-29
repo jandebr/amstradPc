@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import org.maia.graphics2d.image.ImageUtils;
+
 public class AmstradDisplayCanvasOverImage extends AmstradDisplayCanvas {
 
 	private BufferedImage image;
@@ -17,7 +19,7 @@ public class AmstradDisplayCanvasOverImage extends AmstradDisplayCanvas {
 
 	private void provisionImage() {
 		Dimension imageSize = getGraphicsContext().getDisplayCanvasSize();
-		BufferedImage image = new BufferedImage(imageSize.width, imageSize.height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = ImageUtils.createImage(imageSize);
 		setImage(image);
 		setDrawingSurface(image.createGraphics());
 		erase(); // make image fully transparent
