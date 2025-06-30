@@ -1,21 +1,18 @@
-package org.maia.amstrad.gui.covers.util;
+package org.maia.amstrad.gui.covers.cassette;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 
-import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker;
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
-import org.maia.amstrad.gui.covers.cassette.CassetteGlossImageMaker;
-import org.maia.amstrad.gui.covers.cassette.CassetteTextureImageMaker;
-import org.maia.amstrad.gui.covers.cassette.ClosedCassetteCoverImageMaker;
-import org.maia.amstrad.gui.covers.cassette.OpenCassetteCoverImageMaker;
 import org.maia.amstrad.gui.covers.fabric.ClothTextureImageMaker;
 import org.maia.amstrad.gui.covers.fabric.FabricCoverImageMaker;
+import org.maia.amstrad.gui.covers.util.Randomizer;
+import org.maia.amstrad.gui.covers.util.ResourcePaths;
 import org.maia.graphics2d.image.ImageUtils;
 
-public class CoverImageMakerMain implements ResourcePaths {
+public class CassetteCoverImageMakerTest implements ResourcePaths {
 
 	private static NumberFormat nf;
 
@@ -28,7 +25,7 @@ public class CoverImageMakerMain implements ResourcePaths {
 	}
 
 	public static void main(String[] args) {
-		new CoverImageMakerMain().start();
+		new CassetteCoverImageMakerTest().start();
 	}
 
 	private void start() {
