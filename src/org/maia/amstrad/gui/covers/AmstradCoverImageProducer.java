@@ -22,10 +22,6 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 
 	private Color backgroundColor;
 
-	protected AmstradCoverImageProducer(Dimension imageSize) {
-		this(imageSize, null);
-	}
-
 	protected AmstradCoverImageProducer(Dimension imageSize, Color backgroundColor) {
 		this.imageSize = imageSize;
 		this.backgroundColor = backgroundColor;
@@ -78,12 +74,20 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 		return framedImage;
 	}
 
-	protected Dimension getImageSize() {
+	public Dimension getImageSize() {
 		return imageSize;
 	}
 
-	protected Color getBackgroundColor() {
+	public void setImageSize(Dimension imageSize) {
+		this.imageSize = imageSize;
+	}
+
+	public Color getBackgroundColor() {
 		return backgroundColor;
+	}
+
+	public void setBackgroundColor(Color backgroundColor) {
+		this.backgroundColor = backgroundColor;
 	}
 
 }

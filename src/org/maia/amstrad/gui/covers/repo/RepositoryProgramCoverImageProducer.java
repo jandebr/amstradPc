@@ -10,7 +10,7 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 public class RepositoryProgramCoverImageProducer extends AmstradProgramCoverImageProducer {
 
 	public RepositoryProgramCoverImageProducer(Dimension imageSize) {
-		super(imageSize);
+		this(imageSize, null);
 	}
 
 	public RepositoryProgramCoverImageProducer(Dimension imageSize, Color backgroundColor) {

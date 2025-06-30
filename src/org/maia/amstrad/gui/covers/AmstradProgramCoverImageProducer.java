@@ -10,10 +10,6 @@ import org.maia.graphics2d.image.pool.RetryablePooledImageProducerException;
 
 public abstract class AmstradProgramCoverImageProducer extends AmstradCoverImageProducer {
 
-	protected AmstradProgramCoverImageProducer(Dimension imageSize) {
-		super(imageSize);
-	}
-
 	protected AmstradProgramCoverImageProducer(Dimension imageSize, Color backgroundColor) {
 		super(imageSize, backgroundColor);
 	}

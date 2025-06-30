@@ -17,7 +17,7 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
 	public static Dimension CANONICAL_SIZE = new Dimension(330, 600);
 
-	private Rectangle cassettePosterRegion = new Rectangle(16, 13, 300, 480);
+	public static Rectangle CANONICAL_POSTER_REGION = new Rectangle(16, 13, 300, 480);
 
 	private Rectangle titleBounds;
 
@@ -82,7 +82,7 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
 	@Override
 	protected void projectFrontImageOnCassette(BufferedImage front, EmbeddedCassetteImage embeddedCassette) {
-		Rectangle frontBounds = scaleRectangle(getCassettePosterRegion());
+		Rectangle frontBounds = scaleRectangle(CANONICAL_POSTER_REGION);
 		Graphics2D g = embeddedCassette.getImage().createGraphics();
 		g.translate(embeddedCassette.getImagePadding().left, embeddedCassette.getImagePadding().top);
 		g.drawImage(front, frontBounds.x, frontBounds.y, frontBounds.width, frontBounds.height, null);
@@ -113,8 +113,8 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 		return dy;
 	}
 
-	private Rectangle getCassettePosterRegion() {
-		return cassettePosterRegion;
+	public Dimension getScaledPosterSize() {
+		return scaleSize(CANONICAL_POSTER_REGION.getSize());
 	}
 
 	private Rectangle getTitleBounds() {

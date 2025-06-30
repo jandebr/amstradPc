@@ -11,7 +11,7 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 public class RepositoryFolderCoverImageProducer extends AmstradFolderCoverImageProducer {
 
 	public RepositoryFolderCoverImageProducer(Dimension imageSize) {
-		super(imageSize);
+		this(imageSize, null);
 	}
 
 	public RepositoryFolderCoverImageProducer(Dimension imageSize, Color backgroundColor) {

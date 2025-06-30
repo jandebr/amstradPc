@@ -51,6 +51,15 @@ public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 		return projection;
 	}
 
+	protected Quadrilateral createProjectionTargetArea(int xOffset, int yOffset) {
+		double scale = getScaleFactor();
+		Point p1 = new Point(xOffset + (int) Math.round(1 * scale), yOffset + (int) Math.round(70 * scale));
+		Point p2 = new Point(xOffset + (int) Math.round(75 * scale), yOffset + (int) Math.round(6 * scale));
+		Point p3 = new Point(xOffset + (int) Math.round(82 * scale), yOffset + (int) Math.round(576 * scale));
+		Point p4 = new Point(xOffset + (int) Math.round(6 * scale), yOffset + (int) Math.round(479 * scale));
+		return new Quadrilateral(p1, p2, p3, p4);
+	}
+
 	@Override
 	protected ReflectionImageMaker createReflectionMaker() {
 		return new OpenReflectionImageMaker();
@@ -130,14 +139,9 @@ public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
 	@Override
 	protected void projectFrontImageOnCassette(BufferedImage front, EmbeddedCassetteImage embeddedCassette) {
-		double scale = getScaleFactor();
-		int x0 = embeddedCassette.getImagePadding().left;
-		int y0 = embeddedCassette.getImagePadding().top;
-		Point p1 = new Point(x0 + (int) Math.round(1 * scale), y0 + (int) Math.round(70 * scale));
-		Point p2 = new Point(x0 + (int) Math.round(75 * scale), y0 + (int) Math.round(6 * scale));
-		Point p3 = new Point(x0 + (int) Math.round(82 * scale), y0 + (int) Math.round(576 * scale));
-		Point p4 = new Point(x0 + (int) Math.round(6 * scale), y0 + (int) Math.round(479 * scale));
-		Quadrilateral targetArea = new Quadrilateral(p1, p2, p3, p4);
+		int xOffset = embeddedCassette.getImagePadding().left;
+		int yOffset = embeddedCassette.getImagePadding().top;
+		Quadrilateral targetArea = createProjectionTargetArea(xOffset, yOffset);
 		getProjection().projectOntoTargetImage(front, embeddedCassette.getImage(), targetArea,
 				new PseudoPerspective(0.5f, 0f));
 	}
@@ -172,6 +176,10 @@ public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 			float bri = 0.1f + 0.2f * drawFloatUnitNumber();
 			return Color.getHSBColor(hue, sat, bri);
 		}
+	}
+
+	public Dimension getScaledFrontImageSize() {
+		return createProjectionTargetArea(0, 0).getBoundingBox().getSize();
 	}
 
 	public Color getPrintColor() {

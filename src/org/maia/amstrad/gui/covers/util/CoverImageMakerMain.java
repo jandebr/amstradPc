@@ -98,7 +98,7 @@ public class CoverImageMakerMain implements ResourcePaths {
 	}
 
 	private static BufferedImage createPosterImage(CassetteCoverImageMaker imageMaker) {
-		Dimension size = imageMaker.scaleSize(new Dimension(300, 480));
+		Dimension size = imageMaker.scaleSize(ClosedCassetteCoverImageMaker.CANONICAL_POSTER_REGION.getSize());
 		return posterMaker.makeCoverImage(size);
 	}
 
