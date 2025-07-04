@@ -50,5 +50,6 @@ desktop.jvmarg = -Djavacpc.mode=DESKTOP
 desktop.jvmarg = -Djavacpc.program_browser.style=Classic
 entertainment.jvmarg = -Djavacpc.mode=ENTERTAINMENT
 entertainment.jvmarg = -Djavacpc.program_browser.style=Classic
+entertainment.jvmarg = -Dimages.cache_capacity=100
 javacpc.jvmarg = -Djavacpc.mode=JAVACPC
 javacpc.jvmarg = -Djavacpc.program_browser.style=Classic

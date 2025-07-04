@@ -8,22 +8,20 @@ import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItemMaker;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.swing.animate.itemslide.SlidingCursorMovement;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.animate.itemslide.outline.SlidingItemListOutlineView;
 
 public class CarouselComponent extends SlidingItemListComponent {
 
-	private CarouselHost host;
-
 	private CarouselItemMaker itemMaker;
 
 	private FolderNode folderNode;
 
 	public CarouselComponent(Dimension size, Insets padding, Color background, SlidingCursorMovement cursorMovement,
-			CarouselHost host, CarouselItemMaker itemMaker) {
+			CarouselItemMaker itemMaker) {
 		super(size, padding, background, cursorMovement);
-		this.host = host;
 		this.itemMaker = itemMaker;
 	}
 
@@ -38,12 +36,53 @@ public class CarouselComponent extends SlidingItemListComponent {
 				if (node.equals(childNodeInFocus)) {
 					focusIndex = getItemCount();
 				}
-				addItem(getItemMaker().createCarouselItemForNode(node, this));
+				CarouselItem item = null;
+				if (node.isFolder()) {
+					FolderNode childFolderNode = node.asFolder();
+					ProgramNode showcaseProgramNode = selectShowcaseProgramNode(childFolderNode);
+					item = getItemMaker().createCarouselItemForFolder(childFolderNode, showcaseProgramNode, this);
+				} else {
+					item = getItemMaker().createCarouselItemForProgram(node.asProgram(), this);
+				}
+				if (item != null) {
+					addItem(item);
+				}
 			}
 			if (focusIndex >= 0) {
 				validateLayout();
 				moveToItemIndex(focusIndex);
 			}
+		}
+	}
+
+	protected ProgramNode selectShowcaseProgramNode(FolderNode folderNode) {
+		ProgramNode winnerWithCoverImage = null;
+		ProgramNode winnerWithoutCoverImage = null;
+		int winnerWithCoverImageBlocksOnTape = -1;
+		int winnerWithoutCoverImageBlocksOnTape = -1;
+		for (Node node : folderNode.getChildNodes()) {
+			if (node.isProgram()) {
+				ProgramNode programNode = node.asProgram();
+				int blocks = programNode.getProgram().getBlocksOnTape();
+				if (programNode.getCoverImage() != null) {
+					if (blocks > winnerWithCoverImageBlocksOnTape) {
+						winnerWithCoverImageBlocksOnTape = blocks;
+						winnerWithCoverImage = programNode;
+					}
+				} else {
+					if (blocks > winnerWithoutCoverImageBlocksOnTape) {
+						winnerWithoutCoverImageBlocksOnTape = blocks;
+						winnerWithoutCoverImage = programNode;
+					}
+				}
+			}
+		}
+		if (winnerWithCoverImage != null) {
+			return winnerWithCoverImage;
+		} else if (winnerWithoutCoverImage != null) {
+			return winnerWithoutCoverImage;
+		} else {
+			return null;
 		}
 	}
 
@@ -59,10 +98,6 @@ public class CarouselComponent extends SlidingItemListComponent {
 	@Override
 	public CarouselItem getSelectedItem() {
 		return (CarouselItem) super.getSelectedItem();
-	}
-
-	public CarouselHost getHost() {
-		return host;
 	}
 
 	private CarouselItemMaker getItemMaker() {

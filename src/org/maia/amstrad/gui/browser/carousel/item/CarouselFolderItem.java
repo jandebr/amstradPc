@@ -1,38 +1,35 @@
 package org.maia.amstrad.gui.browser.carousel.item;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
+import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.covers.AmstradFolderCoverImage;
+import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
-import org.maia.graphics2d.image.ImageUtils;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public class CarouselFolderItem extends CarouselRepositoryItem {
 
-	private static Image coverImage = ImageUtils
-			.readFromResource("org/maia/amstrad/gui/browser/carousel/item/buzz.png");
+	public CarouselFolderItem(FolderNode folderNode, ProgramNode showcaseProgramNode,
+			CarouselComponent carouselComponent, AmstradFolderCoverImageProducer coverImageProducer, Insets margin) {
+		this(folderNode, carouselComponent,
+				new AmstradFolderCoverImage(folderNode, showcaseProgramNode, coverImageProducer), margin);
+	}
 
-	public CarouselFolderItem(FolderNode folderNode, CarouselComponent carouselComponent, Dimension size, Insets margin,
-			Font font) {
-		super(folderNode, carouselComponent, size, margin, font);
+	public CarouselFolderItem(FolderNode folderNode, CarouselComponent carouselComponent,
+			AmstradFolderCoverImage coverImage, Insets margin) {
+		super(folderNode, carouselComponent, coverImage, margin);
 	}
 
 	@Override
-	public void execute() {
-		getHost().enterFolder(getFolderNode());
+	public void execute(CarouselHost host) {
+		host.enterFolder(getFolderNode());
 	}
 
 	@Override
-	protected Color getBackgroundColor() {
-		return new Color(7, 36, 11);
-	}
-
-	@Override
-	protected Image getCoverImage() {
-		return coverImage;
+	public AmstradFolderCoverImage getCoverImage() {
+		return (AmstradFolderCoverImage) super.getCoverImage();
 	}
 
 	public FolderNode getFolderNode() {

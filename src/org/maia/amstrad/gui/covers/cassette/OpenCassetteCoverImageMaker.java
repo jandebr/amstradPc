@@ -146,26 +146,11 @@ public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 				new PseudoPerspective(0.5f, 0f));
 	}
 
-	@Override
-	protected float getPosterTextureIntensity() {
-		return 0.1f + 0.1f * drawFloatUnitNumber();
-	}
-
-	@Override
-	protected float getPosterBrightnessAdjustment() {
-		return -0.5f;
-	}
-
-	@Override
-	protected float getGlossIntensity() {
-		return 0.6f + 0.2f * drawFloatUnitNumber();
-	}
-
 	protected float getPrintTextureIntensity() {
 		return 0.4f + 0.4f * drawFloatUnitNumber();
 	}
 
-	protected Color drawPrintColor() {
+	public Color drawPrintColor() {
 		if (drawIntegerNumber(1, 3) == 1) {
 			// black
 			return new Color(10, 10, 10);
@@ -176,10 +161,6 @@ public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 			float bri = 0.1f + 0.2f * drawFloatUnitNumber();
 			return Color.getHSBColor(hue, sat, bri);
 		}
-	}
-
-	public Dimension getScaledFrontImageSize() {
-		return createProjectionTargetArea(0, 0).getBoundingBox().getSize();
 	}
 
 	public Color getPrintColor() {

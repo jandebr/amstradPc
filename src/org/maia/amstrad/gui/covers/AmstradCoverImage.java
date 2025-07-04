@@ -1,5 +1,7 @@
 package org.maia.amstrad.gui.covers;
 
+import java.awt.Dimension;
+
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.graphics2d.image.pool.AbstractPooledImage;
@@ -31,6 +33,10 @@ public abstract class AmstradCoverImage extends AbstractPooledImage {
 
 	private static ImagePool getCoverImagePool() {
 		return AmstradFactory.getInstance().getAmstradContext().getSharedImagePool();
+	}
+
+	public Dimension getImageSize() {
+		return getImageProducer().getImageSize();
 	}
 
 	@Override

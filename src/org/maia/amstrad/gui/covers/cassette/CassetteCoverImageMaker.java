@@ -178,7 +178,7 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 	}
 
 	protected float getPosterTextureIntensity() {
-		return 0.1f + 0.3f * drawFloatUnitNumber();
+		return 0.1f + 0.2f * drawFloatUnitNumber();
 	}
 
 	protected float getPosterBrightnessAdjustment() {
@@ -186,7 +186,7 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 	}
 
 	protected float getGlossIntensity() {
-		return 0.3f + 0.2f * drawFloatUnitNumber();
+		return 0.1f + 0.1f * drawFloatUnitNumber();
 	}
 
 	protected int getMaxReflectionHeight(EmbeddedCassetteImage embeddedCassette) {

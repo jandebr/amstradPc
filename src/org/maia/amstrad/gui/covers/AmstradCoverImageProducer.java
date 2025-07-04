@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.program.image.AmstradProgramImage;
@@ -32,7 +33,7 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 		sb.append(getClass().getSimpleName());
 		sb.append('_').append(getImageSize().width).append('x').append(getImageSize().height);
 		if (getBackgroundColor() != null) {
-			sb.append('_').append(getBackgroundColor().getRGB());
+			sb.append('c').append(getBackgroundColor().getRGB());
 		}
 		return sb.toString();
 	}
@@ -69,6 +70,7 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 		Rectangle bounds = layout.getInnerRegionLayoutBounds();
 		BufferedImage framedImage = ImageUtils.createImage(targetSize, bg);
 		Graphics2D g2 = framedImage.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g2.drawImage(image, bounds.x, bounds.y, bounds.width, bounds.height, null);
 		g2.dispose();
 		return framedImage;

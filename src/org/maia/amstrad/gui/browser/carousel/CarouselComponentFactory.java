@@ -33,10 +33,13 @@ import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItemMaker;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
+import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
+import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.graphics2d.image.GradientImageFactory;
 import org.maia.graphics2d.image.GradientImageFactory.GradientFunction;
 import org.maia.graphics2d.image.ImageUtils;
@@ -62,9 +65,17 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	private CarouselLayoutManager layout;
 
-	public CarouselComponentFactory(CarouselProgramBrowserTheme theme, CarouselLayoutManager layout) {
+	private AmstradProgramCoverImageProducer programCoverImageProducer;
+
+	private AmstradFolderCoverImageProducer folderCoverImageProducer;
+
+	public CarouselComponentFactory(CarouselProgramBrowserTheme theme, CarouselLayoutManager layout,
+			AmstradProgramCoverImageProducer programCoverImageProducer,
+			AmstradFolderCoverImageProducer folderCoverImageProducer) {
 		this.theme = theme;
 		this.layout = layout;
+		this.programCoverImageProducer = programCoverImageProducer;
+		this.folderCoverImageProducer = folderCoverImageProducer;
 	}
 
 	public SlidingTextLabel createHeadingComponent(Node node) {
@@ -220,11 +231,11 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		return ImageUtils.combineByTransparency(left, bottom);
 	}
 
-	public CarouselComponent createCarouselComponent(CarouselHost host) {
+	public CarouselComponent createCarouselComponent() {
 		Dimension size = getLayout().getCarouselBounds().getSize();
-		Insets padding = new Insets(8, 8, 8, 8);
+		Insets padding = getLayout().getCarouselPadding();
 		CarouselComponent comp = new CarouselComponent(size, padding, getTheme().getBackgroundColor(),
-				SlidingCursorMovement.LAZY, host, this);
+				SlidingCursorMovement.LAZY, this);
 		comp.setLayoutManager(SlidingItemLayoutManagerFactory.createHorizontallySlidingCenterAlignedLayout(comp,
 				VerticalAlignment.CENTER));
 		comp.setShade(SlidingShadeFactory.createGradientShadeRelativeLength(comp, 0.15));
@@ -237,31 +248,30 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	}
 
 	@Override
-	public CarouselItem createCarouselItemForNode(Node repositoryNode, CarouselComponent comp) {
-		return createCarouselItem(repositoryNode, comp);
+	public CarouselItem createCarouselItemForEmptyFolder(CarouselComponent comp) {
+		Dimension size = getFolderCoverImageProducer().getImageSize();
+		Insets margin = getLayout().getCarouselItemMargin();
+		Font font = getTheme().getCarouselFont();
+		float fontSize = TextLabel.getFontSizeForLineWidth(font, StringUtils.repeat('a', 16), size.width - 20);
+		font = font.deriveFont(fontSize);
+		return new CarouselEmptyItem(comp, size, margin, font);
 	}
 
 	@Override
-	public CarouselItem createCarouselItemForEmptyFolder(CarouselComponent comp) {
-		return createCarouselItem(null, comp);
+	public CarouselItem createCarouselItemForFolder(FolderNode folderNode, ProgramNode showcaseProgramNode,
+			CarouselComponent comp) {
+		Insets margin = getLayout().getCarouselItemMargin();
+		CarouselFolderItem item = new CarouselFolderItem(folderNode, showcaseProgramNode, comp,
+				getFolderCoverImageProducer(), margin);
+		item.getCoverImage().getImage(); // image pre-loading TODO spinner
+		return item;
 	}
 
-	private CarouselItem createCarouselItem(Node repositoryNode, CarouselComponent comp) {
-		CarouselItem item = null;
-		Insets margin = new Insets(8, 16, 8, 16);
-		int height = comp.getViewportHeight();
-		int width = (int) Math.round(height * 0.8);
-		Dimension size = new Dimension(width, height);
-		Font font = getTheme().getCarouselFont();
-		float fontSize = TextLabel.getFontSizeForLineWidth(font, StringUtils.repeat('a', 16), width - 20);
-		font = font.deriveFont(fontSize);
-		if (repositoryNode == null) {
-			item = new CarouselEmptyItem(comp, size, margin, font);
-		} else if (repositoryNode.isFolder()) {
-			item = new CarouselFolderItem(repositoryNode.asFolder(), comp, size, margin, font);
-		} else if (repositoryNode.isProgram()) {
-			item = new CarouselProgramItem(repositoryNode.asProgram(), comp, size, margin, font);
-		}
+	@Override
+	public CarouselItem createCarouselItemForProgram(ProgramNode programNode, CarouselComponent comp) {
+		Insets margin = getLayout().getCarouselItemMargin();
+		CarouselProgramItem item = new CarouselProgramItem(programNode, comp, getProgramCoverImageProducer(), margin);
+		item.getCoverImage().getImage(); // image pre-loading TODO spinner
 		return item;
 	}
 
@@ -316,12 +326,20 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		return new CarouselBreadcrumbItemImpl(breadcrumb, folderNode, label, margin, selectedTextColor);
 	}
 
-	public CarouselProgramBrowserTheme getTheme() {
+	protected CarouselProgramBrowserTheme getTheme() {
 		return theme;
 	}
 
-	public CarouselLayoutManager getLayout() {
+	protected CarouselLayoutManager getLayout() {
 		return layout;
+	}
+
+	protected AmstradProgramCoverImageProducer getProgramCoverImageProducer() {
+		return programCoverImageProducer;
+	}
+
+	protected AmstradFolderCoverImageProducer getFolderCoverImageProducer() {
+		return folderCoverImageProducer;
 	}
 
 }

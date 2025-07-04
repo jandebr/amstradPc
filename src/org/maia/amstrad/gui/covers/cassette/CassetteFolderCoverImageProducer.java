@@ -10,6 +10,7 @@ import org.maia.amstrad.gui.covers.cassette.CassettePosterImageProducer.PosterIm
 import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
+import org.maia.graphics2d.image.ImageUtils;
 
 public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImageProducer {
 
@@ -34,19 +35,23 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 		OpenCassetteCoverImageMaker imageMaker = getImageMaker();
 		imageMaker.setTitle(folderNode.getName());
 		imageMaker.setRandomizer(new Randomizer(folderNode.getName()));
-		Dimension size = imageMaker.scaleSize(OpenCassetteCoverImageMaker.CANONICAL_SIZE);
-		CoverImageEmbedding embedding = new CoverImageEmbedding(size, getBackgroundColor());
+		imageMaker.setPrintColor(imageMaker.drawPrintColor());
+		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
 		embedding.setPadTopFraction(0);
 		return imageMaker.makeCoverImage(posterImage.getImage(), embedding);
 	}
 
 	protected PosterImage producePosterImage(FolderNode folderNode, ProgramNode showcaseProgramNode) {
 		CassettePosterImageProducer posterMaker = getPosterMaker();
-		posterMaker.setImageSize(getImageMaker().getScaledFrontImageSize());
+		posterMaker.setImageSize(
+				getImageMaker().scaleSize(ClosedCassetteCoverImageMaker.CANONICAL_POSTER_REGION.getSize()));
 		if (showcaseProgramNode != null) {
+			Image image = getCoverImageFromRepository(showcaseProgramNode);
+			if (image != null)
+				posterMaker.setImageSize(ImageUtils.getSize(image));
 			return posterMaker.producePosterImage(showcaseProgramNode);
 		} else {
-			return posterMaker.inventPosterImage(folderNode);
+			return posterMaker.inventPosterImage(new Randomizer(folderNode.getName()));
 		}
 	}
 

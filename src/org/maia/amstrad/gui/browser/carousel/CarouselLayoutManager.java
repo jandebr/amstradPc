@@ -134,6 +134,14 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		// done upfront
 	}
 
+	public Insets getCarouselPadding() {
+		return new Insets(8, 8, 8, 8);
+	}
+
+	public Insets getCarouselItemMargin() {
+		return new Insets(8, 16, 8, 16);
+	}
+
 	public Dimension getDisplaySize() {
 		return displaySize;
 	}

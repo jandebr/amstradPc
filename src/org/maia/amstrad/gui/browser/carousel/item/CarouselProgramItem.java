@@ -1,48 +1,39 @@
 package org.maia.amstrad.gui.browser.carousel.item;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
+import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.covers.AmstradProgramCoverImage;
+import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
-import org.maia.graphics2d.image.ImageUtils;
 
 public class CarouselProgramItem extends CarouselRepositoryItem {
 
 	private boolean previousRunFailed;
 
-	private static Image coverImage = ImageUtils
-			.readFromResource("org/maia/amstrad/gui/browser/carousel/item/woody.png");
+	public CarouselProgramItem(ProgramNode programNode, CarouselComponent carouselComponent,
+			AmstradProgramCoverImageProducer coverImageProducer, Insets margin) {
+		this(programNode, carouselComponent, new AmstradProgramCoverImage(programNode, coverImageProducer), margin);
+	}
 
-	public CarouselProgramItem(ProgramNode programNode, CarouselComponent carouselComponent, Dimension size,
-			Insets margin, Font font) {
-		super(programNode, carouselComponent, size, margin, font);
+	public CarouselProgramItem(ProgramNode programNode, CarouselComponent carouselComponent,
+			AmstradProgramCoverImage coverImage, Insets margin) {
+		super(programNode, carouselComponent, coverImage, margin);
 	}
 
 	@Override
-	public void execute() {
+	public void execute(CarouselHost host) {
 		AmstradProgram program = getProgramNode().getProgram();
 		if (program != null) {
-			getHost().runProgram(program);
+			host.runProgram(program);
 		}
 	}
 
 	@Override
-	protected Color getBackgroundColor() {
-		if (isPreviousRunFailed()) {
-			return Color.RED;
-		} else {
-			return new Color(7, 5, 38);
-		}
-	}
-
-	@Override
-	protected Image getCoverImage() {
-		return coverImage;
+	public AmstradProgramCoverImage getCoverImage() {
+		return (AmstradProgramCoverImage) super.getCoverImage();
 	}
 
 	public ProgramNode getProgramNode() {

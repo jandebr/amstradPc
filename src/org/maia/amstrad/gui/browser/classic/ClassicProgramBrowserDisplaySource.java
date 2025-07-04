@@ -101,8 +101,16 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	protected void initCoverImageProducers(AmstradDisplayCanvas canvas) {
 		Dimension imageSize = canvas.getTextAreaBoundsOnCanvas(1, 3, 20, 25).getSize();
-		setProgramCoverImageProducer(new RepositoryProgramCoverImageProducer(imageSize));
-		setFolderCoverImageProducer(new RepositoryFolderCoverImageProducer(imageSize));
+		setProgramCoverImageProducer(createProgramCoverImageProducer(imageSize));
+		setFolderCoverImageProducer(createFolderCoverImageProducer(imageSize));
+	}
+
+	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer(Dimension imageSize) {
+		return new RepositoryProgramCoverImageProducer(imageSize);
+	}
+
+	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer(Dimension imageSize) {
+		return new RepositoryFolderCoverImageProducer(imageSize);
 	}
 
 	@Override
@@ -724,19 +732,19 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		this.theme = theme;
 	}
 
-	public AmstradProgramCoverImageProducer getProgramCoverImageProducer() {
+	protected AmstradProgramCoverImageProducer getProgramCoverImageProducer() {
 		return programCoverImageProducer;
 	}
 
-	public void setProgramCoverImageProducer(AmstradProgramCoverImageProducer imageProducer) {
+	private void setProgramCoverImageProducer(AmstradProgramCoverImageProducer imageProducer) {
 		this.programCoverImageProducer = imageProducer;
 	}
 
-	public AmstradFolderCoverImageProducer getFolderCoverImageProducer() {
+	protected AmstradFolderCoverImageProducer getFolderCoverImageProducer() {
 		return folderCoverImageProducer;
 	}
 
-	public void setFolderCoverImageProducer(AmstradFolderCoverImageProducer imageProducer) {
+	private void setFolderCoverImageProducer(AmstradFolderCoverImageProducer imageProducer) {
 		this.folderCoverImageProducer = imageProducer;
 	}
 

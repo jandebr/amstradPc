@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.UIResources;
@@ -84,6 +85,7 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 	protected void projectFrontImageOnCassette(BufferedImage front, EmbeddedCassetteImage embeddedCassette) {
 		Rectangle frontBounds = scaleRectangle(CANONICAL_POSTER_REGION);
 		Graphics2D g = embeddedCassette.getImage().createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.translate(embeddedCassette.getImagePadding().left, embeddedCassette.getImagePadding().top);
 		g.drawImage(front, frontBounds.x, frontBounds.y, frontBounds.width, frontBounds.height, null);
 		g.dispose();
