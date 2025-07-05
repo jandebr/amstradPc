@@ -20,6 +20,8 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
 	public static Rectangle CANONICAL_POSTER_REGION = new Rectangle(16, 13, 300, 480);
 
+	private float titleRelativeVerticalPosition; // between 0 and 1
+
 	private Rectangle titleBounds;
 
 	private Color titleBackground = new Color(0, 0, 0, 220);
@@ -38,13 +40,27 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 				UIResources.loadImage("covers/cassette-texture-300x480.png"), scaleFactor);
 		addCassetteGlossImage(UIResources.loadImage("covers/cassette-closed-gloss-b-330x348.png"));
 		addCassetteGlossImage(UIResources.loadImage("covers/cassette-closed-gloss-c-330x348.png"));
+		this.titleRelativeVerticalPosition = drawTitleRelativeVerticalPosition();
+	}
+
+	public float drawTitleRelativeVerticalPosition() {
+		if (drawBoolean()) {
+			// center
+			return 0.5f;
+		} else if (drawBoolean()) {
+			// random upper
+			return 0.25f * drawFloatUnitNumber();
+		} else {
+			// top
+			return 0f;
+		}
 	}
 
 	@Override
 	protected void paintTitleOnPoster(BufferedImage poster, String title) {
 		int posterWidth = ImageUtils.getWidth(poster);
 		int posterHeight = ImageUtils.getHeight(poster);
-		Rectangle titleBounds = drawTitleBounds(posterWidth, posterHeight);
+		Rectangle titleBounds = computeTitleBounds(posterWidth, posterHeight);
 		setTitleBounds(titleBounds);
 		int padX = Math.max(posterWidth / 50, 2);
 		int padY = Math.max(posterHeight / 50, 2);
@@ -62,23 +78,14 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 		g.dispose();
 	}
 
-	protected Rectangle drawTitleBounds(int posterWidth, int posterHeight) {
-		int titleWidth = posterWidth;
-		int titleHeight = Math.max(posterHeight / 8, Math.min(20, posterHeight));
-		int y0 = 0;
-		if (drawBoolean()) {
-			// center
-			y0 = (posterHeight - titleHeight) / 2;
-		} else if (drawBoolean()) {
-			// random upper
-			int yMin = titleHeight / 2;
-			int yMax = Math.max(posterHeight / 4 - titleHeight, yMin);
-			y0 = drawIntegerNumber(yMin, yMax);
-		} else {
-			// top
-			y0 = 0;
-		}
-		return new Rectangle(0, y0, titleWidth, titleHeight);
+	private Rectangle computeTitleBounds(int posterWidth, int posterHeight) {
+		int titleHeight = computeTitleHeight(posterHeight);
+		int yTop = Math.round((posterHeight - titleHeight) * getTitleRelativeVerticalPosition());
+		return new Rectangle(0, yTop, posterWidth, titleHeight);
+	}
+
+	protected int computeTitleHeight(int posterHeight) {
+		return Math.max(posterHeight / 8, Math.min(20, posterHeight));
 	}
 
 	@Override
@@ -117,6 +124,14 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
 	public Dimension getScaledPosterSize() {
 		return scaleSize(CANONICAL_POSTER_REGION.getSize());
+	}
+
+	public float getTitleRelativeVerticalPosition() {
+		return titleRelativeVerticalPosition;
+	}
+
+	public void setTitleRelativeVerticalPosition(float relativeVerticalPosition) {
+		this.titleRelativeVerticalPosition = relativeVerticalPosition;
 	}
 
 	private Rectangle getTitleBounds() {

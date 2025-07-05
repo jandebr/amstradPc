@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.covers;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import org.maia.amstrad.AmstradFactory;
@@ -37,6 +38,10 @@ public abstract class AmstradCoverImage extends AbstractPooledImage {
 
 	public Dimension getImageSize() {
 		return getImageProducer().getImageSize();
+	}
+
+	public Color getBackgroundColor() {
+		return getImageProducer().getBackgroundColor();
 	}
 
 	@Override

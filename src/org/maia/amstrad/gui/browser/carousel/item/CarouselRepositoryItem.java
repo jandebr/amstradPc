@@ -22,6 +22,10 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 		this.coverImage = coverImage;
 	}
 
+	public void preLoad() {
+		getCoverImage().getImage();
+	}
+
 	@Override
 	public void render(Graphics2D g, SlidingItemListComponent component) {
 		Image image = getCoverImage().getImage();

@@ -124,6 +124,7 @@ public class ProgramEditorMenuMaker extends PlainTextEditorDefaultMenuMaker impl
 	protected JMenu createMetadataInsertFlagsMenu(ProgramEditorActions programActions) {
 		JMenu menu = new JMenu("Flags");
 		menu.add(decorateForMenu(createInsertFlagMenuItem("Hide", AMD_FLAG_HIDE, programActions)));
+		menu.add(decorateForMenu(createInsertFlagMenuItem("Featured", AMD_FLAG_FEATURED, programActions)));
 		menu.add(decorateForMenu(createInsertFlagMenuItem("No launch", AMD_FLAG_NOLAUNCH, programActions)));
 		menu.add(decorateForMenu(createInsertFlagMenuItem("No stage", AMD_FLAG_NOSTAGE, programActions)));
 		menu.add(decorateForMenu(createInsertFlagMenuItem("No direct joystick", AMD_FLAG_NODIRECTJOY, programActions)));

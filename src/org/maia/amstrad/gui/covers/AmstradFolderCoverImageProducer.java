@@ -20,13 +20,13 @@ public abstract class AmstradFolderCoverImageProducer extends AmstradCoverImageP
 		Image image = null;
 		if (pooledImage instanceof AmstradFolderCoverImage) {
 			FolderNode folderNode = ((AmstradFolderCoverImage) pooledImage).getFolderNode();
-			ProgramNode showcaseProgramNode = ((AmstradFolderCoverImage) pooledImage).getShowcaseProgramNode();
-			image = produceImage(folderNode, showcaseProgramNode);
+			ProgramNode featuredProgramNode = ((AmstradFolderCoverImage) pooledImage).getFeaturedProgramNode();
+			image = produceImage(folderNode, featuredProgramNode);
 		}
 		return image;
 	}
 
-	protected abstract Image produceImage(FolderNode folderNode, ProgramNode showcaseProgramNode)
+	protected abstract Image produceImage(FolderNode folderNode, ProgramNode featuredProgramNode)
 			throws RetryablePooledImageProducerException;
 
 }

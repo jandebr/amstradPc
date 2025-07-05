@@ -11,10 +11,10 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public class CarouselFolderItem extends CarouselRepositoryItem {
 
-	public CarouselFolderItem(FolderNode folderNode, ProgramNode showcaseProgramNode,
+	public CarouselFolderItem(FolderNode folderNode, ProgramNode featuredProgramNode,
 			CarouselComponent carouselComponent, AmstradFolderCoverImageProducer coverImageProducer, Insets margin) {
 		this(folderNode, carouselComponent,
-				new AmstradFolderCoverImage(folderNode, showcaseProgramNode, coverImageProducer), margin);
+				new AmstradFolderCoverImage(folderNode, featuredProgramNode, coverImageProducer), margin);
 	}
 
 	public CarouselFolderItem(FolderNode folderNode, CarouselComponent carouselComponent,

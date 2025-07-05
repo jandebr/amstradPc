@@ -5,24 +5,24 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public class AmstradFolderCoverImage extends AmstradCoverImage {
 
-	private ProgramNode showcaseProgramNode;
+	private ProgramNode featuredProgramNode;
 
 	public AmstradFolderCoverImage(FolderNode folderNode, AmstradFolderCoverImageProducer imageProducer) {
 		super(folderNode, imageProducer);
 	}
 
-	public AmstradFolderCoverImage(FolderNode folderNode, ProgramNode showcaseProgramNode,
+	public AmstradFolderCoverImage(FolderNode folderNode, ProgramNode featuredProgramNode,
 			AmstradFolderCoverImageProducer imageProducer) {
 		this(folderNode, imageProducer);
-		this.showcaseProgramNode = showcaseProgramNode;
+		this.featuredProgramNode = featuredProgramNode;
 	}
 
 	public FolderNode getFolderNode() {
 		return (FolderNode) getNode();
 	}
 
-	public ProgramNode getShowcaseProgramNode() {
-		return showcaseProgramNode;
+	public ProgramNode getFeaturedProgramNode() {
+		return featuredProgramNode;
 	}
 
 }

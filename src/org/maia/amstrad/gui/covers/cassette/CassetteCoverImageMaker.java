@@ -150,7 +150,8 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 						float glossFactor = intensity * (gloss.getRGB(xg, yg) >>> 24) / 128f;
 						if (glossFactor > 0f) {
 							int rgb = cassette.getRGB(x, y);
-							rgb = ColorUtils.adjustBrightness(rgb, glossFactor);
+							float factor = glossFactor * (0.2f + 0.8f * ColorUtils.getBrightness(rgb));
+							rgb = ColorUtils.adjustBrightness(rgb, factor);
 							cassette.setRGB(x, y, rgb);
 						}
 					}
@@ -186,7 +187,7 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 	}
 
 	protected float getGlossIntensity() {
-		return 0.1f + 0.1f * drawFloatUnitNumber();
+		return 0.3f + 0.2f * drawFloatUnitNumber();
 	}
 
 	protected int getMaxReflectionHeight(EmbeddedCassetteImage embeddedCassette) {

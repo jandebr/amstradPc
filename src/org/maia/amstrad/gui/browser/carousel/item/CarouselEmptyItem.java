@@ -20,6 +20,8 @@ public class CarouselEmptyItem extends CarouselItem {
 
 	private Font font;
 
+	private Color color = Color.WHITE;
+
 	public CarouselEmptyItem(CarouselComponent carouselComponent, Dimension size, Insets margin, Font font) {
 		super(carouselComponent, size, margin);
 		this.font = font;
@@ -43,7 +45,7 @@ public class CarouselEmptyItem extends CarouselItem {
 		TextLabel label = TextLabel.createSizedLabel("<empty>", getFont(), getSize());
 		label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		label.setFillMode(FillMode.FIT_DOWNSCALE);
-		label.setForeground(Color.WHITE);
+		label.setForeground(getColor());
 		return label;
 	}
 
@@ -54,8 +56,16 @@ public class CarouselEmptyItem extends CarouselItem {
 		return label;
 	}
 
-	private Font getFont() {
+	public Font getFont() {
 		return font;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 
 }

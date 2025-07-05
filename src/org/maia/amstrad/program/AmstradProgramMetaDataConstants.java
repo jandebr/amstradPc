@@ -48,6 +48,8 @@ public interface AmstradProgramMetaDataConstants {
 
 	String AMD_FLAG_HIDE = "HIDE";
 
+	String AMD_FLAG_FEATURED = "FEATURED";
+
 	String AMD_FLAG_NOLAUNCH = "NO-LAUNCH";
 
 	String AMD_FLAG_NOSTAGE = "NO-STAGE";

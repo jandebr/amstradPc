@@ -165,6 +165,17 @@ public abstract class AmstradProgramRepository {
 
 		protected abstract List<Node> listChildNodes();
 
+		public ProgramNode getFeaturedProgramNode() {
+			for (Node child : getChildNodes()) {
+				if (child.isProgram()) {
+					ProgramNode childProgram = child.asProgram();
+					if (childProgram.getProgram().isFeatured())
+						return childProgram;
+				}
+			}
+			return null;
+		}
+
 	}
 
 	public static abstract class ProgramNode extends Node {

@@ -146,6 +146,11 @@ public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 				new PseudoPerspective(0.5f, 0f));
 	}
 
+	@Override
+	protected float getPosterBrightnessAdjustment() {
+		return -0.2f;
+	}
+
 	protected float getPrintTextureIntensity() {
 		return 0.4f + 0.4f * drawFloatUnitNumber();
 	}

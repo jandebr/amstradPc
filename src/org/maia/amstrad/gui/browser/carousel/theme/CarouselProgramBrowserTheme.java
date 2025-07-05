@@ -81,7 +81,19 @@ public interface CarouselProgramBrowserTheme {
 
 	Color getFolderInfoProgramColor();
 
-	Font getCarouselFont();
+	Font getCarouselEmptyFolderFont();
+
+	Color getCarouselEmptyFolderColor();
+
+	Font getCarouselFolderTitleFont();
+
+	Color getCarouselFolderTitleColor();
+
+	Font getCarouselProgramTitleFont();
+
+	Color getCarouselProgramTitleColor();
+
+	Color getCarouselProgramTitleBackgroundColor();
 
 	Color getCarouselCursorColor();
 

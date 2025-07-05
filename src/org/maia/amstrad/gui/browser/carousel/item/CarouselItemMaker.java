@@ -6,11 +6,11 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public interface CarouselItemMaker {
 
-	CarouselItem createCarouselItemForEmptyFolder(CarouselComponent comp);
+	CarouselEmptyItem createCarouselItemForEmptyFolder(CarouselComponent comp);
 
-	CarouselItem createCarouselItemForFolder(FolderNode folderNode, ProgramNode showcaseProgramNode,
+	CarouselFolderItem createCarouselItemForFolder(FolderNode folderNode, ProgramNode featuredProgramNode,
 			CarouselComponent comp);
 
-	CarouselItem createCarouselItemForProgram(ProgramNode programNode, CarouselComponent comp);
+	CarouselProgramItem createCarouselItemForProgram(ProgramNode programNode, CarouselComponent comp);
 
 }

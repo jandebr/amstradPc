@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
+import org.maia.util.ColorUtils;
 
 public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowserTheme, CarouselDefaultColorPalette {
 
@@ -11,9 +12,9 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	private static Font defaultFont = Font.decode("Arial-PLAIN-20");
 
-	private static Font carouselFont = Font.decode("Century-PLAIN-24");
+	private static Font carouselFolderFont = Font.decode("Dialog-BOLD-24");
 
-	private static Font breadcrumbFont = carouselFont;
+	private static Font breadcrumbFont = Font.decode("Century-PLAIN-24");
 
 	public CarouselProgramBrowserDefaultTheme(AmstradGraphicsContext graphicsContext) {
 		this.graphicsContext = graphicsContext;
@@ -210,8 +211,38 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 	}
 
 	@Override
-	public Font getCarouselFont() {
-		return carouselFont;
+	public Font getCarouselEmptyFolderFont() {
+		return getDefaultFont();
+	}
+
+	@Override
+	public Color getCarouselEmptyFolderColor() {
+		return COLOR_7;
+	}
+
+	@Override
+	public Font getCarouselFolderTitleFont() {
+		return carouselFolderFont;
+	}
+
+	@Override
+	public Color getCarouselFolderTitleColor() {
+		return getHeadingColor();
+	}
+
+	@Override
+	public Font getCarouselProgramTitleFont() {
+		return getHeadingFont();
+	}
+
+	@Override
+	public Color getCarouselProgramTitleColor() {
+		return getHeadingColor();
+	}
+
+	@Override
+	public Color getCarouselProgramTitleBackgroundColor() {
+		return ColorUtils.setTransparency(COLOR_0, 0.15f);
 	}
 
 	@Override

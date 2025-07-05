@@ -1,6 +1,5 @@
 package org.maia.amstrad.gui.browser.carousel;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -38,6 +37,7 @@ import org.maia.amstrad.program.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.swing.DirectionalFocusManager.Direction;
 import org.maia.swing.DirectionalFocusManager.FocusListener;
 import org.maia.swing.animate.itemslide.SlidingCursor;
@@ -67,6 +67,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	private CarouselBreadcrumb carouselBreadcrumb;
 
 	private Node lastVisitedNode;
+
+	private ProgramNode programNodeFailedToRun;
 
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
@@ -109,37 +111,37 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		int height = getLayout().getCarouselBounds().height - padding.top - padding.bottom;
 		int width = Math.round(0.6f * height);
 		Dimension imageSize = new Dimension(width, height);
-		Color backgroundColor = getTheme().getBackgroundColor();
-		initProgramCoverImageProducer(imageSize, backgroundColor);
-		initFolderCoverImageProducer(imageSize, backgroundColor);
+		initProgramCoverImageProducer(imageSize);
+		initFolderCoverImageProducer(imageSize);
 	}
 
-	protected void initProgramCoverImageProducer(Dimension imageSize, Color backgroundColor) {
+	protected void initProgramCoverImageProducer(Dimension imageSize) {
 		AmstradProgramCoverImageProducer producer = getProgramCoverImageProducer();
 		if (producer == null || !producer.getImageSize().equals(imageSize)) {
-			producer = createProgramCoverImageProducer(imageSize, backgroundColor);
+			producer = createProgramCoverImageProducer(imageSize);
 		}
-		producer.setBackgroundColor(backgroundColor);
+		producer.setBackgroundColor(getTheme().getBackgroundColor());
 		setProgramCoverImageProducer(producer);
 	}
 
-	protected void initFolderCoverImageProducer(Dimension imageSize, Color backgroundColor) {
+	protected void initFolderCoverImageProducer(Dimension imageSize) {
 		AmstradFolderCoverImageProducer producer = getFolderCoverImageProducer();
 		if (producer == null || !producer.getImageSize().equals(imageSize)) {
-			producer = createFolderCoverImageProducer(imageSize, backgroundColor);
+			producer = createFolderCoverImageProducer(imageSize);
 		}
-		producer.setBackgroundColor(backgroundColor);
+		producer.setBackgroundColor(getTheme().getBackgroundColor());
 		setFolderCoverImageProducer(producer);
 	}
 
-	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer(Dimension imageSize,
-			Color backgroundColor) {
-		return new CassetteProgramCoverImageProducer(imageSize, backgroundColor);
+	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer(Dimension imageSize) {
+		return new CassetteProgramCoverImageProducer(imageSize, getTheme().getBackgroundColor(),
+				getTheme().getCarouselProgramTitleFont(), getTheme().getCarouselProgramTitleColor(),
+				getTheme().getCarouselProgramTitleBackgroundColor());
 	}
 
-	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer(Dimension imageSize,
-			Color backgroundColor) {
-		return new CassetteFolderCoverImageProducer(imageSize, backgroundColor);
+	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer(Dimension imageSize) {
+		return new CassetteFolderCoverImageProducer(imageSize, getTheme().getBackgroundColor(),
+				getTheme().getCarouselFolderTitleFont(), getTheme().getCarouselFolderTitleColor());
 	}
 
 	protected CarouselComponentFactory createComponentFactory() {
@@ -148,7 +150,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	private void buildCarousel() {
-		CarouselComponent comp = getComponentFactory().createCarouselComponent();
+		CarouselComponent comp = getComponentFactory().createCarouselComponent(this);
 		comp.addListener(new CarouselComponentItemTracker());
 		add(comp.getUI(), CarouselLayoutManager.CAROUSEL);
 		setCarouselComponent(comp);
@@ -359,6 +361,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	public void reset() {
+		clearProgramNodeFailedToRun();
 		AmstradProgramRepository repo = getProgramBrowser().getProgramRepository();
 		repo.refresh();
 		enterFolder(repo.getRootNode());
@@ -422,13 +425,22 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	private void notifyProgramRunFailState(AmstradProgram program, boolean failed) {
+		clearProgramNodeFailedToRun();
 		CarouselItem item = getCurrentCarouselItem();
 		if (item instanceof CarouselProgramItem) {
 			CarouselProgramItem programItem = (CarouselProgramItem) item;
-			if (programItem.getProgramNode().getProgram().equals(program)) {
+			ProgramNode programNode = programItem.getProgramNode();
+			if (programNode.getProgram().getProgramName().equals(program.getProgramName())) {
 				programItem.setPreviousRunFailed(failed);
+				if (failed) {
+					setProgramNodeFailedToRun(programNode);
+				}
 			}
 		}
+	}
+
+	private void clearProgramNodeFailedToRun() {
+		setProgramNodeFailedToRun(null);
 	}
 
 	@Override
@@ -460,6 +472,11 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private boolean isBreadcrumbComponent(Component comp) {
 		return getCarouselBreadcrumb().getUI().equals(comp);
+	}
+
+	@Override
+	public boolean isFailedToRun(ProgramNode programNode) {
+		return programNode != null && programNode.equals(getProgramNodeFailedToRun());
 	}
 
 	@Override
@@ -562,6 +579,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private void setLastVisitedNode(Node node) {
 		this.lastVisitedNode = node;
+	}
+
+	private ProgramNode getProgramNodeFailedToRun() {
+		return programNodeFailedToRun;
+	}
+
+	private void setProgramNodeFailedToRun(ProgramNode programNode) {
+		this.programNodeFailedToRun = programNode;
 	}
 
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {

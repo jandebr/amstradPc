@@ -19,7 +19,7 @@ public class RepositoryFolderCoverImageProducer extends AmstradFolderCoverImageP
 	}
 
 	@Override
-	protected Image produceImage(FolderNode folderNode, ProgramNode showcaseProgramNode) {
+	protected Image produceImage(FolderNode folderNode, ProgramNode featuredProgramNode) {
 		Image image = getCoverImageFromRepository(folderNode);
 		if (image != null) {
 			image = frameImageToSize(image);
