@@ -177,7 +177,7 @@ public abstract class AmstradContext {
 
 	public ImagePool getSharedImagePool() {
 		if (sharedImagePool == null) {
-			int capacity = Integer.parseInt(getUserSettings().get(SETTING_IMAGE_CACHE_CAPACITY, "20"));
+			int capacity = Integer.parseInt(getUserSettings().get(SETTING_IMAGE_CACHE_CAPACITY, "50"));
 			sharedImagePool = new ImagePool("shared", capacity);
 		}
 		return sharedImagePool;
