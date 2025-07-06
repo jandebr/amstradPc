@@ -18,7 +18,7 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 	private ClosedCassetteCoverImageMaker imageMaker;
 
 	public CassetteProgramCoverImageProducer(Dimension imageSize, Color backgroundColor, Font titleFont,
-			Color titleColor, Color titleBackground) {
+			Color titleColor, Color titleBackground, float titleRelativeVerticalPosition) {
 		super(imageSize, backgroundColor);
 		double scaleFactor = imageSize.getHeight() / ClosedCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
 		this.posterMaker = new CassettePosterImageProducer(imageSize);
@@ -26,6 +26,7 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		this.imageMaker.setTitleFont(titleFont);
 		this.imageMaker.setTitleColor(titleColor);
 		this.imageMaker.setTitleBackground(titleBackground);
+		this.imageMaker.setTitleRelativeVerticalPosition(titleRelativeVerticalPosition);
 	}
 
 	@Override
@@ -34,7 +35,6 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		ClosedCassetteCoverImageMaker imageMaker = getImageMaker();
 		imageMaker.setTitle(posterImage.isUntitledImage() ? programNode.getName() : null);
 		imageMaker.setRandomizer(new Randomizer(programNode.getName()));
-		imageMaker.setTitleRelativeVerticalPosition(0.1f);
 		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
 		embedding.setPadTopFraction(0.32f);
 		return imageMaker.makeCoverImage(posterImage.getImage(), embedding);

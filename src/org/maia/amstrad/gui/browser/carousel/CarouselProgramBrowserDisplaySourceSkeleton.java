@@ -136,7 +136,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer(Dimension imageSize) {
 		return new CassetteProgramCoverImageProducer(imageSize, getTheme().getBackgroundColor(),
 				getTheme().getCarouselProgramTitleFont(), getTheme().getCarouselProgramTitleColor(),
-				getTheme().getCarouselProgramTitleBackgroundColor());
+				getTheme().getCarouselProgramTitleBackgroundColor(),
+				getTheme().getCarouselProgramTitleRelativeVerticalPosition());
 	}
 
 	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer(Dimension imageSize) {

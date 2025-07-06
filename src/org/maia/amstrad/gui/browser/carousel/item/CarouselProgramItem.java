@@ -21,7 +21,9 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 
 	private boolean previousRunFailed;
 
-	private static Image errorOverlayImage = UIResources.loadImage("covers/error-overlay-160x160.png");
+	private static Image errorOverlayImage;
+
+	private static Image noLaunchOverlayImage;
 
 	public CarouselProgramItem(ProgramNode programNode, CarouselComponent carouselComponent,
 			AmstradProgramCoverImageProducer coverImageProducer, Insets margin) {
@@ -34,27 +36,55 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	}
 
 	@Override
-	public void render(Graphics2D g, SlidingItemListComponent component) {
-		super.render(g, component);
-		if (isPreviousRunFailed()) {
-			renderErrorOverlay(g);
-		}
-	}
-
-	protected void renderErrorOverlay(Graphics2D g) {
-		Color bg = ColorUtils.setTransparency(getCoverImage().getBackgroundColor(), 0.1f);
-		ImageComponent overlay = new ImageComponent(errorOverlayImage, false, bg);
-		overlay.setSize(getSize());
-		overlay.setFillMode(FillMode.FIT_DOWNSCALE);
-		overlay.paint(g);
+	public boolean isExecutable() {
+		return !isNoLaunch();
 	}
 
 	@Override
-	public void execute(CarouselHost host) {
-		AmstradProgram program = getProgramNode().getProgram();
-		if (program != null && !program.isNoLaunch()) {
-			host.runProgram(program);
+	protected void doExecute(CarouselHost host) {
+		super.doExecute(host);
+		host.runProgram(getProgramNode().getProgram());
+	}
+
+	@Override
+	public void render(Graphics2D g, SlidingItemListComponent component) {
+		super.render(g, component);
+		Image overlayImage = getOverlayImage();
+		if (overlayImage != null) {
+			renderOverlayImage(g, overlayImage);
 		}
+	}
+
+	protected void renderOverlayImage(Graphics2D g, Image overlayImage) {
+		Color bg = ColorUtils.setTransparency(getCoverImage().getBackgroundColor(), 0.1f);
+		ImageComponent overlay = new ImageComponent(overlayImage, false, bg);
+		overlay.setSize(getSize());
+		overlay.setFillMode(FillMode.FIT);
+		overlay.paint(g);
+	}
+
+	protected Image getOverlayImage() {
+		if (isPreviousRunFailed()) {
+			return getErrorOverlayImage();
+		} else if (isNoLaunch()) {
+			return getNoLaunchOverlayImage();
+		} else {
+			return null;
+		}
+	}
+
+	private static Image getErrorOverlayImage() {
+		if (errorOverlayImage == null) {
+			errorOverlayImage = UIResources.loadImage("covers/overlay-error-300x150.png");
+		}
+		return errorOverlayImage;
+	}
+
+	private static Image getNoLaunchOverlayImage() {
+		if (noLaunchOverlayImage == null) {
+			noLaunchOverlayImage = UIResources.loadImage("covers/overlay-lock-300x150.png");
+		}
+		return noLaunchOverlayImage;
 	}
 
 	@Override
@@ -64,6 +94,11 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 
 	public ProgramNode getProgramNode() {
 		return getRepositoryNode().asProgram();
+	}
+
+	public boolean isNoLaunch() {
+		AmstradProgram program = getProgramNode().getProgram();
+		return program == null || program.isNoLaunch();
 	}
 
 	public boolean isPreviousRunFailed() {

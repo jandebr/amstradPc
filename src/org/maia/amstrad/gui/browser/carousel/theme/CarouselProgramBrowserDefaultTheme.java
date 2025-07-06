@@ -246,6 +246,11 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 	}
 
 	@Override
+	public float getCarouselProgramTitleRelativeVerticalPosition() {
+		return 0.2f;
+	}
+
+	@Override
 	public Color getCarouselCursorColor() {
 		return getCursorColor();
 	}

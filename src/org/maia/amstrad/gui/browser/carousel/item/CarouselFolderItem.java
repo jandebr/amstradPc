@@ -23,7 +23,13 @@ public class CarouselFolderItem extends CarouselRepositoryItem {
 	}
 
 	@Override
-	public void execute(CarouselHost host) {
+	public boolean isExecutable() {
+		return true;
+	}
+
+	@Override
+	protected void doExecute(CarouselHost host) {
+		super.doExecute(host);
 		host.enterFolder(getFolderNode());
 	}
 

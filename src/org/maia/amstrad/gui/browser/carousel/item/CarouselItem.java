@@ -22,7 +22,17 @@ public abstract class CarouselItem implements SlidingItem {
 		this.margin = margin;
 	}
 
-	public abstract void execute(CarouselHost host);
+	public final void execute(CarouselHost host) {
+		if (isExecutable()) {
+			doExecute(host);
+		}
+	}
+
+	protected void doExecute(CarouselHost host) {
+		// default implementation does nothing
+	}
+
+	public abstract boolean isExecutable();
 
 	@Override
 	public int getWidth(Graphics2D g) {

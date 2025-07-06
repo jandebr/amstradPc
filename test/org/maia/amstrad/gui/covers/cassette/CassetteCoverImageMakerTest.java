@@ -64,6 +64,7 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		double scaleFactor = height / ClosedCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
 		Randomizer rnd = new Randomizer(title);
 		ClosedCassetteCoverImageMaker imageMaker = new ClosedCassetteCoverImageMaker(title, rnd, scaleFactor);
+		imageMaker.setTitleRelativeVerticalPosition(0.1f);
 		Dimension size = imageMaker.scaleSize(ClosedCassetteCoverImageMaker.CANONICAL_SIZE);
 		CoverImageEmbedding embedding = new CoverImageEmbedding(size, background);
 		embedding.setPadTopFraction(0.32f);

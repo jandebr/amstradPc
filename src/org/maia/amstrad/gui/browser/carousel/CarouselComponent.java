@@ -12,7 +12,9 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.swing.animate.itemslide.SlidingCursorMovement;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
+import org.maia.swing.animate.itemslide.impl.SlidingCursorFactory.SolidOutlineCursor;
 import org.maia.swing.animate.itemslide.outline.SlidingItemListOutlineView;
+import org.maia.util.ColorUtils;
 
 public class CarouselComponent extends SlidingItemListComponent {
 
@@ -23,8 +25,9 @@ public class CarouselComponent extends SlidingItemListComponent {
 	private FolderNode folderNode;
 
 	public CarouselComponent(Dimension size, Insets padding, Color background, SlidingCursorMovement cursorMovement,
-			CarouselHost host, CarouselItemMaker itemMaker) {
+			Color cursorColor, CarouselHost host, CarouselItemMaker itemMaker) {
 		super(size, padding, background, cursorMovement);
+		setSlidingCursor(new CarouselCursor(cursorColor));
 		this.host = host;
 		this.itemMaker = itemMaker;
 	}
@@ -119,6 +122,24 @@ public class CarouselComponent extends SlidingItemListComponent {
 
 	private void setFolderNode(FolderNode folderNode) {
 		this.folderNode = folderNode;
+	}
+
+	private class CarouselCursor extends SolidOutlineCursor {
+
+		public CarouselCursor(Color color) {
+			super(color, 4, 4, true);
+		}
+
+		@Override
+		protected Color getSlidingColor(SlidingItemListComponent component) {
+			Color c = super.getSlidingColor(component);
+			CarouselItem item = getSelectedItem();
+			if (item == null || !item.isExecutable()) {
+				c = ColorUtils.adjustSaturationAndBrightness(c, 1f, -0.8f);
+			}
+			return c;
+		}
+
 	}
 
 	public static class CarouselOutline extends SlidingItemListOutlineView {

@@ -95,6 +95,8 @@ public interface CarouselProgramBrowserTheme {
 
 	Color getCarouselProgramTitleBackgroundColor();
 
+	float getCarouselProgramTitleRelativeVerticalPosition();
+
 	Color getCarouselCursorColor();
 
 	Color getCarouselOutlineBorderColor();
