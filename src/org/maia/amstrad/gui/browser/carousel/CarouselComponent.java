@@ -14,7 +14,6 @@ import org.maia.swing.animate.itemslide.SlidingCursorMovement;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.animate.itemslide.impl.SlidingCursorFactory.SolidOutlineCursor;
 import org.maia.swing.animate.itemslide.outline.SlidingItemListOutlineView;
-import org.maia.util.ColorUtils;
 
 public class CarouselComponent extends SlidingItemListComponent {
 
@@ -127,7 +126,7 @@ public class CarouselComponent extends SlidingItemListComponent {
 	private class CarouselCursor extends SolidOutlineCursor {
 
 		public CarouselCursor(Color color) {
-			super(color, 4, 4, true);
+			super(color, 2, 6);
 		}
 
 		@Override
@@ -135,7 +134,7 @@ public class CarouselComponent extends SlidingItemListComponent {
 			Color c = super.getSlidingColor(component);
 			CarouselItem item = getSelectedItem();
 			if (item == null || !item.isExecutable()) {
-				c = ColorUtils.adjustSaturationAndBrightness(c, 1f, -0.8f);
+				c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 40);
 			}
 			return c;
 		}
