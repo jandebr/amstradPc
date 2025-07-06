@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.joystick;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.util.GenericListenerList;
+import org.maia.util.SystemUtils;
 
 import jemu.settings.Settings;
 
@@ -66,6 +67,18 @@ public abstract class AmstradJoystick extends AmstradPcDevice {
 	}
 
 	protected abstract void doDeactivate();
+
+	public void activateDelayed(long delayInMillis) {
+		new Thread() {
+
+			@Override
+			public void run() {
+				SystemUtils.sleep(delayInMillis);
+				activate();
+			}
+
+		}.start();
+	}
 
 	public void switchAutoRepeatEnabled(boolean autoRepeatEnabled) {
 		if (autoRepeatEnabled != isAutoRepeatEnabled()) {
