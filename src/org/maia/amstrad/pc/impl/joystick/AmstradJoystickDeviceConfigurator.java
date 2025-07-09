@@ -115,7 +115,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 		InputControllerConfiguration configuration = jbuilder.getConfiguration();
 		persistConfiguration(configuration);
 		renewJoystick(configuration);
-		getJoystickDevice().activateDelayed(500L); // suppress noisy events
+		getJoystickDevice().activateAfter(500L); // suppress noisy events
 	}
 
 	@Override

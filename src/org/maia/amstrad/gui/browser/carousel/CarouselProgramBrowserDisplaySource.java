@@ -13,9 +13,9 @@ import org.maia.amstrad.gui.browser.carousel.info.InfoSection;
 import org.maia.amstrad.gui.browser.carousel.info.SlidingInfoSection;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.swing.DirectionalFocusManager.Direction;
 import org.maia.swing.animate.imageslide.show.SlidingImageShow;
 import org.maia.swing.animate.textslide.SlidingTextLabel;
-import org.maia.swing.DirectionalFocusManager.Direction;
 
 public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserDisplaySourceSkeleton {
 
@@ -52,23 +52,31 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	@Override
 	protected synchronized void notifyCursorAtRepositoryNode(Node node) {
 		super.notifyCursorAtRepositoryNode(node);
+		boolean focusOnInfo = isFocusOnInfo();
 		setInfoSections(getComponentFactory().createInfoSectionsForNode(node));
 		setCurrentInfoSectionIndex(getInfoSections().isEmpty() ? -1 : 0);
 		loadHeading(node);
 		loadCaption(node);
 		loadImageShow(node);
 		updateInfo();
+		if (focusOnInfo && getInfoComponent() != null) {
+			changeFocusToInfo(); // keep focus on info
+		}
 	}
 
 	@Override
 	protected synchronized void notifyCursorLeftRepositoryNode() {
 		super.notifyCursorLeftRepositoryNode();
+		boolean focusOnInfo = isFocusOnInfo();
 		unloadHeading();
 		unloadCaption();
 		unloadImageShow();
 		unloadInfo();
 		setInfoSections(null);
 		setCurrentInfoSectionIndex(-1);
+		if (focusOnInfo) {
+			changeFocusToCarousel();
+		}
 	}
 
 	private void loadHeading(Node node) {
@@ -215,6 +223,7 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 			} else if (keyCode == KeyEvent.VK_ESCAPE) {
 				if (sliding && getFocusManager().isFocusTransferingLocked()) {
 					getFocusManager().unlockFocusTransfering();
+					changeFocusToCarousel(); // shortcut action
 					e.consume();
 				}
 			}
@@ -247,6 +256,10 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 
 	protected void changeFocusToInfo() {
 		getFocusManager().changeFocusOwner(getInfoComponent());
+	}
+
+	protected boolean isFocusOnInfo() {
+		return getInfoComponent() != null && getInfoComponent().equals(getFocusManager().getFocusOwner());
 	}
 
 	@Override

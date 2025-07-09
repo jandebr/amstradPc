@@ -103,9 +103,9 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 			System.out.println("Activating " + getJoystickId().getDisplayName());
 			setJoystickDelegate(newDelegate);
 			if (isActive()) {
-				doActivate();
+				newDelegate.deactivateDuring(500L); // delayed activation to suppress noisy events
 			} else {
-				doDeactivate();
+				newDelegate.setActive(false);
 			}
 			doSwitchAutoRepeatEnabled(isAutoRepeatEnabled());
 			fireJoystickConnected();

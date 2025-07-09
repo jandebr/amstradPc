@@ -68,7 +68,7 @@ public abstract class AmstradJoystick extends AmstradPcDevice {
 
 	protected abstract void doDeactivate();
 
-	public void activateDelayed(long delayInMillis) {
+	public void activateAfter(long delayInMillis) {
 		new Thread() {
 
 			@Override
