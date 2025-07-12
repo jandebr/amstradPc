@@ -209,15 +209,16 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected void renderFocus(Graphics2D g, Component focusOwner) {
-		// Subclasses may override
+		// Subclasses may extend
 	}
 
 	protected void notifyCursorAtRepositoryNode(Node node) {
-		// Subclasses may override
+		// Subclasses may extend
 	}
 
 	protected void notifyCursorLeftRepositoryNode() {
-		// Subclasses may override
+		getCarouselComponent().cancelPopulateFolderContentsAsync(); // cancel any "enter folder" task in progress
+		// Subclasses may extend
 	}
 
 	@Override
@@ -380,10 +381,15 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected void enterFolder(FolderNode folderNode, Node childNodeInFocus) {
-		getCarouselComponent().populateFolderContents(folderNode, childNodeInFocus);
-		getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
-		getCarouselBreadcrumb().syncWith(getCarouselComponent());
-		changeFocusToCarousel();
+		getCarouselComponent().populateFolderContentsAsync(folderNode, childNodeInFocus, new Runnable() {
+
+			@Override
+			public void run() {
+				getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
+				getCarouselBreadcrumb().syncWith(getCarouselComponent());
+				changeFocusToCarousel();
+			}
+		});
 	}
 
 	protected void changeFocusToCarousel() {

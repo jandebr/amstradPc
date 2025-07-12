@@ -30,13 +30,15 @@ public class CarouselBreadcrumb extends SlidingItemListComponent {
 	}
 
 	private void populateAncestorsUpTo(FolderNode folderNode) {
-		if (!folderNode.isRoot()) {
-			populateAncestorsUpTo(folderNode.getParent());
+		if (folderNode != null) {
+			if (!folderNode.isRoot()) {
+				populateAncestorsUpTo(folderNode.getParent());
+			}
+			if (hasItems()) {
+				addItem(getItemMaker().createBreadcrumbSeparatorItem(this));
+			}
+			addItem(getItemMaker().createBreadcrumbItemForFolder(folderNode, this));
 		}
-		if (hasItems()) {
-			addItem(getItemMaker().createBreadcrumbSeparatorItem(this));
-		}
-		addItem(getItemMaker().createBreadcrumbItemForFolder(folderNode, this));
 	}
 
 	@Override
