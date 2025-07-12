@@ -1,6 +1,5 @@
 package org.maia.amstrad.gui.browser.carousel;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -14,7 +13,9 @@ import org.maia.amstrad.gui.browser.carousel.info.SlidingInfoSection;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.swing.DirectionalFocusManager.Direction;
+import org.maia.swing.DirectionalFocusManager.FocusListener;
 import org.maia.swing.animate.imageslide.show.SlidingImageShow;
+import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.animate.textslide.SlidingTextLabel;
 
 public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserDisplaySourceSkeleton {
@@ -42,10 +43,16 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	}
 
 	@Override
+	protected void initFocusManager() {
+		super.initFocusManager();
+		getFocusManager().addListener(new FocusTracker());
+	}
+
+	@Override
 	protected void renderFocus(Graphics2D g, Component focusOwner) {
 		super.renderFocus(g, focusOwner);
 		Rectangle bounds = focusOwner.getBounds();
-		g.setColor(getFocusManager().isFocusTransferingLocked() ? Color.MAGENTA : Color.YELLOW);
+		g.setColor(getTheme().getCarouselCursorColor());
 		g.drawRect(bounds.x - 1, bounds.y - 1, bounds.width + 1, bounds.height + 1);
 	}
 
@@ -198,13 +205,14 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	}
 
 	protected void handleKeyboardKeyInInfo(KeyEvent e, InfoSection infoSection) {
-		boolean sliding = infoSection instanceof SlidingInfoSection;
-		if (sliding && getFocusManager().isFocusTransferingLocked()) {
-			navigateInItemList(e, ((SlidingInfoSection) infoSection).getSlidingInfoView());
+		Direction dir = getDirection(e);
+		if (infoSection instanceof SlidingInfoSection) {
+			SlidingItemListComponent slider = ((SlidingInfoSection) infoSection).getSlidingInfoView();
+			if (!Direction.DOWN.equals(dir) || !slider.isItemListFitsInsideViewport()) {
+				navigateInItemList(e, slider);
+			}
 		}
 		if (!e.isConsumed()) {
-			int keyCode = e.getKeyCode();
-			Direction dir = getDirection(e);
 			if (Direction.LEFT.equals(dir)) {
 				if (previousInfo()) {
 					changeFocusToInfo();
@@ -215,17 +223,9 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 					changeFocusToInfo();
 					e.consume();
 				}
-			} else if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_NUMPAD5) {
-				if (sliding && !getFocusManager().isFocusTransferingLocked()) {
-					getFocusManager().lockFocusTransfering();
-					e.consume();
-				}
-			} else if (keyCode == KeyEvent.VK_ESCAPE) {
-				if (sliding && getFocusManager().isFocusTransferingLocked()) {
-					getFocusManager().unlockFocusTransfering();
-					changeFocusToCarousel(); // shortcut action
-					e.consume();
-				}
+			} else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				changeFocusToCarousel();
+				e.consume();
 			}
 			updateInfoOutlineVisibility();
 		}
@@ -240,13 +240,9 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 
 	private void updateInfoOutlineVisibility(InfoSection infoSection) {
 		boolean visible = true;
-		JComponent outline = infoSection.getInfoOutlineView();
 		if (infoSection instanceof SlidingInfoSection) {
-			CarouselFocusManager fm = getFocusManager();
-			boolean fits = ((SlidingInfoSection) infoSection).getSlidingInfoView().isItemListFitsInsideViewport();
-			boolean focus = infoSection.getInfoView().equals(fm.getFocusOwner());
-			boolean active = fm.isFocusTransferingLocked();
-			visible = !fits && focus && active;
+			SlidingItemListComponent slider = ((SlidingInfoSection) infoSection).getSlidingInfoView();
+			visible = isFocusOnInfo() && !slider.isItemListFitsInsideViewport();
 		}
 		remove(getInfoOutlineComponent());
 		if (visible) {
@@ -260,12 +256,6 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 
 	protected boolean isFocusOnInfo() {
 		return getInfoComponent() != null && getInfoComponent().equals(getFocusManager().getFocusOwner());
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		getFocusManager().unlockFocusTransfering();
 	}
 
 	private SlidingTextLabel getHeadingComponent() {
@@ -377,6 +367,30 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 
 		public Node getNode() {
 			return node;
+		}
+
+	}
+
+	private class FocusTracker implements FocusListener {
+
+		public FocusTracker() {
+		}
+
+		@Override
+		public void notifyComponentLostFocus(Component oldFocusOwner) {
+			// nothing
+		}
+
+		@Override
+		public void notifyComponentGainedFocus(Component newFocusOwner) {
+			if (newFocusOwner.equals(getInfoComponent())) {
+				updateInfoOutlineVisibility();
+			}
+		}
+
+		@Override
+		public void notifyFocusOwnerCleared() {
+			// nothing
 		}
 
 	}

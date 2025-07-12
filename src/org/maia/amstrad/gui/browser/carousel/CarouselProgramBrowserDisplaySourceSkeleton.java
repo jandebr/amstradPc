@@ -172,14 +172,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected CarouselFocusManager createFocusManager() {
 		CarouselFocusManager focusManager = new CarouselFocusManager();
 		focusManager.setRequestFocusOnComponents(false); // keep focus on display (to catch key events)
-		focusManager.addListener(new FocusTracker());
 		return focusManager;
 	}
 
 	protected void initFocusManager() {
-		Component carousel = getCarouselComponent().getUI();
 		CarouselFocusManager focusManager = getFocusManager();
-		focusManager.addFocusTransferBidirectional(carousel, Direction.DOWN, getCarouselBreadcrumb().getUI());
+		focusManager.addListener(new FocusTracker());
+		focusManager.addFocusTransferBidirectional(getCarouselComponent().getUI(), Direction.DOWN,
+				getCarouselBreadcrumb().getUI());
 		focusManager.clearFocusOwner();
 	}
 
