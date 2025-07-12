@@ -231,6 +231,12 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			if (keyCode == KeyEvent.VK_F5) {
 				reset();
 				e.consume();
+			} else if (keyCode == KeyEvent.VK_F11 && getSystemSettings().isFullscreenToggleEnabled()) {
+				// Toggle fullscreen by re-init
+				close();
+				getAmstradPc().getMonitor().toggleFullscreen();
+				show();
+				e.consume();
 			} else if (keyCode == KeyEvent.VK_ESCAPE) {
 				changeFocusToCarousel();
 				e.consume();

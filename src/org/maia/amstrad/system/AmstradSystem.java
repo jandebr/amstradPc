@@ -95,7 +95,8 @@ public abstract class AmstradSystem {
 
 	private void updateScreenMonitorResizability(AmstradSystemScreen currentScreen) {
 		boolean resizable = currentScreen.isMonitorResizable();
-		getAmstradPc().getActions().getMonitorFullscreenAction().setEnabled(resizable);
+		getAmstradPc().getActions().getMonitorFullscreenAction()
+				.setEnabled(resizable && getSystemSettings().isFullscreenToggleEnabled());
 		getAmstradPc().getActions().getMonitorSingleSizeAction().setEnabled(resizable);
 		getAmstradPc().getActions().getMonitorDoubleSizeAction().setEnabled(resizable);
 		getAmstradPc().getActions().getMonitorTripleSizeAction().setEnabled(resizable);
