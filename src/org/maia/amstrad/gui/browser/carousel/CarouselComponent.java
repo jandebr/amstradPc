@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
+import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItemMaker;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
@@ -21,6 +22,7 @@ import org.maia.swing.animate.itemslide.impl.SlidingCursorFactory.SolidOutlineCu
 import org.maia.swing.animate.itemslide.outline.SlidingItemListOutlineView;
 import org.maia.util.AsyncSerialTaskWorker;
 import org.maia.util.AsyncSerialTaskWorker.AsyncTask;
+import org.maia.util.SystemUtils;
 
 public class CarouselComponent extends SlidingItemListComponent {
 
@@ -45,12 +47,14 @@ public class CarouselComponent extends SlidingItemListComponent {
 		this.itemMaker = itemMaker;
 	}
 
-	public void populateFolderContentsAsync(FolderNode folderNode, Node childNodeInFocus, Runnable callback) {
-		getCarouselPopulationTaskWorker().addTask(new CarouselPopulationTask(folderNode, childNodeInFocus, callback));
+	public void populateFolderContentsAsync(FolderNode folderNode, Node childNodeInFocus, Runnable callbackOnComplete,
+			Runnable callbackOnAbort) {
+		getCarouselPopulationTaskWorker()
+				.addTask(new CarouselPopulationTask(folderNode, childNodeInFocus, callbackOnComplete, callbackOnAbort));
 	}
 
-	public void cancelPopulateFolderContentsAsync() {
-		getCarouselPopulationTaskWorker().addTask(new CarouselCancelPopulationTask());
+	public void cancelPopulateFolderContentsAsync(Runnable callback) {
+		getCarouselPopulationTaskWorker().addTask(new CarouselCancelPopulationTask(callback));
 	}
 
 	protected ProgramNode selectFeaturedProgramNode(FolderNode folderNode) {
@@ -159,14 +163,22 @@ public class CarouselComponent extends SlidingItemListComponent {
 
 		private int childNodeIndexInFocus = -1;
 
-		private Runnable callback;
+		private Runnable callbackOnComplete;
+
+		private Runnable callbackOnAbort;
 
 		private boolean aborted;
 
-		public CarouselPopulationTask(FolderNode folderNode, Node childNodeInFocus, Runnable callback) {
+		public CarouselPopulationTask(FolderNode folderNode, Node childNodeInFocus, Runnable callbackOnComplete) {
+			this(folderNode, childNodeInFocus, callbackOnComplete, null);
+		}
+
+		public CarouselPopulationTask(FolderNode folderNode, Node childNodeInFocus, Runnable callbackOnComplete,
+				Runnable callbackOnAbort) {
 			this.folderNodeToPopulate = folderNode;
 			this.childNodeInFocus = childNodeInFocus;
-			this.callback = callback;
+			this.callbackOnComplete = callbackOnComplete;
+			this.callbackOnAbort = callbackOnAbort;
 		}
 
 		public void abort() {
@@ -175,30 +187,29 @@ public class CarouselComponent extends SlidingItemListComponent {
 
 		@Override
 		public void process() {
-			if (isAborted())
-				return;
 			List<CarouselItem> items = collectItems();
-			if (isAborted())
-				return;
-			// point of no return
-			SwingUtilities.invokeLater(new Runnable() {
+			if (isAborted()) {
+				runCallback(getCallbackOnAbort());
+			} else {
+				// point of no return
+				handleAnimation();
+				SwingUtilities.invokeLater(new Runnable() {
 
-				@Override
-				public void run() {
-					setFolderNode(getFolderNodeToPopulate());
-					removeAllItems();
-					for (CarouselItem item : items) {
-						addItem(item);
+					@Override
+					public void run() {
+						setFolderNode(getFolderNodeToPopulate());
+						removeAllItems();
+						for (CarouselItem item : items) {
+							addItem(item);
+						}
+						if (getChildNodeIndexInFocus() >= 0) {
+							validateLayout();
+							moveToItemIndex(getChildNodeIndexInFocus());
+						}
+						runCallback(getCallbackOnComplete());
 					}
-					if (getChildNodeIndexInFocus() >= 0) {
-						validateLayout();
-						moveToItemIndex(getChildNodeIndexInFocus());
-					}
-					Runnable callback = getCallback();
-					if (callback != null)
-						callback.run();
-				}
-			});
+				});
+			}
 		}
 
 		private List<CarouselItem> collectItems() {
@@ -231,6 +242,24 @@ public class CarouselComponent extends SlidingItemListComponent {
 			return items;
 		}
 
+		private void handleAnimation() {
+			EnterFolderAction action = getHost().getEnterFolderActionInProgress();
+			if (action != null && action.getFolderNode().equals(getFolderNodeToPopulate())) {
+				if (action.isAnimationShowing()) {
+					long minDuration = action.getMinimumAnimationDurationMillis();
+					SystemUtils.sleep(action.getAnimationStartTimeMillis() + minDuration - System.currentTimeMillis());
+				} else {
+					action.suppressAnimation();
+				}
+			}
+		}
+
+		protected void runCallback(Runnable callback) {
+			if (callback != null) {
+				callback.run();
+			}
+		}
+
 		private FolderNode getFolderNodeToPopulate() {
 			return folderNodeToPopulate;
 		}
@@ -247,8 +276,12 @@ public class CarouselComponent extends SlidingItemListComponent {
 			this.childNodeIndexInFocus = index;
 		}
 
-		private Runnable getCallback() {
-			return callback;
+		protected Runnable getCallbackOnComplete() {
+			return callbackOnComplete;
+		}
+
+		protected Runnable getCallbackOnAbort() {
+			return callbackOnAbort;
 		}
 
 		private boolean isAborted() {
@@ -263,13 +296,14 @@ public class CarouselComponent extends SlidingItemListComponent {
 
 	private class CarouselCancelPopulationTask extends CarouselPopulationTask {
 
-		public CarouselCancelPopulationTask() {
-			super(null, null, null);
+		public CarouselCancelPopulationTask(Runnable callback) {
+			super(null, null, callback);
 		}
 
 		@Override
 		public void process() {
-			// do nothing
+			// adding this task will abort the one in progress and clear any backlog
+			runCallback(getCallbackOnComplete());
 		}
 
 	}

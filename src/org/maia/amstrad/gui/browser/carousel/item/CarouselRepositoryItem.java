@@ -8,6 +8,7 @@ import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.covers.AmstradCoverImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
+import org.maia.util.SystemUtils;
 
 public abstract class CarouselRepositoryItem extends CarouselItem {
 
@@ -23,6 +24,7 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 	}
 
 	public void preLoad() {
+		SystemUtils.sleep(100L); // TODO
 		getCoverImage().getImage();
 	}
 

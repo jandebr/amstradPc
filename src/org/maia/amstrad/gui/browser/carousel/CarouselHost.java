@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel;
 
+import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -15,5 +16,7 @@ public interface CarouselHost {
 	boolean isFocusOnCarousel();
 
 	boolean isFocusOnBreadcrumb();
+
+	EnterFolderAction getEnterFolderActionInProgress();
 
 }

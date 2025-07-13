@@ -70,6 +70,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private ProgramNode programNodeFailedToRun;
 
+	private EnterFolderAction enterFolderActionInProgress;
+
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
@@ -197,6 +199,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected void renderContent(Graphics2D g, int width, int height) {
 		super.renderContent(g, width, height);
 		renderFocus(g);
+		renderEnterFolderAnimation(g, width, height);
 	}
 
 	private void renderFocus(Graphics2D g) {
@@ -212,13 +215,31 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		// Subclasses may extend
 	}
 
+	private void renderEnterFolderAnimation(Graphics2D g, int width, int height) {
+		EnterFolderAction action = getEnterFolderActionInProgress();
+		if (action != null) {
+			if (action.isAnimationShowing()) {
+				// TODO render
+			} else if (action.isPassedAnimationDelay()) {
+				action.showAnimation();
+			}
+		}
+	}
+
 	protected void notifyCursorAtRepositoryNode(Node node) {
 		// Subclasses may extend
 	}
 
 	protected void notifyCursorLeftRepositoryNode() {
-		getCarouselComponent().cancelPopulateFolderContentsAsync(); // cancel any "enter folder" task in progress
+		EnterFolderAction action = getEnterFolderActionInProgress();
+		if (action != null) {
+			action.cancel();
+		}
 		// Subclasses may extend
+	}
+
+	protected void changeFocusToCarousel() {
+		getFocusManager().changeFocusOwner(getCarouselComponent().getUI());
 	}
 
 	@Override
@@ -380,20 +401,27 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		enterFolder(folderNode, null);
 	}
 
-	protected void enterFolder(FolderNode folderNode, Node childNodeInFocus) {
-		getCarouselComponent().populateFolderContentsAsync(folderNode, childNodeInFocus, new Runnable() {
-
-			@Override
-			public void run() {
-				getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
-				getCarouselBreadcrumb().syncWith(getCarouselComponent());
-				changeFocusToCarousel();
-			}
-		});
+	protected synchronized void enterFolder(FolderNode folderNode, Node childNodeInFocus) {
+		EnterFolderAction action = new EnterFolderAction(folderNode, childNodeInFocus);
+		setEnterFolderActionInProgress(action);
+		action.perform();
 	}
 
-	protected void changeFocusToCarousel() {
-		getFocusManager().changeFocusOwner(getCarouselComponent().getUI());
+	protected synchronized void enterFolderCompleted(EnterFolderAction action) {
+		clearEnterFolderActionInProgress(action);
+		getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
+		getCarouselBreadcrumb().syncWith(getCarouselComponent());
+		changeFocusToCarousel();
+	}
+
+	protected synchronized void enterFolderCancelled(EnterFolderAction action) {
+		clearEnterFolderActionInProgress(action);
+	}
+
+	private void clearEnterFolderActionInProgress(EnterFolderAction action) {
+		if (action.equals(getEnterFolderActionInProgress())) {
+			setEnterFolderActionInProgress(null);
+		}
 	}
 
 	@Override
@@ -602,6 +630,15 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		this.programNodeFailedToRun = programNode;
 	}
 
+	@Override
+	public EnterFolderAction getEnterFolderActionInProgress() {
+		return enterFolderActionInProgress;
+	}
+
+	private void setEnterFolderActionInProgress(EnterFolderAction action) {
+		this.enterFolderActionInProgress = action;
+	}
+
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {
 
 		private boolean landed;
@@ -684,6 +721,133 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 		private SlidingCursor getBreadcrumbCursor() {
 			return breadcrumbCursor;
+		}
+
+	}
+
+	protected abstract class CarouselAction {
+
+		private long startTimeMillis;
+
+		protected CarouselAction() {
+		}
+
+		public final void perform() {
+			setStartTimeMillis(System.currentTimeMillis());
+			doPerform();
+		}
+
+		protected abstract void doPerform();
+
+		public long getStartTimeMillis() {
+			return startTimeMillis;
+		}
+
+		private void setStartTimeMillis(long ms) {
+			this.startTimeMillis = ms;
+		}
+
+	}
+
+	public class EnterFolderAction extends CarouselAction {
+
+		private FolderNode folderNode;
+
+		private Node childNodeInFocus;
+
+		private long animationStartTimeMillis;
+
+		private boolean animationSuppressed;
+
+		public EnterFolderAction(FolderNode folderNode, Node childNodeInFocus) {
+			this.folderNode = folderNode;
+			this.childNodeInFocus = childNodeInFocus;
+		}
+
+		@Override
+		protected void doPerform() {
+			getCarouselComponent().populateFolderContentsAsync(getFolderNode(), getChildNodeInFocus(), new Runnable() {
+
+				@Override
+				public void run() {
+					hideAnimation();
+					enterFolderCompleted(EnterFolderAction.this);
+				}
+			}, new Runnable() {
+
+				@Override
+				public void run() {
+					hideAnimation();
+				}
+			});
+		}
+
+		public void cancel() {
+			getCarouselComponent().cancelPopulateFolderContentsAsync(new Runnable() {
+
+				@Override
+				public void run() {
+					hideAnimation();
+					enterFolderCancelled(EnterFolderAction.this);
+				}
+			});
+		}
+
+		public synchronized void showAnimation() {
+			if (!isAnimationShowing() && !isAnimationSuppressed()) {
+				setAnimationStartTimeMillis(System.currentTimeMillis());
+			}
+		}
+
+		public synchronized void hideAnimation() {
+			if (isAnimationShowing()) {
+				setAnimationStartTimeMillis(0L);
+			}
+		}
+
+		public synchronized void suppressAnimation() {
+			hideAnimation();
+			setAnimationSuppressed(true);
+		}
+
+		public boolean isAnimationShowing() {
+			return getAnimationStartTimeMillis() > 0L;
+		}
+
+		public boolean isPassedAnimationDelay() {
+			return getStartTimeMillis() < System.currentTimeMillis() - getMinimumAnimationDelayMillis();
+		}
+
+		public long getMinimumAnimationDelayMillis() {
+			return 400L;
+		}
+
+		public long getMinimumAnimationDurationMillis() {
+			return 1000L;
+		}
+
+		public FolderNode getFolderNode() {
+			return folderNode;
+		}
+
+		public Node getChildNodeInFocus() {
+			return childNodeInFocus;
+		}
+
+		public long getAnimationStartTimeMillis() {
+			return animationStartTimeMillis;
+		}
+
+		private void setAnimationStartTimeMillis(long ms) {
+			this.animationStartTimeMillis = ms;
+		}
+
+		public boolean isAnimationSuppressed() {
+			return animationSuppressed;
+		}
+
+		private void setAnimationSuppressed(boolean suppressed) {
+			this.animationSuppressed = suppressed;
 		}
 
 	}
