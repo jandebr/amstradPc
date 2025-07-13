@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel.item;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
@@ -32,8 +33,18 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 	public void render(Graphics2D g, SlidingItemListComponent component) {
 		Image image = getCoverImage().getImage();
 		if (image != null) {
+			if (isRenderFaded()) {
+				paintBackground(g, component);
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
+			} else {
+				g.setComposite(AlphaComposite.Src);
+			}
 			g.drawImage(image, 0, 0, null);
 		}
+	}
+
+	protected boolean isRenderFaded() {
+		return false;
 	}
 
 	public Node getRepositoryNode() {

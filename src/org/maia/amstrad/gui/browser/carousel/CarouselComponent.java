@@ -245,7 +245,7 @@ public class CarouselComponent extends SlidingItemListComponent {
 		private void handleAnimation() {
 			EnterFolderAction action = getHost().getEnterFolderActionInProgress();
 			if (action != null && action.getFolderNode().equals(getFolderNodeToPopulate())) {
-				if (action.isAnimationShowing()) {
+				if (action.isAnimationStarted()) {
 					long minDuration = action.getMinimumAnimationDurationMillis();
 					SystemUtils.sleep(action.getAnimationStartTimeMillis() + minDuration - System.currentTimeMillis());
 				} else {

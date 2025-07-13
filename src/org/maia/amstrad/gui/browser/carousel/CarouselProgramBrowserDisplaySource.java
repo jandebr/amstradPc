@@ -1,8 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel;
 
 import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
@@ -46,14 +44,6 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	protected void initFocusManager() {
 		super.initFocusManager();
 		getFocusManager().addListener(new FocusTracker());
-	}
-
-	@Override
-	protected void renderFocus(Graphics2D g, Component focusOwner) {
-		super.renderFocus(g, focusOwner);
-		Rectangle bounds = focusOwner.getBounds();
-		g.setColor(getTheme().getCarouselCursorColor());
-		g.drawRect(bounds.x - 1, bounds.y - 1, bounds.width + 1, bounds.height + 1);
 	}
 
 	@Override

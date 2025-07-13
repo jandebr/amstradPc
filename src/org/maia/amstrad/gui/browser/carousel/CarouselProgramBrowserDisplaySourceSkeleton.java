@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
@@ -12,6 +13,8 @@ import javax.swing.JComponent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
+import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimationFactory;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
@@ -71,6 +74,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	private ProgramNode programNodeFailedToRun;
 
 	private EnterFolderAction enterFolderActionInProgress;
+
+	private RunProgramAction runProgramActionInProgress;
 
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
@@ -189,17 +194,25 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		notifyCursorLeftRepositoryNode();
 		Node node = getLastVisitedNode();
 		if (node != null && !node.isRoot()) {
-			enterFolder(node.getParent(), node);
+			enterFolderAsync(node.getParent(), node);
 		} else {
-			enterFolder(getProgramBrowser().getProgramRepository().getRootNode());
+			enterFolderAsync(getProgramBrowser().getProgramRepository().getRootNode());
 		}
+	}
+
+	protected CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode) {
+		return CarouselAnimationFactory.getInstance().createAnimationToEnterFolder(folderNode, this);
+	}
+
+	protected CarouselAnimation createAnimationToRunProgram(ProgramNode programNode) {
+		return CarouselAnimationFactory.getInstance().createAnimationToRunProgram(programNode, this);
 	}
 
 	@Override
 	protected void renderContent(Graphics2D g, int width, int height) {
 		super.renderContent(g, width, height);
 		renderFocus(g);
-		renderEnterFolderAnimation(g, width, height);
+		renderAnimations(g, width, height);
 	}
 
 	private void renderFocus(Graphics2D g) {
@@ -212,34 +225,31 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected void renderFocus(Graphics2D g, Component focusOwner) {
-		// Subclasses may extend
+		Rectangle bounds = focusOwner.getBounds();
+		g.setColor(getTheme().getCarouselCursorColor());
+		g.drawRect(bounds.x - 1, bounds.y - 1, bounds.width + 1, bounds.height + 1);
 	}
 
-	private void renderEnterFolderAnimation(Graphics2D g, int width, int height) {
-		EnterFolderAction action = getEnterFolderActionInProgress();
+	private void renderAnimations(Graphics2D g, int width, int height) {
+		renderAnimation(g, width, height, getEnterFolderActionInProgress());
+		renderAnimation(g, width, height, getRunProgramActionInProgress());
+	}
+
+	private void renderAnimation(Graphics2D g, int width, int height, CarouselAction action) {
 		if (action != null) {
-			if (action.isAnimationShowing()) {
-				// TODO render
-			} else if (action.isPassedAnimationDelay()) {
-				action.showAnimation();
+			action.startAnimationWhenAppropriate();
+			if (action.isAnimationStarted()) {
+				action.getAnimation().renderOntoDisplay(g, width, height, action.getAnimationElapsedTimeMillis());
 			}
 		}
 	}
 
-	protected void notifyCursorAtRepositoryNode(Node node) {
-		// Subclasses may extend
-	}
-
-	protected void notifyCursorLeftRepositoryNode() {
-		EnterFolderAction action = getEnterFolderActionInProgress();
-		if (action != null) {
-			action.cancel();
-		}
-		// Subclasses may extend
-	}
-
-	protected void changeFocusToCarousel() {
-		getFocusManager().changeFocusOwner(getCarouselComponent().getUI());
+	@Override
+	public void dispose(JComponent displayComponent) {
+		super.dispose(displayComponent);
+		clearProgramNodeFailedToRun();
+		clearRunProgramActionInProgress();
+		clearEnterFolderActionInProgress();
 	}
 
 	@Override
@@ -300,7 +310,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			} else if (keyCode == KeyEvent.VK_ESCAPE) {
 				Node parent = comp.getFolderNode();
 				if (parent != null && !parent.isRoot()) {
-					enterFolder(parent.getParent(), parent);
+					enterFolderAsync(parent.getParent(), parent);
 					e.consume();
 				}
 			}
@@ -332,7 +342,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		} else if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_NUMPAD5) {
 			CarouselBreadcrumbItem item = breadcrumb.getSelectedItem();
 			if (item != null && !item.isSeparator()) {
-				enterFolder(item.getFolderNode());
+				enterFolderAsync(item.getFolderNode());
 				e.consume();
 			}
 		}
@@ -393,80 +403,66 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		clearProgramNodeFailedToRun();
 		AmstradProgramRepository repo = getProgramBrowser().getProgramRepository();
 		repo.refresh();
-		enterFolder(repo.getRootNode());
+		enterFolderAsync(repo.getRootNode());
 	}
 
 	@Override
-	public void enterFolder(FolderNode folderNode) {
-		enterFolder(folderNode, null);
+	public void enterFolderAsync(FolderNode folderNode) {
+		enterFolderAsync(folderNode, null);
 	}
 
-	protected synchronized void enterFolder(FolderNode folderNode, Node childNodeInFocus) {
-		EnterFolderAction action = new EnterFolderAction(folderNode, childNodeInFocus);
+	protected synchronized void enterFolderAsync(FolderNode folderNode, Node childNodeInFocus) {
+		CarouselAnimation animation = createAnimationToEnterFolder(folderNode);
+		EnterFolderAction action = new EnterFolderAction(folderNode, childNodeInFocus, animation);
 		setEnterFolderActionInProgress(action);
 		action.perform();
 	}
 
-	protected synchronized void enterFolderCompleted(EnterFolderAction action) {
+	protected synchronized void notifyEnterFolderCompleted(EnterFolderAction action) {
 		clearEnterFolderActionInProgress(action);
 		getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
 		getCarouselBreadcrumb().syncWith(getCarouselComponent());
 		changeFocusToCarousel();
 	}
 
-	protected synchronized void enterFolderCancelled(EnterFolderAction action) {
+	protected synchronized void notifyEnterFolderCancelled(EnterFolderAction action) {
 		clearEnterFolderActionInProgress(action);
+	}
+
+	protected void notifyCursorAtRepositoryNode(Node node) {
+		// Subclasses may extend
+	}
+
+	protected void notifyCursorLeftRepositoryNode() {
+		EnterFolderAction action = getEnterFolderActionInProgress();
+		if (action != null) {
+			action.cancel();
+		}
+		// Subclasses may extend
 	}
 
 	private void clearEnterFolderActionInProgress(EnterFolderAction action) {
 		if (action.equals(getEnterFolderActionInProgress())) {
-			setEnterFolderActionInProgress(null);
+			clearEnterFolderActionInProgress();
 		}
+	}
+
+	private void clearEnterFolderActionInProgress() {
+		clearCarouselAction(getEnterFolderActionInProgress());
+		setEnterFolderActionInProgress(null);
 	}
 
 	@Override
-	public void runProgram(AmstradProgram program) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				AmstradMonitorMode mode = program.getPreferredMonitorMode();
-				try {
-					releaseKeyboard();
-					getAmstradPc().reboot(true, true);
-					getProgramLoader(program).load(program).run();
-					getProgramBrowser().fireProgramRun(program);
-					notifyProgramRunFailState(program, false);
-					close();
-					if (mode != null) {
-						getAmstradPc().getMonitor().setMode(mode);
-					}
-				} catch (AmstradProgramException exc) {
-					exc.printStackTrace();
-					acquireKeyboard();
-					notifyProgramRunFailState(program, true);
-				}
-			}
-		}).start();
+	public void runProgramAsync(ProgramNode programNode) {
+		CarouselAnimation animation = createAnimationToRunProgram(programNode);
+		RunProgramAction action = new RunProgramAction(programNode, animation);
+		setRunProgramActionInProgress(action);
+		action.perform();
 	}
 
-	private AmstradProgramLoader getProgramLoader(AmstradProgram program) {
-		if (getProgramBrowser().isStagedRun(program)) {
-			return AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(getAmstradPc(),
-					new EndingBasicAction() {
-
-						@Override
-						public void perform(AmstradProgramRuntime programRuntime) {
-							AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(getAmstradPc());
-							notifyProgramRunFailState(program, programRuntime.getExitCode() != 0);
-						}
-					});
-		} else {
-			return AmstradProgramLoaderFactory.getInstance().createLoaderFor(program, getAmstradPc());
-		}
-	}
-
-	private void notifyProgramRunFailState(AmstradProgram program, boolean failed) {
+	protected synchronized void notifyProgramRunFailState(AmstradProgram program, boolean failed) {
 		clearProgramNodeFailedToRun();
+		clearRunProgramActionInProgress();
 		CarouselItem item = getCurrentCarouselItem();
 		if (item instanceof CarouselProgramItem) {
 			CarouselProgramItem programItem = (CarouselProgramItem) item;
@@ -482,6 +478,21 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private void clearProgramNodeFailedToRun() {
 		setProgramNodeFailedToRun(null);
+	}
+
+	private void clearRunProgramActionInProgress() {
+		clearCarouselAction(getRunProgramActionInProgress());
+		setRunProgramActionInProgress(null);
+	}
+
+	private void clearCarouselAction(CarouselAction action) {
+		if (action != null) {
+			action.stopAnimation();
+		}
+	}
+
+	protected void changeFocusToCarousel() {
+		getFocusManager().changeFocusOwner(getCarouselComponent().getUI());
 	}
 
 	@Override
@@ -637,6 +648,17 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private void setEnterFolderActionInProgress(EnterFolderAction action) {
 		this.enterFolderActionInProgress = action;
+		getCarouselComponent().refreshUI(); // TODO
+	}
+
+	@Override
+	public RunProgramAction getRunProgramActionInProgress() {
+		return runProgramActionInProgress;
+	}
+
+	private void setRunProgramActionInProgress(RunProgramAction action) {
+		this.runProgramActionInProgress = action;
+		getCarouselComponent().refreshUI(); // TODO
 	}
 
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {
@@ -727,9 +749,16 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected abstract class CarouselAction {
 
+		private CarouselAnimation animation;
+
+		private boolean animationSuppressed;
+
+		private long animationStartTimeMillis;
+
 		private long startTimeMillis;
 
-		protected CarouselAction() {
+		protected CarouselAction(CarouselAnimation animation) {
+			this.animation = animation;
 		}
 
 		public final void perform() {
@@ -738,6 +767,62 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		}
 
 		protected abstract void doPerform();
+
+		public synchronized void startAnimationWhenAppropriate() {
+			if (!isAnimationStarted() && !isAnimationSuppressed() && isPassedAnimationDelay()
+					&& getAnimation() != null) {
+				setAnimationStartTimeMillis(System.currentTimeMillis());
+				getAnimation().start();
+			}
+		}
+
+		public synchronized void stopAnimation() {
+			if (isAnimationStarted()) {
+				setAnimationStartTimeMillis(0L);
+				getAnimation().stop();
+			}
+		}
+
+		public synchronized void suppressAnimation() {
+			stopAnimation();
+			setAnimationSuppressed(true);
+		}
+
+		public boolean isAnimationStarted() {
+			return getAnimationStartTimeMillis() > 0L;
+		}
+
+		public boolean isPassedAnimationDelay() {
+			return getStartTimeMillis() < System.currentTimeMillis() - getMinimumAnimationDelayMillis();
+		}
+
+		public long getMinimumAnimationDelayMillis() {
+			return 400L;
+		}
+
+		public long getAnimationElapsedTimeMillis() {
+			return System.currentTimeMillis() - getAnimationStartTimeMillis();
+		}
+
+		public CarouselAnimation getAnimation() {
+			return animation;
+		}
+
+		public boolean isAnimationSuppressed() {
+			return animationSuppressed;
+		}
+
+		private void setAnimationSuppressed(boolean suppressed) {
+			this.animationSuppressed = suppressed;
+		}
+
+		public long getAnimationStartTimeMillis() {
+			return animationStartTimeMillis;
+		}
+
+		private void setAnimationStartTimeMillis(long ms) {
+			this.animationStartTimeMillis = ms;
+		}
 
 		public long getStartTimeMillis() {
 			return startTimeMillis;
@@ -755,11 +840,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 		private Node childNodeInFocus;
 
-		private long animationStartTimeMillis;
-
-		private boolean animationSuppressed;
-
-		public EnterFolderAction(FolderNode folderNode, Node childNodeInFocus) {
+		public EnterFolderAction(FolderNode folderNode, Node childNodeInFocus, CarouselAnimation animation) {
+			super(animation);
 			this.folderNode = folderNode;
 			this.childNodeInFocus = childNodeInFocus;
 		}
@@ -770,14 +852,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 				@Override
 				public void run() {
-					hideAnimation();
-					enterFolderCompleted(EnterFolderAction.this);
+					stopAnimation();
+					notifyEnterFolderCompleted(EnterFolderAction.this);
 				}
 			}, new Runnable() {
 
 				@Override
 				public void run() {
-					hideAnimation();
+					stopAnimation();
 				}
 			});
 		}
@@ -787,39 +869,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 				@Override
 				public void run() {
-					hideAnimation();
-					enterFolderCancelled(EnterFolderAction.this);
+					stopAnimation();
+					notifyEnterFolderCancelled(EnterFolderAction.this);
 				}
 			});
-		}
-
-		public synchronized void showAnimation() {
-			if (!isAnimationShowing() && !isAnimationSuppressed()) {
-				setAnimationStartTimeMillis(System.currentTimeMillis());
-			}
-		}
-
-		public synchronized void hideAnimation() {
-			if (isAnimationShowing()) {
-				setAnimationStartTimeMillis(0L);
-			}
-		}
-
-		public synchronized void suppressAnimation() {
-			hideAnimation();
-			setAnimationSuppressed(true);
-		}
-
-		public boolean isAnimationShowing() {
-			return getAnimationStartTimeMillis() > 0L;
-		}
-
-		public boolean isPassedAnimationDelay() {
-			return getStartTimeMillis() < System.currentTimeMillis() - getMinimumAnimationDelayMillis();
-		}
-
-		public long getMinimumAnimationDelayMillis() {
-			return 400L;
 		}
 
 		public long getMinimumAnimationDurationMillis() {
@@ -834,20 +887,61 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			return childNodeInFocus;
 		}
 
-		public long getAnimationStartTimeMillis() {
-			return animationStartTimeMillis;
+	}
+
+	public class RunProgramAction extends CarouselAction {
+
+		private ProgramNode programNode;
+
+		public RunProgramAction(ProgramNode programNode, CarouselAnimation animation) {
+			super(animation);
+			this.programNode = programNode;
 		}
 
-		private void setAnimationStartTimeMillis(long ms) {
-			this.animationStartTimeMillis = ms;
+		@Override
+		protected void doPerform() {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					AmstradProgram program = getProgramNode().getProgram();
+					AmstradMonitorMode mode = program.getPreferredMonitorMode();
+					try {
+						releaseKeyboard();
+						getAmstradPc().reboot(true, true);
+						getProgramLoader(program).load(program).run();
+						getProgramBrowser().fireProgramRun(program);
+						notifyProgramRunFailState(program, false);
+						close();
+						if (mode != null) {
+							getAmstradPc().getMonitor().setMode(mode);
+						}
+					} catch (AmstradProgramException exc) {
+						exc.printStackTrace();
+						acquireKeyboard();
+						notifyProgramRunFailState(program, true);
+					}
+				}
+			}).start();
 		}
 
-		public boolean isAnimationSuppressed() {
-			return animationSuppressed;
+		private AmstradProgramLoader getProgramLoader(AmstradProgram program) {
+			if (getProgramBrowser().isStagedRun(program)) {
+				return AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(getAmstradPc(),
+						new EndingBasicAction() {
+
+							@Override
+							public void perform(AmstradProgramRuntime programRuntime) {
+								AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(getAmstradPc());
+								notifyProgramRunFailState(program, programRuntime.getExitCode() != 0);
+							}
+						});
+			} else {
+				return AmstradProgramLoaderFactory.getInstance().createLoaderFor(program, getAmstradPc());
+			}
 		}
 
-		private void setAnimationSuppressed(boolean suppressed) {
-			this.animationSuppressed = suppressed;
+		public ProgramNode getProgramNode() {
+			return programNode;
 		}
 
 	}

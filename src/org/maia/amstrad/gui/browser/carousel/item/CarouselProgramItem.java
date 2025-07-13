@@ -8,6 +8,7 @@ import java.awt.Insets;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.RunProgramAction;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImage;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.program.AmstradProgram;
@@ -36,17 +37,6 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	}
 
 	@Override
-	public boolean isExecutable() {
-		return !isNoLaunch();
-	}
-
-	@Override
-	protected void doExecute(CarouselHost host) {
-		super.doExecute(host);
-		host.runProgram(getProgramNode().getProgram());
-	}
-
-	@Override
 	public void render(Graphics2D g, SlidingItemListComponent component) {
 		super.render(g, component);
 		Image overlayImage = getOverlayImage();
@@ -61,6 +51,34 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 		overlay.setSize(getSize());
 		overlay.setFillMode(FillMode.FIT);
 		overlay.paint(g);
+	}
+
+	@Override
+	protected boolean isRenderFaded() {
+		RunProgramAction action = getCarouselHost().getRunProgramActionInProgress();
+		if (action != null) {
+			return !getProgramNode().equals(action.getProgramNode());
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isExecutable() {
+		if (isNoLaunch()) {
+			return false;
+		} else if (getCarouselHost().getRunProgramActionInProgress() != null) {
+			// only one run at a time
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	protected void doExecute(CarouselHost host) {
+		super.doExecute(host);
+		host.runProgramAsync(getProgramNode());
 	}
 
 	protected Image getOverlayImage() {

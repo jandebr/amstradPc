@@ -7,6 +7,7 @@ import java.awt.Insets;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.CarouselHost;
 import org.maia.swing.animate.itemslide.SlidingItem;
+import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 
 public abstract class CarouselItem implements SlidingItem {
 
@@ -20,6 +21,11 @@ public abstract class CarouselItem implements SlidingItem {
 		this.carouselComponent = carouselComponent;
 		this.size = size;
 		this.margin = margin;
+	}
+
+	protected void paintBackground(Graphics2D g, SlidingItemListComponent component) {
+		g.setColor(component.getBackground());
+		g.fillRect(0, 0, getWidth(g), getHeight(g));
 	}
 
 	public final void execute(CarouselHost host) {
@@ -55,6 +61,10 @@ public abstract class CarouselItem implements SlidingItem {
 
 	protected CarouselComponent getCarouselComponent() {
 		return carouselComponent;
+	}
+
+	protected CarouselHost getCarouselHost() {
+		return getCarouselComponent().getHost();
 	}
 
 }

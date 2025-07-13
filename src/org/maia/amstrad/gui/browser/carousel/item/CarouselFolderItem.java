@@ -4,6 +4,7 @@ import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImage;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
@@ -23,6 +24,16 @@ public class CarouselFolderItem extends CarouselRepositoryItem {
 	}
 
 	@Override
+	protected boolean isRenderFaded() {
+		EnterFolderAction action = getCarouselHost().getEnterFolderActionInProgress();
+		if (action != null) {
+			return !getFolderNode().equals(action.getFolderNode());
+		} else {
+			return false;
+		}
+	}
+
+	@Override
 	public boolean isExecutable() {
 		return true;
 	}
@@ -30,7 +41,7 @@ public class CarouselFolderItem extends CarouselRepositoryItem {
 	@Override
 	protected void doExecute(CarouselHost host) {
 		super.doExecute(host);
-		host.enterFolder(getFolderNode());
+		host.enterFolderAsync(getFolderNode());
 	}
 
 	@Override
