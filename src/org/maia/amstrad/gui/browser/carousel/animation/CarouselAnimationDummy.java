@@ -19,13 +19,23 @@ public class CarouselAnimationDummy extends CarouselAnimation {
 	@Override
 	public void renderOntoDisplay(Graphics2D displayGraphics, int displayWidth, int displayHeight,
 			long elapsedTimeMillis) {
-		System.out.println("animate " + elapsedTimeMillis);
+		// System.out.println("animate " + elapsedTimeMillis);
 	}
 
 	@Override
 	public void stop() {
 		super.stop();
 		System.out.println("stop animation");
+	}
+
+	@Override
+	public long getMinimumDelayMillis() {
+		return 400L;
+	}
+
+	@Override
+	public long getMinimumDurationMillis() {
+		return 1000L;
 	}
 
 }

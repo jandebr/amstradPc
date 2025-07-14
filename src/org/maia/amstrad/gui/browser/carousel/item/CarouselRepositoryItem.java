@@ -6,6 +6,8 @@ import java.awt.Image;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
+import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
+import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.RunProgramAction;
 import org.maia.amstrad.gui.covers.AmstradCoverImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
@@ -30,20 +32,33 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 	}
 
 	@Override
-	public void render(Graphics2D g, SlidingItemListComponent component) {
+	public final void render(Graphics2D g, SlidingItemListComponent component) {
 		Image image = getCoverImage().getImage();
 		if (image != null) {
+			Graphics2D g2 = (Graphics2D) g.create();
 			if (isRenderFaded()) {
-				paintBackground(g, component);
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
-			} else {
-				g.setComposite(AlphaComposite.Src);
+				paintBackground(g2, component);
+				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
 			}
-			g.drawImage(image, 0, 0, null);
+			doRenderItem(g2, image);
+			g2.dispose();
 		}
 	}
 
+	protected void doRenderItem(Graphics2D g, Image coverImage) {
+		g.drawImage(coverImage, 0, 0, null);
+	}
+
 	protected boolean isRenderFaded() {
+		Node node = getRepositoryNode();
+		RunProgramAction programAction = getCarouselHost().getRunProgramActionInProgress();
+		if (programAction != null) {
+			return !node.equals(programAction.getProgramNode());
+		}
+		EnterFolderAction folderAction = getCarouselHost().getEnterFolderActionInProgress();
+		if (folderAction != null) {
+			return !node.equals(folderAction.getFolderNode());
+		}
 		return false;
 	}
 

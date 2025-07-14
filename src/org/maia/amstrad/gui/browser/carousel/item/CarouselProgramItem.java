@@ -8,12 +8,10 @@ import java.awt.Insets;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.CarouselHost;
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.RunProgramAction;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImage;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
-import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.image.ImageComponent;
 import org.maia.swing.layout.FillMode;
 import org.maia.util.ColorUtils;
@@ -37,8 +35,8 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	}
 
 	@Override
-	public void render(Graphics2D g, SlidingItemListComponent component) {
-		super.render(g, component);
+	protected void doRenderItem(Graphics2D g, Image coverImage) {
+		super.doRenderItem(g, coverImage);
 		Image overlayImage = getOverlayImage();
 		if (overlayImage != null) {
 			renderOverlayImage(g, overlayImage);
@@ -51,16 +49,6 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 		overlay.setSize(getSize());
 		overlay.setFillMode(FillMode.FIT);
 		overlay.paint(g);
-	}
-
-	@Override
-	protected boolean isRenderFaded() {
-		RunProgramAction action = getCarouselHost().getRunProgramActionInProgress();
-		if (action != null) {
-			return !getProgramNode().equals(action.getProgramNode());
-		} else {
-			return false;
-		}
 	}
 
 	@Override
@@ -125,7 +113,6 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 
 	public void setPreviousRunFailed(boolean failed) {
 		this.previousRunFailed = failed;
-		getCarouselComponent().refreshUI();
 	}
 
 }

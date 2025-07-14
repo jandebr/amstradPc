@@ -23,6 +23,14 @@ public abstract class CarouselAnimation {
 		// Subclasses may extend
 	}
 
+	public long getMinimumDelayMillis() {
+		return 0L; // subclasses to override
+	}
+
+	public long getMinimumDurationMillis() {
+		return 0L; // subclasses to override
+	}
+
 	protected CarouselHost getHost() {
 		return host;
 	}

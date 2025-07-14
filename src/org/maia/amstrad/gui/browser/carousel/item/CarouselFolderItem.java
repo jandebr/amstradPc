@@ -4,7 +4,6 @@ import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.CarouselHost;
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImage;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
@@ -21,16 +20,6 @@ public class CarouselFolderItem extends CarouselRepositoryItem {
 	public CarouselFolderItem(FolderNode folderNode, CarouselComponent carouselComponent,
 			AmstradFolderCoverImage coverImage, Insets margin) {
 		super(folderNode, carouselComponent, coverImage, margin);
-	}
-
-	@Override
-	protected boolean isRenderFaded() {
-		EnterFolderAction action = getCarouselHost().getEnterFolderActionInProgress();
-		if (action != null) {
-			return !getFolderNode().equals(action.getFolderNode());
-		} else {
-			return false;
-		}
 	}
 
 	@Override

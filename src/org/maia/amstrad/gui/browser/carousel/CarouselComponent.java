@@ -22,7 +22,6 @@ import org.maia.swing.animate.itemslide.impl.SlidingCursorFactory.SolidOutlineCu
 import org.maia.swing.animate.itemslide.outline.SlidingItemListOutlineView;
 import org.maia.util.AsyncSerialTaskWorker;
 import org.maia.util.AsyncSerialTaskWorker.AsyncTask;
-import org.maia.util.SystemUtils;
 
 public class CarouselComponent extends SlidingItemListComponent {
 
@@ -246,8 +245,7 @@ public class CarouselComponent extends SlidingItemListComponent {
 			EnterFolderAction action = getHost().getEnterFolderActionInProgress();
 			if (action != null && action.getFolderNode().equals(getFolderNodeToPopulate())) {
 				if (action.isAnimationStarted()) {
-					long minDuration = action.getMinimumAnimationDurationMillis();
-					SystemUtils.sleep(action.getAnimationStartTimeMillis() + minDuration - System.currentTimeMillis());
+					action.sleepCurrentThreadUntilMinimumAnimationDuration();
 				} else {
 					action.suppressAnimation();
 				}

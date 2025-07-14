@@ -237,7 +237,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 				SlidingCursorMovement.LAZY, getTheme().getCarouselCursorColor(), host, this);
 		comp.setLayoutManager(SlidingItemLayoutManagerFactory.createHorizontallySlidingCenterAlignedLayout(comp,
 				VerticalAlignment.CENTER));
-		comp.setShade(SlidingShadeFactory.createGradientShadeRelativeLength(comp, 0.15));
+		comp.setShade(SlidingShadeFactory.createGradientShadeRelativeLength(comp, 0.2));
 		comp.setSlidingDynamics(SlidingDynamicsFactory.createAdaptiveSpeedDynamics(comp, 0.004, 1.5, 0.5));
 		comp.setSteadyLandingMinimumTimeDelayMillis(100L);
 		comp.setRepaintClientDriven(true);

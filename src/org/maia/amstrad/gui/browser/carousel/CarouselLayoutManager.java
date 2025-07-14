@@ -139,7 +139,7 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 	}
 
 	public Insets getCarouselItemMargin() {
-		return new Insets(8, 16, 8, 16);
+		return new Insets(8, 8, 8, 8);
 	}
 
 	public Dimension getDisplaySize() {
