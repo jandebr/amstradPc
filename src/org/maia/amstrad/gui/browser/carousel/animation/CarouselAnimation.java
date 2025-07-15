@@ -8,6 +8,10 @@ public abstract class CarouselAnimation {
 
 	private CarouselHost host;
 
+	private long minimumDelayMillis;
+
+	private long minimumDurationMillis;
+
 	protected CarouselAnimation(CarouselHost host) {
 		this.host = host;
 	}
@@ -23,16 +27,24 @@ public abstract class CarouselAnimation {
 		// Subclasses may extend
 	}
 
+	protected CarouselHost getHost() {
+		return host;
+	}
+
 	public long getMinimumDelayMillis() {
-		return 0L; // subclasses to override
+		return minimumDelayMillis;
+	}
+
+	public void setMinimumDelayMillis(long delayMillis) {
+		this.minimumDelayMillis = delayMillis;
 	}
 
 	public long getMinimumDurationMillis() {
-		return 0L; // subclasses to override
+		return minimumDurationMillis;
 	}
 
-	protected CarouselHost getHost() {
-		return host;
+	public void setMinimumDurationMillis(long durationMillis) {
+		this.minimumDurationMillis = durationMillis;
 	}
 
 }

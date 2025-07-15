@@ -13,6 +13,7 @@ import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySource
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItemMaker;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselRepositoryItem;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -91,6 +92,18 @@ public class CarouselComponent extends SlidingItemListComponent {
 
 	public CarouselOutline createOutline(int thickness) {
 		return new CarouselOutline(this, thickness);
+	}
+
+	public CarouselItem getItem(Node node) {
+		for (int i = 0; i < getItemCount(); i++) {
+			CarouselItem item = getItem(i);
+			if (item instanceof CarouselRepositoryItem) {
+				if (((CarouselRepositoryItem) item).getRepositoryNode().equals(node)) {
+					return item;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

@@ -1,8 +1,11 @@
 package org.maia.amstrad.gui.browser.carousel;
 
+import java.awt.Rectangle;
+
 import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
 import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.RunProgramAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public interface CarouselHost {
@@ -20,5 +23,7 @@ public interface CarouselHost {
 	EnterFolderAction getEnterFolderActionInProgress();
 
 	RunProgramAction getRunProgramActionInProgress();
+
+	Rectangle getCarouselItemBounds(Node node);
 
 }

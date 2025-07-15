@@ -12,11 +12,17 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
-		return new CarouselAnimationDummy(host);
+		CarouselAnimation animation = new CarouselAnimationDummy(host, host.getCarouselItemBounds(folderNode));
+		animation.setMinimumDelayMillis(400L); // delayed
+		animation.setMinimumDurationMillis(1000L);
+		return animation;
 	}
 
 	public CarouselAnimation createAnimationToRunProgram(ProgramNode programNode, CarouselHost host) {
-		return new CarouselAnimationDummy(host);
+		CarouselAnimation animation = new CarouselAnimationDummy(host, host.getCarouselItemBounds(programNode));
+		animation.setMinimumDelayMillis(0L); // instant
+		animation.setMinimumDurationMillis(1000L);
+		return animation;
 	}
 
 	public static CarouselAnimationFactory getInstance() {

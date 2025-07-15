@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
@@ -313,6 +314,11 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 				if (parent != null && !parent.isRoot()) {
 					enterFolderAsync(parent.getParent(), parent);
 					e.consume();
+				} else {
+					if (getEnterFolderActionInProgress() != null) {
+						cancelEnterFolderAsync();
+						e.consume();
+					}
 				}
 			}
 		}
@@ -419,6 +425,13 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		action.perform();
 	}
 
+	protected synchronized void cancelEnterFolderAsync() {
+		EnterFolderAction action = getEnterFolderActionInProgress();
+		if (action != null) {
+			action.cancel();
+		}
+	}
+
 	protected synchronized void notifyEnterFolderCompleted(EnterFolderAction action) {
 		clearEnterFolderActionInProgress(action);
 		getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
@@ -435,10 +448,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected void notifyCursorLeftRepositoryNode() {
-		EnterFolderAction action = getEnterFolderActionInProgress();
-		if (action != null) {
-			action.cancel();
-		}
+		cancelEnterFolderAsync();
 		// Subclasses may extend
 	}
 
@@ -499,6 +509,20 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected void refreshCarouselUI() {
 		getCarouselComponent().refreshUI();
+	}
+
+	@Override
+	public Rectangle getCarouselItemBounds(Node node) {
+		Rectangle bounds = null;
+		CarouselItem item = getCarouselComponent().getItem(node);
+		if (item != null) {
+			bounds = getCarouselComponent().getItemBoundsInComponent(item);
+			if (bounds != null) {
+				Point loc = getCarouselComponent().getUI().getLocation();
+				bounds.translate(loc.x, loc.y);
+			}
+		}
+		return bounds;
 	}
 
 	@Override
