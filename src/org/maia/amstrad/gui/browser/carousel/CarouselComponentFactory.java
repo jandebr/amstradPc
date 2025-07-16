@@ -88,6 +88,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		SlidingTextLabel label = SlidingTextLabel.createSized(text, font.deriveFont(fontSize), size,
 				getTheme().getBackgroundColor(), getTheme().getHeadingColor(), HorizontalAlignment.LEFT,
 				VerticalTextAlignment.BASELINE);
+		label.setBorder(BorderFactory.createEmptyBorder(0, getLayout().getCaptionBounds().x, 0, 0));
 		label.setSlidingSpeed(20.0);
 		label.setSuspensionAtEndsMillis(1000L);
 		label.setRepaintClientDriven(true);

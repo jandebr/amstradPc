@@ -10,6 +10,7 @@ import org.maia.amstrad.gui.browser.carousel.info.InfoSection;
 import org.maia.amstrad.gui.browser.carousel.info.SlidingInfoSection;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.swing.DirectionalFocusManager.Direction;
 import org.maia.swing.DirectionalFocusManager.FocusListener;
 import org.maia.swing.animate.imageslide.show.SlidingImageShow;
@@ -73,6 +74,15 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 		setCurrentInfoSectionIndex(-1);
 		if (focusOnInfo) {
 			changeFocusToCarousel();
+		}
+	}
+
+	@Override
+	public void runProgramAsync(ProgramNode programNode) {
+		super.runProgramAsync(programNode);
+		if (getRunProgramActionInProgress().getAnimation() != null) {
+			// one animation at a time
+			unloadImageShow();
 		}
 	}
 

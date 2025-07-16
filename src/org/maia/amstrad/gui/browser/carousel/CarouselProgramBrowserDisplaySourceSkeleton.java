@@ -229,7 +229,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected void renderFocus(Graphics2D g, Component focusOwner) {
 		Rectangle bounds = focusOwner.getBounds();
 		g.setColor(getTheme().getCarouselCursorColor());
-		g.drawRect(bounds.x - 1, bounds.y - 1, bounds.width + 1, bounds.height + 1);
+		g.drawRect(bounds.x - 4, bounds.y - 4, bounds.width + 7, bounds.height + 7);
 	}
 
 	private void renderAnimations(Graphics2D g, int width, int height) {
@@ -303,7 +303,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		navigateInItemList(e, comp);
 		if (!e.isConsumed()) {
 			int keyCode = e.getKeyCode();
-			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_NUMPAD5) {
+			if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_NUMPAD5) {
 				CarouselItem item = comp.getSelectedItem();
 				if (item != null) {
 					item.execute(this);
@@ -346,7 +346,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		} else if (keyCode == KeyEvent.VK_END) {
 			breadcrumb.moveToLastItem();
 			e.consume();
-		} else if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_NUMPAD5) {
+		} else if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_NUMPAD5) {
 			CarouselBreadcrumbItem item = breadcrumb.getSelectedItem();
 			if (item != null && !item.isSeparator()) {
 				enterFolderAsync(item.getFolderNode());

@@ -75,10 +75,10 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		Band carouselBreadcrumbBand = windowBand.addSubBand(createHorizontalContainerBand(0.03f));
 		windowBand.addSubBand(createMaximumSpacerBand(0.01f, 8));
 		// Finetuning
-		detailBand.setMargin(new Insets(4, 8, 0, 0));
-		infoBand.setMargin(new Insets(1, 1, 1, 1));
-		infoOutlineBand.setMargin(new Insets(1, 2, 1, 0));
-		infoOutlineBand.setSizeRange(14, 24);
+		captionParentBand.setMargin(new Insets(0, 8, 0, 0));
+		infoSectionBand.setMargin(captionParentBand.getMargin());
+		infoOutlineBand.setMargin(new Insets(0, 6, 0, 0));
+		infoOutlineBand.setSizeRange(18, 24);
 		captionSpacerBand.setSizeRange(infoOutlineBand.getMinimumSize(), infoOutlineBand.getMaximumSize());
 		carouselOutlineBand.setSizeRange(14, 24);
 		carouselBreadcrumbBand.setSizeRange(20, 30);
