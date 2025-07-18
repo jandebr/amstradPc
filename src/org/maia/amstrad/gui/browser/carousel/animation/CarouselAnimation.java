@@ -16,14 +16,14 @@ public abstract class CarouselAnimation {
 		this.host = host;
 	}
 
-	public void start() {
+	public void init() {
 		// Subclasses may extend
 	}
 
 	public abstract void renderOntoDisplay(Graphics2D displayGraphics, int displayWidth, int displayHeight,
 			long elapsedTimeMillis);
 
-	public void stop() {
+	public void dispose() {
 		// Subclasses may extend
 	}
 

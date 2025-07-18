@@ -785,14 +785,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 		private long animationStartTimeMillis;
 
-		private long startTimeMillis;
+		private long actionStartTimeMillis;
 
 		protected CarouselAction(CarouselAnimation animation) {
 			this.animation = animation;
 		}
 
 		public final void perform() {
-			setStartTimeMillis(System.currentTimeMillis());
+			setActionStartTimeMillis(System.currentTimeMillis());
 			doPerform();
 		}
 
@@ -802,14 +802,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			if (!isAnimationStarted() && !isAnimationSuppressed() && isPassedAnimationDelay()
 					&& getAnimation() != null) {
 				setAnimationStartTimeMillis(System.currentTimeMillis());
-				getAnimation().start();
+				getAnimation().init();
 			}
 		}
 
 		public synchronized void stopAnimation() {
 			if (isAnimationStarted()) {
 				setAnimationStartTimeMillis(0L);
-				getAnimation().stop();
+				getAnimation().dispose();
 			}
 		}
 
@@ -829,7 +829,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		}
 
 		public boolean isPassedAnimationDelay() {
-			return getStartTimeMillis() <= System.currentTimeMillis() - getMinimumAnimationDelayMillis();
+			return getActionStartTimeMillis() <= System.currentTimeMillis() - getMinimumAnimationDelayMillis();
 		}
 
 		public long getMinimumAnimationDelayMillis() {
@@ -864,12 +864,12 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			this.animationStartTimeMillis = ms;
 		}
 
-		public long getStartTimeMillis() {
-			return startTimeMillis;
+		public long getActionStartTimeMillis() {
+			return actionStartTimeMillis;
 		}
 
-		private void setStartTimeMillis(long ms) {
-			this.startTimeMillis = ms;
+		private void setActionStartTimeMillis(long ms) {
+			this.actionStartTimeMillis = ms;
 		}
 
 	}
