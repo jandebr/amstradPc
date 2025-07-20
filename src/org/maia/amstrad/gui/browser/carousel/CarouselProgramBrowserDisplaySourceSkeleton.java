@@ -75,6 +75,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private ProgramNode programNodeFailedToRun;
 
+	private StartupAction startupActionInProgress;
+
 	private EnterFolderAction enterFolderActionInProgress;
 
 	private RunProgramAction runProgramActionInProgress;
@@ -88,6 +90,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
+		startup();
 		setTheme(createTheme(graphicsContext));
 		setBackground(getTheme().getBackgroundColor());
 		super.init(displayComponent, graphicsContext); // invokes createLayoutManager() and buildUI()
@@ -202,6 +205,17 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		}
 	}
 
+	protected void startup() {
+		CarouselAnimation animation = createAnimationToStartup();
+		StartupAction action = new StartupAction(animation);
+		setStartupActionInProgress(action);
+		action.perform();
+	}
+
+	protected CarouselAnimation createAnimationToStartup() {
+		return CarouselAnimationFactory.getInstance().createAnimationToStartup(this);
+	}
+
 	protected CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode) {
 		return CarouselAnimationFactory.getInstance().createAnimationToEnterFolder(folderNode, this);
 	}
@@ -212,9 +226,20 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	protected void renderContent(Graphics2D g, int width, int height) {
-		super.renderContent(g, width, height);
-		renderFocus(g);
-		renderAnimations(g, width, height);
+		StartupAction startup = getStartupActionInProgress();
+		if (startup != null) {
+			renderAnimation(g, width, height, startup);
+			if (startup.isAnimationStarted()
+					&& startup.getAnimationElapsedTimeMillis() >= startup.getMinimumAnimationDurationMillis()
+					&& getEnterFolderActionInProgress() == null) {
+				clearStartupActionInProgress();
+			}
+		} else {
+			super.renderContent(g, width, height);
+			renderFocus(g);
+			renderAnimation(g, width, height, getEnterFolderActionInProgress());
+			renderAnimation(g, width, height, getRunProgramActionInProgress());
+		}
 	}
 
 	private void renderFocus(Graphics2D g) {
@@ -230,11 +255,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		Rectangle bounds = focusOwner.getBounds();
 		g.setColor(getTheme().getCarouselCursorColor());
 		g.drawRect(bounds.x - 4, bounds.y - 4, bounds.width + 7, bounds.height + 7);
-	}
-
-	private void renderAnimations(Graphics2D g, int width, int height) {
-		renderAnimation(g, width, height, getEnterFolderActionInProgress());
-		renderAnimation(g, width, height, getRunProgramActionInProgress());
 	}
 
 	private void renderAnimation(Graphics2D g, int width, int height, CarouselAction action) {
@@ -315,7 +335,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 					enterFolderAsync(parent.getParent(), parent);
 					e.consume();
 				} else {
-					if (getEnterFolderActionInProgress() != null) {
+					if (getEnterFolderActionInProgress() != null && !isStartupInProgress()) {
 						cancelEnterFolderAsync();
 						e.consume();
 					}
@@ -433,10 +453,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected synchronized void notifyEnterFolderCompleted(EnterFolderAction action) {
-		clearEnterFolderActionInProgress(action);
 		getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
 		getCarouselBreadcrumb().syncWith(getCarouselComponent());
 		changeFocusToCarousel();
+		clearEnterFolderActionInProgress(action);
 	}
 
 	protected synchronized void notifyEnterFolderCancelled(EnterFolderAction action) {
@@ -497,6 +517,11 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		setRunProgramActionInProgress(null);
 	}
 
+	private void clearStartupActionInProgress() {
+		clearCarouselAction(getStartupActionInProgress());
+		setStartupActionInProgress(null);
+	}
+
 	private void clearCarouselAction(CarouselAction action) {
 		if (action != null) {
 			action.stopAnimation();
@@ -554,6 +579,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private boolean isBreadcrumbComponent(Component comp) {
 		return getCarouselBreadcrumb().getUI().equals(comp);
+	}
+
+	public boolean isStartupInProgress() {
+		return getStartupActionInProgress() != null;
 	}
 
 	@Override
@@ -669,6 +698,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private void setProgramNodeFailedToRun(ProgramNode programNode) {
 		this.programNodeFailedToRun = programNode;
+	}
+
+	private StartupAction getStartupActionInProgress() {
+		return startupActionInProgress;
+	}
+
+	private void setStartupActionInProgress(StartupAction action) {
+		this.startupActionInProgress = action;
 	}
 
 	@Override
@@ -870,6 +907,26 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 		private void setActionStartTimeMillis(long ms) {
 			this.actionStartTimeMillis = ms;
+		}
+
+	}
+
+	private class StartupAction extends CarouselAction {
+
+		public StartupAction(CarouselAnimation animation) {
+			super(animation);
+		}
+
+		@Override
+		protected void doPerform() {
+			setComponentAdditionDeferred(true);
+		}
+
+		@Override
+		public synchronized void stopAnimation() {
+			super.stopAnimation();
+			setComponentAdditionDeferred(false);
+			addDeferred();
 		}
 
 	}

@@ -30,7 +30,7 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 		return producePosterImage(programNode).getImage();
 	}
 
-	public synchronized PosterImage producePosterImage(ProgramNode programNode) {
+	public PosterImage producePosterImage(ProgramNode programNode) {
 		Randomizer rnd = new Randomizer(programNode.getName());
 		Image image = getCoverImageFromRepository(programNode);
 		if (image != null) {
@@ -41,7 +41,7 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 		}
 	}
 
-	public synchronized PosterImage inventPosterImage(Randomizer rnd) {
+	public PosterImage inventPosterImage(Randomizer rnd) {
 		FabricCoverImageMaker imageMaker = getImageMaker();
 		imageMaker.setRandomizer(rnd);
 		return new PosterImage(imageMaker.makeCoverImage(getImageSize()), true); // certainly untitled

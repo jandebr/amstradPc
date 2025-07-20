@@ -30,7 +30,7 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 	}
 
 	@Override
-	protected synchronized Image produceImage(ProgramNode programNode) {
+	protected Image produceImage(ProgramNode programNode) {
 		PosterImage posterImage = producePosterImage(programNode);
 		ClosedCassetteCoverImageMaker imageMaker = getImageMaker();
 		imageMaker.setTitle(posterImage.isUntitledImage() ? programNode.getName() : null);

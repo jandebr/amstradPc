@@ -30,7 +30,7 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 	}
 
 	@Override
-	protected synchronized Image produceImage(FolderNode folderNode, ProgramNode featuredProgramNode) {
+	protected Image produceImage(FolderNode folderNode, ProgramNode featuredProgramNode) {
 		PosterImage posterImage = producePosterImage(folderNode, featuredProgramNode);
 		OpenCassetteCoverImageMaker imageMaker = getImageMaker();
 		imageMaker.setTitle(folderNode.getName());
