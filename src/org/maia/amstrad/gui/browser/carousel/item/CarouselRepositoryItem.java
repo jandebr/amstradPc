@@ -40,6 +40,8 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 			}
 			doRenderItem(g2, image);
 			g2.dispose();
+		} else {
+			paintBackground(g, component);
 		}
 	}
 
