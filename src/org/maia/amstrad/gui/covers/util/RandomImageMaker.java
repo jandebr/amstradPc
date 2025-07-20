@@ -12,10 +12,6 @@ public abstract class RandomImageMaker {
 		return getRandomizer().drawBoolean();
 	}
 
-	protected int drawIntegerNumber() {
-		return getRandomizer().drawIntegerNumber();
-	}
-
 	protected int drawIntegerNumber(int minInclusive, int maxInclusive) {
 		return getRandomizer().drawIntegerNumber(minInclusive, maxInclusive);
 	}

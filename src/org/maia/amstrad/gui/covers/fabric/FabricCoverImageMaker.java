@@ -23,6 +23,8 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 
 	private FabricTexture fabricTexture;
 
+	private List<FabricPatchPatternGenerator> patternGenerators;
+
 	public FabricCoverImageMaker() {
 		this(new Randomizer());
 	}
@@ -34,6 +36,23 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 	public FabricCoverImageMaker(Randomizer randomizer, BufferedImage texture) {
 		super(randomizer);
 		this.fabricTexture = new FabricTexture(texture);
+		this.patternGenerators = new Vector<FabricPatchPatternGenerator>();
+	}
+
+	public void addPatternGenerator(FabricPatchPatternGenerator patternGenerator) {
+		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
+		synchronized (generators) {
+			generators.add(patternGenerator);
+		}
+	}
+
+	public void propagateRandomizerToPatternGenerators() {
+		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
+		synchronized (generators) {
+			for (FabricPatchPatternGenerator generator : generators) {
+				generator.setRandomizer(getRandomizer());
+			}
+		}
 	}
 
 	public BufferedImage makeCoverImage(Dimension size) {
@@ -41,18 +60,34 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 	}
 
 	public BufferedImage makeCoverImage(int width, int height) {
+		BufferedImage image = null;
 		FabricPatchPattern pattern = createPatchPattern(width, height);
-		BufferedImage image = ImageUtils.createImage(width, height, pattern.getBackgroundColor());
-		paintPatchPattern(pattern, image);
-		return applyPatchEdges(pattern, image, width, height);
+		if (pattern != null) {
+			image = ImageUtils.createImage(width, height, pattern.getBackgroundColor());
+			paintPatchPattern(pattern, image);
+			image = applyPatchEdges(pattern, image, width, height);
+		}
+		return image;
 	}
 
 	private FabricPatchPattern createPatchPattern(int width, int height) {
-		return drawPatchPatternGenerator().generatePattern(width, height);
+		FabricPatchPattern pattern = null;
+		FabricPatchPatternGenerator generator = drawPatternGenerator();
+		if (generator != null) {
+			pattern = generator.generatePattern(width, height);
+		}
+		return pattern;
 	}
 
-	protected FabricPatchPatternGenerator drawPatchPatternGenerator() {
-		return new FabricPatchPatternTestGenerator(getRandomizer());
+	protected FabricPatchPatternGenerator drawPatternGenerator() {
+		FabricPatchPatternGenerator generator = null;
+		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
+		synchronized (generators) {
+			if (!generators.isEmpty()) {
+				generator = generators.get(drawIntegerNumber(0, generators.size() - 1));
+			}
+		}
+		return generator;
 	}
 
 	private void paintPatchPattern(FabricPatchPattern pattern, BufferedImage canvas) {
@@ -162,6 +197,10 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 
 	private FabricTexture getFabricTexture() {
 		return fabricTexture;
+	}
+
+	private List<FabricPatchPatternGenerator> getPatternGenerators() {
+		return patternGenerators;
 	}
 
 	private static class FabricTexture {

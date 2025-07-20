@@ -7,6 +7,10 @@ import org.maia.amstrad.gui.covers.util.Randomizer;
 
 public class FabricPatchPatternTestGenerator extends FabricPatchPatternGenerator {
 
+	public FabricPatchPatternTestGenerator() {
+		this(new Randomizer());
+	}
+
 	public FabricPatchPatternTestGenerator(Randomizer randomizer) {
 		super(randomizer);
 	}

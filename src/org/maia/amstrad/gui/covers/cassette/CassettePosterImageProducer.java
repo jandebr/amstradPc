@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.gui.covers.fabric.FabricCoverImageMaker;
+import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternTestGenerator;
 import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.graphics2d.image.ImageUtils;
@@ -22,7 +23,13 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 
 	public CassettePosterImageProducer(Dimension imageSize) {
 		super(imageSize, null);
-		this.imageMaker = new FabricCoverImageMaker();
+		this.imageMaker = createImageMaker();
+	}
+
+	protected FabricCoverImageMaker createImageMaker() {
+		FabricCoverImageMaker imageMaker = new FabricCoverImageMaker();
+		imageMaker.addPatternGenerator(new FabricPatchPatternTestGenerator()); // TODO
+		return imageMaker;
 	}
 
 	@Override
@@ -44,6 +51,7 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 	public PosterImage inventPosterImage(Randomizer rnd) {
 		FabricCoverImageMaker imageMaker = getImageMaker();
 		imageMaker.setRandomizer(rnd);
+		imageMaker.propagateRandomizerToPatternGenerators();
 		return new PosterImage(imageMaker.makeCoverImage(getImageSize()), true); // certainly untitled
 	}
 

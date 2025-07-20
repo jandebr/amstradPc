@@ -7,7 +7,7 @@ public abstract class FabricPatchPatternGenerator {
 	private Randomizer randomizer;
 
 	protected FabricPatchPatternGenerator(Randomizer randomizer) {
-		this.randomizer = randomizer;
+		setRandomizer(randomizer);
 	}
 
 	public abstract FabricPatchPattern generatePattern(int width, int height);
@@ -22,8 +22,12 @@ public abstract class FabricPatchPatternGenerator {
 		return orders[i];
 	}
 
-	protected Randomizer getRandomizer() {
+	public Randomizer getRandomizer() {
 		return randomizer;
+	}
+
+	public void setRandomizer(Randomizer randomizer) {
+		this.randomizer = randomizer;
 	}
 
 }

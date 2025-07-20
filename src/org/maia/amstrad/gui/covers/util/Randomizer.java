@@ -28,10 +28,6 @@ public class Randomizer {
 		return getRandomNumberGenerator().nextBoolean();
 	}
 
-	public int drawIntegerNumber() {
-		return getRandomNumberGenerator().nextInt();
-	}
-
 	public int drawIntegerNumber(int minInclusive, int maxInclusive) {
 		return minInclusive + (int) Math.floor(drawFloatUnitNumber() * (maxInclusive - minInclusive + 1));
 	}
