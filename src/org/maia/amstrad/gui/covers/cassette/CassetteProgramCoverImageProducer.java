@@ -8,8 +8,8 @@ import java.awt.Image;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
 import org.maia.amstrad.gui.covers.cassette.CassettePosterImageProducer.PosterImage;
-import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
+import org.maia.util.Randomizer;
 
 public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageProducer {
 
@@ -17,11 +17,13 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 
 	private ClosedCassetteCoverImageMaker imageMaker;
 
-	public CassetteProgramCoverImageProducer(Dimension imageSize, Color backgroundColor, Font titleFont,
-			Color titleColor, Color titleBackground, float titleRelativeVerticalPosition) {
+	public CassetteProgramCoverImageProducer(Dimension imageSize, Color backgroundColor,
+			Color posterBackgroundColorDark, Color posterBackgroundColorBright, Font titleFont, Color titleColor,
+			Color titleBackground, float titleRelativeVerticalPosition) {
 		super(imageSize, backgroundColor);
 		double scaleFactor = imageSize.getHeight() / ClosedCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
-		this.posterMaker = new CassettePosterImageProducer(imageSize);
+		this.posterMaker = new CassettePosterImageProducer(imageSize, posterBackgroundColorDark,
+				posterBackgroundColorBright);
 		this.imageMaker = new ClosedCassetteCoverImageMaker(null, scaleFactor);
 		this.imageMaker.setTitleFont(titleFont);
 		this.imageMaker.setTitleColor(titleColor);

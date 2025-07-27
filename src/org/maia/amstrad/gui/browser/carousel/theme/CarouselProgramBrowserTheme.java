@@ -2,6 +2,7 @@ package org.maia.amstrad.gui.browser.carousel.theme;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.List;
 
 public interface CarouselProgramBrowserTheme {
 
@@ -88,6 +89,10 @@ public interface CarouselProgramBrowserTheme {
 	Font getCarouselFolderTitleFont();
 
 	Color getCarouselFolderTitleColor();
+
+	Color getCarouselProgramPosterBackgroundColorDark();
+
+	Color getCarouselProgramPosterBackgroundColorBright();
 
 	Font getCarouselProgramTitleFont();
 

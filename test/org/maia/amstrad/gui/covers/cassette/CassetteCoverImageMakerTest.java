@@ -7,22 +7,24 @@ import java.text.NumberFormat;
 
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
 import org.maia.amstrad.gui.covers.fabric.ClothTextureImageMaker;
-import org.maia.amstrad.gui.covers.fabric.FabricCoverImageMaker;
 import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternTestGenerator;
-import org.maia.amstrad.gui.covers.util.Randomizer;
+import org.maia.amstrad.gui.covers.fabric.FabricPosterImageMaker;
 import org.maia.amstrad.gui.covers.util.ResourcePaths;
 import org.maia.graphics2d.image.ImageUtils;
+import org.maia.util.Randomizer;
 
 public class CassetteCoverImageMakerTest implements ResourcePaths {
 
 	private static NumberFormat nf;
 
-	private static FabricCoverImageMaker posterMaker;
+	private static FabricPosterImageMaker posterMaker;
+
+	private static final String TEST_PATH = "resources/test/covers/";
 
 	static {
 		nf = NumberFormat.getIntegerInstance();
 		nf.setMinimumIntegerDigits(3);
-		posterMaker = new FabricCoverImageMaker();
+		posterMaker = new FabricPosterImageMaker();
 		posterMaker.addPatternGenerator(new FabricPatchPatternTestGenerator());
 	}
 
@@ -34,9 +36,9 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		// createClothTextureImage();
 		// createCassetteTextureImage();
 		// createCassetteGlossImage();
-		// createFabricCoverImage(450);
-		createClosedCassetteImage("Dinosaurs II", 450, Color.BLACK);
-		createOpenCassetteImage("Dinosaurs III", 450, Color.BLACK);
+		createFabricPosterImage(450);
+		// createClosedCassetteImage("Dinosaurs II", 450, Color.BLACK);
+		// createOpenCassetteImage("Dinosaurs III", 450, Color.BLACK);
 	}
 
 	private void createClothTextureImage() {
@@ -55,11 +57,13 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		ImageUtils.writeToFile(gloss, CASSETTE_OPEN_PATH + "cassette-open-gloss-300x586.png");
 	}
 
-	private void createFabricCoverImage(int height) {
+	private void createFabricPosterImage(int height) {
 		double scaleFactor = height / ClosedCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
 		ClosedCassetteCoverImageMaker imageMaker = new ClosedCassetteCoverImageMaker(null, scaleFactor);
 		BufferedImage cover = createPosterImage(imageMaker);
-		ImageUtils.writeToFile(cover, COVERS_PATH + "cover_" + nf.format(1) + ".png");
+		for (int i = 0; i < 10; i++) {
+			ImageUtils.writeToFile(cover, TEST_PATH + "poster_" + nf.format(i) + ".png");
+		}
 	}
 
 	private void createClosedCassetteImage(String title, int height, Color background) {
@@ -72,7 +76,7 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		embedding.setPadTopFraction(0.32f);
 		BufferedImage posterImage = createPosterImage(imageMaker);
 		BufferedImage cassetteImage = imageMaker.makeCoverImage(posterImage, embedding);
-		ImageUtils.writeToFile(cassetteImage, COVERS_PATH + "cassette-closed.png");
+		ImageUtils.writeToFile(cassetteImage, TEST_PATH + "cassette-closed.png");
 		long t0 = System.nanoTime();
 		for (int i = 0; i < 100; i++) {
 			imageMaker.makeCoverImage(createPosterImage(imageMaker), embedding);
@@ -89,7 +93,7 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		embedding.setPadTopFraction(0);
 		BufferedImage posterImage = createPosterImage(imageMaker);
 		BufferedImage cassetteImage = imageMaker.makeCoverImage(posterImage, embedding);
-		ImageUtils.writeToFile(cassetteImage, COVERS_PATH + "cassette-open.png");
+		ImageUtils.writeToFile(cassetteImage, TEST_PATH + "cassette-open.png");
 		long t0 = System.nanoTime();
 		for (int i = 0; i < 100; i++) {
 			imageMaker.makeCoverImage(createPosterImage(imageMaker), embedding);
@@ -99,7 +103,7 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 
 	private static BufferedImage createPosterImage(CassetteCoverImageMaker imageMaker) {
 		Dimension size = imageMaker.scaleSize(ClosedCassetteCoverImageMaker.CANONICAL_POSTER_REGION.getSize());
-		return posterMaker.makeCoverImage(size);
+		return posterMaker.makePosterImage(size);
 	}
 
 }

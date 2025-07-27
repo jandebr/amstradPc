@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.covers.util.RandomImageMaker;
-import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.graphics2d.geometry.ApproximatingCurve2D;
 import org.maia.graphics2d.geometry.Curve2D;
 import org.maia.graphics2d.geometry.Point2D;
@@ -18,22 +17,23 @@ import org.maia.graphics2d.image.ops.BandedImageDeformation.VerticalImageBand;
 import org.maia.graphics2d.transform.TransformMatrix2D;
 import org.maia.graphics2d.transform.Transformation2D;
 import org.maia.util.ColorUtils;
+import org.maia.util.Randomizer;
 
-public class FabricCoverImageMaker extends RandomImageMaker {
+public class FabricPosterImageMaker extends RandomImageMaker {
 
 	private FabricTexture fabricTexture;
 
 	private List<FabricPatchPatternGenerator> patternGenerators;
 
-	public FabricCoverImageMaker() {
+	public FabricPosterImageMaker() {
 		this(new Randomizer());
 	}
 
-	public FabricCoverImageMaker(Randomizer randomizer) {
+	public FabricPosterImageMaker(Randomizer randomizer) {
 		this(randomizer, UIResources.loadImage("covers/cloth-texture-300x480.png"));
 	}
 
-	public FabricCoverImageMaker(Randomizer randomizer, BufferedImage texture) {
+	public FabricPosterImageMaker(Randomizer randomizer, BufferedImage texture) {
 		super(randomizer);
 		this.fabricTexture = new FabricTexture(texture);
 		this.patternGenerators = new Vector<FabricPatchPatternGenerator>();
@@ -55,11 +55,11 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 		}
 	}
 
-	public BufferedImage makeCoverImage(Dimension size) {
-		return makeCoverImage(size.width, size.height);
+	public BufferedImage makePosterImage(Dimension size) {
+		return makePosterImage(size.width, size.height);
 	}
 
-	public BufferedImage makeCoverImage(int width, int height) {
+	public BufferedImage makePosterImage(int width, int height) {
 		BufferedImage image = null;
 		FabricPatchPattern pattern = createPatchPattern(width, height);
 		if (pattern != null) {

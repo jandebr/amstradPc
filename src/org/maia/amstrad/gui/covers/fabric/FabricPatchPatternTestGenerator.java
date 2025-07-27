@@ -3,7 +3,7 @@ package org.maia.amstrad.gui.covers.fabric;
 import java.awt.Color;
 
 import org.maia.amstrad.gui.covers.fabric.FabricPatch.Orientation;
-import org.maia.amstrad.gui.covers.util.Randomizer;
+import org.maia.util.Randomizer;
 
 public class FabricPatchPatternTestGenerator extends FabricPatchPatternGenerator {
 

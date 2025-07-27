@@ -147,14 +147,17 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer(Dimension imageSize) {
 		return new CassetteProgramCoverImageProducer(imageSize, getTheme().getBackgroundColor(),
-				getTheme().getCarouselProgramTitleFont(), getTheme().getCarouselProgramTitleColor(),
-				getTheme().getCarouselProgramTitleBackgroundColor(),
+				getTheme().getCarouselProgramPosterBackgroundColorDark(),
+				getTheme().getCarouselProgramPosterBackgroundColorBright(), getTheme().getCarouselProgramTitleFont(),
+				getTheme().getCarouselProgramTitleColor(), getTheme().getCarouselProgramTitleBackgroundColor(),
 				getTheme().getCarouselProgramTitleRelativeVerticalPosition());
 	}
 
 	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer(Dimension imageSize) {
 		return new CassetteFolderCoverImageProducer(imageSize, getTheme().getBackgroundColor(),
-				getTheme().getCarouselFolderTitleFont(), getTheme().getCarouselFolderTitleColor());
+				getTheme().getCarouselProgramPosterBackgroundColorDark(),
+				getTheme().getCarouselProgramPosterBackgroundColorBright(), getTheme().getCarouselFolderTitleFont(),
+				getTheme().getCarouselFolderTitleColor());
 	}
 
 	protected CarouselComponentFactory createComponentFactory() {

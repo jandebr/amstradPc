@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.gui.covers.fabric.FabricPatch.Orientation;
-import org.maia.amstrad.gui.covers.util.Randomizer;
+import org.maia.util.Randomizer;
 
 public abstract class FabricPatchStacking {
 

@@ -1,5 +1,7 @@
 package org.maia.amstrad.gui.covers.util;
 
+import org.maia.util.Randomizer;
+
 public abstract class RandomImageMaker {
 
 	private Randomizer randomizer;

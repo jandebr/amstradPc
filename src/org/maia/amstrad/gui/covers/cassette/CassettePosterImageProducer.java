@@ -6,28 +6,30 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
-import org.maia.amstrad.gui.covers.fabric.FabricCoverImageMaker;
+import org.maia.amstrad.gui.covers.fabric.FabricPosterImageMaker;
 import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternTestGenerator;
-import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.graphics2d.image.ImageUtils;
 import org.maia.util.ColorUtils;
+import org.maia.util.Randomizer;
 
 public class CassettePosterImageProducer extends AmstradProgramCoverImageProducer {
 
-	private FabricCoverImageMaker imageMaker;
+	private FabricPosterImageMaker imageMaker;
 
-	public static Color BACKGROUND_BRIGHT = new Color(255, 254, 242);
+	private Color backgroundColorDark;
 
-	public static Color BACKGROUND_DARK = Color.BLACK;
+	private Color backgroundColorBright;
 
-	public CassettePosterImageProducer(Dimension imageSize) {
+	public CassettePosterImageProducer(Dimension imageSize, Color backgroundColorDark, Color backgroundColorBright) {
 		super(imageSize, null);
 		this.imageMaker = createImageMaker();
+		this.backgroundColorDark = backgroundColorDark;
+		this.backgroundColorBright = backgroundColorBright;
 	}
 
-	protected FabricCoverImageMaker createImageMaker() {
-		FabricCoverImageMaker imageMaker = new FabricCoverImageMaker();
+	protected FabricPosterImageMaker createImageMaker() {
+		FabricPosterImageMaker imageMaker = new FabricPosterImageMaker();
 		imageMaker.addPatternGenerator(new FabricPatchPatternTestGenerator()); // TODO
 		return imageMaker;
 	}
@@ -49,31 +51,32 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 	}
 
 	public PosterImage inventPosterImage(Randomizer rnd) {
-		FabricCoverImageMaker imageMaker = getImageMaker();
+		FabricPosterImageMaker imageMaker = getImageMaker();
 		imageMaker.setRandomizer(rnd);
 		imageMaker.propagateRandomizerToPatternGenerators();
-		return new PosterImage(imageMaker.makeCoverImage(getImageSize()), true); // certainly untitled
+		return new PosterImage(imageMaker.makePosterImage(getImageSize()), true); // certainly untitled
 	}
 
 	protected Color chooseBackgroundColor(BufferedImage image, Randomizer rnd) {
+		Color bgDark = getBackgroundColorDark();
+		Color bgBright = getBackgroundColorBright();
 		float brightness = getOpaqueOutlineBrightness(image);
 		if (brightness >= 0f) {
 			// background matching brightness of the opaque outline
-			if (brightness < ColorUtils.getBrightness(BACKGROUND_DARK)
-					|| brightness > ColorUtils.getBrightness(BACKGROUND_BRIGHT)) {
+			if (brightness < ColorUtils.getBrightness(bgDark) || brightness > ColorUtils.getBrightness(bgBright)) {
 				return new Color(Color.HSBtoRGB(0, 0, brightness));
 			} else if (brightness < 0.5f) {
-				return BACKGROUND_DARK;
+				return bgDark;
 			} else {
-				return BACKGROUND_BRIGHT;
+				return bgBright;
 			}
 		} else {
 			// (semi)transparent outline, background providing contrast with content
 			brightness = getContentBrightness(image, rnd);
 			if (brightness < 0.5f) {
-				return BACKGROUND_BRIGHT;
+				return bgBright;
 			} else {
-				return BACKGROUND_DARK;
+				return bgDark;
 			}
 		}
 	}
@@ -144,8 +147,16 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 		return brightness;
 	}
 
-	private FabricCoverImageMaker getImageMaker() {
+	private FabricPosterImageMaker getImageMaker() {
 		return imageMaker;
+	}
+
+	public Color getBackgroundColorDark() {
+		return backgroundColorDark;
+	}
+
+	public Color getBackgroundColorBright() {
+		return backgroundColorBright;
 	}
 
 	public static class PosterImage {

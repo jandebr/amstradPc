@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.gui.covers.util.RandomImageMaker;
-import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.amstrad.gui.covers.util.ResourcePaths;
 import org.maia.graphics2d.image.ImageUtils;
+import org.maia.util.Randomizer;
 
 public class ClothTextureImageMaker extends RandomImageMaker implements ResourcePaths {
 

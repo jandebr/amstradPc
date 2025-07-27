@@ -8,7 +8,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.amstrad.gui.covers.util.ReflectionImageMaker;
 import org.maia.graphics2d.image.ImageUtils;
 import org.maia.graphics2d.image.ops.QuadrilateralImageProjection;
@@ -17,6 +16,7 @@ import org.maia.graphics2d.image.ops.QuadrilateralImageProjection.Quadrilateral;
 import org.maia.swing.layout.FillMode;
 import org.maia.swing.text.TextLabel;
 import org.maia.util.ColorUtils;
+import org.maia.util.Randomizer;
 
 public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 

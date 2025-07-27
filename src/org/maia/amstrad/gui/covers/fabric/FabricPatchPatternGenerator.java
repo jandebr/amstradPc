@@ -1,6 +1,6 @@
 package org.maia.amstrad.gui.covers.fabric;
 
-import org.maia.amstrad.gui.covers.util.Randomizer;
+import org.maia.util.Randomizer;
 
 public abstract class FabricPatchPatternGenerator {
 

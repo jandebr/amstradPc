@@ -9,10 +9,10 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.gui.covers.util.Randomizer;
 import org.maia.graphics2d.image.ImageUtils;
 import org.maia.swing.layout.FillMode;
 import org.maia.swing.text.TextLabel;
+import org.maia.util.Randomizer;
 
 public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
