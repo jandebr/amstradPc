@@ -7,7 +7,7 @@ import java.text.NumberFormat;
 
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
 import org.maia.amstrad.gui.covers.fabric.ClothTextureImageMaker;
-import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternTestGenerator;
+import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternGeneratorA;
 import org.maia.amstrad.gui.covers.fabric.FabricPosterImageMaker;
 import org.maia.amstrad.gui.covers.util.ResourcePaths;
 import org.maia.graphics2d.image.ImageUtils;
@@ -25,7 +25,7 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		nf = NumberFormat.getIntegerInstance();
 		nf.setMinimumIntegerDigits(3);
 		posterMaker = new FabricPosterImageMaker();
-		posterMaker.addPatternGenerator(new FabricPatchPatternTestGenerator());
+		posterMaker.addPatternGenerator(new FabricPatchPatternGeneratorA(new Randomizer())); // TODO
 	}
 
 	public static void main(String[] args) {

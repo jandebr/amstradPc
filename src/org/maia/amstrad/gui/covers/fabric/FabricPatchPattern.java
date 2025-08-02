@@ -11,17 +11,10 @@ public class FabricPatchPattern {
 
 	private Color backgroundColor;
 
-	private FabricPatchStackingOrder stackingOrder;
-
 	private List<FabricPatch> patches;
 
 	public FabricPatchPattern(Color backgroundColor) {
-		this(backgroundColor, FabricPatchStackingOrder.ORIGINAL);
-	}
-
-	public FabricPatchPattern(Color backgroundColor, FabricPatchStackingOrder stackingOrder) {
 		this.backgroundColor = backgroundColor;
-		this.stackingOrder = stackingOrder;
 		this.patches = new Vector<FabricPatch>();
 	}
 
@@ -32,13 +25,11 @@ public class FabricPatchPattern {
 	public int[] getInnerVerticalPatchCoords(int totalWidth) {
 		Set<Integer> coords = new HashSet<Integer>();
 		for (FabricPatch patch : getPatches()) {
-			if (patch.isVertical()) {
-				coords.add(patch.getOffsetX());
-				coords.add(patch.getOffsetX() + patch.getWidth());
-			}
+			coords.add(patch.getOffsetX());
+			coords.add(patch.getOffsetX() + patch.getWidth() - 1);
 		}
 		coords.remove(0);
-		coords.remove(totalWidth);
+		coords.remove(totalWidth - 1);
 		List<Integer> sortedCoords = new Vector<Integer>(coords);
 		Collections.sort(sortedCoords);
 		return toIntArray(sortedCoords);
@@ -47,13 +38,11 @@ public class FabricPatchPattern {
 	public int[] getInnerHorizontalPatchCoords(int totalHeight) {
 		Set<Integer> coords = new HashSet<Integer>();
 		for (FabricPatch patch : getPatches()) {
-			if (patch.isHorizontal()) {
-				coords.add(patch.getOffsetY());
-				coords.add(patch.getOffsetY() + patch.getHeight());
-			}
+			coords.add(patch.getOffsetY());
+			coords.add(patch.getOffsetY() + patch.getHeight() - 1);
 		}
 		coords.remove(0);
-		coords.remove(totalHeight);
+		coords.remove(totalHeight - 1);
 		List<Integer> sortedCoords = new Vector<Integer>(coords);
 		Collections.sort(sortedCoords);
 		return toIntArray(sortedCoords);
@@ -68,10 +57,6 @@ public class FabricPatchPattern {
 
 	public Color getBackgroundColor() {
 		return backgroundColor;
-	}
-
-	public FabricPatchStackingOrder getStackingOrder() {
-		return stackingOrder;
 	}
 
 	public List<FabricPatch> getPatches() {

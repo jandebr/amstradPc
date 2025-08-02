@@ -14,28 +14,12 @@ public class FabricPatch {
 
 	private int height;
 
-	private Orientation orientation;
-
 	public FabricPatch(Color baseColor, int offsetX, int offsetY, int width, int height) {
-		this(baseColor, offsetX, offsetY, width, height,
-				width > height ? Orientation.HORIZONTAL : Orientation.VERTICAL);
-	}
-
-	public FabricPatch(Color baseColor, int offsetX, int offsetY, int width, int height, Orientation orientation) {
 		this.baseColor = baseColor;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.width = width;
 		this.height = height;
-		this.orientation = orientation;
-	}
-
-	public boolean isHorizontal() {
-		return Orientation.HORIZONTAL.equals(getOrientation());
-	}
-
-	public boolean isVertical() {
-		return Orientation.VERTICAL.equals(getOrientation());
 	}
 
 	public Color getBaseColor() {
@@ -56,18 +40,6 @@ public class FabricPatch {
 
 	public int getHeight() {
 		return height;
-	}
-
-	public Orientation getOrientation() {
-		return orientation;
-	}
-
-	public static enum Orientation {
-
-		HORIZONTAL,
-
-		VERTICAL;
-
 	}
 
 }

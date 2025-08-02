@@ -6,8 +6,10 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternGenerator;
+import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternGeneratorA;
+import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternGeneratorB;
 import org.maia.amstrad.gui.covers.fabric.FabricPosterImageMaker;
-import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternTestGenerator;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.graphics2d.image.ImageUtils;
 import org.maia.util.ColorUtils;
@@ -23,15 +25,9 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 
 	public CassettePosterImageProducer(Dimension imageSize, Color backgroundColorDark, Color backgroundColorBright) {
 		super(imageSize, null);
-		this.imageMaker = createImageMaker();
+		this.imageMaker = new FabricPosterImageMaker();
 		this.backgroundColorDark = backgroundColorDark;
 		this.backgroundColorBright = backgroundColorBright;
-	}
-
-	protected FabricPosterImageMaker createImageMaker() {
-		FabricPosterImageMaker imageMaker = new FabricPosterImageMaker();
-		imageMaker.addPatternGenerator(new FabricPatchPatternTestGenerator()); // TODO
-		return imageMaker;
 	}
 
 	@Override
@@ -46,15 +42,40 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 			setBackgroundColor(chooseBackgroundColor(ImageUtils.convertToBufferedImage(image), rnd));
 			return new PosterImage(frameImageToSize(image), false); // assuming titled
 		} else {
-			return inventPosterImage(rnd);
+			return inventPosterImage(programNode, rnd);
 		}
 	}
 
+	public PosterImage inventPosterImage(ProgramNode programNode, Randomizer rnd) {
+		prepareImageMaker(programNode, rnd);
+		return inventPosterImage();
+	}
+
 	public PosterImage inventPosterImage(Randomizer rnd) {
+		prepareImageMaker(rnd);
+		return inventPosterImage();
+	}
+
+	private PosterImage inventPosterImage() {
+		return new PosterImage(getImageMaker().makePosterImage(getImageSize()), true); // certainly untitled
+	}
+
+	protected void prepareImageMaker(ProgramNode programNode, Randomizer rnd) {
+		prepareImageMaker(rnd);
 		FabricPosterImageMaker imageMaker = getImageMaker();
+		imageMaker.setRandomizer(new Randomizer(programNode.getParent().getName()));
+		FabricPatchPatternGenerator generatorForFolder = imageMaker.drawPatternGenerator();
+		imageMaker.removePatternGenerators();
+		imageMaker.addPatternGenerator(generatorForFolder); // same generator for all programs in folder
 		imageMaker.setRandomizer(rnd);
-		imageMaker.propagateRandomizerToPatternGenerators();
-		return new PosterImage(imageMaker.makePosterImage(getImageSize()), true); // certainly untitled
+	}
+
+	protected void prepareImageMaker(Randomizer rnd) {
+		FabricPosterImageMaker imageMaker = getImageMaker();
+		imageMaker.removePatternGenerators();
+		imageMaker.addPatternGenerator(new FabricPatchPatternGeneratorA(rnd)); // TODO
+		imageMaker.addPatternGenerator(new FabricPatchPatternGeneratorB(rnd));
+		imageMaker.setRandomizer(rnd);
 	}
 
 	protected Color chooseBackgroundColor(BufferedImage image, Randomizer rnd) {

@@ -16,12 +16,6 @@ public abstract class FabricPatchPatternGenerator {
 		return getRandomizer().drawIntegerNumber(minInclusive, maxInclusive);
 	}
 
-	protected FabricPatchStackingOrder drawStackingOrder() {
-		FabricPatchStackingOrder[] orders = FabricPatchStackingOrder.values();
-		int i = drawIntegerNumber(0, orders.length - 1);
-		return orders[i];
-	}
-
 	public Randomizer getRandomizer() {
 		return randomizer;
 	}

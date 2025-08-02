@@ -1,6 +1,7 @@
 package org.maia.amstrad.gui.covers.fabric;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
@@ -25,6 +26,8 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 
 	private List<FabricPatchPatternGenerator> patternGenerators;
 
+	private static boolean concept = false;
+
 	public FabricPosterImageMaker() {
 		this(new Randomizer());
 	}
@@ -46,12 +49,17 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 		}
 	}
 
-	public void propagateRandomizerToPatternGenerators() {
+	public void removePatternGenerator(FabricPatchPatternGenerator patternGenerator) {
 		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
 		synchronized (generators) {
-			for (FabricPatchPatternGenerator generator : generators) {
-				generator.setRandomizer(getRandomizer());
-			}
+			generators.remove(patternGenerator);
+		}
+	}
+
+	public void removePatternGenerators() {
+		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
+		synchronized (generators) {
+			generators.clear();
 		}
 	}
 
@@ -79,7 +87,7 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 		return pattern;
 	}
 
-	protected FabricPatchPatternGenerator drawPatternGenerator() {
+	public FabricPatchPatternGenerator drawPatternGenerator() {
 		FabricPatchPatternGenerator generator = null;
 		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
 		synchronized (generators) {
@@ -91,10 +99,12 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 	}
 
 	private void paintPatchPattern(FabricPatchPattern pattern, BufferedImage canvas) {
-		List<FabricPatch> patches = FabricPatchStacking.getStackingOf(pattern, getRandomizer())
-				.getPatchesInDrawingOrder(pattern);
-		for (FabricPatch patch : patches) {
-			paintPatch(patch, canvas);
+		for (FabricPatch patch : pattern.getPatches()) {
+			if (concept) {
+				paintPatchContour(patch, canvas);
+			} else {
+				paintPatch(patch, canvas);
+			}
 		}
 	}
 
@@ -120,6 +130,13 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 				canvas.setRGB(x, y, ColorUtils.combineByTransparency(front, back));
 			}
 		}
+	}
+
+	private void paintPatchContour(FabricPatch patch, BufferedImage canvas) {
+		Graphics2D g = canvas.createGraphics();
+		g.setColor(patch.getBaseColor());
+		g.drawRect(patch.getOffsetX(), patch.getOffsetY(), patch.getWidth() - 1, patch.getHeight() - 1);
+		g.dispose();
 	}
 
 	private BufferedImage applyPatchEdges(FabricPatchPattern pattern, BufferedImage canvas, int width, int height) {
