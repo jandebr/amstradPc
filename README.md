@@ -31,10 +31,10 @@ The software is created using the Java Development Kit (JDK) 9 and is compatible
 - Joystick support (Xbox, PlayStation,...)
 - Integrated program browser
 - Multiple run modes
-- Basic memory insights
 - Programmer friendly
 	- Modular API
 	- Custom Java AWT displays
+	- Basic memory insights
 	- Basic IO against the host filesystem
 	- Locomotive Basic parser, compiler and decompiler written in Java
 - Performance enhancements
