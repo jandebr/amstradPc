@@ -26,10 +26,10 @@ public class FabricPatchPattern {
 		Set<Integer> coords = new HashSet<Integer>();
 		for (FabricPatch patch : getPatches()) {
 			coords.add(patch.getOffsetX());
-			coords.add(patch.getOffsetX() + patch.getWidth() - 1);
+			coords.add(patch.getOffsetX() + patch.getWidth());
 		}
 		coords.remove(0);
-		coords.remove(totalWidth - 1);
+		coords.remove(totalWidth);
 		List<Integer> sortedCoords = new Vector<Integer>(coords);
 		Collections.sort(sortedCoords);
 		return toIntArray(sortedCoords);
@@ -39,10 +39,10 @@ public class FabricPatchPattern {
 		Set<Integer> coords = new HashSet<Integer>();
 		for (FabricPatch patch : getPatches()) {
 			coords.add(patch.getOffsetY());
-			coords.add(patch.getOffsetY() + patch.getHeight() - 1);
+			coords.add(patch.getOffsetY() + patch.getHeight());
 		}
 		coords.remove(0);
-		coords.remove(totalHeight - 1);
+		coords.remove(totalHeight);
 		List<Integer> sortedCoords = new Vector<Integer>(coords);
 		Collections.sort(sortedCoords);
 		return toIntArray(sortedCoords);

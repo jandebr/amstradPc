@@ -60,9 +60,8 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 	private void createFabricPosterImage(int height) {
 		double scaleFactor = height / ClosedCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
 		ClosedCassetteCoverImageMaker imageMaker = new ClosedCassetteCoverImageMaker(null, scaleFactor);
-		BufferedImage cover = createPosterImage(imageMaker);
 		for (int i = 0; i < 10; i++) {
-			ImageUtils.writeToFile(cover, TEST_PATH + "poster_" + nf.format(i) + ".png");
+			ImageUtils.writeToFile(createPosterImage(imageMaker), TEST_PATH + "poster_" + nf.format(i) + ".png");
 		}
 	}
 

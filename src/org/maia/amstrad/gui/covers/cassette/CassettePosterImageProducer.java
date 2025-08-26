@@ -62,11 +62,13 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 
 	protected void prepareImageMaker(ProgramNode programNode, Randomizer rnd) {
 		prepareImageMaker(rnd);
+		// Same type of patterns for all programs in the folder
 		FabricPosterImageMaker imageMaker = getImageMaker();
 		imageMaker.setRandomizer(new Randomizer(programNode.getParent().getName()));
 		FabricPatchPatternGenerator generatorForFolder = imageMaker.drawPatternGenerator();
 		imageMaker.removePatternGenerators();
-		imageMaker.addPatternGenerator(generatorForFolder); // same generator for all programs in folder
+		imageMaker.addPatternGenerator(generatorForFolder);
+		// Restore the randomizer
 		imageMaker.setRandomizer(rnd);
 	}
 
