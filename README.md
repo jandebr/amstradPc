@@ -4,8 +4,6 @@
 
 The software is created using the Java Development Kit (JDK) 9 and is compatible with JRE/JDK 9 or higher
 
-There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the software
-
 ![AmstradPC GT65 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-GT65.png)
 
 ![AmstradPC CTM644 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-CTM644.png)
@@ -26,22 +24,23 @@ There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that documents the 
 
 *Amstrad PC* provides several enhancements over *JavaCPC* / *JEMU*
 
-- Complete keyboard mapping
+- Modern keyboard mapping
 - Onscreen keyboard
 - Onscreen popup menu
-- Joystick support including popular gamepads (Xbox, PS)
-- Instant loading and saving of Basic programs
+- Onscreen program info
+- Joystick support (Xbox, PlayStation,...)
 - Integrated program browser
-- Quick access to program info
 - Multiple run modes
-- Basic IO against the host filesystem
-- Insights into Basic memory allocation
-- Extend and integrate
-	- A clean API
-	- Customizable Java AWT displays
+- Basic memory insights
+- Programmer friendly
+	- Modular API
+	- Custom Java AWT displays
+	- Basic IO against the host filesystem
 	- Locomotive Basic parser, compiler and decompiler written in Java
-- Optimized fullscreen rendering
-- Stability fixes
+- Performance enhancements
+	- Instant loading and saving of Basic programs
+	- Fullscreen rendering
+- Stability enhancements and bug fixes
 
 For more information see the [Features](https://github.com/jandebr/amstradPc/wiki/Features) documentation
 
@@ -61,6 +60,12 @@ Alternatively, one can distribute *Amstrad PC* to end user computers using [getd
 A *getdown distribution* may ship with a (managed) collection of Basic program files. It is *managed* so not intended to make local changes as these will get overridden upon update
 
 To setup your own (local) program collection, see the [repository](https://github.com/jandebr/amstradPc/wiki/Program-repository) documentation
+
+
+
+## Wiki
+
+There is a [Wiki](https://github.com/jandebr/amstradPc/wiki) that contains detailed information
 
 
 
