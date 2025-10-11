@@ -1,0 +1,55 @@
+# The URL from which the application is downloaded
+appbase = %AMSTRADPC_APPBASE%
+
+# UI Configuration
+ui.name = AmstradPc %AMSTRADPC_VERSION%
+ui.hide_decorations = true
+ui.background = 000000
+ui.background_image = images/launcher-background.png
+ui.error_background = images/launcher-error.png
+ui.icon = images/launcher-icon.png
+ui.progress = 16, 352, 608, 28
+ui.progress_bar = 395D88
+ui.progress_text = FFFFFF
+ui.status = 16, 322, 608, 20
+ui.status_text = FFFFFF
+ui.text_shadow = 111111
+
+# Allow the application to be run when offline
+allow_offline = true
+
+# Image resources
+resource = images/launcher-background.png
+resource = images/launcher-error.png
+resource = images/launcher-icon.png
+resource = images/splash.png
+resource = images/amstrad.ico
+resource = images/amstrad-green.ico
+
+# System resources
+uresource = system/system.jar
+
+# Program resources
+# %AMSTRADPC_PROGRAMS%
+
+# Application jar files
+code = amstradPc.jar
+
+# The main entry point for the application
+class = org.maia.amstrad.AmstradMain
+
+# JVM arguments
+jvmarg = -splash:images/splash.png
+jvmarg = -Xmx512m
+jvmarg = -Djava.library.path=system/jinput
+jvmarg = -Djavacpc-version=%AMSTRADPC_VERSION%
+jvmarg = -Djavacpc-ini-read=javacpc.ini
+jvmarg = -Djavacpc-ini-write=javacpc.ini
+jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
+desktop.jvmarg = -Djavacpc.mode=DESKTOP
+desktop.jvmarg = -Djavacpc.program_browser.style=Classic
+entertainment.jvmarg = -Djavacpc.mode=ENTERTAINMENT
+entertainment.jvmarg = -Djavacpc.program_browser.style=Classic
+entertainment.jvmarg = -Dimages.cache_capacity=100
+javacpc.jvmarg = -Djavacpc.mode=JAVACPC
+javacpc.jvmarg = -Djavacpc.program_browser.style=Classic

@@ -5,6 +5,7 @@
 		<mkdir dir="docs/javadoc" />
 		<javadoc doctitle="Amstrad PC -- A fork of the JavaCPC emulator" destdir="docs/javadoc" access="public" additionalparam="-encoding windows-1252" docencoding="utf-8" source="9" sourcepath="src" packagenames="org.maia.amstrad.*" noindex="false" nonavbar="false" notree="false" splitindex="true" nodeprecated="false" nodeprecatedlist="false" use="false" author="false" version="false">
 			<classpath>
+				<pathelement location="lib/ant.jar" />
 				<pathelement location="lib/maiaUtils.jar" />
 				<pathelement location="lib/maiaSwing.jar" />
 				<pathelement location="lib/maiaInputDevice.jar" />

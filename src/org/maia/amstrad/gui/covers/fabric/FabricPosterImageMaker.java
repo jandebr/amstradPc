@@ -26,7 +26,7 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 
 	private List<FabricPatchPatternGenerator> patternGenerators;
 
-	private static boolean concept = true;
+	private boolean conceptMode;
 
 	public FabricPosterImageMaker() {
 		this(new Randomizer());
@@ -73,7 +73,9 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 		if (pattern != null) {
 			image = ImageUtils.createImage(width, height, pattern.getBackgroundColor());
 			paintPatchPattern(pattern, image);
-			image = applyPatchEdges(pattern, image, width, height);
+			if (!pattern.isStraightEdges()) {
+				image = applyPatchEdges(pattern, image, width, height);
+			}
 		}
 		return image;
 	}
@@ -100,7 +102,7 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 
 	private void paintPatchPattern(FabricPatchPattern pattern, BufferedImage canvas) {
 		for (FabricPatch patch : pattern.getPatches()) {
-			if (concept) {
+			if (isConceptMode()) {
 				paintPatchContour(patch, canvas);
 			} else {
 				paintPatch(patch, canvas);
@@ -218,6 +220,14 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 
 	private List<FabricPatchPatternGenerator> getPatternGenerators() {
 		return patternGenerators;
+	}
+
+	public boolean isConceptMode() {
+		return conceptMode;
+	}
+
+	public void setConceptMode(boolean conceptMode) {
+		this.conceptMode = conceptMode;
 	}
 
 	private static class FabricTexture {

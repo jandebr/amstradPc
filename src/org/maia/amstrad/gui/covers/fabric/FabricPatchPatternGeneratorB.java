@@ -15,7 +15,7 @@ public class FabricPatchPatternGeneratorB extends FabricPatchPatternGenerator {
 		Color c0 = new Color(255, 239, 214);
 		Color c1 = new Color(67, 37, 156, 240);
 		Color c2 = new Color(26, 135, 29, 240);
-		FabricPatchPattern pattern = new FabricPatchPattern(c0);
+		FabricPatchPattern pattern = new FabricPatchPattern(c0, false);
 		pattern.addPatch(new FabricPatch(c1, width / 10, 0, width / 10, height));
 		pattern.addPatch(new FabricPatch(c2, width / 3, 0, width / 3, height));
 		pattern.addPatch(new FabricPatch(c1, width * 8 / 10, 0, width / 10, height));

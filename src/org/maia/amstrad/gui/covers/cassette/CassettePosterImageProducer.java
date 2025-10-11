@@ -6,8 +6,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.fabric.AxialPatchPatternGenerator;
 import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternGenerator;
-import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternGeneratorA;
 import org.maia.amstrad.gui.covers.fabric.FabricPatchPatternGeneratorB;
 import org.maia.amstrad.gui.covers.fabric.FabricPosterImageMaker;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -75,9 +75,11 @@ public class CassettePosterImageProducer extends AmstradProgramCoverImageProduce
 	protected void prepareImageMaker(Randomizer rnd) {
 		FabricPosterImageMaker imageMaker = getImageMaker();
 		imageMaker.removePatternGenerators();
-		imageMaker.addPatternGenerator(new FabricPatchPatternGeneratorA(rnd)); // TODO
+		// TODO add pattern generators
+		imageMaker.addPatternGenerator(new AxialPatchPatternGenerator(Color.BLACK, rnd));
 		imageMaker.addPatternGenerator(new FabricPatchPatternGeneratorB(rnd));
 		imageMaker.setRandomizer(rnd);
+		imageMaker.setConceptMode(true);
 	}
 
 	protected Color chooseBackgroundColor(BufferedImage image, Randomizer rnd) {

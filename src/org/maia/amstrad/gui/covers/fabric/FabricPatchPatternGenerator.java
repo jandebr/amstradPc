@@ -12,8 +12,24 @@ public abstract class FabricPatchPatternGenerator {
 
 	public abstract FabricPatchPattern generatePattern(int width, int height);
 
+	protected boolean drawBoolean() {
+		return getRandomizer().drawBoolean();
+	}
+
 	protected int drawIntegerNumber(int minInclusive, int maxInclusive) {
 		return getRandomizer().drawIntegerNumber(minInclusive, maxInclusive);
+	}
+
+	protected float drawFloatUnitNumber() {
+		return getRandomizer().drawFloatUnitNumber();
+	}
+
+	protected double drawDoubleUnitNumber() {
+		return getRandomizer().drawDoubleUnitNumber();
+	}
+
+	protected double drawGaussian() {
+		return getRandomizer().drawGaussian();
 	}
 
 	public Randomizer getRandomizer() {

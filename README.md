@@ -4,9 +4,9 @@
 
 The software is created using the Java Development Kit (JDK) 9 and is compatible with JRE/JDK 9 or higher
 
-![AmstradPC GT65 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-GT65.png)
+![AmstradPC GT65 emulator](https://github.com/jandebr/amstradPc/blob/main/resources/images/amstradpc/AmstradPC-GT65.png)
 
-![AmstradPC CTM644 emulator](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-CTM644.png)
+![AmstradPC CTM644 emulator](https://github.com/jandebr/amstradPc/blob/main/resources/images/amstradpc/AmstradPC-CTM644.png)
 
 
 
@@ -44,7 +44,7 @@ The software is created using the Java Development Kit (JDK) 9 and is compatible
 
 For more information see the [Features](https://github.com/jandebr/amstradPc/wiki/Features) documentation
 
-![Integrated program browser](https://github.com/jandebr/amstradPc/blob/main/screenshots/AmstradPC-Program-Browser.png)
+![Integrated program browser](https://github.com/jandebr/amstradPc/blob/main/resources/images/amstradpc/AmstradPC-Program-Browser.png)
 
 
 

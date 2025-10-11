@@ -11,10 +11,17 @@ public class FabricPatchPattern {
 
 	private Color backgroundColor;
 
+	private boolean straightEdges;
+
 	private List<FabricPatch> patches;
 
 	public FabricPatchPattern(Color backgroundColor) {
+		this(backgroundColor, true);
+	}
+
+	public FabricPatchPattern(Color backgroundColor, boolean straightEdges) {
 		this.backgroundColor = backgroundColor;
+		this.straightEdges = straightEdges;
 		this.patches = new Vector<FabricPatch>();
 	}
 
@@ -57,6 +64,10 @@ public class FabricPatchPattern {
 
 	public Color getBackgroundColor() {
 		return backgroundColor;
+	}
+
+	public boolean isStraightEdges() {
+		return straightEdges;
 	}
 
 	public List<FabricPatch> getPatches() {
