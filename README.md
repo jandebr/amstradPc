@@ -53,7 +53,7 @@ For more information see the [Features](https://github.com/jandebr/amstradPc/wik
 To get started
 
 1. Download the project sources from [github](https://github.com/jandebr/amstradPc)
-2. From the parent directory, run `java -Djava.library.path=system/jinput -jar dist/amstradPc.jar`
+2. From the parent directory, run `java -Djava.library.path=system/jinput -jar deploy/amstradPc.jar`
 
 Alternatively, one can distribute *Amstrad PC* to end user computers using [getdown](https://github.com/threerings/getdown) as detailed in the [distribution](https://github.com/jandebr/amstradPc/wiki/Distribute-using-getdown) documentation
 
