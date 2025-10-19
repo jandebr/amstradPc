@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.covers.fabric;
+package org.maia.amstrad.gui.covers.stock.fabric;
 
 import java.awt.Color;
 import java.awt.Point;

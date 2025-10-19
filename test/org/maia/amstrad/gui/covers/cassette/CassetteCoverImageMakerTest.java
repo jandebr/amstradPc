@@ -6,9 +6,9 @@ import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
-import org.maia.amstrad.gui.covers.fabric.AxialPatchPatternGenerator;
-import org.maia.amstrad.gui.covers.fabric.ClothTextureImageMaker;
-import org.maia.amstrad.gui.covers.fabric.FabricPosterImageMaker;
+import org.maia.amstrad.gui.covers.stock.fabric.ClothTextureImageMaker;
+import org.maia.amstrad.gui.covers.stock.fabric.FabricCoverImageMaker;
+import org.maia.amstrad.gui.covers.stock.fabric.TestPatchPatternGenerator;
 import org.maia.amstrad.gui.covers.util.ResourcePaths;
 import org.maia.graphics2d.image.ImageUtils;
 import org.maia.util.Randomizer;
@@ -17,16 +17,16 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 
 	private static NumberFormat nf;
 
-	private static FabricPosterImageMaker posterMaker;
+	private static FabricCoverImageMaker coverMaker;
 
 	private static final String TEST_PATH = "resources/test/covers/";
 
 	static {
 		nf = NumberFormat.getIntegerInstance();
 		nf.setMinimumIntegerDigits(3);
-		posterMaker = new FabricPosterImageMaker();
-		posterMaker.addPatternGenerator(new AxialPatchPatternGenerator(Color.BLACK, new Randomizer()));
-		posterMaker.setConceptMode(false);
+		coverMaker = new FabricCoverImageMaker(new TestPatchPatternGenerator());
+		// coverMaker = new FabricCoverImageMaker(new AxialPatchPatternGenerator(Color.BLACK));
+		// coverMaker.setConceptMode(true);
 	}
 
 	public static void main(String[] args) {
@@ -62,7 +62,7 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		double scaleFactor = height / ClosedCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
 		ClosedCassetteCoverImageMaker imageMaker = new ClosedCassetteCoverImageMaker(null, scaleFactor);
 		for (int i = 0; i < 10; i++) {
-			ImageUtils.writeToFile(createPosterImage(imageMaker), TEST_PATH + "poster_" + nf.format(i) + ".png");
+			ImageUtils.writeToFile(createCoverImage(imageMaker), TEST_PATH + "poster_" + nf.format(i) + ".png");
 		}
 	}
 
@@ -74,12 +74,12 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		Dimension size = imageMaker.scaleSize(ClosedCassetteCoverImageMaker.CANONICAL_SIZE);
 		CoverImageEmbedding embedding = new CoverImageEmbedding(size, background);
 		embedding.setPadTopFraction(0.32f);
-		BufferedImage posterImage = createPosterImage(imageMaker);
+		BufferedImage posterImage = createCoverImage(imageMaker);
 		BufferedImage cassetteImage = imageMaker.makeCoverImage(posterImage, embedding);
 		ImageUtils.writeToFile(cassetteImage, TEST_PATH + "cassette-closed.png");
 		long t0 = System.nanoTime();
 		for (int i = 0; i < 100; i++) {
-			imageMaker.makeCoverImage(createPosterImage(imageMaker), embedding);
+			imageMaker.makeCoverImage(createCoverImage(imageMaker), embedding);
 		}
 		System.out.println((System.nanoTime() - t0) / 1000000f / 100f + " ms.");
 	}
@@ -91,19 +91,19 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 		Dimension size = imageMaker.scaleSize(OpenCassetteCoverImageMaker.CANONICAL_SIZE);
 		CoverImageEmbedding embedding = new CoverImageEmbedding(size, background);
 		embedding.setPadTopFraction(0);
-		BufferedImage posterImage = createPosterImage(imageMaker);
+		BufferedImage posterImage = createCoverImage(imageMaker);
 		BufferedImage cassetteImage = imageMaker.makeCoverImage(posterImage, embedding);
 		ImageUtils.writeToFile(cassetteImage, TEST_PATH + "cassette-open.png");
 		long t0 = System.nanoTime();
 		for (int i = 0; i < 100; i++) {
-			imageMaker.makeCoverImage(createPosterImage(imageMaker), embedding);
+			imageMaker.makeCoverImage(createCoverImage(imageMaker), embedding);
 		}
 		System.out.println((System.nanoTime() - t0) / 1000000f / 100f + " ms.");
 	}
 
-	private static BufferedImage createPosterImage(CassetteCoverImageMaker imageMaker) {
+	private static BufferedImage createCoverImage(CassetteCoverImageMaker imageMaker) {
 		Dimension size = imageMaker.scaleSize(ClosedCassetteCoverImageMaker.CANONICAL_POSTER_REGION.getSize());
-		return posterMaker.makePosterImage(size);
+		return coverMaker.makeCoverImage(size);
 	}
 
 }

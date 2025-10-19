@@ -257,7 +257,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public float getCarouselProgramTitleRelativeVerticalPosition() {
-		return 0.2f;
+		return 0f;
 	}
 
 	@Override

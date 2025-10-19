@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.covers.fabric;
+package org.maia.amstrad.gui.covers.stock.fabric;
 
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -82,6 +82,10 @@ public class AxialPatchPatternGenerator extends FabricPatchPatternGenerator {
 	private int patchMinOutlierCount = 0;
 
 	private int patchMaxOutlierCount = 3;
+
+	public AxialPatchPatternGenerator(Color backgroundColor) {
+		this(backgroundColor, new Randomizer());
+	}
 
 	public AxialPatchPatternGenerator(Color backgroundColor, Randomizer randomizer) {
 		super(randomizer);

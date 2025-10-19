@@ -14,6 +14,7 @@ import javax.swing.JComponent;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
+import org.maia.amstrad.gui.browser.carousel.CarouselCoverImageFactory.CassetteCoverImageFactory;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimationFactory;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
@@ -25,8 +26,6 @@ import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserDefault
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
-import org.maia.amstrad.gui.covers.cassette.CassetteFolderCoverImageProducer;
-import org.maia.amstrad.gui.covers.cassette.CassetteProgramCoverImageProducer;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
@@ -62,6 +61,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
 
 	private CarouselFocusManager focusManager;
+
+	private CarouselCoverImageFactory coverImageFactory;
 
 	private CarouselComponentFactory componentFactory;
 
@@ -118,46 +119,28 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		buildCarouselBreadcrumb();
 	}
 
-	protected void initCoverImageProducers() {
+	private void initCoverImageProducers() {
+		Dimension imageSize = getImageSizeForCoverImages();
+		CarouselProgramBrowserTheme theme = getTheme();
+		CarouselCoverImageFactory factory = getCoverImageFactory();
+		if (factory == null || !factory.getImageSize().equals(imageSize) || !factory.getTheme().equals(theme)) {
+			factory = createCoverImageFactory(imageSize, theme);
+			setProgramCoverImageProducer(factory.createProgramCoverImageProducer());
+			setFolderCoverImageProducer(factory.createFolderCoverImageProducer());
+			setCoverImageFactory(factory);
+		}
+	}
+
+	protected Dimension getImageSizeForCoverImages() {
 		Insets padding = getLayout().getCarouselPadding();
 		int height = getLayout().getCarouselBounds().height - padding.top - padding.bottom;
 		int width = Math.round(0.6f * height);
-		Dimension imageSize = new Dimension(width, height);
-		initProgramCoverImageProducer(imageSize);
-		initFolderCoverImageProducer(imageSize);
+		return new Dimension(width, height);
 	}
 
-	protected void initProgramCoverImageProducer(Dimension imageSize) {
-		AmstradProgramCoverImageProducer producer = getProgramCoverImageProducer();
-		if (producer == null || !producer.getImageSize().equals(imageSize)) {
-			producer = createProgramCoverImageProducer(imageSize);
-		}
-		producer.setBackgroundColor(getTheme().getBackgroundColor());
-		setProgramCoverImageProducer(producer);
-	}
-
-	protected void initFolderCoverImageProducer(Dimension imageSize) {
-		AmstradFolderCoverImageProducer producer = getFolderCoverImageProducer();
-		if (producer == null || !producer.getImageSize().equals(imageSize)) {
-			producer = createFolderCoverImageProducer(imageSize);
-		}
-		producer.setBackgroundColor(getTheme().getBackgroundColor());
-		setFolderCoverImageProducer(producer);
-	}
-
-	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer(Dimension imageSize) {
-		return new CassetteProgramCoverImageProducer(imageSize, getTheme().getBackgroundColor(),
-				getTheme().getCarouselProgramPosterBackgroundColorDark(),
-				getTheme().getCarouselProgramPosterBackgroundColorBright(), getTheme().getCarouselProgramTitleFont(),
-				getTheme().getCarouselProgramTitleColor(), getTheme().getCarouselProgramTitleBackgroundColor(),
-				getTheme().getCarouselProgramTitleRelativeVerticalPosition());
-	}
-
-	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer(Dimension imageSize) {
-		return new CassetteFolderCoverImageProducer(imageSize, getTheme().getBackgroundColor(),
-				getTheme().getCarouselProgramPosterBackgroundColorDark(),
-				getTheme().getCarouselProgramPosterBackgroundColorBright(), getTheme().getCarouselFolderTitleFont(),
-				getTheme().getCarouselFolderTitleColor());
+	protected CarouselCoverImageFactory createCoverImageFactory(Dimension imageSize,
+			CarouselProgramBrowserTheme theme) {
+		return new CassetteCoverImageFactory(imageSize, theme);
 	}
 
 	protected CarouselComponentFactory createComponentFactory() {
@@ -653,6 +636,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private void setFocusManager(CarouselFocusManager focusManager) {
 		this.focusManager = focusManager;
+	}
+
+	protected CarouselCoverImageFactory getCoverImageFactory() {
+		return coverImageFactory;
+	}
+
+	private void setCoverImageFactory(CarouselCoverImageFactory factory) {
+		this.coverImageFactory = factory;
 	}
 
 	protected CarouselComponentFactory getComponentFactory() {

@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.covers.fabric;
+package org.maia.amstrad.gui.covers.stock.fabric;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -18,86 +18,44 @@ import org.maia.graphics2d.image.ops.BandedImageDeformation.VerticalImageBand;
 import org.maia.graphics2d.transform.TransformMatrix2D;
 import org.maia.graphics2d.transform.Transformation2D;
 import org.maia.util.ColorUtils;
-import org.maia.util.Randomizer;
 
-public class FabricPosterImageMaker extends RandomImageMaker {
+public class FabricCoverImageMaker extends RandomImageMaker {
+
+	private FabricPatchPatternGenerator patternGenerator;
 
 	private FabricTexture fabricTexture;
 
-	private List<FabricPatchPatternGenerator> patternGenerators;
-
 	private boolean conceptMode;
 
-	public FabricPosterImageMaker() {
-		this(new Randomizer());
+	public FabricCoverImageMaker(FabricPatchPatternGenerator patternGenerator) {
+		this(patternGenerator, UIResources.loadImage("covers/cloth-texture-300x480.png"));
 	}
 
-	public FabricPosterImageMaker(Randomizer randomizer) {
-		this(randomizer, UIResources.loadImage("covers/cloth-texture-300x480.png"));
-	}
-
-	public FabricPosterImageMaker(Randomizer randomizer, BufferedImage texture) {
-		super(randomizer);
+	public FabricCoverImageMaker(FabricPatchPatternGenerator patternGenerator, BufferedImage texture) {
+		super(patternGenerator.getRandomizer());
+		this.patternGenerator = patternGenerator;
 		this.fabricTexture = new FabricTexture(texture);
-		this.patternGenerators = new Vector<FabricPatchPatternGenerator>();
 	}
 
-	public void addPatternGenerator(FabricPatchPatternGenerator patternGenerator) {
-		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
-		synchronized (generators) {
-			generators.add(patternGenerator);
-		}
+	public BufferedImage makeCoverImage(Dimension size) {
+		return makeCoverImage(size.width, size.height);
 	}
 
-	public void removePatternGenerator(FabricPatchPatternGenerator patternGenerator) {
-		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
-		synchronized (generators) {
-			generators.remove(patternGenerator);
-		}
-	}
-
-	public void removePatternGenerators() {
-		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
-		synchronized (generators) {
-			generators.clear();
-		}
-	}
-
-	public BufferedImage makePosterImage(Dimension size) {
-		return makePosterImage(size.width, size.height);
-	}
-
-	public BufferedImage makePosterImage(int width, int height) {
+	public BufferedImage makeCoverImage(int width, int height) {
 		BufferedImage image = null;
 		FabricPatchPattern pattern = createPatchPattern(width, height);
-		if (pattern != null) {
-			image = ImageUtils.createImage(width, height, pattern.getBackgroundColor());
-			paintPatchPattern(pattern, image);
-			if (!pattern.isStraightEdges()) {
-				image = applyPatchEdges(pattern, image, width, height);
-			}
+		image = ImageUtils.createImage(width, height, pattern.getBackgroundColor());
+		paintPatchPattern(pattern, image);
+		if (!pattern.isStraightEdges()) {
+			image = applyPatchEdges(pattern, image, width, height);
 		}
 		return image;
 	}
 
 	private FabricPatchPattern createPatchPattern(int width, int height) {
-		FabricPatchPattern pattern = null;
-		FabricPatchPatternGenerator generator = drawPatternGenerator();
-		if (generator != null) {
-			pattern = generator.generatePattern(width, height);
-		}
-		return pattern;
-	}
-
-	public FabricPatchPatternGenerator drawPatternGenerator() {
-		FabricPatchPatternGenerator generator = null;
-		List<FabricPatchPatternGenerator> generators = getPatternGenerators();
-		synchronized (generators) {
-			if (!generators.isEmpty()) {
-				generator = generators.get(drawIntegerNumber(0, generators.size() - 1));
-			}
-		}
-		return generator;
+		FabricPatchPatternGenerator generator = getPatternGenerator();
+		generator.setRandomizer(getRandomizer());
+		return generator.generatePattern(width, height);
 	}
 
 	private void paintPatchPattern(FabricPatchPattern pattern, BufferedImage canvas) {
@@ -214,12 +172,12 @@ public class FabricPosterImageMaker extends RandomImageMaker {
 		return sizes;
 	}
 
-	private FabricTexture getFabricTexture() {
-		return fabricTexture;
+	public FabricPatchPatternGenerator getPatternGenerator() {
+		return patternGenerator;
 	}
 
-	private List<FabricPatchPatternGenerator> getPatternGenerators() {
-		return patternGenerators;
+	private FabricTexture getFabricTexture() {
+		return fabricTexture;
 	}
 
 	public boolean isConceptMode() {

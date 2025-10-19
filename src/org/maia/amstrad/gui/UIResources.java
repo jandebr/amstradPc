@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -17,6 +18,9 @@ import org.maia.amstrad.pc.action.PauseResumeAction;
 import org.maia.amstrad.pc.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.VirtualKeyboardAction;
 import org.maia.graphics2d.image.ImageUtils;
+
+import com.github.weisj.jsvg.SVGDocument;
+import com.github.weisj.jsvg.parser.SVGLoader;
 
 public class UIResources {
 
@@ -121,6 +125,12 @@ public class UIResources {
 
 	public static BufferedImage loadImage(String resourceName) {
 		return ImageUtils.readFromStream(UIResources.class.getResourceAsStream("images/" + resourceName));
+	}
+
+	public static SVGDocument loadSvg(String resourceName) {
+		URL svgUrl = UIResources.class.getResource("images/" + resourceName);
+		SVGLoader svgLoader = new SVGLoader();
+		return svgLoader.load(svgUrl);
 	}
 
 	private static class ButtonStateIcon implements Icon {
