@@ -25,7 +25,7 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 
 	private FabricTexture fabricTexture;
 
-	private boolean conceptMode;
+	private boolean conceptMode; // when true, paints contours only
 
 	public FabricCoverImageMaker(FabricPatchPatternGenerator patternGenerator) {
 		this(patternGenerator, UIResources.loadImage("covers/cloth-texture-300x480.png"));
@@ -38,24 +38,28 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 	}
 
 	public BufferedImage makeCoverImage(Dimension size) {
-		return makeCoverImage(size.width, size.height);
+		return makeCoverImage(size, new FabricHints());
 	}
 
-	public BufferedImage makeCoverImage(int width, int height) {
+	public BufferedImage makeCoverImage(Dimension size, FabricHints hints) {
+		return makeCoverImage(size.width, size.height, hints);
+	}
+
+	public BufferedImage makeCoverImage(int width, int height, FabricHints hints) {
 		BufferedImage image = null;
-		FabricPatchPattern pattern = createPatchPattern(width, height);
+		FabricPatchPattern pattern = createPatchPattern(width, height, hints);
 		image = ImageUtils.createImage(width, height, pattern.getBackgroundColor());
 		paintPatchPattern(pattern, image);
-		if (!pattern.isStraightEdges()) {
-			image = applyPatchEdges(pattern, image, width, height);
+		if (pattern.isCurvedEdges()) {
+			image = applyCurvedPatchEdges(pattern, image, width, height);
 		}
 		return image;
 	}
 
-	private FabricPatchPattern createPatchPattern(int width, int height) {
+	private FabricPatchPattern createPatchPattern(int width, int height, FabricHints hints) {
 		FabricPatchPatternGenerator generator = getPatternGenerator();
 		generator.setRandomizer(getRandomizer());
-		return generator.generatePattern(width, height);
+		return generator.generatePattern(width, height, hints);
 	}
 
 	private void paintPatchPattern(FabricPatchPattern pattern, BufferedImage canvas) {
@@ -99,31 +103,36 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 		}
 	}
 
-	private BufferedImage applyPatchEdges(FabricPatchPattern pattern, BufferedImage canvas, int width, int height) {
+	private BufferedImage applyCurvedPatchEdges(FabricPatchPattern pattern, BufferedImage canvas, int width,
+			int height) {
 		int maxExtent = Math.max((int) Math.ceil(Math.min(width, height) / 150.0), 1);
-		canvas = applyVerticalPatchEdges(pattern, canvas, width, height, maxExtent);
-		canvas = applyHorizontalPatchEdges(pattern, canvas, width, height, maxExtent);
+		canvas = applyCurvedVerticalPatchEdges(pattern, canvas, width, height, maxExtent);
+		canvas = applyCurvedHorizontalPatchEdges(pattern, canvas, width, height, maxExtent);
 		return canvas;
 	}
 
-	private BufferedImage applyVerticalPatchEdges(FabricPatchPattern pattern, BufferedImage canvas, int width,
+	private BufferedImage applyCurvedVerticalPatchEdges(FabricPatchPattern pattern, BufferedImage canvas, int width,
 			int height, int maxExtent) {
 		int[] edgeCoords = pattern.getInnerVerticalPatchCoords(width);
-		int[] patchWidths = getEdgePartitionSizes(edgeCoords, width);
-		Curve2D[] patchEdges = new Curve2D[edgeCoords.length];
-		Curve2D normalizedEdge = createNormalizedVerticalPatchEdge();
-		for (int i = 0; i < edgeCoords.length; i++) {
-			int extent = Math.min(Math.min(patchWidths[i], patchWidths[i + 1]), maxExtent);
-			TransformMatrix2D translation = Transformation2D.getTranslationMatrix(edgeCoords[i], 0);
-			TransformMatrix2D scale = Transformation2D.getScalingMatrix(extent, height);
-			patchEdges[i] = normalizedEdge.transform(scale.postMultiply(translation));
+		if (edgeCoords.length > 0) {
+			int[] patchWidths = getEdgePartitionSizes(edgeCoords, width);
+			Curve2D[] patchEdges = new Curve2D[edgeCoords.length];
+			Curve2D normalizedEdge = createNormalizedCurvedVerticalPatchEdge();
+			for (int i = 0; i < edgeCoords.length; i++) {
+				int extent = Math.min(Math.min(patchWidths[i], patchWidths[i + 1]), maxExtent);
+				TransformMatrix2D translation = Transformation2D.getTranslationMatrix(edgeCoords[i], 0);
+				TransformMatrix2D scale = Transformation2D.getScalingMatrix(extent, height);
+				patchEdges[i] = normalizedEdge.transform(scale.postMultiply(translation));
+			}
+			BandedImageDeformation<VerticalImageBand> deformation = BandedImageDeformation
+					.createCurvedVerticalBandedImageDeformation(patchWidths, patchEdges);
+			return deformation.deform(canvas);
+		} else {
+			return canvas;
 		}
-		BandedImageDeformation<VerticalImageBand> deformation = BandedImageDeformation
-				.createCurvedVerticalBandedImageDeformation(patchWidths, patchEdges);
-		return deformation.deform(canvas);
 	}
 
-	private Curve2D createNormalizedVerticalPatchEdge() {
+	private Curve2D createNormalizedCurvedVerticalPatchEdge() {
 		int n = drawIntegerNumber(6, 10);
 		List<Point2D> controlPoints = new Vector<Point2D>(n);
 		for (int i = 0; i < n; i++) {
@@ -134,24 +143,28 @@ public class FabricCoverImageMaker extends RandomImageMaker {
 		return ApproximatingCurve2D.createStandardCurve(controlPoints);
 	}
 
-	private BufferedImage applyHorizontalPatchEdges(FabricPatchPattern pattern, BufferedImage canvas, int width,
+	private BufferedImage applyCurvedHorizontalPatchEdges(FabricPatchPattern pattern, BufferedImage canvas, int width,
 			int height, int maxExtent) {
 		int[] edgeCoords = pattern.getInnerHorizontalPatchCoords(height);
-		int[] patchHeights = getEdgePartitionSizes(edgeCoords, height);
-		Curve2D[] patchEdges = new Curve2D[edgeCoords.length];
-		Curve2D normalizedEdge = createNormalizedHorizontalPatchEdge();
-		for (int i = 0; i < edgeCoords.length; i++) {
-			int extent = Math.min(Math.min(patchHeights[i], patchHeights[i + 1]), maxExtent);
-			TransformMatrix2D translation = Transformation2D.getTranslationMatrix(0, edgeCoords[i]);
-			TransformMatrix2D scale = Transformation2D.getScalingMatrix(width, extent);
-			patchEdges[i] = normalizedEdge.transform(scale.postMultiply(translation));
+		if (edgeCoords.length > 0) {
+			int[] patchHeights = getEdgePartitionSizes(edgeCoords, height);
+			Curve2D[] patchEdges = new Curve2D[edgeCoords.length];
+			Curve2D normalizedEdge = createNormalizedCurvedHorizontalPatchEdge();
+			for (int i = 0; i < edgeCoords.length; i++) {
+				int extent = Math.min(Math.min(patchHeights[i], patchHeights[i + 1]), maxExtent);
+				TransformMatrix2D translation = Transformation2D.getTranslationMatrix(0, edgeCoords[i]);
+				TransformMatrix2D scale = Transformation2D.getScalingMatrix(width, extent);
+				patchEdges[i] = normalizedEdge.transform(scale.postMultiply(translation));
+			}
+			BandedImageDeformation<HorizontalImageBand> deformation = BandedImageDeformation
+					.createCurvedHorizontalBandedImageDeformation(patchHeights, patchEdges);
+			return deformation.deform(canvas);
+		} else {
+			return canvas;
 		}
-		BandedImageDeformation<HorizontalImageBand> deformation = BandedImageDeformation
-				.createCurvedHorizontalBandedImageDeformation(patchHeights, patchEdges);
-		return deformation.deform(canvas);
 	}
 
-	private Curve2D createNormalizedHorizontalPatchEdge() {
+	private Curve2D createNormalizedCurvedHorizontalPatchEdge() {
 		int n = drawIntegerNumber(6, 10);
 		List<Point2D> controlPoints = new Vector<Point2D>(n);
 		for (int i = 0; i < n; i++) {

@@ -45,7 +45,7 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		ClosedCassetteCoverImageMaker imageMaker = getImageMaker();
 		ProgramPosterImage posterImage = producePosterImage(programNode, imageMaker.getScaledPosterSize());
 		imageMaker.setTitle(posterImage.isUntitledImage() ? programNode.getName() : null);
-		imageMaker.setRandomizer(new Randomizer(programNode.getName()));
+		imageMaker.setRandomizer(createRandomizer(programNode));
 		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
 		embedding.setPadTopFraction(0.32f);
 		return imageMaker.makeCoverImage(posterImage.getImage(), embedding);
@@ -54,7 +54,7 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 	protected ProgramPosterImage producePosterImage(ProgramNode programNode, Dimension posterSize) {
 		Image image = getCoverImageFromRepository(programNode);
 		if (image != null) {
-			return toPosterImage(image, posterSize, new Randomizer(programNode.getName()));
+			return toPosterImage(image, posterSize, createRandomizer(programNode));
 		} else {
 			return inventPosterImage(programNode, posterSize);
 		}

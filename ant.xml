@@ -30,6 +30,7 @@
 			<zipfileset src="lib/maiaSwing.jar" />
 			<zipfileset src="lib/maiaInputDevice.jar" />
 			<zipfileset src="lib/maia2d.jar" />
+			<zipfileset src="lib/phylopicSvg.jar" />
 			<fileset dir="bin" />
 		</jar>
 	</target>
@@ -46,6 +47,7 @@
 		<copy todir="deploy/staging/${distribution.id}/images">
 			<fileset dir="resources/images/launcher" />
 			<fileset dir="resources/images/icons" />
+			<file file="resources/images/covers/badge/phylopic-db.zip" />
 		</copy>
 		<copy todir="deploy/staging/${distribution.id}/${distribution.programbase}">
 			<fileset dir="${program-repo.source}" />

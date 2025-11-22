@@ -10,7 +10,7 @@ public abstract class FabricPatchPatternGenerator {
 		setRandomizer(randomizer);
 	}
 
-	public abstract FabricPatchPattern generatePattern(int width, int height);
+	public abstract FabricPatchPattern generatePattern(int width, int height, FabricHints hints);
 
 	protected boolean drawBoolean() {
 		return getRandomizer().drawBoolean();
@@ -26,10 +26,6 @@ public abstract class FabricPatchPatternGenerator {
 
 	protected double drawDoubleUnitNumber() {
 		return getRandomizer().drawDoubleUnitNumber();
-	}
-
-	protected double drawGaussian() {
-		return getRandomizer().drawGaussian();
 	}
 
 	public Randomizer getRandomizer() {

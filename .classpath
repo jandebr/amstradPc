@@ -12,6 +12,6 @@
 	<classpathentry kind="lib" path="lib/maiaUtils.jar" sourcepath="/MaiaUtils/src"/>
 	<classpathentry kind="lib" path="lib/maiaInputDevice.jar" sourcepath="/MaiaInputDevice/src"/>
 	<classpathentry kind="lib" path="lib/maia2d.jar" sourcepath="/Maia2D/src"/>
-	<classpathentry kind="lib" path="lib/jsvg-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/phylopicSvg.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

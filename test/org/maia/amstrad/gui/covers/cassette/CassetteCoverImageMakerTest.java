@@ -6,9 +6,10 @@ import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
+import org.maia.amstrad.gui.covers.stock.fabric.CheckerboardPatchPatternGenerator;
 import org.maia.amstrad.gui.covers.stock.fabric.ClothTextureImageMaker;
 import org.maia.amstrad.gui.covers.stock.fabric.FabricCoverImageMaker;
-import org.maia.amstrad.gui.covers.stock.fabric.TestPatchPatternGenerator;
+import org.maia.amstrad.gui.covers.stock.fabric.FabricPatchPatternGenerator;
 import org.maia.amstrad.gui.covers.util.ResourcePaths;
 import org.maia.graphics2d.image.ImageUtils;
 import org.maia.util.Randomizer;
@@ -24,8 +25,10 @@ public class CassetteCoverImageMakerTest implements ResourcePaths {
 	static {
 		nf = NumberFormat.getIntegerInstance();
 		nf.setMinimumIntegerDigits(3);
-		coverMaker = new FabricCoverImageMaker(new TestPatchPatternGenerator());
-		// coverMaker = new FabricCoverImageMaker(new AxialPatchPatternGenerator(Color.BLACK));
+		// FabricPatchPatternGenerator generator = new AxialPatchPatternGenerator();
+		// FabricPatchPatternGenerator generator = new AmfCheckerboardPatchPatternGenerator();
+		FabricPatchPatternGenerator generator = new CheckerboardPatchPatternGenerator(new Randomizer("test"));
+		coverMaker = new FabricCoverImageMaker(generator);
 		// coverMaker.setConceptMode(true);
 	}
 

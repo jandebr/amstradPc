@@ -25,8 +25,6 @@ import org.maia.util.Randomizer;
 
 public class AxialPatchPatternGenerator extends FabricPatchPatternGenerator {
 
-	private Color backgroundColor;
-
 	private float patchBaseColorMinSaturation = 0.5f; // relative unit
 
 	private float patchBaseColorMaxSaturation = 0.8f; // relative unit
@@ -83,18 +81,17 @@ public class AxialPatchPatternGenerator extends FabricPatchPatternGenerator {
 
 	private int patchMaxOutlierCount = 3;
 
-	public AxialPatchPatternGenerator(Color backgroundColor) {
-		this(backgroundColor, new Randomizer());
+	public AxialPatchPatternGenerator() {
+		this(new Randomizer());
 	}
 
-	public AxialPatchPatternGenerator(Color backgroundColor, Randomizer randomizer) {
+	public AxialPatchPatternGenerator(Randomizer randomizer) {
 		super(randomizer);
-		this.backgroundColor = backgroundColor;
 	}
 
 	@Override
-	public FabricPatchPattern generatePattern(int width, int height) {
-		FabricPatchPattern pattern = new FabricPatchPattern(getBackgroundColor());
+	public FabricPatchPattern generatePattern(int width, int height, FabricHints hints) {
+		FabricPatchPattern pattern = new FabricPatchPattern(hints.getBackgroundColor(Color.BLACK));
 		Color patchBaseColor = drawPatchBaseColor();
 		float patchColorVariation = patchColorMinVariation
 				+ (patchColorMaxVariation - patchColorMinVariation) * drawFloatUnitNumber();
@@ -241,14 +238,6 @@ public class AxialPatchPatternGenerator extends FabricPatchPatternGenerator {
 
 	private int toCanvasCoordinateY(double y, int height) {
 		return height - (int) Math.round(y + height / 2.0);
-	}
-
-	public Color getBackgroundColor() {
-		return backgroundColor;
-	}
-
-	public void setBackgroundColor(Color backgroundColor) {
-		this.backgroundColor = backgroundColor;
 	}
 
 }

@@ -42,6 +42,7 @@ class = org.maia.amstrad.AmstradMain
 jvmarg = -splash:images/splash.png
 jvmarg = -Xmx512m
 jvmarg = -Djava.library.path=system/jinput
+jvmarg = -Dphylopic-db.path=images/phylopic-db.zip
 jvmarg = -Djavacpc-version=%AMSTRADPC_VERSION%
 jvmarg = -Djavacpc-ini-read=javacpc.ini
 jvmarg = -Djavacpc-ini-write=javacpc.ini

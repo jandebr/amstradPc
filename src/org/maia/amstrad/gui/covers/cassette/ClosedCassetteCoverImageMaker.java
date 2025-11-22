@@ -85,7 +85,7 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 	}
 
 	protected int computeTitleHeight(int posterHeight) {
-		return Math.max(posterHeight / 8, Math.min(20, posterHeight));
+		return Math.max(posterHeight / 10, Math.min(20, posterHeight));
 	}
 
 	@Override

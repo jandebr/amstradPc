@@ -81,7 +81,8 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 		return framedImage;
 	}
 
-	protected static Color chooseImageFrameColor(Image image, Color darkFrameColor, Color brightFrameColor, Randomizer rnd) {
+	protected static Color chooseImageFrameColor(Image image, Color darkFrameColor, Color brightFrameColor,
+			Randomizer rnd) {
 		BufferedImage bufImage = ImageUtils.convertToBufferedImage(image);
 		float brightness = getOpaqueOutlineBrightness(bufImage);
 		if (brightness >= 0f) {
@@ -169,6 +170,10 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 			brightness = ColorUtils.getBrightness(new Color(red, green, blue));
 		}
 		return brightness;
+	}
+
+	protected Randomizer createRandomizer(Node node) {
+		return new Randomizer(node.getName());
 	}
 
 	public Dimension getImageSize() {
