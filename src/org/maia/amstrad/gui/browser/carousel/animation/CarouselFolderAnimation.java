@@ -4,12 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 
 public class CarouselFolderAnimation extends CarouselItemAnimation {
 
-	public CarouselFolderAnimation(CarouselHost host, Rectangle itemBounds) {
-		super(host, itemBounds);
+	public CarouselFolderAnimation(CarouselFolderItem item, Rectangle itemBounds) {
+		super(item, itemBounds);
 	}
 
 	@Override
@@ -17,8 +17,12 @@ public class CarouselFolderAnimation extends CarouselItemAnimation {
 		if (elapsedTimeMillis % 200L < 100L) {
 			Rectangle bounds = getItemBounds();
 			if (bounds != null) {
-				g.setColor(Color.RED);
-				g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+				if (getItemHighlightOverlay() != null) {
+					g.drawImage(getItemHighlightOverlay(), bounds.x, bounds.y, null);
+				} else {
+					g.setColor(Color.RED);
+					g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+				}
 			}
 		}
 	}

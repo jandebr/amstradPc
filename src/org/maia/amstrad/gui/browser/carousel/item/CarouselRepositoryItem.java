@@ -35,13 +35,13 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 		if (image != null) {
 			Graphics2D g2 = (Graphics2D) g.create();
 			if (isRenderFaded()) {
-				paintBackground(g2, component);
+				paintBackground(g2);
 				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
 			}
 			doRenderItem(g2, image);
 			g2.dispose();
 		} else {
-			paintBackground(g, component);
+			paintBackground(g);
 		}
 	}
 

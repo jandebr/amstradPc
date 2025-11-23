@@ -48,9 +48,7 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 				ImageDetailLevel.FULL);
 		imageMaker.setTitle(posterImage.isUntitledImage() ? programNode.getName() : null);
 		imageMaker.setRandomizer(createRandomizer(programNode));
-		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
-		embedding.setPadTopFraction(0.32f);
-		return imageMaker.makeCoverImage(posterImage.getImage(), embedding);
+		return imageMaker.makeCoverImage(posterImage.getImage(), getEmbedding());
 	}
 
 	protected ProgramPosterImage producePosterImage(ProgramNode programNode, Dimension posterSize,
@@ -77,9 +75,15 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		return new ProgramPosterImage(image, true); // assuming untitled
 	}
 
+	protected CoverImageEmbedding getEmbedding() {
+		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
+		embedding.setPadTopFraction(0.32f);
+		return embedding;
+	}
+
 	@Override
 	public Image produceHighlightOverlayImage(ProgramNode programNode) {
-		return getImageMaker().getCassetteHighlightImage();
+		return getImageMaker().makeCoverHighlightImage(getEmbedding());
 	}
 
 	private ClosedCassetteCoverImageMaker getImageMaker() {

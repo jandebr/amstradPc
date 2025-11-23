@@ -2,12 +2,12 @@ package org.maia.amstrad.gui.browser.carousel.item;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.swing.animate.itemslide.SlidingItem;
-import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 
 public abstract class CarouselItem implements SlidingItem {
 
@@ -23,8 +23,8 @@ public abstract class CarouselItem implements SlidingItem {
 		this.margin = margin;
 	}
 
-	protected void paintBackground(Graphics2D g, SlidingItemListComponent component) {
-		g.setColor(component.getBackground());
+	protected void paintBackground(Graphics2D g) {
+		g.setColor(getCarouselComponent().getBackground());
 		g.fillRect(0, 0, getWidth(g), getHeight(g));
 	}
 
@@ -39,6 +39,19 @@ public abstract class CarouselItem implements SlidingItem {
 	}
 
 	public abstract boolean isExecutable();
+
+	public final Image getHighlightOverlayImage() {
+		Image highlight = null;
+		if (isExecutable()) {
+			highlight = createHighlightOverlayImage();
+		}
+		return highlight;
+	}
+
+	protected Image createHighlightOverlayImage() {
+		// subclasses may override to provide an overlay image
+		return null;
+	}
 
 	@Override
 	public int getWidth(Graphics2D g) {

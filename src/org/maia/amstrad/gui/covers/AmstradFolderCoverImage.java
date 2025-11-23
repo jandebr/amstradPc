@@ -25,4 +25,9 @@ public class AmstradFolderCoverImage extends AmstradCoverImage {
 		return featuredProgramNode;
 	}
 
+	@Override
+	public AmstradFolderCoverImageProducer getImageProducer() {
+		return (AmstradFolderCoverImageProducer) super.getImageProducer();
+	}
+
 }

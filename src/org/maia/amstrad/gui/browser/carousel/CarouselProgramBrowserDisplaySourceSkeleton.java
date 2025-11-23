@@ -25,6 +25,7 @@ import org.maia.amstrad.gui.browser.carousel.api.CarouselRunProgramHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselRepositoryItem;
@@ -534,6 +535,16 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected void refreshCarouselUI() {
 		getCarouselComponent().refreshUI();
+	}
+
+	@Override
+	public CarouselFolderItem getCarouselFolderItem(FolderNode folderNode) {
+		return (CarouselFolderItem) getCarouselComponent().getItem(folderNode);
+	}
+
+	@Override
+	public CarouselProgramItem getCarouselProgramItem(ProgramNode programNode) {
+		return (CarouselProgramItem) getCarouselComponent().getItem(programNode);
 	}
 
 	@Override

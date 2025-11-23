@@ -42,9 +42,7 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 		imageMaker.setTitle(folderNode.getName());
 		imageMaker.setRandomizer(createRandomizer(folderNode));
 		imageMaker.setPrintColor(getCassettePrintColor(folderNode));
-		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
-		embedding.setPadTopFraction(0);
-		return imageMaker.makeCoverImage(ImageUtils.convertToBufferedImage(posterImage), embedding);
+		return imageMaker.makeCoverImage(ImageUtils.convertToBufferedImage(posterImage), getEmbedding());
 	}
 
 	protected Image producePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension posterSize) {
@@ -64,9 +62,15 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 		return Color.getHSBColor(hue, sat, bri);
 	}
 
+	protected CoverImageEmbedding getEmbedding() {
+		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
+		embedding.setPadTopFraction(0);
+		return embedding;
+	}
+
 	@Override
 	public Image produceHighlightOverlayImage(FolderNode folderNode) {
-		return getImageMaker().getCassetteHighlightImage();
+		return getImageMaker().makeCoverHighlightImage(getEmbedding());
 	}
 
 	private OpenCassetteCoverImageMaker getImageMaker() {

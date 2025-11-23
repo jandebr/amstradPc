@@ -4,12 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 
 public class CarouselProgramAnimation extends CarouselItemAnimation {
 
-	public CarouselProgramAnimation(CarouselHost host, Rectangle itemBounds) {
-		super(host, itemBounds);
+	public CarouselProgramAnimation(CarouselProgramItem item, Rectangle itemBounds) {
+		super(item, itemBounds);
 	}
 
 	@Override

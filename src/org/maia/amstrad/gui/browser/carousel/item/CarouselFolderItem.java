@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel.item;
 
+import java.awt.Image;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
@@ -31,6 +32,11 @@ public class CarouselFolderItem extends CarouselRepositoryItem {
 	protected void doExecute(CarouselHost host) {
 		super.doExecute(host);
 		host.enterFolderAsync(getFolderNode());
+	}
+
+	@Override
+	protected Image createHighlightOverlayImage() {
+		return getCoverImage().getImageProducer().produceHighlightOverlayImage(getFolderNode());
 	}
 
 	@Override

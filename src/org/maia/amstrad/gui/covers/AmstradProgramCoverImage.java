@@ -12,4 +12,9 @@ public class AmstradProgramCoverImage extends AmstradCoverImage {
 		return (ProgramNode) getNode();
 	}
 
+	@Override
+	public AmstradProgramCoverImageProducer getImageProducer() {
+		return (AmstradProgramCoverImageProducer) super.getImageProducer();
+	}
+
 }

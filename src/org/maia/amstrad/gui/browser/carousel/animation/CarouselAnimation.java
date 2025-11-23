@@ -2,18 +2,13 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 
 import java.awt.Graphics2D;
 
-import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
-
 public abstract class CarouselAnimation {
-
-	private CarouselHost host;
 
 	private long minimumDelayMillis;
 
 	private long minimumDurationMillis;
 
-	protected CarouselAnimation(CarouselHost host) {
-		this.host = host;
+	protected CarouselAnimation() {
 	}
 
 	public void init() {
@@ -25,10 +20,6 @@ public abstract class CarouselAnimation {
 
 	public void dispose() {
 		// Subclasses may extend
-	}
-
-	protected CarouselHost getHost() {
-		return host;
 	}
 
 	public long getMinimumDelayMillis() {

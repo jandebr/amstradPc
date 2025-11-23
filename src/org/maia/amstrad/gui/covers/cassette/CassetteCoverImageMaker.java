@@ -82,6 +82,17 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 		return embeddedCassette.getImage();
 	}
 
+	public BufferedImage makeCoverHighlightImage(CoverImageEmbedding embedding) {
+		BufferedImage highlight = getCassetteHighlightImage();
+		Insets padding = embedding.computePadding(ImageUtils.getSize(highlight));
+		BufferedImage embeddedHighlight = ImageUtils.createImage(embedding.getSize(),
+				ColorUtils.setTransparency(embedding.getBackground(), 0.5f));
+		Graphics2D g = embeddedHighlight.createGraphics();
+		g.drawImage(highlight, padding.left, padding.top, null);
+		g.dispose();
+		return embeddedHighlight;
+	}
+
 	protected BufferedImage createCassetteFront(BufferedImage posterImage, boolean posterImageReadOnly) {
 		BufferedImage image = posterImageReadOnly ? ImageUtils.duplicateImage(posterImage) : posterImage;
 		if (hasTitle()) {
@@ -114,18 +125,10 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 
 	protected EmbeddedCassetteImage createEmbeddedCassetteImage(CoverImageEmbedding embedding) {
 		BufferedImage cassette = getCassetteImage();
-		Dimension cassetteSize = ImageUtils.getSize(cassette);
-		Dimension embedSize = embedding.getSize();
-		int padHor = Math.max(embedSize.width - cassetteSize.width, 0);
-		int padVer = Math.max(embedSize.height - cassetteSize.height, 0);
-		int padLeft = Math.round(padHor * embedding.getPadLeftFraction());
-		int padRight = padHor - padLeft;
-		int padTop = Math.round(padVer * embedding.getPadTopFraction());
-		int padBottom = padVer - padTop;
-		Insets padding = new Insets(padTop, padLeft, padBottom, padRight);
-		BufferedImage newCassette = ImageUtils.createImage(embedSize, embedding.getBackground());
+		Insets padding = embedding.computePadding(ImageUtils.getSize(cassette));
+		BufferedImage newCassette = ImageUtils.createImage(embedding.getSize(), embedding.getBackground());
 		Graphics2D g = newCassette.createGraphics();
-		g.drawImage(cassette, padLeft, padTop, null);
+		g.drawImage(cassette, padding.left, padding.top, null);
 		g.dispose();
 		return new EmbeddedCassetteImage(newCassette, embedding, padding);
 	}
@@ -231,11 +234,11 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 		return scaleFactor;
 	}
 
-	public BufferedImage getCassetteImage() {
+	private BufferedImage getCassetteImage() {
 		return cassetteImage;
 	}
 
-	public BufferedImage getCassetteHighlightImage() {
+	private BufferedImage getCassetteHighlightImage() {
 		return cassetteHighlightImage;
 	}
 
@@ -296,6 +299,17 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 		public CoverImageEmbedding(Dimension size, Color background) {
 			this.size = size;
 			this.background = background;
+		}
+
+		public Insets computePadding(Dimension contentSize) {
+			Dimension embedSize = getSize();
+			int padHor = Math.max(embedSize.width - contentSize.width, 0);
+			int padVer = Math.max(embedSize.height - contentSize.height, 0);
+			int padLeft = Math.round(padHor * getPadLeftFraction());
+			int padRight = padHor - padLeft;
+			int padTop = Math.round(padVer * getPadTopFraction());
+			int padBottom = padVer - padTop;
+			return new Insets(padTop, padLeft, padBottom, padRight);
 		}
 
 		public Dimension getSize() {

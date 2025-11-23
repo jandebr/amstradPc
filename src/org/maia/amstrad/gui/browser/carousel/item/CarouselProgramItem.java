@@ -94,6 +94,11 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	}
 
 	@Override
+	protected Image createHighlightOverlayImage() {
+		return getCoverImage().getImageProducer().produceHighlightOverlayImage(getProgramNode());
+	}
+
+	@Override
 	public AmstradProgramCoverImage getCoverImage() {
 		return (AmstradProgramCoverImage) super.getCoverImage();
 	}

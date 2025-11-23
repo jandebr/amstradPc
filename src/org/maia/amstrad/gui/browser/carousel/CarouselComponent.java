@@ -23,6 +23,7 @@ import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.animate.itemslide.impl.SlidingCursorFactory.SolidOutlineCursor;
 import org.maia.swing.animate.itemslide.outline.SlidingItemListOutlineView;
 import org.maia.util.AsyncSerialTaskWorker;
+import org.maia.util.SystemUtils;
 import org.maia.util.AsyncSerialTaskWorker.AsyncTask;
 
 public class CarouselComponent extends SlidingItemListComponent {

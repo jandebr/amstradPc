@@ -12,21 +12,23 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselAnimation createAnimationToStartup(CarouselHost host) {
-		CarouselAnimation animation = new CarouselStartupAnimation(host);
+		CarouselAnimation animation = new CarouselStartupAnimation();
 		animation.setMinimumDelayMillis(0L); // instant
 		animation.setMinimumDurationMillis(3000L);
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselFolderAnimation(host, host.getCarouselItemBounds(folderNode));
+		CarouselAnimation animation = new CarouselFolderAnimation(host.getCarouselFolderItem(folderNode),
+				host.getCarouselItemBounds(folderNode));
 		animation.setMinimumDelayMillis(400L); // delayed
 		animation.setMinimumDurationMillis(1000L);
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToRunProgram(ProgramNode programNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselProgramAnimation(host, host.getCarouselItemBounds(programNode));
+		CarouselAnimation animation = new CarouselProgramAnimation(host.getCarouselProgramItem(programNode),
+				host.getCarouselItemBounds(programNode));
 		animation.setMinimumDelayMillis(0L); // instant
 		animation.setMinimumDurationMillis(1000L);
 		return animation;

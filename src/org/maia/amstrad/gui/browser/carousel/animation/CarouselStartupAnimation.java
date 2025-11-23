@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.swing.SwingUtils;
 import org.maia.swing.text.TextLabel;
 
@@ -14,8 +13,7 @@ public class CarouselStartupAnimation extends CarouselAnimation {
 
 	private static Font font = Font.decode("Arial-PLAIN-20");
 
-	public CarouselStartupAnimation(CarouselHost host) {
-		super(host);
+	public CarouselStartupAnimation() {
 	}
 
 	@Override

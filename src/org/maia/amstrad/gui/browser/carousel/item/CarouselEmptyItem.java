@@ -33,7 +33,7 @@ public class CarouselEmptyItem extends CarouselItem {
 
 	@Override
 	public void render(Graphics2D g, SlidingItemListComponent component) {
-		paintBackground(g, component);
+		paintBackground(g);
 		getLabel().paint(g);
 	}
 
