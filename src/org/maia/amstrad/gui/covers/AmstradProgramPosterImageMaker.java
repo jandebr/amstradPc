@@ -7,6 +7,6 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public interface AmstradProgramPosterImageMaker {
 
-	Image makePosterImage(ProgramNode programNode, Dimension size);
+	Image makePosterImage(ProgramNode programNode, Dimension size, ImageDetailLevel detailLevel);
 
 }

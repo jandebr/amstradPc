@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradProgramPosterImageMaker;
+import org.maia.amstrad.gui.covers.ImageDetailLevel;
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.graphics2d.image.ImageUtils;
@@ -43,7 +44,8 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 	@Override
 	protected Image produceImage(ProgramNode programNode) {
 		ClosedCassetteCoverImageMaker imageMaker = getImageMaker();
-		ProgramPosterImage posterImage = producePosterImage(programNode, imageMaker.getScaledPosterSize());
+		ProgramPosterImage posterImage = producePosterImage(programNode, imageMaker.getScaledPosterSize(),
+				ImageDetailLevel.FULL);
 		imageMaker.setTitle(posterImage.isUntitledImage() ? programNode.getName() : null);
 		imageMaker.setRandomizer(createRandomizer(programNode));
 		CoverImageEmbedding embedding = new CoverImageEmbedding(getImageSize(), getBackgroundColor());
@@ -51,12 +53,13 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		return imageMaker.makeCoverImage(posterImage.getImage(), embedding);
 	}
 
-	protected ProgramPosterImage producePosterImage(ProgramNode programNode, Dimension posterSize) {
+	protected ProgramPosterImage producePosterImage(ProgramNode programNode, Dimension posterSize,
+			ImageDetailLevel detailLevel) {
 		Image image = getCoverImageFromRepository(programNode);
 		if (image != null) {
 			return toPosterImage(image, posterSize, createRandomizer(programNode));
 		} else {
-			return inventPosterImage(programNode, posterSize);
+			return inventPosterImage(programNode, posterSize, detailLevel);
 		}
 	}
 
@@ -68,8 +71,9 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		return new ProgramPosterImage(framedImage, false); // assuming titled
 	}
 
-	protected ProgramPosterImage inventPosterImage(ProgramNode programNode, Dimension posterSize) {
-		Image image = getPosterImageMaker().makePosterImage(programNode, posterSize);
+	protected ProgramPosterImage inventPosterImage(ProgramNode programNode, Dimension posterSize,
+			ImageDetailLevel detailLevel) {
+		Image image = getPosterImageMaker().makePosterImage(programNode, posterSize, detailLevel);
 		return new ProgramPosterImage(image, true); // assuming untitled
 	}
 

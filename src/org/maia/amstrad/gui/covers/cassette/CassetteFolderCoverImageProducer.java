@@ -7,6 +7,7 @@ import java.awt.Image;
 
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradFolderPosterImageMaker;
+import org.maia.amstrad.gui.covers.ImageDetailLevel;
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -48,7 +49,8 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 
 	protected Image producePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension posterSize) {
 		if (featuredProgramNode != null) {
-			return getProgramImageMaker().producePosterImage(featuredProgramNode, posterSize).getImage();
+			return getProgramImageMaker().producePosterImage(featuredProgramNode, posterSize, ImageDetailLevel.MINIMAL)
+					.getImage();
 		} else {
 			return getFolderImageMaker().makePosterImage(folderNode, posterSize);
 		}

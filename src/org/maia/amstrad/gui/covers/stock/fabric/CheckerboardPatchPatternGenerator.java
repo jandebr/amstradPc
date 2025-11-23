@@ -63,7 +63,9 @@ public class CheckerboardPatchPatternGenerator extends FabricPatchPatternGenerat
 
 	protected List<SecondaryColorDerivation> createSecondaryColorDerivations() {
 		List<SecondaryColorDerivation> derivations = new Vector<SecondaryColorDerivation>(2);
-		derivations.add(new SecondaryColorDerivation(new Range(-0.8f, -0.2f), new Range(-0.4f, -0.2f)));
+		if (drawBoolean()) {
+			derivations.add(new SecondaryColorDerivation(new Range(-0.8f, -0.2f), new Range(-0.4f, -0.2f)));
+		}
 		if (drawBoolean()) {
 			derivations.add(new SecondaryColorDerivation(new Range(-0.8f, -0.2f), new Range(-0.9f, -0.5f)));
 		}
