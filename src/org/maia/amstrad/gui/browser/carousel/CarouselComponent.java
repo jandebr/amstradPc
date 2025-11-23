@@ -9,7 +9,8 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItemMaker;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
@@ -255,7 +256,7 @@ public class CarouselComponent extends SlidingItemListComponent {
 		}
 
 		private void handleAnimation() {
-			EnterFolderAction action = getHost().getEnterFolderActionInProgress();
+			CarouselEnterFolderAction action = getHost().getEnterFolderActionInProgress();
 			if (action != null && action.getFolderNode().equals(getFolderNodeToPopulate())) {
 				if (action.isAnimationStarted()) {
 					action.sleepCurrentThreadUntilMinimumAnimationDuration();

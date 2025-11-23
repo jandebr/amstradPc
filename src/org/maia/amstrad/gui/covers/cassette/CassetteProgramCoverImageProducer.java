@@ -77,6 +77,11 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		return new ProgramPosterImage(image, true); // assuming untitled
 	}
 
+	@Override
+	public Image produceHighlightOverlayImage(ProgramNode programNode) {
+		return getImageMaker().getCassetteHighlightImage();
+	}
+
 	private ClosedCassetteCoverImageMaker getImageMaker() {
 		return imageMaker;
 	}

@@ -1,6 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel.animation;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 

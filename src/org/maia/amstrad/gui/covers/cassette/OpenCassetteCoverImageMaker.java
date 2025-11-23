@@ -38,6 +38,7 @@ public class OpenCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
 	public OpenCassetteCoverImageMaker(String title, Randomizer randomizer, double scaleFactor) {
 		super(title, randomizer, UIResources.loadImage("covers/cassette-open-300x586.png"),
+				UIResources.loadImage("covers/cassette-open-highlight-300x586.png"),
 				UIResources.loadImage("covers/cassette-open-gloss-81x586.png"),
 				UIResources.loadImage("covers/cassette-texture-300x480.png"), scaleFactor);
 		this.printTexture = scaleImage(UIResources.loadImage("covers/cassette-texture-print-300x586.png"));

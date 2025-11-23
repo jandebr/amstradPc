@@ -6,8 +6,8 @@ import java.awt.Image;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.RunProgramAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.covers.AmstradCoverImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
@@ -51,11 +51,11 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 
 	protected boolean isRenderFaded() {
 		Node node = getRepositoryNode();
-		RunProgramAction programAction = getCarouselHost().getRunProgramActionInProgress();
+		CarouselRunProgramAction programAction = getCarouselHost().getRunProgramActionInProgress();
 		if (programAction != null) {
 			return !node.equals(programAction.getProgramNode());
 		}
-		EnterFolderAction folderAction = getCarouselHost().getEnterFolderActionInProgress();
+		CarouselEnterFolderAction folderAction = getCarouselHost().getEnterFolderActionInProgress();
 		if (folderAction != null) {
 			return !node.equals(folderAction.getFolderNode());
 		}

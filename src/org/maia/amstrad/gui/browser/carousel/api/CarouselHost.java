@@ -1,9 +1,10 @@
-package org.maia.amstrad.gui.browser.carousel;
+package org.maia.amstrad.gui.browser.carousel.api;
 
 import java.awt.Rectangle;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.EnterFolderAction;
-import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySourceSkeleton.RunProgramAction;
+import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -20,10 +21,12 @@ public interface CarouselHost {
 
 	boolean isFocusOnBreadcrumb();
 
-	EnterFolderAction getEnterFolderActionInProgress();
+	CarouselEnterFolderAction getEnterFolderActionInProgress();
 
-	RunProgramAction getRunProgramActionInProgress();
+	CarouselRunProgramAction getRunProgramActionInProgress();
 
 	Rectangle getCarouselItemBounds(Node node);
+
+	CarouselComponent getCarouselComponent();
 
 }

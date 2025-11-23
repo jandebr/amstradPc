@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 
 public class CarouselProgramAnimation extends CarouselItemAnimation {
 

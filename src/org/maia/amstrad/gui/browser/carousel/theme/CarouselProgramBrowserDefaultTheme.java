@@ -252,7 +252,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getCarouselProgramTitleBackgroundColor() {
-		return ColorUtils.setTransparency(COLOR_0, 0.15f);
+		return ColorUtils.setTransparency(COLOR_0, 0.3f);
 	}
 
 	@Override

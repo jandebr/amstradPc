@@ -64,6 +64,11 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 		return Color.getHSBColor(hue, sat, bri);
 	}
 
+	@Override
+	public Image produceHighlightOverlayImage(FolderNode folderNode) {
+		return getImageMaker().getCassetteHighlightImage();
+	}
+
 	private OpenCassetteCoverImageMaker getImageMaker() {
 		return imageMaker;
 	}

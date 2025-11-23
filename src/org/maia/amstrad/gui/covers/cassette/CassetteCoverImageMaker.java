@@ -22,6 +22,8 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 
 	private BufferedImage cassetteImage;
 
+	private BufferedImage cassetteHighlightImage;
+
 	private List<BufferedImage> cassetteGlossImages = new Vector<BufferedImage>();
 
 	private PosterTexture posterTexture;
@@ -35,17 +37,19 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 	private Color titleColor = Color.WHITE;
 
 	protected CassetteCoverImageMaker(String title, Randomizer randomizer, BufferedImage cassetteImage,
-			BufferedImage cassetteGloss, BufferedImage posterTexture) {
-		this(title, randomizer, cassetteImage, cassetteGloss, posterTexture, 1.0);
+			BufferedImage cassetteHighlightImage, BufferedImage cassetteGloss, BufferedImage posterTexture) {
+		this(title, randomizer, cassetteImage, cassetteHighlightImage, cassetteGloss, posterTexture, 1.0);
 	}
 
 	protected CassetteCoverImageMaker(String title, Randomizer randomizer, BufferedImage cassetteImage,
-			BufferedImage cassetteGloss, BufferedImage posterTexture, double scaleFactor) {
+			BufferedImage cassetteHighlightImage, BufferedImage cassetteGloss, BufferedImage posterTexture,
+			double scaleFactor) {
 		super(randomizer);
 		this.title = title;
 		this.scaleFactor = scaleFactor;
 		this.reflectionMaker = createReflectionMaker();
 		this.cassetteImage = scaleImage(cassetteImage);
+		this.cassetteHighlightImage = scaleImage(cassetteHighlightImage);
 		this.posterTexture = new PosterTexture(scaleImage(posterTexture));
 		addCassetteGlossImage(cassetteGloss);
 	}
@@ -231,8 +235,8 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 		return cassetteImage;
 	}
 
-	public void setCassetteImage(BufferedImage cassetteImage) {
-		this.cassetteImage = cassetteImage;
+	public BufferedImage getCassetteHighlightImage() {
+		return cassetteHighlightImage;
 	}
 
 	private List<BufferedImage> getCassetteGlossImages() {

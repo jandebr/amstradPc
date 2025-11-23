@@ -7,7 +7,7 @@ import java.awt.Insets;
 
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
-import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImage;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
 import org.maia.amstrad.program.AmstradProgram;

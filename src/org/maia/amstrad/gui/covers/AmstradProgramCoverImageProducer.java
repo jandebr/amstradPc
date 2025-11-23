@@ -26,4 +26,8 @@ public abstract class AmstradProgramCoverImageProducer extends AmstradCoverImage
 
 	protected abstract Image produceImage(ProgramNode programNode) throws RetryablePooledImageProducerException;
 
+	public Image produceHighlightOverlayImage(ProgramNode programNode) {
+		return null; // Subclasses to override
+	}
+
 }

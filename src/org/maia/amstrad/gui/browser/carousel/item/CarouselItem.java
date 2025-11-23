@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
-import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 

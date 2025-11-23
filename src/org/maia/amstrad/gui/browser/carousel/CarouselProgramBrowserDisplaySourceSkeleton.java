@@ -11,12 +11,18 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
 
-import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
 import org.maia.amstrad.gui.browser.carousel.CarouselCoverImageFactory.CassetteCoverImageFactory;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselStartupAction;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimationFactory;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselEnterFolderHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselRunProgramHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
@@ -31,12 +37,7 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAwtDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
-import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
-import org.maia.amstrad.program.load.AmstradProgramLoader;
-import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
-import org.maia.amstrad.program.load.AmstradProgramRuntime;
-import org.maia.amstrad.program.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
@@ -47,10 +48,9 @@ import org.maia.swing.animate.itemslide.SlidingCursor;
 import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
-import org.maia.util.SystemUtils;
 
 public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends AmstradAwtDisplaySource
-		implements ProgramBrowserDisplaySource, CarouselHost {
+		implements ProgramBrowserDisplaySource, CarouselStartupHost, CarouselEnterFolderHost, CarouselRunProgramHost {
 
 	private CarouselAmstradProgramBrowser programBrowser;
 
@@ -76,11 +76,11 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private ProgramNode programNodeFailedToRun;
 
-	private StartupAction startupActionInProgress;
+	private CarouselStartupAction startupActionInProgress;
 
-	private EnterFolderAction enterFolderActionInProgress;
+	private CarouselEnterFolderAction enterFolderActionInProgress;
 
-	private RunProgramAction runProgramActionInProgress;
+	private CarouselRunProgramAction runProgramActionInProgress;
 
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
@@ -193,7 +193,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected void startup() {
 		CarouselAnimation animation = createAnimationToStartup();
-		StartupAction action = new StartupAction(animation);
+		CarouselStartupAction action = new CarouselStartupAction(this, animation);
 		setStartupActionInProgress(action);
 		action.perform();
 	}
@@ -211,8 +211,19 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	@Override
+	public void pauseBuildingUI() {
+		setComponentAdditionDeferred(true);
+	}
+
+	@Override
+	public void resumeBuildingUI() {
+		setComponentAdditionDeferred(false);
+		addDeferred();
+	}
+
+	@Override
 	protected void renderContent(Graphics2D g, int width, int height) {
-		StartupAction startup = getStartupActionInProgress();
+		CarouselStartupAction startup = getStartupActionInProgress();
 		if (startup != null) {
 			renderAnimation(g, width, height, startup);
 			if (startup.isAnimationStarted()
@@ -426,26 +437,28 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected synchronized void enterFolderAsync(FolderNode folderNode, Node childNodeInFocus) {
 		CarouselAnimation animation = createAnimationToEnterFolder(folderNode);
-		EnterFolderAction action = new EnterFolderAction(folderNode, childNodeInFocus, animation);
+		CarouselEnterFolderAction action = new CarouselEnterFolderAction(this, folderNode, childNodeInFocus, animation);
 		setEnterFolderActionInProgress(action);
 		action.perform();
 	}
 
 	protected synchronized void cancelEnterFolderAsync() {
-		EnterFolderAction action = getEnterFolderActionInProgress();
+		CarouselEnterFolderAction action = getEnterFolderActionInProgress();
 		if (action != null) {
 			action.cancel();
 		}
 	}
 
-	protected synchronized void notifyEnterFolderCompleted(EnterFolderAction action) {
+	@Override
+	public synchronized void notifyEnterFolderCompleted(CarouselEnterFolderAction action) {
 		getCarouselOutline().setVisible(getCarouselComponent().getItemCount() > 1);
 		getCarouselBreadcrumb().syncWith(getCarouselComponent());
 		changeFocusToCarousel();
 		clearEnterFolderActionInProgress(action);
 	}
 
-	protected synchronized void notifyEnterFolderCancelled(EnterFolderAction action) {
+	@Override
+	public synchronized void notifyEnterFolderCancelled(CarouselEnterFolderAction action) {
 		clearEnterFolderActionInProgress(action);
 	}
 
@@ -458,7 +471,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		// Subclasses may extend
 	}
 
-	private void clearEnterFolderActionInProgress(EnterFolderAction action) {
+	private void clearEnterFolderActionInProgress(CarouselEnterFolderAction action) {
 		if (action.equals(getEnterFolderActionInProgress())) {
 			clearEnterFolderActionInProgress();
 		}
@@ -472,12 +485,13 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	@Override
 	public void runProgramAsync(ProgramNode programNode) {
 		CarouselAnimation animation = createAnimationToRunProgram(programNode);
-		RunProgramAction action = new RunProgramAction(programNode, animation);
+		CarouselRunProgramAction action = new CarouselRunProgramAction(this, programNode, animation);
 		setRunProgramActionInProgress(action);
 		action.perform();
 	}
 
-	protected synchronized void notifyProgramRunFailState(AmstradProgram program, boolean failed) {
+	@Override
+	public synchronized void notifyProgramRunFailState(AmstradProgram program, boolean failed) {
 		clearProgramNodeFailedToRun();
 		clearRunProgramActionInProgress();
 		CarouselItem item = getCurrentCarouselItem();
@@ -654,7 +668,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		this.componentFactory = factory;
 	}
 
-	protected CarouselComponent getCarouselComponent() {
+	@Override
+	public CarouselComponent getCarouselComponent() {
 		return carouselComponent;
 	}
 
@@ -694,30 +709,30 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		this.programNodeFailedToRun = programNode;
 	}
 
-	private StartupAction getStartupActionInProgress() {
+	private CarouselStartupAction getStartupActionInProgress() {
 		return startupActionInProgress;
 	}
 
-	private void setStartupActionInProgress(StartupAction action) {
+	private void setStartupActionInProgress(CarouselStartupAction action) {
 		this.startupActionInProgress = action;
 	}
 
 	@Override
-	public EnterFolderAction getEnterFolderActionInProgress() {
+	public CarouselEnterFolderAction getEnterFolderActionInProgress() {
 		return enterFolderActionInProgress;
 	}
 
-	private void setEnterFolderActionInProgress(EnterFolderAction action) {
+	private void setEnterFolderActionInProgress(CarouselEnterFolderAction action) {
 		this.enterFolderActionInProgress = action;
 		refreshCarouselUI();
 	}
 
 	@Override
-	public RunProgramAction getRunProgramActionInProgress() {
+	public CarouselRunProgramAction getRunProgramActionInProgress() {
 		return runProgramActionInProgress;
 	}
 
-	private void setRunProgramActionInProgress(RunProgramAction action) {
+	private void setRunProgramActionInProgress(CarouselRunProgramAction action) {
 		this.runProgramActionInProgress = action;
 		refreshCarouselUI();
 	}
@@ -804,232 +819,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 		private SlidingCursor getBreadcrumbCursor() {
 			return breadcrumbCursor;
-		}
-
-	}
-
-	protected abstract class CarouselAction {
-
-		private CarouselAnimation animation;
-
-		private boolean animationSuppressed;
-
-		private long animationStartTimeMillis;
-
-		private long actionStartTimeMillis;
-
-		protected CarouselAction(CarouselAnimation animation) {
-			this.animation = animation;
-		}
-
-		public final void perform() {
-			setActionStartTimeMillis(System.currentTimeMillis());
-			doPerform();
-		}
-
-		protected abstract void doPerform();
-
-		public synchronized void startAnimationWhenAppropriate() {
-			if (!isAnimationStarted() && !isAnimationSuppressed() && isPassedAnimationDelay()
-					&& getAnimation() != null) {
-				setAnimationStartTimeMillis(System.currentTimeMillis());
-				getAnimation().init();
-			}
-		}
-
-		public synchronized void stopAnimation() {
-			if (isAnimationStarted()) {
-				setAnimationStartTimeMillis(0L);
-				getAnimation().dispose();
-			}
-		}
-
-		public synchronized void suppressAnimation() {
-			stopAnimation();
-			setAnimationSuppressed(true);
-		}
-
-		public void sleepCurrentThreadUntilMinimumAnimationDuration() {
-			if (isAnimationStarted()) {
-				SystemUtils.sleep(getMinimumAnimationDurationMillis() - getAnimationElapsedTimeMillis());
-			}
-		}
-
-		public boolean isAnimationStarted() {
-			return getAnimationStartTimeMillis() > 0L;
-		}
-
-		public boolean isPassedAnimationDelay() {
-			return getActionStartTimeMillis() <= System.currentTimeMillis() - getMinimumAnimationDelayMillis();
-		}
-
-		public long getMinimumAnimationDelayMillis() {
-			return getAnimation() != null ? getAnimation().getMinimumDelayMillis() : 0L;
-		}
-
-		public long getMinimumAnimationDurationMillis() {
-			return getAnimation() != null ? getAnimation().getMinimumDurationMillis() : 0L;
-		}
-
-		public long getAnimationElapsedTimeMillis() {
-			return System.currentTimeMillis() - getAnimationStartTimeMillis();
-		}
-
-		public CarouselAnimation getAnimation() {
-			return animation;
-		}
-
-		public boolean isAnimationSuppressed() {
-			return animationSuppressed;
-		}
-
-		private void setAnimationSuppressed(boolean suppressed) {
-			this.animationSuppressed = suppressed;
-		}
-
-		public long getAnimationStartTimeMillis() {
-			return animationStartTimeMillis;
-		}
-
-		private void setAnimationStartTimeMillis(long ms) {
-			this.animationStartTimeMillis = ms;
-		}
-
-		public long getActionStartTimeMillis() {
-			return actionStartTimeMillis;
-		}
-
-		private void setActionStartTimeMillis(long ms) {
-			this.actionStartTimeMillis = ms;
-		}
-
-	}
-
-	private class StartupAction extends CarouselAction {
-
-		public StartupAction(CarouselAnimation animation) {
-			super(animation);
-		}
-
-		@Override
-		protected void doPerform() {
-			setComponentAdditionDeferred(true);
-		}
-
-		@Override
-		public synchronized void stopAnimation() {
-			super.stopAnimation();
-			setComponentAdditionDeferred(false);
-			addDeferred();
-		}
-
-	}
-
-	public class EnterFolderAction extends CarouselAction {
-
-		private FolderNode folderNode;
-
-		private Node childNodeInFocus;
-
-		public EnterFolderAction(FolderNode folderNode, Node childNodeInFocus, CarouselAnimation animation) {
-			super(animation);
-			this.folderNode = folderNode;
-			this.childNodeInFocus = childNodeInFocus;
-		}
-
-		@Override
-		protected void doPerform() {
-			getCarouselComponent().populateFolderContentsAsync(getFolderNode(), getChildNodeInFocus(), new Runnable() {
-
-				@Override
-				public void run() {
-					stopAnimation();
-					notifyEnterFolderCompleted(EnterFolderAction.this);
-				}
-			}, new Runnable() {
-
-				@Override
-				public void run() {
-					stopAnimation();
-				}
-			});
-		}
-
-		public void cancel() {
-			getCarouselComponent().cancelPopulateFolderContentsAsync(new Runnable() {
-
-				@Override
-				public void run() {
-					stopAnimation();
-					notifyEnterFolderCancelled(EnterFolderAction.this);
-				}
-			});
-		}
-
-		public FolderNode getFolderNode() {
-			return folderNode;
-		}
-
-		public Node getChildNodeInFocus() {
-			return childNodeInFocus;
-		}
-
-	}
-
-	public class RunProgramAction extends CarouselAction {
-
-		private ProgramNode programNode;
-
-		public RunProgramAction(ProgramNode programNode, CarouselAnimation animation) {
-			super(animation);
-			this.programNode = programNode;
-		}
-
-		@Override
-		protected void doPerform() {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					AmstradProgram program = getProgramNode().getProgram();
-					AmstradMonitorMode mode = program.getPreferredMonitorMode();
-					try {
-						releaseKeyboard();
-						getAmstradPc().reboot(true, true);
-						getProgramLoader(program).load(program).run();
-						getProgramBrowser().fireProgramRun(program);
-						sleepCurrentThreadUntilMinimumAnimationDuration();
-						notifyProgramRunFailState(program, false);
-						close();
-						if (mode != null) {
-							getAmstradPc().getMonitor().setMode(mode);
-						}
-					} catch (AmstradProgramException exc) {
-						exc.printStackTrace();
-						acquireKeyboard();
-						notifyProgramRunFailState(program, true);
-					}
-				}
-			}).start();
-		}
-
-		private AmstradProgramLoader getProgramLoader(AmstradProgram program) {
-			if (getProgramBrowser().isStagedRun(program)) {
-				return AmstradProgramLoaderFactory.getInstance().createStagedBasicProgramLoader(getAmstradPc(),
-						new EndingBasicAction() {
-
-							@Override
-							public void perform(AmstradProgramRuntime programRuntime) {
-								AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(getAmstradPc());
-								notifyProgramRunFailState(program, programRuntime.getExitCode() != 0);
-							}
-						});
-			} else {
-				return AmstradProgramLoaderFactory.getInstance().createLoaderFor(program, getAmstradPc());
-			}
-		}
-
-		public ProgramNode getProgramNode() {
-			return programNode;
 		}
 
 	}

@@ -3,7 +3,7 @@ package org.maia.amstrad.gui.browser.carousel.item;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
-import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImage;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;

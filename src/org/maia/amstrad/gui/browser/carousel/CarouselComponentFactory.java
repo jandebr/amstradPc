@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItemImpl;

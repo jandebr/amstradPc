@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
-import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.swing.animate.itemslide.SlidingCursorMovement;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;

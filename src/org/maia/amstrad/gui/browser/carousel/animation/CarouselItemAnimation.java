@@ -2,7 +2,7 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 
 import java.awt.Rectangle;
 
-import org.maia.amstrad.gui.browser.carousel.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 
 public abstract class CarouselItemAnimation extends CarouselAnimation {
 

@@ -29,4 +29,8 @@ public abstract class AmstradFolderCoverImageProducer extends AmstradCoverImageP
 	protected abstract Image produceImage(FolderNode folderNode, ProgramNode featuredProgramNode)
 			throws RetryablePooledImageProducerException;
 
+	public Image produceHighlightOverlayImage(FolderNode folderNode) {
+		return null; // Subclasses to override
+	}
+
 }

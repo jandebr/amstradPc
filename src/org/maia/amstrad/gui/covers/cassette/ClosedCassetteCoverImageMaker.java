@@ -36,6 +36,7 @@ public class ClosedCassetteCoverImageMaker extends CassetteCoverImageMaker {
 
 	public ClosedCassetteCoverImageMaker(String title, Randomizer randomizer, double scaleFactor) {
 		super(title, randomizer, UIResources.loadImage("covers/cassette-closed-330x512.png"),
+				UIResources.loadImage("covers/cassette-closed-highlight-330x512.png"),
 				UIResources.loadImage("covers/cassette-closed-gloss-a-330x348.png"),
 				UIResources.loadImage("covers/cassette-texture-300x480.png"), scaleFactor);
 		addCassetteGlossImage(UIResources.loadImage("covers/cassette-closed-gloss-b-330x348.png"));
