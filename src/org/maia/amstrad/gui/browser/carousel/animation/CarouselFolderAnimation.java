@@ -17,12 +17,8 @@ public class CarouselFolderAnimation extends CarouselItemAnimation {
 		if (elapsedTimeMillis % 200L < 100L) {
 			Rectangle bounds = getItemBounds();
 			if (bounds != null) {
-				if (getItemHighlightOverlay() != null) {
-					g.drawImage(getItemHighlightOverlay(), bounds.x, bounds.y, null);
-				} else {
-					g.setColor(Color.RED);
-					g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-				}
+				g.setColor(Color.RED);
+				g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 			}
 		}
 	}

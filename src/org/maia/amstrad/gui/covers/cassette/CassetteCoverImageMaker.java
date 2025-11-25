@@ -85,8 +85,7 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 	public BufferedImage makeCoverHighlightImage(CoverImageEmbedding embedding) {
 		BufferedImage highlight = getCassetteHighlightImage();
 		Insets padding = embedding.computePadding(ImageUtils.getSize(highlight));
-		BufferedImage embeddedHighlight = ImageUtils.createImage(embedding.getSize(),
-				ColorUtils.setTransparency(embedding.getBackground(), 0.5f));
+		BufferedImage embeddedHighlight = ImageUtils.createImage(embedding.getSize());
 		Graphics2D g = embeddedHighlight.createGraphics();
 		g.drawImage(highlight, padding.left, padding.top, null);
 		g.dispose();

@@ -236,7 +236,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		Dimension size = getLayout().getCarouselBounds().getSize();
 		Insets padding = getLayout().getCarouselPadding();
 		CarouselComponent comp = new CarouselComponent(size, padding, getTheme().getBackgroundColor(),
-				SlidingCursorMovement.LAZY, getTheme().getCarouselCursorColor(), host, this);
+				SlidingCursorMovement.LAZY, Color.DARK_GRAY, host, this);
 		comp.setLayoutManager(SlidingItemLayoutManagerFactory.createHorizontallySlidingCenterAlignedLayout(comp,
 				VerticalAlignment.CENTER));
 		comp.setShade(SlidingShadeFactory.createGradientShadeRelativeLength(comp, 0.2));
