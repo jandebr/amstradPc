@@ -42,10 +42,14 @@ public abstract class CarouselItem implements SlidingItem {
 
 	public final Image getHighlightOverlayImage() {
 		Image highlight = null;
-		if (isExecutable()) {
+		if (isHighlightable()) {
 			highlight = createHighlightOverlayImage();
 		}
 		return highlight;
+	}
+
+	protected boolean isHighlightable() {
+		return isExecutable();
 	}
 
 	protected Image createHighlightOverlayImage() {

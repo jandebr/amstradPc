@@ -37,7 +37,6 @@ public class CarouselRunProgramAction extends CarouselAction {
 					getProgramLoader(program).load(program).run();
 					host.getProgramBrowser().fireProgramRun(program);
 					sleepCurrentThreadUntilMinimumAnimationDuration();
-					host.notifyProgramRunFailState(program, false);
 					host.close();
 					if (mode != null) {
 						amstradPc.getMonitor().setMode(mode);
@@ -45,7 +44,7 @@ public class CarouselRunProgramAction extends CarouselAction {
 				} catch (AmstradProgramException exc) {
 					exc.printStackTrace();
 					host.acquireKeyboard();
-					host.notifyProgramRunFailState(program, true);
+					host.notifyProgramRunFailState(getProgramNode(), true);
 				}
 			}
 		}).start();
@@ -61,7 +60,7 @@ public class CarouselRunProgramAction extends CarouselAction {
 						@Override
 						public void perform(AmstradProgramRuntime programRuntime) {
 							AmstradFactory.getInstance().getAmstradContext().showProgramBrowser(amstradPc);
-							host.notifyProgramRunFailState(program, programRuntime.getExitCode() != 0);
+							host.notifyProgramRunFailState(getProgramNode(), programRuntime.getExitCode() != 0);
 						}
 					});
 		} else {

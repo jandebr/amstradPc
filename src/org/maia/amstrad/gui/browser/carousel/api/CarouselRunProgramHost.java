@@ -1,8 +1,8 @@
 package org.maia.amstrad.gui.browser.carousel.api;
 
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public interface CarouselRunProgramHost extends CarouselHost {
 
@@ -12,7 +12,7 @@ public interface CarouselRunProgramHost extends CarouselHost {
 
 	void close();
 
-	void notifyProgramRunFailState(AmstradProgram program, boolean failed);
+	void notifyProgramRunFailState(ProgramNode programNode, boolean failed);
 
 	AmstradPc getAmstradPc();
 

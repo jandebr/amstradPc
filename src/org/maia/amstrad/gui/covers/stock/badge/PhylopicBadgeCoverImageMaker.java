@@ -7,6 +7,7 @@ import java.io.File;
 
 import org.maia.svg.phylopic.PhylopicSvgImage;
 import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase;
+import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase.ImageEntity;
 import org.maia.util.Randomizer;
 
 public class PhylopicBadgeCoverImageMaker extends EmbossedBadgeCoverImageMaker {
@@ -19,17 +20,31 @@ public class PhylopicBadgeCoverImageMaker extends EmbossedBadgeCoverImageMaker {
 	}
 
 	@Override
-	protected MonochromeBadge drawBadge() {
+	protected MonochromeBadge drawBadge(String suggestedBadgeId) {
 		MonochromeBadge badge = null;
-		PhylopicSvgOfflineDatabase db = getPhylopicDatabase();
-		if (db != null && db.size() > 0) {
-			int index = getRandomizer().drawIntegerNumber(0, db.size() - 1);
-			PhylopicSvgImage svgImage = db.getImageEntity(index).getSvgImage();
+		ImageEntity entity = drawPhylopicImageEntity(suggestedBadgeId);
+		if (entity != null) {
+			PhylopicSvgImage svgImage = entity.getSvgImage();
 			if (svgImage != null) {
 				badge = new PhylopicBadge(svgImage);
 			}
 		}
 		return badge;
+	}
+
+	protected ImageEntity drawPhylopicImageEntity(String suggestedPhylopicUuid) {
+		ImageEntity entity = null;
+		PhylopicSvgOfflineDatabase db = getPhylopicDatabase();
+		if (db != null) {
+			if (suggestedPhylopicUuid != null) {
+				entity = db.getImageEntity(suggestedPhylopicUuid);
+			}
+			if (entity == null && db.size() > 0) {
+				int index = getRandomizer().drawIntegerNumber(0, db.size() - 1);
+				entity = db.getImageEntity(index);
+			}
+		}
+		return entity;
 	}
 
 	private PhylopicSvgOfflineDatabase getPhylopicDatabase() {

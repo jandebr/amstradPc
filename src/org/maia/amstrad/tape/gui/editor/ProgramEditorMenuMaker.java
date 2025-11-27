@@ -106,6 +106,8 @@ public class ProgramEditorMenuMaker extends PlainTextEditorDefaultMenuMaker impl
 				programActions)));
 		menu.add(decorateForMenu(
 				createInsertTextMenuItem("Cover image", formatMetadatum(AMD_COVER_IMAGE, "$.png"), programActions)));
+		menu.add(decorateForMenu(createInsertTextMenuItem("Cover image badge ID",
+				formatMetadatum(AMD_COVER_IMAGE_BADGE_ID), programActions)));
 		return menu;
 	}
 

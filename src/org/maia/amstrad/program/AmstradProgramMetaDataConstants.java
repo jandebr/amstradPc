@@ -40,6 +40,8 @@ public interface AmstradProgramMetaDataConstants {
 
 	String AMD_COVER_IMAGE = "COVERIMAGE";
 
+	String AMD_COVER_IMAGE_BADGE_ID = "COVERIMAGE-BADGE-ID";
+	
 	String AMD_FILEREFS_PREFIX = "FILEREFS";
 
 	String AMD_FILEREFS_DESCRIBED_BY = "DESCRIBED BY";

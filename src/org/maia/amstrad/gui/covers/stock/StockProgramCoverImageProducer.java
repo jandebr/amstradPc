@@ -41,7 +41,8 @@ public class StockProgramCoverImageProducer extends AmstradProgramCoverImageProd
 		if (ImageDetailLevel.FULL.equals(detailLevel)) {
 			Insets insets = EmbossedBadgeCoverImageMaker.computeCenteredBadgeInsets(poster, BADGE_PADDING_RATIO);
 			getBadgeImageMaker().setRandomizer(createRandomizer(programNode));
-			poster = getBadgeImageMaker().overlayEmbossedBadge(poster, insets);
+			String badgeId = programNode.getProgram().getCoverImageBadgeId();
+			poster = getBadgeImageMaker().overlayEmbossedBadge(poster, insets, badgeId);
 		}
 		return poster;
 	}

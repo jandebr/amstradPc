@@ -100,6 +100,11 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 		return this;
 	}
 
+	public AmstradProgramBuilder withCoverImageBadgeId(String badgeId) {
+		getProgram().setCoverImageBadgeId(badgeId);
+		return this;
+	}
+
 	public AmstradProgramBuilder withFileReferences(List<FileReference> fileReferences) {
 		getProgram().clearFileReferences();
 		for (FileReference reference : fileReferences) {
@@ -172,6 +177,9 @@ public class AmstradProgramBuilder implements AmstradProgramMetaDataConstants {
 			AmstradProgramImage cover = extractCoverImageFromMetaData(props, relativePath);
 			if (cover != null)
 				withCoverImage(cover);
+			String badgeId = props.getProperty(AMD_COVER_IMAGE_BADGE_ID);
+			if (badgeId != null)
+				withCoverImageBadgeId(badgeId);
 			List<FileReference> fileRefs = extractFileReferencesFromMetaData(props, relativePath);
 			if (!fileRefs.isEmpty())
 				withFileReferences(fileRefs);

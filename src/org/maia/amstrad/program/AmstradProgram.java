@@ -42,6 +42,8 @@ public abstract class AmstradProgram implements Cloneable {
 
 	private AmstradProgramImage coverImage;
 
+	private String coverImageBadgeId;
+
 	private AmstradProgramPayload payload;
 
 	protected AmstradProgram(AmstradProgramType programType, String programName) {
@@ -90,6 +92,8 @@ public abstract class AmstradProgram implements Cloneable {
 		builder.append(preferredMonitorMode);
 		builder.append(", coverImage=");
 		builder.append(coverImage);
+		builder.append(", coverImageBadgeId=");
+		builder.append(coverImageBadgeId);
 		builder.append("]");
 		return builder.toString();
 	}
@@ -287,6 +291,14 @@ public abstract class AmstradProgram implements Cloneable {
 
 	public void setCoverImage(AmstradProgramImage coverImage) {
 		this.coverImage = coverImage;
+	}
+
+	public String getCoverImageBadgeId() {
+		return coverImageBadgeId;
+	}
+
+	public void setCoverImageBadgeId(String badgeId) {
+		this.coverImageBadgeId = badgeId;
 	}
 
 	public List<FileReference> getFileReferences() {

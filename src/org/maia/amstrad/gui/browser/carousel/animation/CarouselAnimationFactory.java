@@ -3,7 +3,9 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -18,12 +20,12 @@ public class CarouselAnimationFactory {
 	public CarouselAnimation createAnimationToStartup(CarouselHost host) {
 		CarouselAnimation animation = new CarouselStartupAnimation();
 		animation.setMinimumDelayMillis(0L); // instant
-		animation.setMinimumDurationMillis(3000L);
+		animation.setMinimumDurationMillis(300L); // TODO
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselFolderAnimation(host.getCarouselFolderItem(folderNode),
+		CarouselAnimation animation = new CarouselFolderAnimation((CarouselFolderItem) host.getCarouselItem(folderNode),
 				host.getCarouselItemBounds(folderNode));
 		animation.setMinimumDelayMillis(400L); // delayed
 		animation.setMinimumDurationMillis(1000L);
@@ -31,16 +33,15 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselAnimation createAnimationToRunProgram(ProgramNode programNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselProgramAnimation(host.getCarouselProgramItem(programNode),
-				host.getCarouselItemBounds(programNode));
+		CarouselAnimation animation = new CarouselProgramAnimation(
+				(CarouselProgramItem) host.getCarouselItem(programNode), host.getCarouselItemBounds(programNode));
 		animation.setMinimumDelayMillis(0L); // instant
 		animation.setMinimumDurationMillis(1000L);
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToHighlightNode(Node node, CarouselHost host) {
-		CarouselItem item = node.isProgram() ? host.getCarouselProgramItem(node.asProgram())
-				: host.getCarouselFolderItem(node.asFolder());
+		CarouselItem item = host.getCarouselItem(node);
 		Rectangle itemBounds = host.getCarouselItemBounds(node);
 		CarouselItemHighlightAnimation animation = new CarouselItemHighlightAnimation(item, itemBounds);
 		animation.setMinimumDelayMillis(0L); // instant, builtin random delay in animation

@@ -94,6 +94,11 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	}
 
 	@Override
+	protected boolean isHighlightable() {
+		return super.isHighlightable() && !isPreviousRunFailed();
+	}
+
+	@Override
 	protected Image createHighlightOverlayImage() {
 		return getCoverImage().getImageProducer().produceHighlightOverlayImage(getProgramNode());
 	}

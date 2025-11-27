@@ -26,7 +26,6 @@ import org.maia.amstrad.gui.browser.carousel.api.CarouselRunProgramHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
-import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselRepositoryItem;
@@ -118,6 +117,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected void buildUI() {
 		initCoverImageProducers();
 		setComponentFactory(createComponentFactory());
+		add(new CarouselComponentCursor(), CarouselLayoutManager.CAROUSEL_CURSOR); // TODO
 		buildCarousel();
 		buildCarouselOutline();
 		buildCarouselBreadcrumb();
@@ -509,21 +509,17 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	@Override
-	public synchronized void notifyProgramRunFailState(AmstradProgram program, boolean failed) {
+	public synchronized void notifyProgramRunFailState(ProgramNode programNode, boolean failed) {
 		clearProgramNodeFailedToRun();
 		clearRunProgramActionInProgress();
-		CarouselItem item = getCurrentCarouselItem();
-		if (item instanceof CarouselProgramItem) {
-			CarouselProgramItem programItem = (CarouselProgramItem) item;
-			ProgramNode programNode = programItem.getProgramNode();
-			if (programNode.getProgram().getProgramName().equals(program.getProgramName())) {
-				programItem.setPreviousRunFailed(failed);
-				if (failed) {
-					setProgramNodeFailedToRun(programNode);
-				}
-				refreshCarouselUI();
-			}
+		CarouselProgramItem programItem = (CarouselProgramItem) getCarouselItem(programNode);
+		if (programItem != null) {
+			programItem.setPreviousRunFailed(failed);
 		}
+		if (failed) {
+			setProgramNodeFailedToRun(programNode);
+		}
+		refreshCarouselUI();
 	}
 
 	private void clearProgramNodeFailedToRun() {
@@ -560,13 +556,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	@Override
-	public CarouselFolderItem getCarouselFolderItem(FolderNode folderNode) {
-		return (CarouselFolderItem) getCarouselComponent().getItem(folderNode);
-	}
-
-	@Override
-	public CarouselProgramItem getCarouselProgramItem(ProgramNode programNode) {
-		return (CarouselProgramItem) getCarouselComponent().getItem(programNode);
+	public CarouselItem getCarouselItem(Node node) {
+		return getCarouselComponent().getItem(node);
 	}
 
 	@Override
@@ -820,29 +811,22 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private class FocusTracker implements FocusListener {
 
-		private SlidingCursor carouselCursor;
-
 		private SlidingCursor breadcrumbCursor;
 
 		public FocusTracker() {
-			this.carouselCursor = getCarouselComponent().getSlidingCursor();
 			this.breadcrumbCursor = getCarouselBreadcrumb().getSlidingCursor();
 		}
 
 		@Override
 		public void notifyComponentGainedFocus(Component newFocusOwner) {
-			if (isCarouselComponent(newFocusOwner)) {
-				getCarouselComponent().setSlidingCursor(getCarouselCursor());
-			} else if (isBreadcrumbComponent(newFocusOwner)) {
+			if (isBreadcrumbComponent(newFocusOwner)) {
 				getCarouselBreadcrumb().setSlidingCursor(getBreadcrumbCursor());
 			}
 		}
 
 		@Override
 		public void notifyComponentLostFocus(Component oldFocusOwner) {
-			if (isCarouselComponent(oldFocusOwner)) {
-				getCarouselComponent().setSlidingCursor(null);
-			} else if (isBreadcrumbComponent(oldFocusOwner)) {
+			if (isBreadcrumbComponent(oldFocusOwner)) {
 				getCarouselBreadcrumb().moveToLastItem();
 				getCarouselBreadcrumb().setSlidingCursor(null);
 			}
@@ -850,12 +834,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 		@Override
 		public void notifyFocusOwnerCleared() {
-			getCarouselComponent().setSlidingCursor(null);
 			getCarouselBreadcrumb().setSlidingCursor(null);
-		}
-
-		private SlidingCursor getCarouselCursor() {
-			return carouselCursor;
 		}
 
 		private SlidingCursor getBreadcrumbCursor() {

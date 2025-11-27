@@ -76,7 +76,11 @@ public abstract class EmbossedBadgeCoverImageMaker extends RandomImageMaker {
 	}
 
 	public BufferedImage overlayEmbossedBadge(BufferedImage backdrop, Insets insets) {
-		MonochromeBadge badge = drawBadge();
+		return overlayEmbossedBadge(backdrop, insets, null);
+	}
+
+	public BufferedImage overlayEmbossedBadge(BufferedImage backdrop, Insets insets, String suggestedBadgeId) {
+		MonochromeBadge badge = drawBadge(suggestedBadgeId);
 		if (badge != null) {
 			Rectangle badgeBounds = computeBadgeBounds(backdrop, insets, badge);
 			return overlayEmbossedBadge(backdrop, badgeBounds, badge);
@@ -136,7 +140,7 @@ public abstract class EmbossedBadgeCoverImageMaker extends RandomImageMaker {
 		return mask;
 	}
 
-	protected abstract MonochromeBadge drawBadge();
+	protected abstract MonochromeBadge drawBadge(String suggestedBadgeId);
 
 	public float getOutsideBadgeBrightnessShift() {
 		return outsideBadgeBrightnessShift;
