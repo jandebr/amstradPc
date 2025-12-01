@@ -1,8 +1,8 @@
 package org.maia.amstrad.gui.browser.carousel;
 
 import java.awt.Dimension;
-import java.io.File;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
@@ -12,8 +12,9 @@ import org.maia.amstrad.gui.covers.stock.StockFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.stock.StockProgramCoverImageProducer;
 import org.maia.amstrad.gui.covers.stock.badge.EmbossedBadgeCoverImageMaker;
 import org.maia.amstrad.gui.covers.stock.badge.PhylopicBadgeCoverImageMaker;
-import org.maia.amstrad.gui.covers.stock.fabric.FabricCoverImageMaker;
 import org.maia.amstrad.gui.covers.stock.fabric.CheckerboardPatchPatternGenerator;
+import org.maia.amstrad.gui.covers.stock.fabric.FabricCoverImageMaker;
+import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase;
 
 public abstract class CarouselCoverImageFactory {
 
@@ -43,10 +44,6 @@ public abstract class CarouselCoverImageFactory {
 		private AmstradProgramCoverImageProducer programCoverImageProducer;
 
 		private AmstradFolderCoverImageProducer folderCoverImageProducer;
-
-		private static final String SETTING_PHYLOPIC_DB_PATH = "phylopic-db.path";
-
-		private static final String DEFAULT_PHYLOPIC_DB_PATH = "resources/images/covers/badge/phylopic-db.zip";
 
 		public CassetteCoverImageFactory(Dimension imageSize, CarouselProgramBrowserTheme theme) {
 			super(imageSize, theme);
@@ -79,8 +76,8 @@ public abstract class CarouselCoverImageFactory {
 		}
 
 		protected EmbossedBadgeCoverImageMaker createProgramBadgeImageMaker() {
-			String phylopicDatabasePath = System.getProperty(SETTING_PHYLOPIC_DB_PATH, DEFAULT_PHYLOPIC_DB_PATH);
-			return new PhylopicBadgeCoverImageMaker(new File(phylopicDatabasePath));
+			PhylopicSvgOfflineDatabase db = AmstradFactory.getInstance().getAmstradContext().getPhylopicDatabase();
+			return new PhylopicBadgeCoverImageMaker(db);
 		}
 
 		@Override

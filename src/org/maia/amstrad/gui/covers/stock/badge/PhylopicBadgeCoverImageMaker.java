@@ -3,7 +3,6 @@ package org.maia.amstrad.gui.covers.stock.badge;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.io.File;
 
 import org.maia.svg.phylopic.PhylopicSvgImage;
 import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase;
@@ -14,9 +13,9 @@ public class PhylopicBadgeCoverImageMaker extends EmbossedBadgeCoverImageMaker {
 
 	private PhylopicSvgOfflineDatabase phylopicDatabase;
 
-	public PhylopicBadgeCoverImageMaker(File phylopicDatabaseFile) {
+	public PhylopicBadgeCoverImageMaker(PhylopicSvgOfflineDatabase phylopicDatabase) {
 		super(new Randomizer());
-		this.phylopicDatabase = new PhylopicSvgOfflineDatabase(phylopicDatabaseFile);
+		this.phylopicDatabase = phylopicDatabase;
 	}
 
 	@Override

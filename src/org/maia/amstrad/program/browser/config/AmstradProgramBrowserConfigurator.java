@@ -31,9 +31,9 @@ import org.maia.swing.cards.CardsInOrderPanel;
 import org.maia.swing.cards.CardsInOrderPanel.Card;
 import org.maia.swing.cards.CardsOfChoicePanel;
 import org.maia.swing.dialog.ActionableDialog;
-import org.maia.swing.file.FolderInputField;
-import org.maia.swing.file.GenericFileInputField;
-import org.maia.swing.file.GenericFileInputFieldListener;
+import org.maia.swing.input.FolderInputField;
+import org.maia.swing.input.GenericFileInputField;
+import org.maia.swing.input.GenericFileInputFieldListener;
 
 public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 

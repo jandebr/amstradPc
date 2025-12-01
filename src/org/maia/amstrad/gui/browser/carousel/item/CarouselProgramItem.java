@@ -95,7 +95,7 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 
 	@Override
 	protected boolean isHighlightable() {
-		return super.isHighlightable() && !isPreviousRunFailed();
+		return super.isHighlightable() && getOverlayImage() == null;
 	}
 
 	@Override

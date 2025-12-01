@@ -36,15 +36,15 @@ import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.tape.config.TapeReaderTaskConfiguration;
 import org.maia.amstrad.tape.gui.AudioFileExtendedView;
 import org.maia.amstrad.tape.gui.AudioFileView;
-import org.maia.amstrad.tape.gui.UIResourcesTape;
 import org.maia.amstrad.tape.gui.AudioFileView.SelectionListener;
+import org.maia.amstrad.tape.gui.UIResourcesTape;
 import org.maia.amstrad.tape.model.AudioRange;
 import org.maia.amstrad.tape.read.AudioFile;
 import org.maia.amstrad.tape.read.AudioWaveFile;
-import org.maia.swing.file.FileInputField;
-import org.maia.swing.file.FolderInputField;
-import org.maia.swing.file.GenericFileInputField;
-import org.maia.swing.file.GenericFileInputFieldListener;
+import org.maia.swing.input.FileInputField;
+import org.maia.swing.input.FolderInputField;
+import org.maia.swing.input.GenericFileInputField;
+import org.maia.swing.input.GenericFileInputFieldListener;
 
 public class TapeReaderTaskConfigurator extends JPanel implements SelectionListener {
 

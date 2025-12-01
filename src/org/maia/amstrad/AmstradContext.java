@@ -17,6 +17,7 @@ import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.amstrad.system.impl.AmstradDesktopSystem;
 import org.maia.graphics2d.image.pool.ImagePool;
+import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase;
 import org.maia.util.SystemUtils;
 
 public abstract class AmstradContext {
@@ -25,9 +26,15 @@ public abstract class AmstradContext {
 
 	private ImagePool sharedImagePool;
 
+	private PhylopicSvgOfflineDatabase phylopicDatabase;
+
 	public static final String SETTING_AMSTRAD_SYSTEM = "mode";
 
 	private static final String SETTING_IMAGE_CACHE_CAPACITY = "images.cache_capacity";
+
+	private static final String SETTING_PHYLOPIC_DB_PATH = "images.phylopic.db-path";
+
+	private static final String DEFAULT_PHYLOPIC_DB_PATH = "resources/images/covers/badge/phylopic-db.zip";
 
 	private static final String SETTING_CURRENT_DIR = "current_dir";
 
@@ -175,12 +182,20 @@ public abstract class AmstradContext {
 		getSharedImagePool().clear();
 	}
 
-	public ImagePool getSharedImagePool() {
+	public synchronized ImagePool getSharedImagePool() {
 		if (sharedImagePool == null) {
 			int capacity = Integer.parseInt(getUserSettings().get(SETTING_IMAGE_CACHE_CAPACITY, "50"));
 			sharedImagePool = new ImagePool("shared", capacity);
 		}
 		return sharedImagePool;
+	}
+
+	public synchronized PhylopicSvgOfflineDatabase getPhylopicDatabase() {
+		if (phylopicDatabase == null) {
+			String dbPath = getUserSettings().get(SETTING_PHYLOPIC_DB_PATH, DEFAULT_PHYLOPIC_DB_PATH);
+			phylopicDatabase = new PhylopicSvgOfflineDatabase(new File(dbPath));
+		}
+		return phylopicDatabase;
 	}
 
 	public File getCurrentDirectory() {

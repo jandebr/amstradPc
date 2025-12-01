@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import javax.swing.Action;
 
 import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
+import org.maia.amstrad.tape.gui.editor.InsertPhylopicImageDialog.ChosenImageCallback;
+import org.maia.svg.phylopic.PhylopicSvgImage;
 import org.maia.swing.text.pte.PlainTextDocumentEditor;
 import org.maia.swing.text.pte.PlainTextDocumentEditorActions;
 import org.maia.swing.text.pte.PlainTextDocumentEditorAdapter;
@@ -16,6 +18,8 @@ import org.maia.swing.text.pte.PlainTextEditor;
 public class ProgramEditorActions extends PlainTextDocumentEditorActions {
 
 	private Map<String, InsertTextAction> insertTextActions;
+
+	private Action insertPhylopicImageIdAction;
 
 	public ProgramEditorActions(PlainTextDocumentEditor documentEditor, PlainTextEditor editor) {
 		super(documentEditor, editor);
@@ -48,6 +52,17 @@ public class ProgramEditorActions extends PlainTextDocumentEditorActions {
 			getInsertTextActions().put(cacheKey, action);
 		}
 		return action;
+	}
+
+	public final Action getInsertPhylopicImageIdAction() {
+		if (insertPhylopicImageIdAction == null) {
+			insertPhylopicImageIdAction = createInsertPhylopicImageIdAction();
+		}
+		return insertPhylopicImageIdAction;
+	}
+
+	protected Action createInsertPhylopicImageIdAction() {
+		return new InsertPhylopicImageIdAction();
 	}
 
 	private Map<String, InsertTextAction> getInsertTextActions() {
@@ -110,6 +125,36 @@ public class ProgramEditorActions extends PlainTextDocumentEditorActions {
 
 		public String getFlag() {
 			return getTextToInsert();
+		}
+
+	}
+
+	private class InsertPhylopicImageIdAction extends DocumentEditorAction {
+
+		private InsertPhylopicImageDialog dialog;
+
+		public InsertPhylopicImageIdAction() {
+			super("Phylopic image ID", null);
+			this.dialog = createDialog();
+		}
+
+		protected InsertPhylopicImageDialog createDialog() {
+			return new InsertPhylopicImageDialog();
+		}
+
+		@Override
+		protected void doAction(PlainTextDocumentEditor documentEditor) {
+			getDialog().show(new ChosenImageCallback() {
+
+				@Override
+				public void imageChosen(PhylopicSvgImage image) {
+					documentEditor.type(image.getUuid());
+				}
+			});
+		}
+
+		protected InsertPhylopicImageDialog getDialog() {
+			return dialog;
 		}
 
 	}

@@ -108,6 +108,7 @@ public class ProgramEditorMenuMaker extends PlainTextEditorDefaultMenuMaker impl
 				createInsertTextMenuItem("Cover image", formatMetadatum(AMD_COVER_IMAGE, "$.png"), programActions)));
 		menu.add(decorateForMenu(createInsertTextMenuItem("Cover image badge ID",
 				formatMetadatum(AMD_COVER_IMAGE_BADGE_ID), programActions)));
+		menu.add(decorateForMenu(createInsertPhylopicImageIdMenuItem(programActions)));
 		return menu;
 	}
 
@@ -141,6 +142,11 @@ public class ProgramEditorMenuMaker extends PlainTextEditorDefaultMenuMaker impl
 
 	protected JMenuItem createInsertFlagMenuItem(String name, String flag, ProgramEditorActions programActions) {
 		JMenuItem menuItem = new JMenuItem(programActions.getInsertMetadataFlagAction(name, flag));
+		return menuItem;
+	}
+
+	protected JMenuItem createInsertPhylopicImageIdMenuItem(ProgramEditorActions programActions) {
+		JMenuItem menuItem = new JMenuItem(programActions.getInsertPhylopicImageIdAction());
 		return menuItem;
 	}
 
