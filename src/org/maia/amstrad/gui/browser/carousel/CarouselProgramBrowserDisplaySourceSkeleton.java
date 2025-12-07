@@ -28,6 +28,8 @@ import org.maia.amstrad.gui.browser.carousel.api.CarouselRunProgramHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
+import org.maia.amstrad.gui.browser.carousel.cursor.CarouselCursorRenderer;
+import org.maia.amstrad.gui.browser.carousel.cursor.CarouselCursorSymbolRenderer;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselRepositoryItem;
@@ -60,6 +62,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private CarouselProgramBrowserTheme theme;
 
+	private AmstradGraphicsContext graphicsContext;
+
 	private AmstradProgramCoverImageProducer programCoverImageProducer;
 
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
@@ -69,6 +73,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	private CarouselCoverImageFactory coverImageFactory;
 
 	private CarouselComponentFactory componentFactory;
+
+	private CarouselCursorRenderer carouselCursorRenderer;
 
 	private CarouselComponent carouselComponent;
 
@@ -93,6 +99,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
+		this.graphicsContext = getAmstradPc().getMonitor().getGraphicsContext();
 		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 		setAutoPauseResume(true);
 	}
@@ -122,6 +129,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected void buildUI() {
 		initCoverImageProducers();
 		setComponentFactory(createComponentFactory());
+		setCarouselCursorRenderer(createCarouselCursorRenderer());
 		buildCarousel();
 		buildCarouselOutline();
 		buildCarouselBreadcrumb();
@@ -154,6 +162,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected CarouselComponentFactory createComponentFactory() {
 		return new CarouselComponentFactory(getTheme(), getLayout(), getProgramCoverImageProducer(),
 				getFolderCoverImageProducer());
+	}
+
+	protected CarouselCursorRenderer createCarouselCursorRenderer() {
+		return new CarouselCursorSymbolRenderer(this);
 	}
 
 	private void buildCarousel() {
@@ -270,6 +282,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			renderAnimation(g, width, height, getRunProgramActionInProgress());
 			renderAnimation(g, width, height, getItemHighlightActionInProgress());
 			renderAnimation(g, width, height, getOutlineActionInProgress());
+			renderCarouselCursor(g);
 		}
 	}
 
@@ -293,6 +306,22 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			action.startAnimationWhenAppropriate();
 			if (action.isAnimationStarted()) {
 				action.getAnimation().renderOntoDisplay(g, width, height, action.getAnimationElapsedTimeMillis());
+			}
+		}
+	}
+
+	protected void renderCarouselCursor(Graphics2D g) {
+		CarouselCursorRenderer renderer = getCarouselCursorRenderer();
+		if (renderer != null) {
+			if (!getCarouselOutline().isShowing()) {
+				Rectangle cursorBounds = getCarouselComponent().getCursorOuterBoundsInComponent();
+				Rectangle outlineBounds = getLayout().getCarouselOutlineBounds();
+				int width = cursorBounds.width;
+				int height = outlineBounds.height;
+				Graphics2D g2 = (Graphics2D) g.create(cursorBounds.x, outlineBounds.y, width, height);
+				g2.translate(width / 2, height / 2);
+				renderer.render(g2, width, height);
+				g2.dispose();
 			}
 		}
 	}
@@ -669,12 +698,18 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		return programBrowser;
 	}
 
+	@Override
 	public CarouselProgramBrowserTheme getTheme() {
 		return theme;
 	}
 
 	public void setTheme(CarouselProgramBrowserTheme theme) {
 		this.theme = theme;
+	}
+
+	@Override
+	public AmstradGraphicsContext getGraphicsContext() {
+		return graphicsContext;
 	}
 
 	protected AmstradProgramCoverImageProducer getProgramCoverImageProducer() {
@@ -715,6 +750,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private void setComponentFactory(CarouselComponentFactory factory) {
 		this.componentFactory = factory;
+	}
+
+	private CarouselCursorRenderer getCarouselCursorRenderer() {
+		return carouselCursorRenderer;
+	}
+
+	private void setCarouselCursorRenderer(CarouselCursorRenderer renderer) {
+		this.carouselCursorRenderer = renderer;
 	}
 
 	@Override
@@ -844,11 +887,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 		@Override
 		public void notifyStopSliding(SlidingItemListComponent component) {
-			CarouselOutlineAction action = getOutlineActionInProgress();
-			if (action != null) {
-				action.sleepCurrentThreadUntilMinimumAnimationDuration();
-				clearOutlineActionInProgress();
-			}
+			clearOutlineActionInProgress();
 		}
 
 	}

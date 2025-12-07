@@ -55,8 +55,7 @@ public class CarouselAnimationFactory {
 
 	public CarouselAnimation createAnimationToShowCarouselOutline(CarouselOutlineHost host) {
 		CarouselOutlineAnimation animation = new CarouselOutlineAnimation(host);
-		animation.setMinimumDelayMillis(500L); // delayed
-		animation.setMinimumDurationMillis(250L);
+		animation.setMinimumDelayMillis(800L); // delayed
 		return animation;
 	}
 

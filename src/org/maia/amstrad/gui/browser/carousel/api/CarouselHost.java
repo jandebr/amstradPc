@@ -7,6 +7,8 @@ import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselOutlineAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
+import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -23,6 +25,8 @@ public interface CarouselHost {
 
 	boolean isFocusOnBreadcrumb();
 
+	CarouselProgramBrowserTheme getTheme();
+
 	CarouselEnterFolderAction getEnterFolderActionInProgress();
 
 	CarouselRunProgramAction getRunProgramActionInProgress();
@@ -34,5 +38,7 @@ public interface CarouselHost {
 	Rectangle getCarouselItemBounds(Node node);
 
 	CarouselComponent getCarouselComponent();
+
+	AmstradGraphicsContext getGraphicsContext();
 
 }

@@ -279,11 +279,22 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	public CarouselOutline createCarouselOutline(CarouselComponent comp) {
 		int thickness = getLayout().getCarouselOutlineBounds().height;
 		CarouselOutline outline = comp.createOutline(thickness);
-		outline.setBorder(BorderFactory.createLineBorder(getTheme().getCarouselOutlineBorderColor()));
+		outline.setBorder(getTheme().getCarouselOutlineBorderColor() != null
+				? BorderFactory.createLineBorder(getTheme().getCarouselOutlineBorderColor())
+				: null);
 		outline.setExtentMargin(new Insets(1, 0, 1, 0));
-		outline.setExtentRenderer(new SolidFillOutlineRenderer(getTheme().getCarouselOutlineExtentFillColor()));
-		outline.setCursorBorder(BorderFactory.createLineBorder(getTheme().getCarouselOutlineCursorBorderColor()));
-		outline.setCursorRenderer(new SolidFillOutlineRenderer(getTheme().getCarouselOutlineCursorFillColor()));
+		outline.setExtentBorder(getTheme().getCarouselOutlineExtentBorderColor() != null
+				? BorderFactory.createLineBorder(getTheme().getCarouselOutlineExtentBorderColor())
+				: null);
+		outline.setExtentRenderer(getTheme().getCarouselOutlineExtentFillColor() != null
+				? new SolidFillOutlineRenderer(getTheme().getCarouselOutlineExtentFillColor())
+				: null);
+		outline.setCursorBorder(getTheme().getCarouselOutlineCursorBorderColor() != null
+				? BorderFactory.createLineBorder(getTheme().getCarouselOutlineCursorBorderColor())
+				: null);
+		outline.setCursorRenderer(getTheme().getCarouselOutlineCursorFillColor() != null
+				? new SolidFillOutlineRenderer(getTheme().getCarouselOutlineCursorFillColor())
+				: null);
 		return outline;
 	}
 

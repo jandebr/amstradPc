@@ -262,7 +262,12 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getCarouselOutlineBorderColor() {
-		return COLOR_3;
+		return COLOR_19;
+	}
+
+	@Override
+	public Color getCarouselOutlineExtentBorderColor() {
+		return null;
 	}
 
 	@Override
@@ -272,12 +277,17 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getCarouselOutlineCursorBorderColor() {
-		return COLOR_4;
+		return COLOR_3;
 	}
 
 	@Override
 	public Color getCarouselOutlineCursorFillColor() {
-		return COLOR_3;
+		return null;
+	}
+
+	@Override
+	public Color getCarouselCursorColor() {
+		return getFocusColor();
 	}
 
 	@Override

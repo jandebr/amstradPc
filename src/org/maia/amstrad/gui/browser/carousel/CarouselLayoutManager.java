@@ -68,8 +68,8 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		// Spacer
 		windowBand.addSubBand(createMinimumSpacerBand(0.01f, 4));
 		// South
-		Band carouselOutlineBand = windowBand.addSubBand(createHorizontalContainerBand(0.01f));
-		Band carouselBand = windowBand.addSubBand(createHorizontalContainerBand(0.48f));
+		Band carouselOutlineBand = windowBand.addSubBand(createHorizontalContainerBand(0.02f));
+		Band carouselBand = windowBand.addSubBand(createHorizontalContainerBand(0.46f));
 		windowBand.addSubBand(createMinimumSpacerBand(0.02f, 8));
 		Band carouselBreadcrumbBand = windowBand.addSubBand(createHorizontalContainerBand(0.03f));
 		windowBand.addSubBand(createMaximumSpacerBand(0.01f, 4));
@@ -79,7 +79,7 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		infoOutlineBand.setMargin(new Insets(0, 6, 0, 0));
 		infoOutlineBand.setSizeRange(18, 24);
 		captionSpacerBand.setSizeRange(infoOutlineBand.getMinimumSize(), infoOutlineBand.getMaximumSize());
-		carouselOutlineBand.setSizeRange(8, 12);
+		carouselOutlineBand.setSizeRange(12, 20);
 		carouselBreadcrumbBand.setSizeRange(20, 30);
 		// Layout
 		layout(windowBand, getDisplaySize());
