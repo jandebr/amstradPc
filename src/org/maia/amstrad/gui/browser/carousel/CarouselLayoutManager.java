@@ -24,8 +24,6 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 
 	private Rectangle previewBounds;
 
-	private Rectangle carouselCursorBounds;
-
 	private Rectangle carouselBounds;
 
 	private Rectangle carouselOutlineBounds;
@@ -41,8 +39,6 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 	public static final String INFO_OUTLINE = "InfoOutline";
 
 	public static final String PREVIEW = "Preview";
-
-	public static final String CAROUSEL_CURSOR = "CarouselCursor";
 
 	public static final String CAROUSEL = "Carousel";
 
@@ -72,10 +68,8 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		// Spacer
 		windowBand.addSubBand(createMinimumSpacerBand(0.01f, 4));
 		// South
-		Band carouselCursorBand = windowBand.addSubBand(createHorizontalContainerBand(0.03f));
-		Band carouselBand = windowBand.addSubBand(createHorizontalContainerBand(0.43f));
-		windowBand.addSubBand(createMinimumSpacerBand(0.01f, 4));
-		Band carouselOutlineBand = windowBand.addSubBand(createHorizontalContainerBand(0.02f));
+		Band carouselOutlineBand = windowBand.addSubBand(createHorizontalContainerBand(0.01f));
+		Band carouselBand = windowBand.addSubBand(createHorizontalContainerBand(0.48f));
 		windowBand.addSubBand(createMinimumSpacerBand(0.02f, 8));
 		Band carouselBreadcrumbBand = windowBand.addSubBand(createHorizontalContainerBand(0.03f));
 		windowBand.addSubBand(createMaximumSpacerBand(0.01f, 4));
@@ -85,8 +79,7 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		infoOutlineBand.setMargin(new Insets(0, 6, 0, 0));
 		infoOutlineBand.setSizeRange(18, 24);
 		captionSpacerBand.setSizeRange(infoOutlineBand.getMinimumSize(), infoOutlineBand.getMaximumSize());
-		carouselCursorBand.setSizeRange(20, 30);
-		carouselOutlineBand.setSizeRange(12, 18);
+		carouselOutlineBand.setSizeRange(8, 12);
 		carouselBreadcrumbBand.setSizeRange(20, 30);
 		// Layout
 		layout(windowBand, getDisplaySize());
@@ -95,7 +88,6 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		setInfoBounds(infoBand.getBounds());
 		setInfoOutlineBounds(infoOutlineBand.getBounds());
 		setPreviewBounds(previewBand.getBounds());
-		setCarouselCursorBounds(carouselCursorBand.getBounds());
 		setCarouselBounds(carouselBand.getBounds());
 		setCarouselOutlineBounds(carouselOutlineBand.getBounds());
 		setCarouselBreadcrumbBounds(carouselBreadcrumbBand.getBounds());
@@ -113,8 +105,6 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 			comp.setLocation(getInfoOutlineBounds().getLocation());
 		} else if (PREVIEW.equals(name)) {
 			comp.setBounds(getPreviewBounds());
-		} else if (CAROUSEL_CURSOR.equals(name)) {
-			comp.setBounds(getCarouselCursorBounds());
 		} else if (CAROUSEL.equals(name)) {
 			comp.setBounds(getCarouselBounds());
 		} else if (CAROUSEL_OUTLINE.equals(name)) {
@@ -194,14 +184,6 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 
 	private void setPreviewBounds(Rectangle bounds) {
 		this.previewBounds = bounds;
-	}
-
-	public Rectangle getCarouselCursorBounds() {
-		return carouselCursorBounds;
-	}
-
-	private void setCarouselCursorBounds(Rectangle bounds) {
-		this.carouselCursorBounds = bounds;
 	}
 
 	public Rectangle getCarouselBounds() {

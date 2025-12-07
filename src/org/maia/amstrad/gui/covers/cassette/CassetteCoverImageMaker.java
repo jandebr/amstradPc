@@ -92,6 +92,11 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 		return embeddedHighlight;
 	}
 
+	public int getCoverImageBaselineMeasuredFromBottom(CoverImageEmbedding embedding) {
+		Insets padding = embedding.computePadding(ImageUtils.getSize(getCassetteImage()));
+		return padding.bottom;
+	}
+
 	protected BufferedImage createCassetteFront(BufferedImage posterImage, boolean posterImageReadOnly) {
 		BufferedImage image = posterImageReadOnly ? ImageUtils.duplicateImage(posterImage) : posterImage;
 		if (hasTitle()) {

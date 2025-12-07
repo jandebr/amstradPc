@@ -107,17 +107,17 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getInfoOutlineBorderColor() {
-		return getOutlineBorderColor();
+		return COLOR_3;
 	}
 
 	@Override
 	public Color getInfoOutlineCursorBorderColor() {
-		return getOutlineCursorBorderColor();
+		return COLOR_4;
 	}
 
 	@Override
 	public Color getInfoOutlineCursorFillColor() {
-		return getOutlineCursorFillColor();
+		return COLOR_3;
 	}
 
 	@Override
@@ -261,23 +261,23 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 	}
 
 	@Override
-	public Color getCarouselCursorColor() {
-		return getCursorColor();
+	public Color getCarouselOutlineBorderColor() {
+		return COLOR_3;
 	}
 
 	@Override
-	public Color getCarouselOutlineBorderColor() {
-		return getOutlineBorderColor();
+	public Color getCarouselOutlineExtentFillColor() {
+		return COLOR_19;
 	}
 
 	@Override
 	public Color getCarouselOutlineCursorBorderColor() {
-		return getOutlineCursorBorderColor();
+		return COLOR_4;
 	}
 
 	@Override
 	public Color getCarouselOutlineCursorFillColor() {
-		return getOutlineCursorFillColor();
+		return COLOR_3;
 	}
 
 	@Override
@@ -287,7 +287,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Color getBreadcrumbCursorColor() {
-		return getCursorColor();
+		return getFocusColor();
 	}
 
 	@Override
@@ -305,20 +305,9 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 		return COLOR_3;
 	}
 
-	protected Color getCursorColor() {
+	@Override
+	public Color getFocusColor() {
 		return COLOR_14;
-	}
-
-	protected Color getOutlineBorderColor() {
-		return COLOR_3;
-	}
-
-	protected Color getOutlineCursorBorderColor() {
-		return COLOR_4;
-	}
-
-	protected Color getOutlineCursorFillColor() {
-		return COLOR_3;
 	}
 
 	protected Font getFolderInfoFont() {

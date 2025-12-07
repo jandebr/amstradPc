@@ -73,6 +73,11 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 		return getImageMaker().makeCoverHighlightImage(getEmbedding());
 	}
 
+	@Override
+	public int getCoverImageBaselineMeasuredFromBottom() {
+		return getImageMaker().getCoverImageBaselineMeasuredFromBottom(getEmbedding());
+	}
+
 	private OpenCassetteCoverImageMaker getImageMaker() {
 		return imageMaker;
 	}

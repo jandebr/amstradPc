@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselOutlineAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
@@ -25,6 +26,8 @@ public interface CarouselHost {
 	CarouselEnterFolderAction getEnterFolderActionInProgress();
 
 	CarouselRunProgramAction getRunProgramActionInProgress();
+
+	CarouselOutlineAction getOutlineActionInProgress();
 
 	CarouselItem getCarouselItem(Node node);
 

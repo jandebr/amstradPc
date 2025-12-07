@@ -42,4 +42,6 @@ public interface CarouselDefaultColorPalette {
 
 	Color COLOR_18 = new Color(255, 254, 242);
 
+	Color COLOR_19 = new Color(12, 29, 40);
+
 }

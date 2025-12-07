@@ -102,9 +102,9 @@ public interface CarouselProgramBrowserTheme {
 
 	float getCarouselProgramTitleRelativeVerticalPosition();
 
-	Color getCarouselCursorColor();
-
 	Color getCarouselOutlineBorderColor();
+
+	Color getCarouselOutlineExtentFillColor();
 
 	Color getCarouselOutlineCursorBorderColor();
 
@@ -119,5 +119,7 @@ public interface CarouselProgramBrowserTheme {
 	Color getBreadcrumbSelectedFolderColor();
 
 	Color getBreadcrumbSeparatorColor();
+
+	Color getFocusColor();
 
 }

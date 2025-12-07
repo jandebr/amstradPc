@@ -241,7 +241,6 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 				VerticalAlignment.CENTER));
 		comp.setShade(SlidingShadeFactory.createGradientShadeRelativeLength(comp, 0.2));
 		comp.setSlidingDynamics(SlidingDynamicsFactory.createAdaptiveSpeedDynamics(comp, 0.004, 1.5, 0.5));
-		comp.setSlidingCursor(null);
 		comp.setSteadyLandingMinimumTimeDelayMillis(100L);
 		comp.setRepaintClientDriven(true);
 		return comp;
@@ -282,7 +281,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		CarouselOutline outline = comp.createOutline(thickness);
 		outline.setBorder(BorderFactory.createLineBorder(getTheme().getCarouselOutlineBorderColor()));
 		outline.setExtentMargin(new Insets(1, 0, 1, 0));
-		outline.setExtentRenderer(null);
+		outline.setExtentRenderer(new SolidFillOutlineRenderer(getTheme().getCarouselOutlineExtentFillColor()));
 		outline.setCursorBorder(BorderFactory.createLineBorder(getTheme().getCarouselOutlineCursorBorderColor()));
 		outline.setCursorRenderer(new SolidFillOutlineRenderer(getTheme().getCarouselOutlineCursorFillColor()));
 		return outline;

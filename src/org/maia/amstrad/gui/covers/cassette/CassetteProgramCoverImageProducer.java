@@ -86,6 +86,11 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		return getImageMaker().makeCoverHighlightImage(getEmbedding());
 	}
 
+	@Override
+	public int getCoverImageBaselineMeasuredFromBottom() {
+		return getImageMaker().getCoverImageBaselineMeasuredFromBottom(getEmbedding());
+	}
+
 	private ClosedCassetteCoverImageMaker getImageMaker() {
 		return imageMaker;
 	}

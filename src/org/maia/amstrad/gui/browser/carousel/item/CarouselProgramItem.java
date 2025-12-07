@@ -35,8 +35,8 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	}
 
 	@Override
-	protected void doRenderItem(Graphics2D g, Image coverImage) {
-		super.doRenderItem(g, coverImage);
+	protected void renderOverlays(Graphics2D g) {
+		super.renderOverlays(g);
 		Image overlayImage = getOverlayImage();
 		if (overlayImage != null) {
 			renderOverlayImage(g, overlayImage);
@@ -44,7 +44,7 @@ public class CarouselProgramItem extends CarouselRepositoryItem {
 	}
 
 	protected void renderOverlayImage(Graphics2D g, Image overlayImage) {
-		Color bg = ColorUtils.setTransparency(getCoverImage().getBackgroundColor(), 0.1f);
+		Color bg = ColorUtils.setTransparency(getCoverImage().getBackgroundColor(), 0.2f);
 		ImageComponent overlay = new ImageComponent(overlayImage, false, bg);
 		overlay.setSize(getSize());
 		overlay.setFillMode(FillMode.FIT);

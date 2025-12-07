@@ -2,7 +2,9 @@ package org.maia.amstrad.gui.browser.carousel;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.util.List;
 import java.util.Queue;
 import java.util.Vector;
@@ -18,6 +20,7 @@ import org.maia.amstrad.gui.browser.carousel.item.CarouselRepositoryItem;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
+import org.maia.swing.animate.itemslide.SlidingCursor;
 import org.maia.swing.animate.itemslide.SlidingCursorMovement;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.animate.itemslide.outline.SlidingItemListOutlineView;
@@ -42,6 +45,7 @@ public class CarouselComponent extends SlidingItemListComponent {
 	public CarouselComponent(Dimension size, Insets padding, Color background, SlidingCursorMovement cursorMovement,
 			CarouselHost host, CarouselItemMaker itemMaker) {
 		super(size, padding, background, cursorMovement);
+		setSlidingCursor(new CarouselVoidCursor());
 		this.host = host;
 		this.itemMaker = itemMaker;
 	}
@@ -144,6 +148,23 @@ public class CarouselComponent extends SlidingItemListComponent {
 		@Override
 		public CarouselComponent getComponent() {
 			return (CarouselComponent) super.getComponent();
+		}
+
+	}
+
+	private static class CarouselVoidCursor implements SlidingCursor {
+
+		public CarouselVoidCursor() {
+		}
+
+		@Override
+		public void renderUnderItems(Graphics2D g, Rectangle innerBounds, SlidingItemListComponent component) {
+			// void
+		}
+
+		@Override
+		public void renderAboveItems(Graphics2D g, Rectangle innerBounds, SlidingItemListComponent component) {
+			// void
 		}
 
 	}

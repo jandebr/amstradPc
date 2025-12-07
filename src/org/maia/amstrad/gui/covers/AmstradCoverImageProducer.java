@@ -176,6 +176,10 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 		return new Randomizer(node.getName());
 	}
 
+	public int getCoverImageBaselineMeasuredFromBottom() {
+		return 0; // Subclasses to override
+	}
+
 	public Dimension getImageSize() {
 		return imageSize;
 	}
