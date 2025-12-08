@@ -24,8 +24,6 @@ public interface CarouselHost {
 
 	boolean isFocusOnBreadcrumb();
 
-	CarouselProgramBrowserTheme getTheme();
-
 	CarouselEnterFolderAction getEnterFolderActionInProgress();
 
 	CarouselRunProgramAction getRunProgramActionInProgress();

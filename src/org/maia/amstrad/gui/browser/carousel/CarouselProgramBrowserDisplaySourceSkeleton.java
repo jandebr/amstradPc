@@ -124,10 +124,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected void buildUI() {
 		initCoverImageProducers();
 		setComponentFactory(createComponentFactory());
-		setCarouselCursorRenderer(createCarouselCursorRenderer());
 		buildCarousel();
 		buildCarouselOutline();
 		buildCarouselBreadcrumb();
+		setCarouselCursorRenderer(createCarouselCursorRenderer());
 	}
 
 	private void initCoverImageProducers() {
@@ -159,10 +159,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 				getFolderCoverImageProducer());
 	}
 
-	protected CarouselCursorRenderer createCarouselCursorRenderer() {
-		return new CarouselCursorSymbolRenderer(this);
-	}
-
 	private void buildCarousel() {
 		CarouselComponent comp = getComponentFactory().createCarouselComponent(this);
 		comp.addListener(new CarouselComponentItemTracker());
@@ -179,6 +175,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		CarouselBreadcrumb breadcrumb = getComponentFactory().createCarouselBreadcrumb(this);
 		add(breadcrumb.getUI(), CarouselLayoutManager.CAROUSEL_BREADCRUMB);
 		setCarouselBreadcrumb(breadcrumb);
+	}
+
+	protected CarouselCursorRenderer createCarouselCursorRenderer() {
+		return new CarouselCursorSymbolRenderer(this, getTheme().getCarouselCursorColor());
 	}
 
 	protected CarouselFocusManager createFocusManager() {
@@ -696,7 +696,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		return programBrowser;
 	}
 
-	@Override
 	public CarouselProgramBrowserTheme getTheme() {
 		return theme;
 	}
