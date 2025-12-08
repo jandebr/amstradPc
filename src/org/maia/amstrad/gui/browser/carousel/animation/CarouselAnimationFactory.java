@@ -3,7 +3,6 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
-import org.maia.amstrad.gui.browser.carousel.api.CarouselOutlineHost;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
@@ -50,12 +49,6 @@ public class CarouselAnimationFactory {
 		animation.setHighlightMinimumDelayMillis(6000L); // 6s
 		animation.setHighlightMaximumDelayMillis(12000L); // 12s
 		animation.setHighlightDurationMillis(800L); // 0.8s
-		return animation;
-	}
-
-	public CarouselAnimation createAnimationToShowCarouselOutline(CarouselOutlineHost host) {
-		CarouselOutlineAnimation animation = new CarouselOutlineAnimation(host);
-		animation.setMinimumDelayMillis(800L); // delayed
 		return animation;
 	}
 

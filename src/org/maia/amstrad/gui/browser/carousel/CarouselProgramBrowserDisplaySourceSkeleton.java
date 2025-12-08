@@ -17,13 +17,11 @@ import org.maia.amstrad.gui.browser.carousel.CarouselCoverImageFactory.CassetteC
 import org.maia.amstrad.gui.browser.carousel.action.CarouselAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselItemHighlightAction;
-import org.maia.amstrad.gui.browser.carousel.action.CarouselOutlineAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselStartupAction;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimationFactory;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselEnterFolderHost;
-import org.maia.amstrad.gui.browser.carousel.api.CarouselOutlineHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselRunProgramHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
 import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumb;
@@ -55,8 +53,7 @@ import org.maia.swing.animate.itemslide.SlidingItemListAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 
 public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends AmstradAwtDisplaySource
-		implements ProgramBrowserDisplaySource, CarouselStartupHost, CarouselEnterFolderHost, CarouselRunProgramHost,
-		CarouselOutlineHost {
+		implements ProgramBrowserDisplaySource, CarouselStartupHost, CarouselEnterFolderHost, CarouselRunProgramHost {
 
 	private CarouselAmstradProgramBrowser programBrowser;
 
@@ -93,8 +90,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	private CarouselRunProgramAction runProgramActionInProgress;
 
 	private CarouselItemHighlightAction itemHighlightActionInProgress;
-
-	private CarouselOutlineAction outlineActionInProgress;
 
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
@@ -240,10 +235,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		return CarouselAnimationFactory.getInstance().createAnimationToHighlightNode(node, this);
 	}
 
-	protected CarouselAnimation createAnimationToShowCarouselOutline() {
-		return CarouselAnimationFactory.getInstance().createAnimationToShowCarouselOutline(this);
-	}
-
 	@Override
 	public void pauseBuildingUI() {
 		setComponentAdditionDeferred(true);
@@ -255,14 +246,16 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		addDeferred();
 	}
 
-	@Override
-	public void showCarouselOutline() {
+	protected void showCarouselOutline() {
 		add(getCarouselOutline(), CarouselLayoutManager.CAROUSEL_OUTLINE);
 	}
 
-	@Override
-	public void hideCarouselOutline() {
+	protected void hideCarouselOutline() {
 		remove(getCarouselOutline());
+	}
+
+	protected boolean isCarouselOutlineShowing() {
+		return getCarouselOutline().isShowing();
 	}
 
 	@Override
@@ -281,7 +274,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			renderAnimation(g, width, height, getEnterFolderActionInProgress());
 			renderAnimation(g, width, height, getRunProgramActionInProgress());
 			renderAnimation(g, width, height, getItemHighlightActionInProgress());
-			renderAnimation(g, width, height, getOutlineActionInProgress());
+			renderCarouselOutline();
 			renderCarouselCursor(g);
 		}
 	}
@@ -310,19 +303,30 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		}
 	}
 
+	protected void renderCarouselOutline() {
+		double speed = getCarouselComponent().getSlidingSpeed();
+		if (isCarouselOutlineShowing()) {
+			if (speed == 0) {
+				hideCarouselOutline();
+			}
+		} else {
+			if (speed == 1.0 && !getCarouselComponent().isItemListFitsInsideViewport()) {
+				showCarouselOutline();
+			}
+		}
+	}
+
 	protected void renderCarouselCursor(Graphics2D g) {
 		CarouselCursorRenderer renderer = getCarouselCursorRenderer();
-		if (renderer != null) {
-			if (!getCarouselOutline().isShowing()) {
-				Rectangle cursorBounds = getCarouselComponent().getCursorOuterBoundsInComponent();
-				Rectangle outlineBounds = getLayout().getCarouselOutlineBounds();
-				int width = cursorBounds.width;
-				int height = outlineBounds.height;
-				Graphics2D g2 = (Graphics2D) g.create(cursorBounds.x, outlineBounds.y, width, height);
-				g2.translate(width / 2, height / 2);
-				renderer.render(g2, width, height);
-				g2.dispose();
-			}
+		if (renderer != null && !isCarouselOutlineShowing()) {
+			Rectangle cursorBounds = getCarouselComponent().getCursorOuterBoundsInComponent();
+			Rectangle outlineBounds = getLayout().getCarouselOutlineBounds();
+			int width = cursorBounds.width;
+			int height = outlineBounds.height;
+			Graphics2D g2 = (Graphics2D) g.create(cursorBounds.x, outlineBounds.y, width, height);
+			g2.translate(width / 2, height / 2);
+			renderer.render(g2, width, height);
+			g2.dispose();
 		}
 	}
 
@@ -333,7 +337,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		clearRunProgramActionInProgress();
 		clearEnterFolderActionInProgress();
 		clearItemHighlightActionInProgress();
-		clearOutlineActionInProgress();
 	}
 
 	@Override
@@ -590,11 +593,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		setItemHighlightActionInProgress(null);
 	}
 
-	private void clearOutlineActionInProgress() {
-		clearCarouselAction(getOutlineActionInProgress());
-		setOutlineActionInProgress(null);
-	}
-
 	private void clearCarouselAction(CarouselAction action) {
 		if (action != null) {
 			action.stopAnimation();
@@ -837,15 +835,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		this.itemHighlightActionInProgress = action;
 	}
 
-	@Override
-	public CarouselOutlineAction getOutlineActionInProgress() {
-		return outlineActionInProgress;
-	}
-
-	private void setOutlineActionInProgress(CarouselOutlineAction action) {
-		this.outlineActionInProgress = action;
-	}
-
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {
 
 		public CarouselComponentItemTracker() {
@@ -876,18 +865,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		@Override
 		public void notifyStartSliding(SlidingItemListComponent component) {
 			clearItemHighlightActionInProgress();
-			if (!component.isItemListFitsInsideViewport()) {
-				CarouselAnimation animation = createAnimationToShowCarouselOutline();
-				CarouselOutlineAction action = new CarouselOutlineAction(
-						CarouselProgramBrowserDisplaySourceSkeleton.this, animation);
-				setOutlineActionInProgress(action);
-				action.perform();
-			}
-		}
-
-		@Override
-		public void notifyStopSliding(SlidingItemListComponent component) {
-			clearOutlineActionInProgress();
 		}
 
 	}
