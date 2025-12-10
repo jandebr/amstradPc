@@ -35,7 +35,6 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 
 	@Override
 	public final void render(Graphics2D g, SlidingItemListComponent component) {
-		paintBackground(g);
 		Image image = getCoverImage().getImage();
 		if (image != null) {
 			Graphics2D g2 = (Graphics2D) g.create();
@@ -100,7 +99,7 @@ public abstract class CarouselRepositoryItem extends CarouselItem {
 		int shrinkedWidth = Math.round(fullSize.width * scale);
 		int shrinkedHeight = Math.round(fullSize.height * scale);
 		int x0 = (fullSize.width - shrinkedWidth) / 2;
-		int y0 = Math.round((fullSize.height - baseline) * (1f - scale));
+		int y0 = (int) Math.floor((fullSize.height - baseline) * (1f - scale));
 		return new Rectangle(x0, y0, shrinkedWidth, shrinkedHeight);
 	}
 

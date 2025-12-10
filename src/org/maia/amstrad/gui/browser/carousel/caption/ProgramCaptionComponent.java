@@ -48,7 +48,7 @@ public class ProgramCaptionComponent extends CarouselCaptionComponent {
 		String author = getProgram().getAuthor();
 		int year = getProgram().getProductionYear();
 		if (!isFull() && !StringUtils.isEmpty(author)) {
-			addTextElement("by ", c2, font);
+			addTextElement("By ", c2, font);
 			if (!isFull()) {
 				addTextElement(author, c1, font);
 				if (!isFull() && year > 0) {

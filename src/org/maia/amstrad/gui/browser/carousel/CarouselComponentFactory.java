@@ -43,6 +43,9 @@ import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.graphics2d.image.GradientImageFactory;
 import org.maia.graphics2d.image.GradientImageFactory.GradientFunction;
 import org.maia.graphics2d.image.ImageUtils;
+import org.maia.swing.animate.imageslide.show.SlidingImageCollectionIterator;
+import org.maia.swing.animate.imageslide.show.SlidingImageCollectionIterator.ImageElement;
+import org.maia.swing.animate.imageslide.show.SlidingImageIterator;
 import org.maia.swing.animate.imageslide.show.SlidingImageShow;
 import org.maia.swing.animate.imageslide.show.SlidingImageShowBuilder;
 import org.maia.swing.animate.itemslide.SlidingCursorMovement;
@@ -81,16 +84,17 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	public SlidingTextLabel createHeadingComponent(Node node) {
 		String text = node.getName();
 		Dimension size = extendHorizontallyAcrossImageShow(getLayout().getHeadingBounds(), node);
+		int marginLeft = getLayout().getCaptionBounds().x;
 		Font font = getTheme().getHeadingFont();
 		float fontSize = TextLabel.getFontSizeForLineHeight(font, size.height);
-		float fontSizeFitWidth = TextLabel.getFontSizeForLineWidth(font, text, size.width);
+		float fontSizeFitWidth = TextLabel.getFontSizeForLineWidth(font, text, size.width - marginLeft);
 		if (fontSizeFitWidth < fontSize && fontSizeFitWidth >= fontSize * 0.8f)
 			fontSize = fontSizeFitWidth;
 		SlidingTextLabel label = SlidingTextLabel.createSized(text, font.deriveFont(fontSize), size,
 				getTheme().getBackgroundColor(), getTheme().getHeadingColor(), HorizontalAlignment.LEFT,
 				VerticalTextAlignment.BASELINE);
-		label.setBorder(BorderFactory.createEmptyBorder(0, getLayout().getCaptionBounds().x, 0, 0));
-		label.setSlidingSpeed(20.0);
+		label.setBorder(BorderFactory.createEmptyBorder(0, marginLeft, 0, 0));
+		label.setSlidingSpeed(40.0);
 		label.setSuspensionAtEndsMillis(1000L);
 		label.setRepaintClientDriven(true);
 		return label;
@@ -195,26 +199,60 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	public SlidingImageShow createImageShow(Node node) {
 		SlidingImageShow show = null;
-		if (node.isProgram()) {
-			List<AmstradProgramImage> images = node.asProgram().getProgram().getImages();
-			if (!images.isEmpty()) {
-				Dimension size = getLayout().getPreviewBounds().getSize();
-				SlidingImageShowBuilder builder = new SlidingImageShowBuilder(size, getTheme().getBackgroundColor());
-				builder.withMaxToMinZoomFactorRatio(3.0);
-				builder.withRepaintClientDriven(true);
-				builder.withImageOverlay(createImageShowOverlay(size));
-				for (AmstradProgramImage image : images) {
-					builder.addImage(image.getImage());
-					image.disposeImage(); // free up image pool
-				}
-				show = builder.build();
-			}
+		SlidingImageIterator iterator = getImagesToShow(node);
+		if (iterator.hasNext()) {
+			Dimension size = getLayout().getPreviewBounds().getSize();
+			SlidingImageShowBuilder builder = new SlidingImageShowBuilder(size, getTheme().getBackgroundColor());
+			builder.withImageIterator(iterator);
+			builder.withMaxToMinZoomFactorRatio(3.0);
+			builder.withRepaintClientDriven(true);
+			builder.withImageOverlay(createImageShowOverlay(size));
+			show = builder.build();
 		}
 		return show;
 	}
 
 	public boolean hasImageShow(Node node) {
-		return node.isProgram() && !node.asProgram().getProgram().getImages().isEmpty();
+		return getImagesToShow(node, 1).hasNext();
+	}
+
+	private SlidingImageIterator getImagesToShow(Node node) {
+		return getImagesToShow(node, Integer.MAX_VALUE);
+	}
+
+	private SlidingImageIterator getImagesToShow(Node node, int maximumImages) {
+		SlidingImageCollectionIterator iterator = SlidingImageCollectionIterator.createPermutedRepeatingIterator();
+		collectImagesToShow(node, iterator, maximumImages);
+		return iterator;
+	}
+
+	private void collectImagesToShow(Node node, SlidingImageCollectionIterator iterator, int maximumImages) {
+		if (node.isProgram()) {
+			List<AmstradProgramImage> programImages = node.asProgram().getProgram().getImages();
+			for (AmstradProgramImage programImage : programImages) {
+				if (iterator.getUniqueImageCount() < maximumImages) {
+					iterator.addImageLazyLoaded(new ImageElement() {
+
+						@Override
+						public Image getImage() {
+							Image image = programImage.getImage();
+							programImage.disposeImage(); // free up image pool
+							return image;
+						}
+					});
+				} else {
+					break;
+				}
+			}
+		} else if (node.isFolder()) {
+			for (Node child : node.asFolder().getChildNodes()) {
+				if (iterator.getUniqueImageCount() < maximumImages) {
+					collectImagesToShow(child, iterator, maximumImages); // recursive collection
+				} else {
+					break;
+				}
+			}
+		}
 	}
 
 	private Image createImageShowOverlay(Dimension size) {
