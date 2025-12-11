@@ -33,8 +33,6 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 
 	private SlidingImageShow imageShow;
 
-	private ImageShowLoader imageShowLoader;
-
 	private Object imageShowSemaphore = new Object();
 
 	public CarouselProgramBrowserDisplaySource(CarouselAmstradProgramBrowser programBrowser) {
@@ -117,20 +115,21 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	private void loadImageShow(Node node) {
 		synchronized (getImageShowSemaphore()) {
 			unloadImageShow();
-			if (getComponentFactory().hasImageShow(node)) {
-				ImageShowLoader loader = new ImageShowLoader(node);
-				setImageShowLoader(loader);
-				loader.start();
+			SlidingImageShow show = getComponentFactory().createImageShow(node);
+			if (show != null) {
+				setImageShow(show);
+				add(show.getUI(), CarouselLayoutManager.PREVIEW);
+				show.startAnimating();
 			}
 		}
 	}
 
 	private void unloadImageShow() {
 		synchronized (getImageShowSemaphore()) {
-			setImageShowLoader(null);
-			if (getImageShow() != null) {
-				getImageShow().stopAnimating();
-				remove(getImageShow().getUI());
+			SlidingImageShow show = getImageShow();
+			if (show != null) {
+				show.stopAnimating();
+				remove(show.getUI());
 				setImageShow(null);
 			}
 		}
@@ -327,48 +326,8 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 		this.imageShow = imageShow;
 	}
 
-	private ImageShowLoader getImageShowLoader() {
-		return imageShowLoader;
-	}
-
-	private void setImageShowLoader(ImageShowLoader loader) {
-		this.imageShowLoader = loader;
-	}
-
 	private Object getImageShowSemaphore() {
 		return imageShowSemaphore;
-	}
-
-	private class ImageShowLoader extends Thread {
-
-		private Node node;
-
-		public ImageShowLoader(Node node) {
-			super("ImageShow Loader");
-			setDaemon(true);
-			this.node = node;
-		}
-
-		@Override
-		public void run() {
-			SlidingImageShow show = getComponentFactory().createImageShow(getNode());
-			if (show != null) {
-				synchronized (getImageShowSemaphore()) {
-					if (equals(getImageShowLoader())) {
-						setImageShow(show);
-						add(show.getUI(), CarouselLayoutManager.PREVIEW);
-						show.startAnimating();
-					} else {
-						// no longer current node, dismiss show
-					}
-				}
-			}
-		}
-
-		public Node getNode() {
-			return node;
-		}
-
 	}
 
 	private class FocusTracker implements FocusListener {
