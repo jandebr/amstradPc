@@ -2,6 +2,7 @@ package org.maia.amstrad.program.browser.config;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -14,12 +15,15 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
@@ -39,7 +43,7 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 
 	private AmstradProgramBrowserConfiguration state;
 
-	private JComboBox<String> styleSelectorField;
+	private JComboBox<AmstradProgramBrowserStyle> styleSelectorField;
 
 	private FolderInputField rootFolderField;
 
@@ -148,20 +152,23 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 		return comp;
 	}
 
-	private JComboBox<String> createStyleSelectorField() {
-		JComboBox<String> field = new JComboBox<String>();
-		for (AmstradProgramBrowserStyle style : AmstradProgramBrowserStyle.values()) {
-			field.addItem(style.getDisplayName());
+	private JComboBox<AmstradProgramBrowserStyle> createStyleSelectorField() {
+		JComboBox<AmstradProgramBrowserStyle> field = new JComboBox<AmstradProgramBrowserStyle>();
+		List<AmstradProgramBrowserStyle> styles = AmstradFactory.getInstance().getProgramBrowserStyleManager()
+				.getStyles();
+		for (AmstradProgramBrowserStyle style : styles) {
+			field.addItem(style);
 		}
-		field.setSelectedItem(getState().getStyle().getDisplayName());
+		field.setSelectedItem(getState().getStyle());
+		field.setRenderer(new StyleRenderer());
 		field.setEditable(false);
 		field.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("comboBoxChanged")) {
-					String selectedStyle = field.getSelectedItem().toString();
-					getState().setStyle(AmstradProgramBrowserStyle.forDisplayNameIgnoreCase(selectedStyle));
+					AmstradProgramBrowserStyle selectedStyle = (AmstradProgramBrowserStyle) field.getSelectedItem();
+					getState().setStyle(selectedStyle);
 				}
 			}
 		});
@@ -332,7 +339,7 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 		return state;
 	}
 
-	private JComboBox<String> getStyleSelectorField() {
+	private JComboBox<AmstradProgramBrowserStyle> getStyleSelectorField() {
 		return styleSelectorField;
 	}
 
@@ -375,6 +382,29 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 
 		public Facet getFacet() {
 			return facet;
+		}
+
+	}
+
+	private static class StyleRenderer implements ListCellRenderer<AmstradProgramBrowserStyle> {
+
+		public StyleRenderer() {
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends AmstradProgramBrowserStyle> list,
+				AmstradProgramBrowserStyle value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel label = new JLabel(value.getDisplayName());
+			label.setOpaque(true);
+			if (isSelected) {
+				label.setBackground(list.getSelectionBackground());
+				label.setForeground(list.getSelectionForeground());
+			} else {
+				label.setBackground(list.getBackground());
+				label.setForeground(list.getForeground());
+			}
+			label.setFont(list.getFont());
+			return label;
 		}
 
 	}

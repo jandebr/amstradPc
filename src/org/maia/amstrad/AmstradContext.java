@@ -9,7 +9,7 @@ import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
-import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyleManager;
 import org.maia.amstrad.program.browser.config.AmstradProgramBrowserConfiguration;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetFactory;
@@ -28,7 +28,9 @@ public abstract class AmstradContext {
 
 	private PhylopicSvgOfflineDatabase phylopicDatabase;
 
-	public static final String SETTING_AMSTRAD_SYSTEM = "mode";
+	private static final String SETTING_MODE = "mode";
+
+	private static final String DEFAULT_MODE = "DESKTOP";
 
 	private static final String SETTING_IMAGE_CACHE_CAPACITY = "images.cache_capacity";
 
@@ -54,8 +56,6 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED_CLEANUP = "program_repo.file.dir-managed.cleanup.enable";
 
-	public static final String SETTING_PROGRAM_BROWSER_STYLE = "program_browser.style";
-
 	private static final String SETTING_LOWPERFORMANCE = "lowperformance";
 
 	private static final String SETTING_LOWPERFORMANCE_ALLOW_MONITOR_EFFECT = "lowperformance.allow_display_effect";
@@ -68,9 +68,11 @@ public abstract class AmstradContext {
 
 	private static final String SYSTEM_PROPERTY_VERSION = "javacpc-version";
 
-	public static AmstradProgramBrowserStyle defaultProgramBrowserStyle = AmstradProgramBrowserStyle.CLASSIC;
-
 	protected AmstradContext() {
+	}
+
+	public String getMode() {
+		return getUserSettings().get(SETTING_MODE, DEFAULT_MODE);
 	}
 
 	public AmstradSystem setupAmstradSystem() {
@@ -251,31 +253,20 @@ public abstract class AmstradContext {
 		settings.set(SETTING_PROGRAM_REPO_FACETS, FacetFactory.getInstance().toExternalForm(configuration.getFacets()));
 	}
 
-	public AmstradProgramBrowserStyle getProgramBrowserStyle() {
-		String styleName = getUserSettings().get(SETTING_PROGRAM_BROWSER_STYLE,
-				defaultProgramBrowserStyle.getDisplayName());
-		AmstradProgramBrowserStyle style = AmstradProgramBrowserStyle.forDisplayNameIgnoreCase(styleName);
-		if (style != null) {
-			return style;
-		} else {
-			return defaultProgramBrowserStyle;
-		}
-	}
-
-	public void setProgramBrowserStyle(AmstradProgramBrowserStyle style) {
-		getUserSettings().set(SETTING_PROGRAM_BROWSER_STYLE, style.getDisplayName());
-	}
-
-	public AmstradProgramBrowserConfiguration getProgramBrowserConfiguration() {
+	public AmstradProgramBrowserConfiguration getProgramBrowserConfiguration(AmstradPc amstradPc) {
 		AmstradProgramBrowserConfiguration configuration = new AmstradProgramBrowserConfiguration(
 				getProgramRepositoryConfiguration());
-		configuration.setStyle(getProgramBrowserStyle());
+		configuration.setStyle(getProgramBrowserStyleManager().getStyle(amstradPc));
 		return configuration;
 	}
 
-	public void setProgramBrowserConfiguration(AmstradProgramBrowserConfiguration configuration) {
+	public void setProgramBrowserConfiguration(AmstradProgramBrowserConfiguration configuration, AmstradPc amstradPc) {
 		setProgramRepositoryConfiguration(configuration.getRepositoryConfiguration());
-		setProgramBrowserStyle(configuration.getStyle());
+		getProgramBrowserStyleManager().applyStyle(configuration.getStyle(), amstradPc);
+	}
+
+	public AmstradProgramBrowserStyleManager getProgramBrowserStyleManager() {
+		return AmstradFactory.getInstance().getProgramBrowserStyleManager();
 	}
 
 	public File getManagedProgramRepositoryRootFolder() {

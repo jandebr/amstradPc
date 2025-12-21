@@ -34,9 +34,9 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramBuilder;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
-import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
-import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
-import org.maia.amstrad.program.browser.impl.ClassicAmstradProgramBrowser;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyleManager;
+import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowserStyle;
+import org.maia.amstrad.program.browser.impl.ClassicAmstradProgramBrowserStyle;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 import org.maia.amstrad.program.repo.facet.FacetedAmstradProgramRepository;
@@ -61,6 +61,8 @@ public class AmstradFactory {
 
 	private AmstradContext context;
 
+	private AmstradProgramBrowserStyleManager programBrowserStyleManager;
+
 	private static AmstradFactory instance;
 
 	static {
@@ -78,14 +80,27 @@ public class AmstradFactory {
 		return context;
 	}
 
+	public AmstradProgramBrowserStyleManager getProgramBrowserStyleManager() {
+		if (programBrowserStyleManager == null) {
+			programBrowserStyleManager = createProgramBrowserStyleManager();
+		}
+		return programBrowserStyleManager;
+	}
+
+	private AmstradProgramBrowserStyleManager createProgramBrowserStyleManager() {
+		AmstradProgramBrowserStyleManager manager = new AmstradProgramBrowserStyleManager();
+		manager.addStyle(new ClassicAmstradProgramBrowserStyle());
+		manager.addStyle(new CarouselAmstradProgramBrowserStyle());
+		return manager;
+	}
+
 	private AmstradSettings createUserSettings() {
 		return new AmstradSettingsImpl();
 	}
 
 	public AmstradSystem createAmstradSystem() {
 		AmstradSystem system = null;
-		String systemName = getAmstradContext().getUserSettings().get(AmstradContext.SETTING_AMSTRAD_SYSTEM,
-				AmstradDesktopSystem.NAME);
+		String systemName = getAmstradContext().getMode();
 		if (systemName.equalsIgnoreCase(AmstradDesktopSystem.NAME)) {
 			system = new AmstradDesktopSystem();
 		} else if (systemName.equalsIgnoreCase(AmstradEntertainmentSystem.NAME)) {
@@ -190,18 +205,6 @@ public class AmstradFactory {
 			repository = new FacetedAmstradProgramRepository(repository, config.getFacets());
 		}
 		return repository;
-	}
-
-	public AmstradProgramBrowser createProgramBrowser(AmstradPc amstradPc) {
-		AmstradProgramBrowser browser = null;
-		AmstradProgramRepository repository = createProgramRepository();
-		AmstradProgramBrowserStyle browserStyle = getAmstradContext().getProgramBrowserStyle();
-		if (AmstradProgramBrowserStyle.CLASSIC.equals(browserStyle)) {
-			browser = new ClassicAmstradProgramBrowser(amstradPc, repository);
-		} else if (AmstradProgramBrowserStyle.CAROUSEL.equals(browserStyle)) {
-			browser = new CarouselAmstradProgramBrowser(amstradPc, repository);
-		}
-		return browser;
 	}
 
 	public ClassicProgramInfoDisplaySource createProgramInfoDisplaySource(AmstradPc amstradPc, AmstradProgram program) {

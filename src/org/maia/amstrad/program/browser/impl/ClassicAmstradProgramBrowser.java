@@ -4,12 +4,14 @@ import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
 import org.maia.amstrad.gui.browser.classic.ClassicProgramBrowserDisplaySource;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 
 public class ClassicAmstradProgramBrowser extends AmstradProgramBrowser {
 
-	public ClassicAmstradProgramBrowser(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
-		super(amstradPc, programRepository);
+	ClassicAmstradProgramBrowser(AmstradPc amstradPc, AmstradProgramRepository programRepository,
+			AmstradProgramBrowserStyle style) {
+		super(amstradPc, programRepository, style);
 	}
 
 	@Override

@@ -15,15 +15,19 @@ public abstract class AmstradProgramBrowser {
 
 	private AmstradProgramRepository programRepository;
 
+	private AmstradProgramBrowserStyle style;
+
 	private ProgramBrowserDisplaySource displaySource;
 
 	private GenericListenerList<AmstradProgramBrowserListener> listeners;
 
 	private static final String SETTING_ENABLE_BASIC_STAGING = "basic_staging.enable";
 
-	protected AmstradProgramBrowser(AmstradPc amstradPc, AmstradProgramRepository programRepository) {
+	protected AmstradProgramBrowser(AmstradPc amstradPc, AmstradProgramRepository programRepository,
+			AmstradProgramBrowserStyle style) {
 		this.amstradPc = amstradPc;
 		this.programRepository = programRepository;
+		this.style = style;
 		this.displaySource = createDisplaySource();
 		this.listeners = new GenericListenerList<AmstradProgramBrowserListener>();
 	}
@@ -82,6 +86,10 @@ public abstract class AmstradProgramBrowser {
 
 	public AmstradProgramRepository getProgramRepository() {
 		return programRepository;
+	}
+
+	public AmstradProgramBrowserStyle getStyle() {
+		return style;
 	}
 
 	public ProgramBrowserDisplaySource getDisplaySource() {

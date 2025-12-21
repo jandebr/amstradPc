@@ -1,24 +1,41 @@
 package org.maia.amstrad.program.browser;
 
-public enum AmstradProgramBrowserStyle {
+import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.program.repo.AmstradProgramRepository;
 
-	CLASSIC("Classic"),
-
-	CAROUSEL("Carousel");
+public abstract class AmstradProgramBrowserStyle {
 
 	private String displayName;
 
-	private AmstradProgramBrowserStyle(String displayName) {
+	protected AmstradProgramBrowserStyle(String displayName) {
 		this.displayName = displayName;
 	}
 
-	public static AmstradProgramBrowserStyle forDisplayNameIgnoreCase(String displayName) {
-		for (AmstradProgramBrowserStyle style : AmstradProgramBrowserStyle.values()) {
-			if (style.getDisplayName().equalsIgnoreCase(displayName))
-				return style;
-		}
-		return null;
+	@Override
+	public int hashCode() {
+		return getDisplayName().hashCode();
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AmstradProgramBrowserStyle other = (AmstradProgramBrowserStyle) obj;
+		return getDisplayName().equals(other.getDisplayName());
+	}
+
+	public AmstradProgramBrowser createProgramBrowser(AmstradPc amstradPc) {
+		AmstradProgramRepository repository = AmstradFactory.getInstance().createProgramRepository();
+		return createProgramBrowser(amstradPc, repository);
+	}
+
+	protected abstract AmstradProgramBrowser createProgramBrowser(AmstradPc amstradPc,
+			AmstradProgramRepository repository);
 
 	public String getDisplayName() {
 		return displayName;
