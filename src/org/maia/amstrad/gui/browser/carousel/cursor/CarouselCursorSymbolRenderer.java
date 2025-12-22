@@ -44,29 +44,25 @@ public class CarouselCursorSymbolRenderer extends SlidingItemListAdapter impleme
 
 	@Override
 	public void render(Graphics2D gCentered, int maximumCursorWidth, int maximumCursorHeight) {
-		if (isHidden())
-			return;
-		Color color = null;
-		int scale = Math.max(1, Math.floorDiv(maximumCursorHeight - 2 * getMinimumPulseAmplitude(), 8));
-		int dy = 0;
-		if (isInFocus()) {
-			color = getInFocusColor();
+		if (!isInFocus()) {
+			setPulseStartTimeMillis(System.currentTimeMillis());
+		}
+		if (!isHidden()) {
+			int dy = 0;
+			int scale = Math.max(1, Math.floorDiv(maximumCursorHeight - 2 * getMinimumPulseAmplitude(), 8));
 			float pulseOffset = getRelativePulseOffset();
 			if (pulseOffset > 0) {
 				int pulseAmplitude = Math.min(Math.floorDiv(Math.max(maximumCursorHeight - scale * 8, 0), 2),
 						getMaximumPulseAmplitude());
 				dy = (int) Math.round(pulseAmplitude * Math.sin(pulseOffset * 2.0 * Math.PI));
 			}
-		} else {
-			color = getOutFocusColor();
-			setPulseStartTimeMillis(System.currentTimeMillis());
+			AmstradSymbolRenderer sym = getSymbolRenderer();
+			sym.replaceGraphics2D(gCentered);
+			sym.color(getInFocusColor());
+			sym.scale(scale);
+			sym.drawChr(213, -8 * scale, -4 * scale + dy);
+			sym.drawChr(212, 0, -4 * scale + dy);
 		}
-		AmstradSymbolRenderer sym = getSymbolRenderer();
-		sym.replaceGraphics2D(gCentered);
-		sym.color(color);
-		sym.scale(scale);
-		sym.drawChr(213, -8 * scale, -4 * scale + dy);
-		sym.drawChr(212, 0, -4 * scale + dy);
 	}
 
 	@Override
@@ -94,6 +90,8 @@ public class CarouselCursorSymbolRenderer extends SlidingItemListAdapter impleme
 		if (getHost().getRunProgramActionInProgress() != null)
 			return true;
 		if (getHost().getEnterFolderActionInProgress() != null)
+			return true;
+		if (!isInFocus())
 			return true;
 		return false;
 	}
