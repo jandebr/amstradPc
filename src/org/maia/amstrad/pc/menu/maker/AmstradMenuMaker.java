@@ -14,11 +14,13 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.MonitorModeAction;
 import org.maia.amstrad.pc.action.MonitorSizeAction;
+import org.maia.amstrad.pc.action.ProgramBrowserStyleAction;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.joystick.AmstradJoystickStateAdapter;
@@ -26,6 +28,9 @@ import org.maia.amstrad.pc.menu.AmstradMenu;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyleManager;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyleManager.StyleListener;
 
 public abstract class AmstradMenuMaker {
 
@@ -80,6 +85,23 @@ public abstract class AmstradMenuMaker {
 	protected JMenuItem createProgramBrowserResetMenuItem() {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getProgramBrowserResetAction()),
 				UIResources.browserResetIcon);
+	}
+
+	protected JMenu createProgramBrowserStyleMenu() {
+		JMenu menu = new JMenu("Program browser style");
+		ButtonGroup buttonGroup = new ButtonGroup();
+		for (AmstradProgramBrowserStyle style : getProgramBrowserStyleManager().getStyles()) {
+			JRadioButtonMenuItem styleOption = createProgramBrowserStyleMenuItem(style);
+			menu.add(styleOption);
+			buttonGroup.add(styleOption);
+		}
+		ProgramBrowserStyleMenuHelper helper = new ProgramBrowserStyleMenuHelper(buttonGroup);
+		return updateMenuLookAndFeel(menu, UIResources.browserStyleIcon);
+	}
+
+	protected JRadioButtonMenuItem createProgramBrowserStyleMenuItem(AmstradProgramBrowserStyle style) {
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(getActions().getProgramBrowserStyleAction(style));
+		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
 	protected JMenuItem createProgramInfoMenuItem() {
@@ -404,6 +426,10 @@ public abstract class AmstradMenuMaker {
 		return item;
 	}
 
+	protected AmstradProgramBrowserStyleManager getProgramBrowserStyleManager() {
+		return AmstradFactory.getInstance().getProgramBrowserStyleManager();
+	}
+
 	protected AmstradMonitor getMonitor() {
 		return getAmstradPc().getMonitor();
 	}
@@ -418,6 +444,37 @@ public abstract class AmstradMenuMaker {
 
 	public AmstradMenuLookAndFeel getLookAndFeel() {
 		return lookAndFeel;
+	}
+
+	private class ProgramBrowserStyleMenuHelper implements StyleListener {
+
+		private ButtonGroup buttonGroup;
+
+		public ProgramBrowserStyleMenuHelper(ButtonGroup buttonGroup) {
+			this.buttonGroup = buttonGroup;
+			syncMenu();
+			getProgramBrowserStyleManager().addListener(this);
+		}
+
+		@Override
+		public void programBrowserStyleApplied(AmstradProgramBrowserStyle style, AmstradPc amstradPc) {
+			syncMenu();
+		}
+
+		private void syncMenu() {
+			AmstradProgramBrowserStyle style = getProgramBrowserStyleManager().getStyle(getAmstradPc());
+			for (Enumeration<AbstractButton> en = getButtonGroup().getElements(); en.hasMoreElements();) {
+				AbstractButton button = en.nextElement();
+				if (((ProgramBrowserStyleAction) button.getAction()).getStyle().equals(style)) {
+					button.setSelected(true);
+				}
+			}
+		}
+
+		private ButtonGroup getButtonGroup() {
+			return buttonGroup;
+		}
+
 	}
 
 	private static abstract class MonitorMenuHelper extends AmstradMonitorAdapter {

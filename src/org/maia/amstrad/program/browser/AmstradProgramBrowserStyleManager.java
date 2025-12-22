@@ -7,19 +7,32 @@ import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.ProgramBrowserAction;
+import org.maia.util.GenericListener;
+import org.maia.util.GenericListenerList;
 
 public class AmstradProgramBrowserStyleManager {
 
 	private List<AmstradProgramBrowserStyle> styles;
 
+	private GenericListenerList<StyleListener> listeners;
+
 	private static final String SETTING_PROGRAM_BROWSER_STYLE = "program_browser.style";
 
 	public AmstradProgramBrowserStyleManager() {
 		this.styles = new Vector<AmstradProgramBrowserStyle>();
+		this.listeners = new GenericListenerList<StyleListener>();
 	}
 
 	public void addStyle(AmstradProgramBrowserStyle style) {
 		getStyles().add(style);
+	}
+
+	public void addListener(StyleListener listener) {
+		getListeners().addListener(listener);
+	}
+
+	public void removeListener(StyleListener listener) {
+		getListeners().removeListener(listener);
 	}
 
 	public void applyStyle(AmstradProgramBrowserStyle style, AmstradPc amstradPc) {
@@ -28,8 +41,15 @@ public class AmstradProgramBrowserStyleManager {
 			if (browserAction != null) {
 				AmstradProgramBrowser browser = style.createProgramBrowser(amstradPc);
 				browserAction.reset(browser);
-				setDefaultStyle(getCurrentMode(), style);
+				fireStyleApplied(style, amstradPc);
+				setDefaultStyle(getCurrentMode(), style); // update default style
 			}
+		}
+	}
+
+	private void fireStyleApplied(AmstradProgramBrowserStyle style, AmstradPc amstradPc) {
+		for (StyleListener listener : getListeners()) {
+			listener.programBrowserStyleApplied(style, amstradPc);
 		}
 	}
 
@@ -94,6 +114,16 @@ public class AmstradProgramBrowserStyleManager {
 
 	public List<AmstradProgramBrowserStyle> getStyles() {
 		return styles;
+	}
+
+	private GenericListenerList<StyleListener> getListeners() {
+		return listeners;
+	}
+
+	public static interface StyleListener extends GenericListener {
+
+		void programBrowserStyleApplied(AmstradProgramBrowserStyle style, AmstradPc amstradPc);
+
 	}
 
 }

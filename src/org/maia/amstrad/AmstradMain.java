@@ -9,6 +9,8 @@ public class AmstradMain {
 
 	public static final String SETTING_OVERRIDE_PREFIX = "javacpc.";
 
+	public static final String SETTING_OVERRIDE_FLAG_INIT_VALUE = "??";
+
 	public static void main(String[] args) throws Exception {
 		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
 		overrideSettingsFromSytemProperties(context.getUserSettings());
@@ -22,7 +24,14 @@ public class AmstradMain {
 			if (prop.startsWith(SETTING_OVERRIDE_PREFIX)) {
 				String key = prop.substring(SETTING_OVERRIDE_PREFIX.length());
 				String value = props.getProperty(prop);
-				settings.set(key, value);
+				if (value.startsWith(SETTING_OVERRIDE_FLAG_INIT_VALUE)) {
+					if (settings.get(key, null) == null) {
+						value = value.substring(SETTING_OVERRIDE_FLAG_INIT_VALUE.length());
+						settings.set(key, value);
+					}
+				} else {
+					settings.set(key, value);
+				}
 			}
 		}
 	}
