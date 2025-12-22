@@ -22,6 +22,8 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 
 	private Rectangle infoOutlineBounds;
 
+	private Rectangle infoSectionBounds;
+
 	private Rectangle previewBounds;
 
 	private Rectangle carouselBounds;
@@ -87,6 +89,7 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 		setCaptionBounds(captionBand.getBounds());
 		setInfoBounds(infoBand.getBounds());
 		setInfoOutlineBounds(infoOutlineBand.getBounds());
+		setInfoSectionBounds(infoSectionBand.getBounds());
 		setPreviewBounds(previewBand.getBounds());
 		setCarouselBounds(carouselBand.getBounds());
 		setCarouselOutlineBounds(carouselOutlineBand.getBounds());
@@ -176,6 +179,14 @@ public class CarouselLayoutManager extends BandedLayout implements LayoutManager
 
 	private void setInfoOutlineBounds(Rectangle bounds) {
 		this.infoOutlineBounds = bounds;
+	}
+
+	public Rectangle getInfoSectionBounds() {
+		return infoSectionBounds;
+	}
+
+	private void setInfoSectionBounds(Rectangle bounds) {
+		this.infoSectionBounds = bounds;
 	}
 
 	public Rectangle getPreviewBounds() {

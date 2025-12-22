@@ -178,7 +178,14 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected CarouselCursorRenderer createCarouselCursorRenderer() {
-		return new CarouselCursorSymbolRenderer(this, getTheme().getCarouselCursorColor());
+		CarouselCursorSymbolRenderer renderer = new CarouselCursorSymbolRenderer(this,
+				getTheme().getCarouselCursorColor());
+		renderer.setPulseIntervalTimeMillis(getCursorPulseIntervalTimeMillis());
+		return renderer;
+	}
+
+	protected long getCursorPulseIntervalTimeMillis() {
+		return 2200L;
 	}
 
 	protected CarouselFocusManager createFocusManager() {
@@ -289,9 +296,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected void renderFocus(Graphics2D g, Component focusOwner) {
-		Rectangle bounds = focusOwner.getBounds();
-		g.setColor(getTheme().getFocusColor());
-		g.drawRect(bounds.x - 4, bounds.y - 4, bounds.width + 7, bounds.height + 7);
+		// Subclasses may extend
 	}
 
 	private void renderAnimation(Graphics2D g, int width, int height, CarouselAction action) {

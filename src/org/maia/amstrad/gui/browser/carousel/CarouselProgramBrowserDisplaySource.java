@@ -1,11 +1,14 @@
 package org.maia.amstrad.gui.browser.carousel;
 
 import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.JComponent;
 
+import org.maia.amstrad.gui.AmstradSymbolRenderer;
 import org.maia.amstrad.gui.browser.carousel.info.InfoSection;
 import org.maia.amstrad.gui.browser.carousel.info.SlidingInfoSection;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
@@ -18,6 +21,8 @@ import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.animate.textslide.SlidingTextLabel;
 
 public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserDisplaySourceSkeleton {
+
+	private AmstradSymbolRenderer symbolRenderer;
 
 	private SlidingTextLabel headingComponent;
 
@@ -37,12 +42,40 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 
 	public CarouselProgramBrowserDisplaySource(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser);
+		this.symbolRenderer = new AmstradSymbolRenderer(getGraphicsContext(), null);
 	}
 
 	@Override
 	protected void initFocusManager() {
 		super.initFocusManager();
 		getFocusManager().addListener(new FocusTracker());
+	}
+
+	@Override
+	protected void renderFocus(Graphics2D g, Component focusOwner) {
+		super.renderFocus(g, focusOwner);
+		if (isInfoComponent(focusOwner)) {
+			renderFocusAtInfoComponent(g);
+		}
+	}
+
+	protected void renderFocusAtInfoComponent(Graphics2D g) {
+		Rectangle bounds = getLayout().getInfoSectionBounds();
+		int scale = 1 + Math.min(Math.floorDiv(bounds.height, 300), 1);
+		int x = bounds.x;
+		int y = bounds.y - 3 * scale;
+		int width = bounds.width + 6 * scale;
+		int height = bounds.height + 6 * scale;
+		long itv = getCursorPulseIntervalTimeMillis();
+		int d = 5 + (int) Math.round(3 * Math.sin(2.0 * Math.PI * (System.currentTimeMillis() % itv) / itv));
+		AmstradSymbolRenderer sym = getSymbolRenderer();
+		sym.replaceGraphics2D(g);
+		sym.color(getTheme().getFocusColor());
+		sym.scale(scale);
+		sym.drawChr(212, x - d, y - d);
+		sym.drawChr(213, x + width - 8 * scale + d, y - d);
+		sym.drawChr(215, x - d, y + height - 8 * scale + d);
+		sym.drawChr(214, x + width - 8 * scale + d, y + height - 8 * scale + d);
 	}
 
 	@Override
@@ -194,7 +227,7 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	protected void handleKeyboardKeyInFocusOwner(KeyEvent e, Component focusOwner) {
 		super.handleKeyboardKeyInFocusOwner(e, focusOwner);
 		if (!e.isConsumed()) {
-			if (focusOwner.equals(getInfoComponent())) {
+			if (isInfoComponent(focusOwner)) {
 				InfoSection infoSection = getCurrentInfoSection();
 				if (infoSection != null) {
 					handleKeyboardKeyInInfo(e, infoSection);
@@ -254,7 +287,15 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	}
 
 	protected boolean isFocusOnInfo() {
-		return getInfoComponent() != null && getInfoComponent().equals(getFocusManager().getFocusOwner());
+		return isInfoComponent(getFocusManager().getFocusOwner());
+	}
+
+	private boolean isInfoComponent(Component comp) {
+		return getInfoComponent() != null && getInfoComponent().equals(comp);
+	}
+
+	private AmstradSymbolRenderer getSymbolRenderer() {
+		return symbolRenderer;
 	}
 
 	private SlidingTextLabel getHeadingComponent() {
@@ -342,7 +383,7 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 
 		@Override
 		public void notifyComponentGainedFocus(Component newFocusOwner) {
-			if (newFocusOwner.equals(getInfoComponent())) {
+			if (isInfoComponent(newFocusOwner)) {
 				updateInfoOutlineVisibility();
 			}
 		}
