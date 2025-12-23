@@ -62,20 +62,22 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	protected void renderFocusAtInfoComponent(Graphics2D g) {
 		Rectangle bounds = getLayout().getInfoSectionBounds();
 		int scale = 1 + Math.min(Math.floorDiv(bounds.height, 300), 1);
+		int amp = 2 + scale;
 		int x = bounds.x;
-		int y = bounds.y - 3 * scale;
-		int width = bounds.width + 6 * scale;
-		int height = bounds.height + 6 * scale;
+		int y = bounds.y - 3 * (scale - 1);
+		int width = bounds.width + 6 * (scale - 1);
+		int height = bounds.height + 6 * (scale - 1);
 		long itv = getCursorPulseIntervalTimeMillis();
-		int d = 5 + (int) Math.round(3 * Math.sin(2.0 * Math.PI * (System.currentTimeMillis() % itv) / itv));
+		int dsin = (int) Math.round(amp * Math.sin(2.0 * Math.PI * (System.currentTimeMillis() % itv) / itv));
+		int d = Math.min(10 * scale + amp, bounds.x + 3 * scale) - amp + dsin;
 		AmstradSymbolRenderer sym = getSymbolRenderer();
 		sym.replaceGraphics2D(g);
 		sym.color(getTheme().getFocusColor());
 		sym.scale(scale);
-		sym.drawChr(212, x - d, y - d);
-		sym.drawChr(213, x + width - 8 * scale + d, y - d);
-		sym.drawChr(215, x - d, y + height - 8 * scale + d);
-		sym.drawChr(214, x + width - 8 * scale + d, y + height - 8 * scale + d);
+		sym.drawChr(150, x - d, y - d);
+		sym.drawChr(156, x + width - 8 * scale + d, y - d);
+		sym.drawChr(147, x - d, y + height - 8 * scale + d);
+		sym.drawChr(153, x + width - 8 * scale + d, y + height - 8 * scale + d);
 	}
 
 	@Override
