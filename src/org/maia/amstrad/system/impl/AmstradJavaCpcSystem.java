@@ -12,8 +12,6 @@ import org.maia.amstrad.system.AmstradSystemSettings;
 
 public class AmstradJavaCpcSystem extends AmstradSystem {
 
-	public static final String NAME = "JAVACPC";
-
 	public static final AmstradSystemSettings SETTINGS = new JavaCpcSystemSettings();
 
 	public AmstradJavaCpcSystem() {
@@ -44,7 +42,7 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 
 	@Override
 	public String getName() {
-		return NAME;
+		return "JAVACPC";
 	}
 
 	private static class JavaCpcSystemSettings implements AmstradSystemSettings {

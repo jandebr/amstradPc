@@ -25,8 +25,6 @@ import org.maia.amstrad.system.impl.terminate.AmstradSystemAnimatedTermination;
 
 public class AmstradEntertainmentSystem extends AmstradSystem {
 
-	public static final String NAME = "ENTERTAINMENT";
-
 	public static final AmstradSystemSettings SETTINGS = new EntertainmentSystemSettings();
 
 	public AmstradEntertainmentSystem() {
@@ -83,7 +81,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 
 	@Override
 	public String getName() {
-		return NAME;
+		return "ENTERTAINMENT";
 	}
 
 	private abstract class EntertainmentPopupMenuMaker extends AmstradPopupMenuMaker {

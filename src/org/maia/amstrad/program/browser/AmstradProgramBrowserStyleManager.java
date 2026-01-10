@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.AmstradRunMode;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.ProgramBrowserAction;
 import org.maia.util.GenericListener;
@@ -76,20 +77,20 @@ public class AmstradProgramBrowserStyleManager {
 		return style;
 	}
 
-	private AmstradProgramBrowserStyle getDefaultStyle(String mode) {
+	private AmstradProgramBrowserStyle getDefaultStyle(AmstradRunMode mode) {
 		String styleName = getAmstradContext().getUserSettings().get(getDefaultStyleSetting(mode), null);
 		return getStyleForName(styleName);
 	}
 
-	private void setDefaultStyle(String mode, AmstradProgramBrowserStyle style) {
+	private void setDefaultStyle(AmstradRunMode mode, AmstradProgramBrowserStyle style) {
 		String styleName = style.getDisplayName().toLowerCase();
 		getAmstradContext().getUserSettings().set(getDefaultStyleSetting(mode), styleName);
 	}
 
-	private String getDefaultStyleSetting(String mode) {
+	private String getDefaultStyleSetting(AmstradRunMode mode) {
 		String setting = SETTING_PROGRAM_BROWSER_STYLE;
 		if (mode != null) {
-			setting += "." + mode.toLowerCase();
+			setting += "." + mode.name().toLowerCase();
 		}
 		return setting;
 	}
@@ -104,7 +105,7 @@ public class AmstradProgramBrowserStyleManager {
 		return null;
 	}
 
-	private String getCurrentMode() {
+	private AmstradRunMode getCurrentMode() {
 		return getAmstradContext().getMode();
 	}
 

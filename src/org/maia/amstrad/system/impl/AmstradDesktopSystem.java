@@ -24,8 +24,6 @@ import org.maia.amstrad.system.impl.screen.AmstradSystemUnknownScreen;
 
 public class AmstradDesktopSystem extends AmstradSystem {
 
-	public static final String NAME = "DESKTOP";
-
 	public static final AmstradSystemSettings SETTINGS = new DesktopSystemSettings();
 
 	public AmstradDesktopSystem() {
@@ -90,7 +88,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 
 	@Override
 	public String getName() {
-		return NAME;
+		return "DESKTOP";
 	}
 
 	private class DesktopMenuBarMaker extends AmstradMenuBarMaker {

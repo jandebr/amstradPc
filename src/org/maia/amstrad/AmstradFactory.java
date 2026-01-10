@@ -100,12 +100,12 @@ public class AmstradFactory {
 
 	public AmstradSystem createAmstradSystem() {
 		AmstradSystem system = null;
-		String systemName = getAmstradContext().getMode();
-		if (systemName.equalsIgnoreCase(AmstradDesktopSystem.NAME)) {
+		AmstradRunMode mode = getAmstradContext().getMode();
+		if (AmstradRunMode.DESKTOP.equals(mode)) {
 			system = new AmstradDesktopSystem();
-		} else if (systemName.equalsIgnoreCase(AmstradEntertainmentSystem.NAME)) {
+		} else if (AmstradRunMode.ENTERTAINMENT.equals(mode)) {
 			system = new AmstradEntertainmentSystem();
-		} else if (systemName.equalsIgnoreCase(AmstradJavaCpcSystem.NAME)) {
+		} else if (AmstradRunMode.JAVACPC.equals(mode)) {
 			system = new AmstradJavaCpcSystem();
 		} else {
 			// default (Desktop)

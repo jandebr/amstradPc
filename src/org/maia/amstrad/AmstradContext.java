@@ -71,8 +71,8 @@ public abstract class AmstradContext {
 	protected AmstradContext() {
 	}
 
-	public String getMode() {
-		return getUserSettings().get(SETTING_MODE, DEFAULT_MODE);
+	public AmstradRunMode getMode() {
+		return AmstradRunMode.valueOf(getUserSettings().get(SETTING_MODE, DEFAULT_MODE).toUpperCase());
 	}
 
 	public AmstradSystem setupAmstradSystem() {
