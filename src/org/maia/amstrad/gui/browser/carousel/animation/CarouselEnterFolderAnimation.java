@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 
-public class CarouselProgramAnimation extends CarouselItemAnimation {
+public class CarouselEnterFolderAnimation extends CarouselItemAnimation {
 
-	public CarouselProgramAnimation(CarouselProgramItem item, Rectangle itemBounds) {
+	public CarouselEnterFolderAnimation(CarouselFolderItem item, Rectangle itemBounds) {
 		super(item, itemBounds);
 	}
 
@@ -17,7 +17,7 @@ public class CarouselProgramAnimation extends CarouselItemAnimation {
 		if (elapsedTimeMillis % 200L < 100L) {
 			Rectangle bounds = getItemBounds();
 			if (bounds != null) {
-				g.setColor(Color.GREEN);
+				g.setColor(Color.RED);
 				g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 			}
 		}

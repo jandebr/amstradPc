@@ -25,7 +25,7 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselFolderAnimation((CarouselFolderItem) host.getCarouselItem(folderNode),
+		CarouselAnimation animation = new CarouselEnterFolderAnimation((CarouselFolderItem) host.getCarouselItem(folderNode),
 				host.getCarouselItemBounds(folderNode));
 		animation.setMinimumDelayMillis(400L); // delayed
 		animation.setMinimumDurationMillis(1000L);
@@ -33,7 +33,7 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselAnimation createAnimationToRunProgram(ProgramNode programNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselProgramAnimation(
+		CarouselAnimation animation = new CarouselRunProgramAnimation(
 				(CarouselProgramItem) host.getCarouselItem(programNode), host.getCarouselItemBounds(programNode));
 		animation.setMinimumDelayMillis(0L); // instant
 		animation.setMinimumDurationMillis(1000L);
@@ -43,7 +43,7 @@ public class CarouselAnimationFactory {
 	public CarouselAnimation createAnimationToHighlightNode(Node node, CarouselHost host) {
 		CarouselItem item = host.getCarouselItem(node);
 		Rectangle itemBounds = host.getCarouselItemBounds(node);
-		CarouselItemHighlightAnimation animation = new CarouselItemHighlightAnimation(item, itemBounds);
+		CarouselHighlightItemAnimation animation = new CarouselHighlightItemAnimation(item, itemBounds);
 		animation.setMinimumDelayMillis(0L); // instant, builtin random delay in animation
 		animation.setMinimumDurationMillis(1000000000L); // a very long time since animation repeats
 		animation.setHighlightMinimumDelayMillis(6000L); // 6s

@@ -8,7 +8,7 @@ import java.awt.Shape;
 
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 
-public class CarouselItemHighlightAnimation extends CarouselItemAnimation {
+public class CarouselHighlightItemAnimation extends CarouselItemAnimation {
 
 	private long highlightDurationMillis = 1000L; // 1s
 
@@ -24,7 +24,7 @@ public class CarouselItemHighlightAnimation extends CarouselItemAnimation {
 
 	private int highlightOverlayClipHeight;
 
-	public CarouselItemHighlightAnimation(CarouselItem item, Rectangle itemBounds) {
+	public CarouselHighlightItemAnimation(CarouselItem item, Rectangle itemBounds) {
 		super(item, itemBounds);
 	}
 
