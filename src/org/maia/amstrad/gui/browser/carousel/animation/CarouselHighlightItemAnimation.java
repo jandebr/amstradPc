@@ -29,8 +29,8 @@ public class CarouselHighlightItemAnimation extends CarouselItemAnimation {
 	}
 
 	@Override
-	public void init() {
-		super.init();
+	public void init(int displayWidth, int displayHeight) {
+		super.init(displayWidth, displayHeight);
 		if (getItem() != null) {
 			setHighlightOverlayImage(getItem().getHighlightOverlayImage());
 		}

@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -21,6 +22,7 @@ import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselStartupAction;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimationFactory;
+import org.maia.amstrad.gui.browser.carousel.animation.CarouselStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselEnterFolderHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselRunProgramHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
@@ -101,9 +103,9 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
-		startup();
 		setTheme(createTheme(graphicsContext));
 		setBackground(getTheme().getBackgroundColor());
+		startup();
 		super.init(displayComponent, graphicsContext); // invokes createLayoutManager() and buildUI()
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		setFocusManager(createFocusManager());
@@ -213,7 +215,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected void startup() {
-		CarouselAnimation animation = createAnimationToStartup();
+		CarouselStartupAnimation animation = createAnimationToStartup();
 		CarouselStartupAction action = new CarouselStartupAction(this, animation);
 		setStartupActionInProgress(action);
 		action.perform();
@@ -226,7 +228,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		action.perform();
 	}
 
-	protected CarouselAnimation createAnimationToStartup() {
+	protected CarouselStartupAnimation createAnimationToStartup() {
 		return CarouselAnimationFactory.getInstance().createAnimationToStartup(this);
 	}
 
@@ -251,6 +253,16 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	public void resumeBuildingUI() {
 		setComponentAdditionDeferred(false);
 		addDeferred();
+	}
+
+	@Override
+	public Color getDisplayBackgroundColor() {
+		return getBackground();
+	}
+
+	@Override
+	public void setDisplayBackgroundColor(Color color) {
+		setBackground(color);
 	}
 
 	protected void showCarouselOutline() {
@@ -301,7 +313,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private void renderAnimation(Graphics2D g, int width, int height, CarouselAction action) {
 		if (action != null) {
-			action.startAnimationWhenAppropriate();
+			action.startAnimationWhenAppropriate(width, height);
 			if (action.isAnimationStarted()) {
 				action.getAnimation().renderOntoDisplay(g, width, height, action.getAnimationElapsedTimeMillis());
 			}
@@ -509,6 +521,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	protected synchronized void enterFolderAsync(FolderNode folderNode, Node childNodeInFocus) {
+		clearItemHighlightActionInProgress(); // one animation at a time
 		CarouselAnimation animation = createAnimationToEnterFolder(folderNode);
 		CarouselEnterFolderAction action = new CarouselEnterFolderAction(this, folderNode, childNodeInFocus, animation);
 		setEnterFolderActionInProgress(action);
@@ -559,6 +572,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	public void runProgramAsync(ProgramNode programNode) {
+		clearItemHighlightActionInProgress(); // one animation at a time
 		CarouselAnimation animation = createAnimationToRunProgram(programNode);
 		CarouselRunProgramAction action = new CarouselRunProgramAction(this, programNode, animation);
 		setRunProgramActionInProgress(action);

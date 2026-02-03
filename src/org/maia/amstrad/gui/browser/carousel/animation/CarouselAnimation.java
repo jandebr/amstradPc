@@ -11,7 +11,7 @@ public abstract class CarouselAnimation {
 	protected CarouselAnimation() {
 	}
 
-	public void init() {
+	public void init(int displayWidth, int displayHeight) {
 		// Subclasses may extend
 	}
 

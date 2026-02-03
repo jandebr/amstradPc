@@ -17,16 +17,16 @@ public class CarouselAnimationFactory {
 	private CarouselAnimationFactory() {
 	}
 
-	public CarouselAnimation createAnimationToStartup(CarouselHost host) {
-		CarouselAnimation animation = new CarouselStartupAnimation();
+	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
+		CarouselStartupAnimation animation = new CarouselWavesStartupAnimation();
 		animation.setMinimumDelayMillis(0L); // instant
-		animation.setMinimumDurationMillis(300L); // TODO
+		animation.setMinimumDurationMillis(10000L);
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselEnterFolderAnimation((CarouselFolderItem) host.getCarouselItem(folderNode),
-				host.getCarouselItemBounds(folderNode));
+		CarouselAnimation animation = new CarouselEnterFolderAnimation(
+				(CarouselFolderItem) host.getCarouselItem(folderNode), host.getCarouselItemBounds(folderNode));
 		animation.setMinimumDelayMillis(400L); // delayed
 		animation.setMinimumDurationMillis(1000L);
 		return animation;
