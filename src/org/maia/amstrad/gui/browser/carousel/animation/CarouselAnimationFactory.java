@@ -18,14 +18,14 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
-		CarouselStartupAnimation animation = new CarouselWavesStartupAnimation();
+		CarouselPixelatedWavesAnimation animation = new CarouselPixelatedWavesAnimation();
 		animation.setMinimumDelayMillis(0L); // instant
-		animation.setMinimumDurationMillis(10000L);
+		animation.setMinimumDurationMillis(30000L);
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselEnterFolderAnimation(
+		CarouselEnterFolderAnimation animation = new CarouselEnterFolderAnimation(
 				(CarouselFolderItem) host.getCarouselItem(folderNode), host.getCarouselItemBounds(folderNode));
 		animation.setMinimumDelayMillis(400L); // delayed
 		animation.setMinimumDurationMillis(1000L);
@@ -33,7 +33,7 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselAnimation createAnimationToRunProgram(ProgramNode programNode, CarouselHost host) {
-		CarouselAnimation animation = new CarouselRunProgramAnimation(
+		CarouselRunProgramAnimation animation = new CarouselRunProgramAnimation(
 				(CarouselProgramItem) host.getCarouselItem(programNode), host.getCarouselItemBounds(programNode));
 		animation.setMinimumDelayMillis(0L); // instant
 		animation.setMinimumDurationMillis(1000L);

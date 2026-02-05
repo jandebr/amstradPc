@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 
-public abstract class CarouselItemAnimation extends CarouselAnimation {
+public abstract class CarouselItemAnimation extends CarouselBaseAnimation {
 
 	private CarouselItem item;
 
