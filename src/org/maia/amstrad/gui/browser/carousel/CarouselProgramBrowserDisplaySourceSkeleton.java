@@ -22,7 +22,7 @@ import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselStartupAction;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimationFactory;
-import org.maia.amstrad.gui.browser.carousel.animation.CarouselStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselEnterFolderHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselRunProgramHost;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
@@ -368,10 +368,12 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 				reset();
 				e.consume();
 			} else if (keyCode == KeyEvent.VK_F11 && getSystemSettings().isFullscreenToggleEnabled()) {
-				// Toggle fullscreen by re-init
-				close();
-				getAmstradPc().getMonitor().toggleFullscreen();
-				show();
+				if (!isStartupInProgress()) {
+					// Toggle fullscreen by re-init
+					close();
+					getAmstradPc().getMonitor().toggleFullscreen();
+					show();
+				}
 				e.consume();
 			} else if (keyCode == KeyEvent.VK_ESCAPE) {
 				changeFocusToCarousel();

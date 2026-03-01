@@ -2,7 +2,7 @@ package org.maia.amstrad.gui.browser.carousel.action;
 
 import java.awt.Color;
 
-import org.maia.amstrad.gui.browser.carousel.animation.CarouselStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselStartupHost;
 
 public class CarouselStartupAction extends CarouselAction {

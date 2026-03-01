@@ -2,10 +2,14 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 
 import java.awt.Rectangle;
 
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselTropicWavesAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
+import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -18,7 +22,8 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
-		CarouselPixelatedWavesAnimation animation = new CarouselPixelatedWavesAnimation();
+		AmstradMonitorMode monitorMode = host.getGraphicsContext().getMonitorMode();
+		CarouselPortholeStartupAnimation animation = new CarouselTropicWavesAnimation(monitorMode);
 		animation.setMinimumDelayMillis(0L); // instant
 		animation.setMinimumDurationMillis(30000L);
 		return animation;

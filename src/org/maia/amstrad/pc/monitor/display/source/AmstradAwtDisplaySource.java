@@ -38,6 +38,10 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 	@Override
 	public void dispose(JComponent displayComponent) {
 		super.dispose(displayComponent);
+		synchronized (getDeferredComponentAdditions()) {
+			getDeferredComponentAdditions().clear();
+			setComponentAdditionDeferred(false);
+		}
 		removeAll();
 		setLayout(null);
 		validate();
