@@ -46,13 +46,13 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 	protected void renderPixelatedWaveOverlay(Graphics2D g, int waveIndex, long elapsedTimeMillis) {
 		super.renderPixelatedWaveOverlay(g, waveIndex, elapsedTimeMillis);
 		if (waveIndex == orcaFinAboveWaveIndex) {
-			renderOrcaFin(g, elapsedTimeMillis);
+			renderOrcaFin(g, getOrcaFin(), elapsedTimeMillis);
 		}
 	}
 
-	protected void renderOrcaFin(Graphics2D g, long elapsedTimeMillis) {
-		getOrcaFin().update(elapsedTimeMillis);
-		getOrcaFin().draw(g);
+	protected void renderOrcaFin(Graphics2D g, OrcaFin orcaFin, long elapsedTimeMillis) {
+		orcaFin.update(elapsedTimeMillis);
+		orcaFin.draw(g);
 	}
 
 	private OrcaFin getOrcaFin() {
@@ -70,7 +70,7 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 		private PerpetualApproximatingFunction2D positionFunction;
 
 		public OrcaFin() {
-			super(getSpriteImageCatalog().getOrcaFinSmall(), createOrcaFinColors());
+			super(getSpriteImageCatalog().getOrcaFin(), createOrcaFinColors());
 			this.descendFunction = createDescendFunction();
 			this.positionFunction = createPositionFunction();
 		}

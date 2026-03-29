@@ -198,7 +198,7 @@ public abstract class CassetteCoverImageMaker extends RandomImageMaker {
 	}
 
 	protected float getGlossIntensity() {
-		return 0.3f + 0.2f * drawFloatUnitNumber();
+		return 0.1f + 0.4f * drawFloatUnitNumber();
 	}
 
 	protected int getMaxReflectionHeight(EmbeddedCassetteImage embeddedCassette) {

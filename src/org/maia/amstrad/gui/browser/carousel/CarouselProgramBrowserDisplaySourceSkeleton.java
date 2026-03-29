@@ -17,7 +17,7 @@ import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
 import org.maia.amstrad.gui.browser.carousel.CarouselCoverImageFactory.CassetteCoverImageFactory;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselEnterFolderAction;
-import org.maia.amstrad.gui.browser.carousel.action.CarouselItemHighlightAction;
+import org.maia.amstrad.gui.browser.carousel.action.CarouselHighlightItemAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselStartupAction;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselAnimation;
@@ -91,7 +91,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private CarouselRunProgramAction runProgramActionInProgress;
 
-	private CarouselItemHighlightAction itemHighlightActionInProgress;
+	private CarouselHighlightItemAction itemHighlightActionInProgress;
 
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
@@ -223,7 +223,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected void startHighlightingNode(Node node) {
 		CarouselAnimation animation = createAnimationToHighlightNode(node);
-		CarouselItemHighlightAction action = new CarouselItemHighlightAction(this, animation);
+		CarouselHighlightItemAction action = new CarouselHighlightItemAction(this, animation);
 		setItemHighlightActionInProgress(action);
 		action.perform();
 	}
@@ -847,11 +847,11 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		refreshCarouselUI();
 	}
 
-	private CarouselItemHighlightAction getItemHighlightActionInProgress() {
+	private CarouselHighlightItemAction getItemHighlightActionInProgress() {
 		return itemHighlightActionInProgress;
 	}
 
-	private void setItemHighlightActionInProgress(CarouselItemHighlightAction action) {
+	private void setItemHighlightActionInProgress(CarouselHighlightItemAction action) {
 		this.itemHighlightActionInProgress = action;
 	}
 

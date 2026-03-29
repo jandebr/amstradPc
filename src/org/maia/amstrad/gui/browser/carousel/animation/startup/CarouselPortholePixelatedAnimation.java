@@ -22,7 +22,7 @@ public abstract class CarouselPortholePixelatedAnimation extends CarouselPorthol
 	public void init(int displayWidth, int displayHeight) {
 		super.init(displayWidth, displayHeight);
 		setPixelSize(derivePixelSize());
-		getPanorama(); // create upfront
+		getPanorama(); // create upfront since it may involve pixelating images
 	}
 
 	protected int derivePixelSize() {

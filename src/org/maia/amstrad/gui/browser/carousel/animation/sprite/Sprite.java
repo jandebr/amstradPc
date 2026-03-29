@@ -25,6 +25,8 @@ public class Sprite {
 
 	private BufferedImage canvas;
 
+	private BufferedImage canvasRotated;
+
 	public Sprite(SpriteImage image, SpriteColorMap colorMap) {
 		this.image = image;
 		this.colorMap = colorMap;
@@ -33,18 +35,19 @@ public class Sprite {
 	public void changeImage(SpriteImage image) {
 		setImage(image);
 		setCanvas(null);
+		setCanvasRotated(null);
 	}
 
 	public void draw(Graphics2D g) {
-		if (getRotationDegrees() != 0) {
+		if (getRotationDegrees() != 0f) {
 			drawUsingCanvas(g);
 		} else {
 			Graphics2D g2 = (Graphics2D) g.create();
 			g2.translate(getX(), getY());
 			if (isMirroredX())
-				g2.translate(getWidth() - 1, 0);
+				g2.translate(getWidth(), 0);
 			if (isMirroredY())
-				g2.translate(0, getHeight() - 1);
+				g2.translate(0, getHeight());
 			g2.scale(getOrientationX(), getOrientationY());
 			getImage().draw(g2, getColorMap());
 			g2.dispose();
@@ -52,20 +55,43 @@ public class Sprite {
 	}
 
 	private void drawUsingCanvas(Graphics2D g) {
-		BufferedImage canvas = getCleanCanvas();
-		Graphics2D gc = canvas.createGraphics();
-		getImage().draw(gc, getColorMap());
-		gc.dispose();
+		BufferedImage canvasRotated = drawRotatedOnCanvas();
+		double s2 = canvasRotated.getWidth() / 2.0;
 		double w2 = getWidth() / 2.0;
 		double h2 = getHeight() / 2.0;
 		Graphics2D g2 = (Graphics2D) g.create();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-		g2.translate(getX() + w2 - 0.5, getY() + h2 - 0.5);
-		g2.rotate(Radians.degreesToRadians(getRotationDegrees()));
-		g2.scale(getOrientationX(), getOrientationY());
-		g2.translate(-w2, -h2);
-		g2.drawImage(canvas, 0, 0, null);
+		g2.translate(getX() + w2 - s2 - 0.5, getY() + h2 - s2 - 0.5);
+		g2.drawImage(canvasRotated, 0, 0, null);
 		g2.dispose();
+	}
+
+	private BufferedImage drawRotatedOnCanvas() {
+		BufferedImage canvasRotated = getCleanCanvasRotated();
+		Graphics2D gc = canvasRotated.createGraphics();
+		double s2 = canvasRotated.getWidth() / 2.0;
+		double w2 = getWidth() / 2.0;
+		double h2 = getHeight() / 2.0;
+		gc.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		gc.translate(s2, s2);
+		gc.rotate(Radians.degreesToRadians(getRotationDegrees()));
+		gc.scale(getOrientationX(), getOrientationY());
+		gc.translate(-w2, -h2);
+		gc.drawImage(drawOnCanvas(), 0, 0, null);
+		gc.dispose();
+		return canvasRotated;
+	}
+
+	private BufferedImage drawOnCanvas() {
+		BufferedImage canvas = getCanvas();
+		if (canvas == null) {
+			canvas = ImageUtils.createImage(getWidth(), getHeight());
+			Graphics2D gc = canvas.createGraphics();
+			getImage().draw(gc, getColorMap());
+			gc.dispose();
+			setCanvas(canvas);
+		}
+		return canvas;
 	}
 
 	public void flipX() {
@@ -162,11 +188,12 @@ public class Sprite {
 		return colorMap;
 	}
 
-	private BufferedImage getCleanCanvas() {
-		BufferedImage canvas = getCanvas();
+	private BufferedImage getCleanCanvasRotated() {
+		BufferedImage canvas = getCanvasRotated();
 		if (canvas == null) {
-			canvas = ImageUtils.createImage(getWidth(), getHeight());
-			setCanvas(canvas);
+			int size = 2 * (1 + (int) Math.ceil(Math.sqrt(getWidth() * getWidth() + getHeight() * getHeight())));
+			canvas = ImageUtils.createImage(size, size);
+			setCanvasRotated(canvas);
 		} else {
 			ImageUtils.makeFullyTransparent(canvas);
 		}
@@ -179,6 +206,14 @@ public class Sprite {
 
 	private void setCanvas(BufferedImage canvas) {
 		this.canvas = canvas;
+	}
+
+	private BufferedImage getCanvasRotated() {
+		return canvasRotated;
+	}
+
+	private void setCanvasRotated(BufferedImage canvasRotated) {
+		this.canvasRotated = canvasRotated;
 	}
 
 }

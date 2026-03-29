@@ -4,49 +4,36 @@ import java.awt.Graphics2D;
 
 public class SpriteImageCatalog {
 
-	private SpriteImage orcaFinSmall;
+	private SpriteImage orcaFin;
 
-	private SpriteImage sharkFinSmall;
-
-	private SpriteImage sharkFinLarge;
+	private SpriteImage dolphin;
 
 	public SpriteImageCatalog() {
 	}
 
-	public SpriteImage getOrcaFinSmall() {
-		if (orcaFinSmall == null) {
-			orcaFinSmall = new SpriteImageRLE(23, 16,
+	public SpriteImage getOrcaFin() {
+		if (orcaFin == null) {
+			orcaFin = new SpriteImageRLE(23, 16,
 					new int[] { -1, 12, 0, 3, -2, -1, 10, 0, 5, -2, -1, 9, 0, 6, -2, -1, 8, 0, 7, -2, -1, 7, 0, 9, -2,
 							-1, 6, 0, 10, -2, -1, 6, 0, 10, -2, -1, 5, 0, 11, -2, -1, 5, 0, 11, -2, -1, 4, 0, 12, -2,
 							-1, 4, 0, 12, -2, -1, 3, 0, 14, -2, -1, 3, 0, 15, -2, -1, 2, 0, 17, -2, -1, 2, 0, 19, -2, 0,
 							23 });
 		}
-		return orcaFinSmall;
+		return orcaFin;
 	}
 
-	public SpriteImage getSharkFinSmall() {
-		if (sharkFinSmall == null) {
-			sharkFinSmall = new SpriteImageRLE(23, 16,
-					new int[] { -1, 12, 0, 3, -2, -1, 10, 0, 5, -2, -1, 9, 0, 6, -2, -1, 8, 0, 7, -2, -1, 7, 0, 9, -2,
-							-1, 6, 0, 10, -2, -1, 6, 0, 9, -2, -1, 5, 0, 11, -2, -1, 5, 0, 10, -2, -1, 4, 0, 12, -2, -1,
-							4, 0, 12, -2, -1, 3, 0, 14, -2, -1, 3, 0, 15, -2, -1, 2, 0, 17, -2, -1, 2, 0, 19, -2, 0,
-							23 });
+	public SpriteImage getDolphin() {
+		if (dolphin == null) {
+			dolphin = new SpriteImageRLE(33, 23, new int[] { -1, 23, 0, 1, -2, -1, 22, 0, 3, -2, -1, 22, 0, 4, -2, -1,
+					23, 0, 4, -2, -1, 17, 0, 10, -2, -1, 14, 0, 14, -2, -1, 13, 0, 15, -2, -1, 12, 0, 16, -2, -1, 11, 0,
+					18, -2, -1, 1, 0, 3, -1, 6, 0, 20, -2, 0, 6, -1, 3, 0, 4, 1, 4, 0, 14, -2, -1, 1, 0, 6, -1, 1, 0, 3,
+					1, 9, 0, 12, -2, -1, 3, 0, 6, 1, 5, -1, 2, 1, 5, 0, 11, -2, -1, 3, 0, 5, 1, 3, -1, 7, 1, 3, 0, 12,
+					-2, -1, 3, 0, 4, 1, 2, -1, 8, 0, 16, -2, -1, 4, 0, 3, 1, 2, -1, 7, 0, 4, 1, 3, 0, 5, 2, 2, 0, 3, -2,
+					-1, 3, 0, 3, 1, 2, -1, 7, 0, 3, 1, 7, 0, 3, 2, 2, 0, 3, -2, -1, 3, 0, 3, 1, 2, -1, 8, 1, 2, -1, 4,
+					1, 4, 0, 6, -2, -1, 3, 0, 2, 1, 2, -1, 16, 1, 5, 0, 4, -2, -1, 3, 0, 2, 1, 1, -1, 19, 1, 4, 0, 4,
+					-2, -1, 2, 0, 3, -1, 22, 1, 3, 0, 3, -2, -1, 3, 0, 1, -1, 24, 1, 4, -2, -1, 30, 1, 2 });
 		}
-		return sharkFinSmall;
-	}
-
-	public SpriteImage getSharkFinLarge() {
-		if (sharkFinLarge == null) {
-			sharkFinLarge = new SpriteImageRLE(40, 32,
-					new int[] { -1, 21, 0, 3, -2, -1, 19, 0, 5, -2, -1, 17, 0, 8, -2, -1, 16, 0, 9, -2, -1, 15, 0, 10,
-							-2, -1, 14, 0, 10, -2, -1, 14, 0, 11, -2, -1, 13, 0, 12, -2, -1, 12, 0, 13, -2, -1, 11, 0,
-							14, -2, -1, 11, 0, 14, -2, -1, 10, 0, 15, -2, -1, 10, 0, 15, -2, -1, 9, 0, 16, -2, -1, 8, 0,
-							17, -2, -1, 8, 0, 16, -2, -1, 7, 0, 18, -2, -1, 7, 0, 19, -2, -1, 6, 0, 20, -2, -1, 6, 0,
-							21, -2, -1, 5, 0, 22, -2, -1, 5, 0, 23, -2, -1, 4, 0, 24, -2, -1, 4, 0, 25, -2, -1, 4, 0,
-							26, -2, -1, 3, 0, 27, -2, -1, 3, 0, 28, -2, -1, 3, 0, 29, -2, -1, 2, 0, 32, -2, -1, 2, 0,
-							35, -2, 0, 40, -2, 0, 40 });
-		}
-		return sharkFinLarge;
+		return dolphin;
 	}
 
 	private static class SpriteImageRLE implements SpriteImage {
@@ -79,7 +66,7 @@ public class SpriteImageCatalog {
 				if (ci >= 0) {
 					int len = data[di++];
 					g.setColor(colorMap.getColor(ci));
-					g.drawLine(x, y, x + len - 1, y);
+					g.fillRect(x, y, len, 1);
 					x += len;
 				} else if (ci == -1) {
 					x += data[di++];
