@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.browser.carousel.animation.sprite;
+package org.maia.amstrad.gui.sprite;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -9,6 +9,8 @@ public class SpriteColorMapImpl implements SpriteColorMap {
 	private Color defaultColor;
 
 	private Map<Integer, Color> map;
+
+	private int maxColorIndex = -1;
 
 	public SpriteColorMapImpl() {
 		this(Color.BLACK);
@@ -30,6 +32,7 @@ public class SpriteColorMapImpl implements SpriteColorMap {
 
 	public SpriteColorMapImpl setColor(int colorIndex, Color color) {
 		getMap().put(colorIndex, color);
+		setMaxColorIndex(Math.max(getMaxColorIndex(), colorIndex));
 		return this;
 	}
 
@@ -43,6 +46,15 @@ public class SpriteColorMapImpl implements SpriteColorMap {
 
 	private Map<Integer, Color> getMap() {
 		return map;
+	}
+
+	@Override
+	public int getMaxColorIndex() {
+		return maxColorIndex;
+	}
+
+	private void setMaxColorIndex(int colorIndex) {
+		this.maxColorIndex = colorIndex;
 	}
 
 }

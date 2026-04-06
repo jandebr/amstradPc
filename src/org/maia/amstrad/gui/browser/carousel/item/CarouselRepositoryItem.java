@@ -13,6 +13,7 @@ import org.maia.amstrad.gui.browser.carousel.action.CarouselRunProgramAction;
 import org.maia.amstrad.gui.covers.AmstradCoverImage;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
+import org.maia.util.SystemUtils;
 
 public abstract class CarouselRepositoryItem extends CarouselItem {
 

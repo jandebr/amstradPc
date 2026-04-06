@@ -3,9 +3,9 @@ package org.maia.amstrad.gui.browser.carousel.animation.startup;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.Sprite;
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.SpriteColorMap;
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.SpriteColorMapImpl;
+import org.maia.amstrad.gui.sprite.Sprite;
+import org.maia.amstrad.gui.sprite.SpriteColorMap;
+import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D.ControlValueGenerator;
@@ -27,24 +27,23 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 	}
 
 	protected SpriteColorMap createOrcaFinColors() {
-		SpriteColorMapImpl colors = new SpriteColorMapImpl();
-		colors.setColor(0, toMonitorColor(new Color(10, 10, 10)));
-		return colors;
+		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
+		colorMap.setColor(0, new Color(10, 10, 10));
+		return toMonitorColors(colorMap);
 	}
 
 	@Override
 	protected Panorama createPanorama() {
 		float bl = getWavesBaseline();
 		Landscape landscape = new Landscape(
-				toMonitorColors(loadPixelatedImage("animations/arctic-mountains800x150.png")), bl,
+				toMonitorColors(loadPixelatedImage("animations/waves/arctic-mountains800x150.png")), bl,
 				Math.max(bl - 0.2f, 0.1f));
 		return new Panorama(toMonitorColor(new Color(130, 167, 190)),
-				toMonitorColors(loadPixelatedImage("animations/arctic-sky8x150.png")), landscape);
+				toMonitorColors(loadPixelatedImage("animations/waves/arctic-sky8x150.png")), landscape);
 	}
 
 	@Override
 	protected void renderPixelatedWaveOverlay(Graphics2D g, int waveIndex, long elapsedTimeMillis) {
-		super.renderPixelatedWaveOverlay(g, waveIndex, elapsedTimeMillis);
 		if (waveIndex == orcaFinAboveWaveIndex) {
 			renderOrcaFin(g, getOrcaFin(), elapsedTimeMillis);
 		}

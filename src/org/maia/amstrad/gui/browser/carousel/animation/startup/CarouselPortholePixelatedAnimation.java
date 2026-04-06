@@ -3,7 +3,7 @@ package org.maia.amstrad.gui.browser.carousel.animation.startup;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.SpriteImageCatalog;
+import org.maia.amstrad.gui.sprite.SpriteImageCatalog;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.graphics2d.image.ImageUtils;
 
@@ -30,7 +30,7 @@ public abstract class CarouselPortholePixelatedAnimation extends CarouselPorthol
 	}
 
 	protected int getTargetPixelWidth() {
-		return 64;
+		return 96;
 	}
 
 	protected BufferedImage loadPixelatedImage(String resourceName) {

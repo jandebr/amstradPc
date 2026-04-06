@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.Sprite;
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.SpriteColorMap;
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.SpriteColorMapImpl;
+import org.maia.amstrad.gui.sprite.Sprite;
+import org.maia.amstrad.gui.sprite.SpriteColorMap;
+import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.graphics2d.function.Function2D;
 import org.maia.graphics2d.function.SigmoidFunction2D;
@@ -43,11 +43,11 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 	}
 
 	protected SpriteColorMap createDolphinColors(float brightness) {
-		SpriteColorMapImpl colors = new SpriteColorMapImpl();
-		colors.setColor(0, toMonitorColor(ColorUtils.adjustBrightness(new Color(16, 29, 51), brightness)));
-		colors.setColor(1, toMonitorColor(ColorUtils.adjustBrightness(new Color(127, 140, 161), brightness)));
-		colors.setColor(2, toMonitorColor(ColorUtils.adjustBrightness(new Color(1, 7, 18), brightness)));
-		return colors;
+		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
+		colorMap.setColor(0, ColorUtils.adjustBrightness(new Color(16, 29, 51), brightness));
+		colorMap.setColor(1, ColorUtils.adjustBrightness(new Color(127, 140, 161), brightness));
+		colorMap.setColor(2, ColorUtils.adjustBrightness(new Color(1, 7, 18), brightness));
+		return toMonitorColors(colorMap);
 	}
 
 	@Override
@@ -72,15 +72,14 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 	protected Panorama createPanorama() {
 		float bl = getWavesBaseline();
 		Landscape landscape = new Landscape(
-				toMonitorColors(loadPixelatedImage("animations/tropic-mountains645x120.png")), bl,
+				toMonitorColors(loadPixelatedImage("animations/waves/tropic-mountains645x120.png")), bl,
 				Math.max(bl - 0.2f, 0.1f));
 		return new Panorama(toMonitorColor(new Color(177, 195, 209)),
-				toMonitorColors(loadPixelatedImage("animations/tropic-sky8x150.png")), landscape);
+				toMonitorColors(loadPixelatedImage("animations/waves/tropic-sky8x150.png")), landscape);
 	}
 
 	@Override
 	protected void renderPixelatedWaveOverlay(Graphics2D g, int waveIndex, long elapsedTimeMillis) {
-		super.renderPixelatedWaveOverlay(g, waveIndex, elapsedTimeMillis);
 		Dolphin dolphin = getDolphins().get(waveIndex);
 		if (dolphin != null) {
 			renderDolphin(g, dolphin, elapsedTimeMillis);

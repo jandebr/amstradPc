@@ -3,9 +3,9 @@ package org.maia.amstrad.gui.browser.carousel.animation.startup;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.Sprite;
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.SpriteColorMap;
-import org.maia.amstrad.gui.browser.carousel.animation.sprite.SpriteColorMapImpl;
+import org.maia.amstrad.gui.sprite.Sprite;
+import org.maia.amstrad.gui.sprite.SpriteColorMap;
+import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 
 public class DolphinTestAnimation extends CarouselPortholePixelatedAnimation {
@@ -42,9 +42,9 @@ public class DolphinTestAnimation extends CarouselPortholePixelatedAnimation {
 
 	protected SpriteColorMap createDolphinColors() {
 		SpriteColorMapImpl colors = new SpriteColorMapImpl();
-		colors.setColor(0, toMonitorColor(new Color(16, 29, 51)));
-		colors.setColor(1, toMonitorColor(new Color(127, 140, 161)));
-		colors.setColor(2, toMonitorColor(new Color(1, 7, 18)));
+		colors.setColor(0, new Color(16, 29, 51));
+		colors.setColor(1, new Color(127, 140, 161));
+		colors.setColor(2, new Color(1, 7, 18));
 		return colors;
 	}
 

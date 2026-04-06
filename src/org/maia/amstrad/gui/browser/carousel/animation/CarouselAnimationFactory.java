@@ -2,9 +2,9 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 
 import java.awt.Rectangle;
 
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselNinjaFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselTropicWavesAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
@@ -23,8 +23,8 @@ public class CarouselAnimationFactory {
 
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
 		AmstradMonitorMode monitorMode = host.getGraphicsContext().getMonitorMode();
-		CarouselPortholeStartupAnimation animation = new CarouselTropicWavesAnimation(monitorMode);
-		animation.setMinimumDelayMillis(0L); // instant
+		CarouselPortholeStartupAnimation animation = new CarouselNinjaFightAnimation(monitorMode);
+		animation.setMinimumDelayMillis(200L);
 		animation.setMinimumDurationMillis(30000L);
 		return animation;
 	}
@@ -32,7 +32,7 @@ public class CarouselAnimationFactory {
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
 		CarouselEnterFolderAnimation animation = new CarouselEnterFolderAnimation(
 				(CarouselFolderItem) host.getCarouselItem(folderNode), host.getCarouselItemBounds(folderNode));
-		animation.setMinimumDelayMillis(400L); // delayed
+		animation.setMinimumDelayMillis(400L);
 		animation.setMinimumDurationMillis(1000L);
 		return animation;
 	}
@@ -40,7 +40,7 @@ public class CarouselAnimationFactory {
 	public CarouselAnimation createAnimationToRunProgram(ProgramNode programNode, CarouselHost host) {
 		CarouselRunProgramAnimation animation = new CarouselRunProgramAnimation(
 				(CarouselProgramItem) host.getCarouselItem(programNode), host.getCarouselItemBounds(programNode));
-		animation.setMinimumDelayMillis(0L); // instant
+		animation.setMinimumDelayMillis(0L);
 		animation.setMinimumDurationMillis(1000L);
 		return animation;
 	}

@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselBaseAnimation;
+import org.maia.amstrad.gui.sprite.SpriteColorMap;
+import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.graphics2d.function.Function2D;
@@ -47,25 +49,26 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 
 	@Override
 	public final void renderOntoDisplay(Graphics2D g, int displayWidth, int displayHeight, long elapsedTimeMillis) {
-		float alpha = Math.min((elapsedTimeMillis - 200L) / 1000f, 1f);
-		if (alpha > 0f) {
-			// center porthole in display
-			int portholeWidth = getPortholeWidth();
-			int portholeHeight = getPortholeHeight();
-			int x = (displayWidth - portholeWidth) / 2;
-			int y = (displayHeight - portholeHeight) / 2;
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.translate(x, y);
-			g2.setClip(new Ellipse2D.Float(0, 0, portholeWidth, portholeHeight));
-			renderInPorthole(g2, elapsedTimeMillis);
-			// fade in
+		// center porthole in display
+		int portholeWidth = getPortholeWidth();
+		int portholeHeight = getPortholeHeight();
+		int x = (displayWidth - portholeWidth) / 2;
+		int y = (displayHeight - portholeHeight) / 2;
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.translate(x, y);
+		g2.setClip(new Ellipse2D.Float(0, 0, portholeWidth, portholeHeight));
+		renderInPorthole(g2, elapsedTimeMillis);
+		// fade in
+		float alpha = Math.min(elapsedTimeMillis / 1000f, 1f);
+		alpha *= alpha;
+		if (alpha < 1f) {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f - alpha));
 			g2.setColor(getDisplayBackgroundColor());
 			g2.fillRect(0, 0, portholeWidth, portholeHeight);
 			g2.dispose();
-			// overlay porthole mask
-			g.drawImage(getPortholeMask(), x, y, portholeWidth, portholeHeight, null);
 		}
+		// overlay porthole mask
+		g.drawImage(getPortholeMask(), x, y, portholeWidth, portholeHeight, null);
 	}
 
 	protected void renderInPorthole(Graphics2D g, long elapsedTimeMillis) {
@@ -163,6 +166,17 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 			}
 			return recoloredImage;
 		}
+	}
+
+	protected SpriteColorMap toMonitorColors(SpriteColorMap colorMap) {
+		SpriteColorMapImpl recoloredColorMap = new SpriteColorMapImpl();
+		for (int i = 0; i <= colorMap.getMaxColorIndex(); i++) {
+			Color color = colorMap.getColor(i);
+			if (color != null) {
+				recoloredColorMap.setColor(i, toMonitorColor(color));
+			}
+		}
+		return recoloredColorMap;
 	}
 
 	protected Color toMonitorColor(Color color) {

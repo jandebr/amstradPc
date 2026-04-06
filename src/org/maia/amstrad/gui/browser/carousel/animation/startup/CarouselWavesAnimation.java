@@ -40,9 +40,7 @@ public abstract class CarouselWavesAnimation extends CarouselPortholePixelatedAn
 		getWavesComponent().getUI().paint(g);
 	}
 
-	protected void renderPixelatedWaveOverlay(Graphics2D g, int waveIndex, long elapsedTimeMillis) {
-		// Subclasses may extend
-	}
+	protected abstract void renderPixelatedWaveOverlay(Graphics2D g, int waveIndex, long elapsedTimeMillis);
 
 	protected WavesComponent createWavesComponent() {
 		PixelatedWavesComponent comp = new PixelatedWavesComponent(getPortholeSize(), null, getPixelSize(),
@@ -114,11 +112,6 @@ public abstract class CarouselWavesAnimation extends CarouselPortholePixelatedAn
 	protected int getWavePixelBottom(int waveIndex) {
 		Wave wave = getWavesComponent().getWave(waveIndex);
 		return (int) Math.floor((wave.getTranslationY() + wave.getAmplitude()) * getPortholeHeight() / getPixelSize());
-	}
-
-	@Override
-	protected int getTargetPixelWidth() {
-		return 96;
 	}
 
 	protected int getWaveCount() {
