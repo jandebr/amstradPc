@@ -36,10 +36,10 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 	protected Panorama createPanorama() {
 		float bl = getWavesBaseline();
 		Landscape landscape = new Landscape(
-				toMonitorColors(loadPixelatedImage("animations/waves/arctic-mountains800x150.png")), bl,
+				toMonitorColors(loadPixelatedImage("animations/waves/arctic-landscape-800x150.png")), bl,
 				Math.max(bl - 0.2f, 0.1f));
 		return new Panorama(toMonitorColor(new Color(130, 167, 190)),
-				toMonitorColors(loadPixelatedImage("animations/waves/arctic-sky8x150.png")), landscape);
+				toMonitorColors(loadPixelatedImage("animations/waves/arctic-sky-8x150.png")), landscape);
 	}
 
 	@Override

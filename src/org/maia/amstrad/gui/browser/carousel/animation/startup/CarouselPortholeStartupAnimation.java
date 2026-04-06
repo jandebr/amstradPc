@@ -121,9 +121,9 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 
 	protected BufferedImage createPortholeMask() {
 		if (getPortholeWidth() <= 400 && getPortholeHeight() <= 400) {
-			return toMonitorColors(UIResources.loadImage("animations/porthole-mask400.png"));
+			return toMonitorColors(UIResources.loadImage("animations/porthole-mask-400.png"));
 		} else {
-			return toMonitorColors(UIResources.loadImage("animations/porthole-mask800.png"));
+			return toMonitorColors(UIResources.loadImage("animations/porthole-mask-800.png"));
 		}
 	}
 

@@ -72,10 +72,10 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 	protected Panorama createPanorama() {
 		float bl = getWavesBaseline();
 		Landscape landscape = new Landscape(
-				toMonitorColors(loadPixelatedImage("animations/waves/tropic-mountains645x120.png")), bl,
+				toMonitorColors(loadPixelatedImage("animations/waves/tropic-landscape-645x120.png")), bl,
 				Math.max(bl - 0.2f, 0.1f));
 		return new Panorama(toMonitorColor(new Color(177, 195, 209)),
-				toMonitorColors(loadPixelatedImage("animations/waves/tropic-sky8x150.png")), landscape);
+				toMonitorColors(loadPixelatedImage("animations/waves/tropic-sky-8x150.png")), landscape);
 	}
 
 	@Override

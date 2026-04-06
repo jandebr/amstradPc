@@ -26,10 +26,10 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 
 	@Override
 	protected Panorama createPanorama() {
-		Landscape landscape = new Landscape(toMonitorColors(loadPixelatedImage("animations/ninja/ninja478x478.png")),
-				1.0f, 1.0f);
+		Landscape landscape = new Landscape(
+				toMonitorColors(loadPixelatedImage("animations/ninja/ninja-landscape-478x478.png")), 1.0f, 1.0f);
 		return new Panorama(toMonitorColor(new Color(197, 195, 198)),
-				toMonitorColors(loadPixelatedImage("animations/ninja/ninja-sky8x150.png")), landscape);
+				toMonitorColors(loadPixelatedImage("animations/ninja/ninja-sky-8x150.png")), landscape);
 	}
 
 }

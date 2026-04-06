@@ -26,8 +26,8 @@ public class CarouselDragonFlightAnimation extends CarouselPortholePixelatedAnim
 
 	@Override
 	protected Panorama createPanorama() {
-		Landscape landscape = new Landscape(toMonitorColors(loadPixelatedImage("animations/dragon/dragon-480x370.png")),
-				1.0f, 1.0f);
+		Landscape landscape = new Landscape(
+				toMonitorColors(loadPixelatedImage("animations/dragon/dragon-landscape-480x370.png")), 1.0f, 1.0f);
 		return new Panorama(Color.BLACK, null, landscape);
 	}
 
