@@ -3,6 +3,7 @@ package org.maia.amstrad.gui.sprite;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 import org.maia.graphics2d.geometry.Radians;
 import org.maia.graphics2d.image.ImageUtils;
@@ -27,30 +28,39 @@ public class Sprite {
 
 	private BufferedImage canvasRotated;
 
+	public Sprite(SpriteColorMap colorMap) {
+		this(null, colorMap);
+	}
+
 	public Sprite(SpriteImage image, SpriteColorMap colorMap) {
 		this.image = image;
 		this.colorMap = colorMap;
 	}
 
 	public void changeImage(SpriteImage image) {
-		setImage(image);
-		setCanvas(null);
-		setCanvasRotated(null);
+		SpriteImage oldImage = getImage();
+		if (!Objects.equals(image, oldImage)) {
+			setImage(image);
+			setCanvas(null);
+			setCanvasRotated(null);
+		}
 	}
 
 	public void draw(Graphics2D g) {
-		if (getRotationDegrees() != 0f) {
-			drawUsingCanvas(g);
-		} else {
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.translate(getX(), getY());
-			if (isMirroredX())
-				g2.translate(getWidth(), 0);
-			if (isMirroredY())
-				g2.translate(0, getHeight());
-			g2.scale(getOrientationX(), getOrientationY());
-			getImage().draw(g2, getColorMap());
-			g2.dispose();
+		if (getImage() != null) {
+			if (getRotationDegrees() != 0f) {
+				drawUsingCanvas(g);
+			} else {
+				Graphics2D g2 = (Graphics2D) g.create();
+				g2.translate(getX(), getY());
+				if (isMirroredX())
+					g2.translate(getWidth(), 0);
+				if (isMirroredY())
+					g2.translate(0, getHeight());
+				g2.scale(getOrientationX(), getOrientationY());
+				getImage().draw(g2, getColorMap());
+				g2.dispose();
+			}
 		}
 	}
 
@@ -129,11 +139,11 @@ public class Sprite {
 	}
 
 	public int getWidth() {
-		return getImage().getWidth();
+		return getImage() != null ? getImage().getWidth() : 0;
 	}
 
 	public int getHeight() {
-		return getImage().getHeight();
+		return getImage() != null ? getImage().getHeight() : 0;
 	}
 
 	public int getX() {

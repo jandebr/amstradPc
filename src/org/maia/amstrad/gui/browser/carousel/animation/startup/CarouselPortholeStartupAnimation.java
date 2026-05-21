@@ -260,7 +260,7 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 		return panorama;
 	}
 
-	protected static class Panorama {
+	public static class Panorama {
 
 		private Color baseColor;
 
@@ -296,7 +296,7 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 
 	}
 
-	protected static class Landscape {
+	public static class Landscape {
 
 		private BufferedImage image;
 

@@ -12,6 +12,13 @@ public class CarouselDragonFlightAnimation extends CarouselPortholePixelatedAnim
 	}
 
 	@Override
+	protected Panorama createPanorama() {
+		Landscape landscape = new Landscape(
+				toMonitorColors(loadPixelatedImage("animations/dragon/dragon-landscape-480x370.png")), 1.0f, 1.0f);
+		return new Panorama(Color.BLACK, null, landscape);
+	}
+
+	@Override
 	protected void renderInPorthole(Graphics2D g, long elapsedTimeMillis) {
 		super.renderInPorthole(g, elapsedTimeMillis);
 		Graphics2D g2 = (Graphics2D) g.create();
@@ -22,13 +29,6 @@ public class CarouselDragonFlightAnimation extends CarouselPortholePixelatedAnim
 
 	protected void renderDragon(Graphics2D g, long elapsedTimeMillis) {
 		// TODO
-	}
-
-	@Override
-	protected Panorama createPanorama() {
-		Landscape landscape = new Landscape(
-				toMonitorColors(loadPixelatedImage("animations/dragon/dragon-landscape-480x370.png")), 1.0f, 1.0f);
-		return new Panorama(Color.BLACK, null, landscape);
 	}
 
 	@Override

@@ -48,6 +48,11 @@ public class DolphinTestAnimation extends CarouselPortholePixelatedAnimation {
 		return colors;
 	}
 
+	@Override
+	protected int getTargetPixelWidth() {
+		return 64;
+	}
+
 	private Dolphin getDolphin() {
 		return dolphin;
 	}

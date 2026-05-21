@@ -52,7 +52,7 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 			AmstradGraphicsContext graphicsContext) {
 		int width = displayBounds.width;
 		int height = displayBounds.height;
-		Graphics2D g = (Graphics2D) display.create(displayBounds.x, displayBounds.y, width, height);
+		Graphics2D g = (Graphics2D) display.create(displayBounds.x, displayBounds.y, width + 1, height + 1);
 		paintBackground(g, width, height);
 		if (!getAmstradContext().isLowPerformance()) {
 			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);

@@ -282,9 +282,12 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		CarouselStartupAction startup = getStartupActionInProgress();
 		if (startup != null) {
 			renderAnimation(g, width, height, startup);
-			if (startup.isAnimationStarted()
-					&& startup.getAnimationElapsedTimeMillis() >= startup.getMinimumAnimationDurationMillis()
-					&& getEnterFolderActionInProgress() == null) {
+			if (startup.isAnimationStarted()) {
+				if (startup.getAnimationElapsedTimeMillis() >= startup.getMinimumAnimationDurationMillis()
+						&& getEnterFolderActionInProgress() == null) {
+					clearStartupActionInProgress();
+				}
+			} else if (getEnterFolderActionInProgress() == null) {
 				clearStartupActionInProgress();
 			}
 		} else {

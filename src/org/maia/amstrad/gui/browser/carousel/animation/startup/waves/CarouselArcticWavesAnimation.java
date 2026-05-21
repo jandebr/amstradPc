@@ -1,8 +1,11 @@
-package org.maia.amstrad.gui.browser.carousel.animation.startup;
+package org.maia.amstrad.gui.browser.carousel.animation.startup.waves;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation.Landscape;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation.Panorama;
 import org.maia.amstrad.gui.sprite.Sprite;
 import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;

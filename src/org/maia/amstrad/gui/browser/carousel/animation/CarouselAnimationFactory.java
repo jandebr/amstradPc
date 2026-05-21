@@ -2,9 +2,9 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 
 import java.awt.Rectangle;
 
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselNinjaFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.ninja.CarouselNinjaFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
@@ -24,8 +24,8 @@ public class CarouselAnimationFactory {
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
 		AmstradMonitorMode monitorMode = host.getGraphicsContext().getMonitorMode();
 		CarouselPortholeStartupAnimation animation = new CarouselNinjaFightAnimation(monitorMode);
-		animation.setMinimumDelayMillis(200L);
-		animation.setMinimumDurationMillis(30000L);
+		animation.setMinimumDelayMillis(0L); // TODO
+		animation.setMinimumDurationMillis(7000L);
 		return animation;
 	}
 

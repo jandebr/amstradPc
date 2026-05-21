@@ -1,10 +1,11 @@
-package org.maia.amstrad.gui.browser.carousel.animation.startup;
+package org.maia.amstrad.gui.browser.carousel.animation.startup.waves;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.List;
 import java.util.Vector;
 
+import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholePixelatedAnimation;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.swing.animate.wave.PixelatedWavesComponent;
 import org.maia.swing.animate.wave.Wave;
