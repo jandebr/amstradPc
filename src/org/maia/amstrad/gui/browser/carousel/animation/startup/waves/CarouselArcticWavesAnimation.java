@@ -3,17 +3,18 @@ package org.maia.amstrad.gui.browser.carousel.animation.startup.waves;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation.Landscape;
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation.Panorama;
 import org.maia.amstrad.gui.sprite.Sprite;
 import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
+import org.maia.amstrad.gui.sprite.SpriteImage;
+import org.maia.amstrad.gui.sprite.SpriteImageRLE;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D.ControlValueGenerator;
 
 public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
+
+	private SpriteImage orcaFinImage;
 
 	private OrcaFin orcaFin;
 
@@ -57,6 +58,17 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 		orcaFin.draw(g);
 	}
 
+	private SpriteImage getOrcaFinImage() {
+		if (orcaFinImage == null) {
+			orcaFinImage = new SpriteImageRLE(23, 16,
+					new int[] { -1, 12, 0, 3, -2, -1, 10, 0, 5, -2, -1, 9, 0, 6, -2, -1, 8, 0, 7, -2, -1, 7, 0, 9, -2,
+							-1, 6, 0, 10, -2, -1, 6, 0, 10, -2, -1, 5, 0, 11, -2, -1, 5, 0, 11, -2, -1, 4, 0, 12, -2,
+							-1, 4, 0, 12, -2, -1, 3, 0, 14, -2, -1, 3, 0, 15, -2, -1, 2, 0, 17, -2, -1, 2, 0, 19, -2, 0,
+							23 });
+		}
+		return orcaFinImage;
+	}
+
 	private OrcaFin getOrcaFin() {
 		return orcaFin;
 	}
@@ -72,7 +84,7 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 		private PerpetualApproximatingFunction2D positionFunction;
 
 		public OrcaFin() {
-			super(getSpriteImageCatalog().getOrcaFin(), createOrcaFinColors());
+			super(getOrcaFinImage(), createOrcaFinColors());
 			this.descendFunction = createDescendFunction();
 			this.positionFunction = createPositionFunction();
 		}

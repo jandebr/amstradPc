@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation.Landscape;
-import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation.Panorama;
 import org.maia.amstrad.gui.sprite.Sprite;
 import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
+import org.maia.amstrad.gui.sprite.SpriteImage;
+import org.maia.amstrad.gui.sprite.SpriteImageRLE;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.graphics2d.function.Function2D;
 import org.maia.graphics2d.function.SigmoidFunction2D;
@@ -23,6 +22,8 @@ import org.maia.swing.animate.wave.impl.AgitatedWaveDynamics.ValueRange;
 import org.maia.util.ColorUtils;
 
 public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
+
+	private SpriteImage dolphinImage;
 
 	private Map<Integer, Dolphin> dolphins = new HashMap<Integer, Dolphin>(); // indexed by wave index
 
@@ -141,6 +142,20 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		return 0.2;
 	}
 
+	private SpriteImage getDolphinImage() {
+		if (dolphinImage == null) {
+			dolphinImage = new SpriteImageRLE(33, 23, new int[] { -1, 23, 0, 1, -2, -1, 22, 0, 3, -2, -1, 22, 0, 4, -2,
+					-1, 23, 0, 4, -2, -1, 17, 0, 10, -2, -1, 14, 0, 14, -2, -1, 13, 0, 15, -2, -1, 12, 0, 16, -2, -1,
+					11, 0, 18, -2, -1, 1, 0, 3, -1, 6, 0, 20, -2, 0, 6, -1, 3, 0, 4, 1, 4, 0, 14, -2, -1, 1, 0, 6, -1,
+					1, 0, 3, 1, 9, 0, 12, -2, -1, 3, 0, 6, 1, 5, -1, 2, 1, 5, 0, 11, -2, -1, 3, 0, 5, 1, 3, -1, 7, 1, 3,
+					0, 12, -2, -1, 3, 0, 4, 1, 2, -1, 8, 0, 16, -2, -1, 4, 0, 3, 1, 2, -1, 7, 0, 4, 1, 3, 0, 5, 2, 2, 0,
+					3, -2, -1, 3, 0, 3, 1, 2, -1, 7, 0, 3, 1, 7, 0, 3, 2, 2, 0, 3, -2, -1, 3, 0, 3, 1, 2, -1, 8, 1, 2,
+					-1, 4, 1, 4, 0, 6, -2, -1, 3, 0, 2, 1, 2, -1, 16, 1, 5, 0, 4, -2, -1, 3, 0, 2, 1, 1, -1, 19, 1, 4,
+					0, 4, -2, -1, 2, 0, 3, -1, 22, 1, 3, 0, 3, -2, -1, 3, 0, 1, -1, 24, 1, 4, -2, -1, 30, 1, 2 });
+		}
+		return dolphinImage;
+	}
+
 	private Map<Integer, Dolphin> getDolphins() {
 		return dolphins;
 	}
@@ -166,7 +181,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		private boolean showing;
 
 		public Dolphin(int waveIndex, float velocity) {
-			super(getSpriteImageCatalog().getDolphin(), createDolphinColors(drawValue(dolphinBrightnessRange)));
+			super(getDolphinImage(), createDolphinColors(drawValue(dolphinBrightnessRange)));
 			this.waveIndex = waveIndex;
 			this.velocity = velocity;
 		}

@@ -3,9 +3,10 @@ package org.maia.amstrad.gui.browser.carousel.animation.startup.ninja;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.maia.amstrad.gui.sprite.SpriteImageCatalog;
+import org.maia.amstrad.gui.sprite.SpriteImage;
+import org.maia.amstrad.gui.sprite.SpriteImageRLE;
 
-public class NinjaAnimationCatalog {
+public class NinjaCatalog {
 
 	private Set<NinjaAnimation> inGameAnimations;
 
@@ -77,10 +78,33 @@ public class NinjaAnimationCatalog {
 
 	private NinjaPose spreadPunchPose;
 
-	private SpriteImageCatalog spriteImageCatalog;
+	private SpriteImage standardImage;
 
-	public NinjaAnimationCatalog(SpriteImageCatalog spriteImageCatalog) {
-		this.spriteImageCatalog = spriteImageCatalog;
+	private SpriteImage croucheMidwayImage;
+
+	private SpriteImage croucheImage;
+
+	private SpriteImage crouchePunchImage;
+
+	private SpriteImage punchImage;
+
+	private SpriteImage kickImage;
+
+	private SpriteImage punchKickImage;
+
+	private SpriteImage roll1Image;
+
+	private SpriteImage roll2Image;
+
+	private SpriteImage roll3Image;
+
+	private SpriteImage roll4Image;
+
+	private SpriteImage spreadImage;
+
+	private SpriteImage spreadPunchImage;
+
+	public NinjaCatalog() {
 	}
 
 	public Set<NinjaAnimation> getInGameAnimations() {
@@ -175,125 +199,323 @@ public class NinjaAnimationCatalog {
 
 	public NinjaPose getStandardPose() {
 		if (standardPose == null) {
-			standardPose = new NinjaPose(getSpriteImageCatalog().getNinja());
+			standardPose = new NinjaPose(getStandardImage());
 		}
 		return standardPose;
 	}
 
 	public NinjaPose getCroucheMidwayPose() {
 		if (croucheMidwayPose == null) {
-			croucheMidwayPose = new NinjaPose(getSpriteImageCatalog().getNinjaCroucheMidway());
+			croucheMidwayPose = new NinjaPose(getCroucheMidwayImage());
 		}
 		return croucheMidwayPose;
 	}
 
 	public NinjaPose getCrouchePose() {
 		if (crouchePose == null) {
-			crouchePose = new NinjaPose(getSpriteImageCatalog().getNinjaCrouche());
+			crouchePose = new NinjaPose(getCroucheImage());
 		}
 		return crouchePose;
 	}
 
 	public NinjaPose getCrouchePunchPose() {
 		if (crouchePunchPose == null) {
-			crouchePunchPose = new NinjaPose(getSpriteImageCatalog().getNinjaCrouchePunch());
+			crouchePunchPose = new NinjaPose(getCrouchePunchImage());
 		}
 		return crouchePunchPose;
 	}
 
 	public NinjaPose getPunchPose() {
 		if (punchPose == null) {
-			punchPose = new NinjaPose(getSpriteImageCatalog().getNinjaPunch());
+			punchPose = new NinjaPose(getPunchImage());
 		}
 		return punchPose;
 	}
 
 	public NinjaPose getKickPose() {
 		if (kickPose == null) {
-			kickPose = new NinjaPose(getSpriteImageCatalog().getNinjaKick());
+			kickPose = new NinjaPose(getKickImage());
 		}
 		return kickPose;
 	}
 
 	public NinjaPose getPunchKickPose() {
 		if (punchKickPose == null) {
-			punchKickPose = new NinjaPose(getSpriteImageCatalog().getNinjaPunchKick());
+			punchKickPose = new NinjaPose(getPunchKickImage());
 		}
 		return punchKickPose;
 	}
 
 	public NinjaPose getJumpMidwayPose() {
 		if (jumpMidwayPose == null) {
-			jumpMidwayPose = new NinjaPose(getSpriteImageCatalog().getNinjaCroucheMidway(), 0, 0, -3);
+			jumpMidwayPose = new NinjaPose(getCroucheMidwayImage(), 0, 0, -3);
 		}
 		return jumpMidwayPose;
 	}
 
 	public NinjaPose getJumpHighPose() {
 		if (jumpHighPose == null) {
-			jumpHighPose = new NinjaPose(getSpriteImageCatalog().getNinjaCrouche(), 0, 0, -6);
+			jumpHighPose = new NinjaPose(getCroucheImage(), 0, 0, -6);
 		}
 		return jumpHighPose;
 	}
 
 	public NinjaPose getJumpRoll1Pose() {
 		if (jumpRoll1Pose == null) {
-			jumpRoll1Pose = new NinjaPose(getSpriteImageCatalog().getNinjaRoll1(), 0, 0, -3);
+			jumpRoll1Pose = new NinjaPose(getRoll1Image(), 0, 0, -3);
 		}
 		return jumpRoll1Pose;
 	}
 
 	public NinjaPose getJumpRoll2Pose() {
 		if (jumpRoll2Pose == null) {
-			jumpRoll2Pose = new NinjaPose(getSpriteImageCatalog().getNinjaRoll2(), 0, 0, -9);
+			jumpRoll2Pose = new NinjaPose(getRoll2Image(), 0, 0, -9);
 		}
 		return jumpRoll2Pose;
 	}
 
 	public NinjaPose getJumpRoll3Pose() {
 		if (jumpRoll3Pose == null) {
-			jumpRoll3Pose = new NinjaPose(getSpriteImageCatalog().getNinjaRoll3(), 0, 0, -7);
+			jumpRoll3Pose = new NinjaPose(getRoll3Image(), 0, 0, -7);
 		}
 		return jumpRoll3Pose;
 	}
 
 	public NinjaPose getJumpRoll4Pose() {
 		if (jumpRoll4Pose == null) {
-			jumpRoll4Pose = new NinjaPose(getSpriteImageCatalog().getNinjaRoll4(), 0, 0, -1);
+			jumpRoll4Pose = new NinjaPose(getRoll4Image(), 0, 0, -1);
 		}
 		return jumpRoll4Pose;
 	}
 
 	public NinjaPose getBowPose() {
 		if (bowPose == null) {
-			bowPose = new NinjaPose(getSpriteImageCatalog().getNinjaRoll1(), 2, -10, 0);
+			bowPose = new NinjaPose(getRoll1Image(), 2, -10, 0);
 		}
 		return bowPose;
 	}
 
 	public NinjaPose getStepPose() {
 		if (stepPose == null) {
-			stepPose = new NinjaPose(getSpriteImageCatalog().getNinjaSpread());
+			stepPose = new NinjaPose(getSpreadImage());
 		}
 		return stepPose;
 	}
 
 	public NinjaPose getSpreadPose() {
 		if (spreadPose == null) {
-			spreadPose = new NinjaPose(getSpriteImageCatalog().getNinjaSpread());
+			spreadPose = new NinjaPose(getSpreadImage());
 		}
 		return spreadPose;
 	}
 
 	public NinjaPose getSpreadPunchPose() {
 		if (spreadPunchPose == null) {
-			spreadPunchPose = new NinjaPose(getSpriteImageCatalog().getNinjaSpreadPunch());
+			spreadPunchPose = new NinjaPose(getSpreadPunchImage());
 		}
 		return spreadPunchPose;
 	}
 
-	private SpriteImageCatalog getSpriteImageCatalog() {
-		return spriteImageCatalog;
+	public SpriteImage getStandardImage() {
+		if (standardImage == null) {
+			standardImage = new SpriteImageRLE(13, 30,
+					new int[] { -1, 3, 0, 4, -2, -1, 2, 0, 6, -2, -1, 2, 0, 6, -2, -1, 2, 0, 3, 1, 1, 2, 1, -1, 3, 0, 2,
+							-2, -1, 2, 0, 4, 1, 1, -1, 3, 0, 2, -2, -1, 3, 0, 5, -1, 3, 0, 1, -2, -1, 2, 0, 1, 1, 1, 0,
+							3, -1, 2, 0, 1, -1, 1, 0, 2, -2, -1, 2, 0, 2, 1, 2, -1, 2, 0, 1, -1, 2, 0, 2, -2, -1, 1, 0,
+							6, -1, 1, 0, 1, -1, 1, 0, 2, -2, -1, 1, 0, 1, 1, 2, 0, 4, -1, 2, 0, 2, -2, -1, 1, 0, 1, 1,
+							6, 0, 3, -2, -1, 2, 0, 1, 1, 4, 0, 3, -2, -1, 2, 0, 5, -2, -1, 2, 0, 5, -2, -1, 1, 0, 3, 3,
+							3, -2, -1, 1, 0, 1, 3, 3, 0, 2, -2, -1, 1, 3, 2, 0, 5, -2, -1, 1, 0, 3, 1, 2, 0, 3, -2, 0,
+							2, -1, 1, 1, 1, 0, 2, 1, 1, -1, 1, 0, 1, -2, 0, 1, -1, 2, 0, 4, -2, -1, 3, 0, 4, -2, -1, 3,
+							0, 4, -2, -1, 2, 0, 5, -2, -1, 2, 0, 5, -2, -1, 2, 0, 4, -2, -1, 3, 0, 3, -2, -1, 3, 0, 3,
+							-2, -1, 3, 0, 2, -2, -1, 3, 0, 3, -2, -1, 3, 0, 4 });
+		}
+		return standardImage;
+	}
+
+	public SpriteImage getCroucheMidwayImage() {
+		if (croucheMidwayImage == null) {
+			croucheMidwayImage = new SpriteImageRLE(13, 27,
+					new int[] { -1, 3, 0, 4, -2, -1, 2, 0, 6, -2, -1, 2, 0, 6, -2, -1, 2, 0, 3, 1, 1, 2, 1, -1, 3, 0, 2,
+							-2, -1, 2, 0, 4, 1, 1, -1, 3, 0, 2, -2, -1, 3, 0, 5, -1, 3, 0, 1, -2, -1, 2, 0, 1, 1, 1, 0,
+							3, -1, 2, 0, 1, -1, 1, 0, 2, -2, -1, 2, 0, 2, 1, 2, -1, 2, 0, 1, -1, 2, 0, 2, -2, -1, 1, 0,
+							6, -1, 1, 0, 1, -1, 1, 0, 2, -2, -1, 1, 0, 1, 1, 2, 0, 4, -1, 2, 0, 2, -2, -1, 1, 0, 1, 1,
+							6, 0, 3, -2, -1, 2, 0, 1, 1, 4, 0, 3, -2, -1, 2, 0, 5, -2, -1, 2, 0, 5, -2, -1, 1, 0, 3, 3,
+							3, -2, -1, 1, 0, 1, 3, 3, 0, 3, -2, -1, 1, 3, 2, 0, 2, 1, 2, 0, 2, -2, -1, 1, 0, 2, 1, 2, 0,
+							2, -2, 0, 2, -1, 1, 0, 6, -2, 0, 1, -1, 2, 0, 7, -2, -1, 3, 0, 8, -2, -1, 4, 0, 8, -2, -1,
+							8, 0, 4, -2, -1, 7, 0, 4, -2, -1, 4, 0, 1, -1, 1, 0, 4, -2, -1, 3, 0, 1, 1, 1, 0, 4, -2, -1,
+							1, 0, 5 });
+		}
+		return croucheMidwayImage;
+	}
+
+	public SpriteImage getCroucheImage() {
+		if (croucheImage == null) {
+			croucheImage = new SpriteImageRLE(13, 24,
+					new int[] { -1, 3, 0, 4, -2, -1, 2, 0, 6, -2, -1, 2, 0, 6, -2, -1, 2, 0, 3, 1, 1, 2, 1, -1, 3, 0, 2,
+							-2, -1, 2, 0, 4, 1, 1, -1, 3, 0, 2, -2, -1, 3, 0, 5, -1, 3, 0, 1, -2, -1, 2, 0, 1, 1, 1, 0,
+							3, -1, 2, 0, 1, -1, 1, 0, 2, -2, -1, 2, 0, 2, 1, 2, -1, 2, 0, 1, -1, 2, 0, 2, -2, -1, 1, 0,
+							6, -1, 1, 0, 1, -1, 1, 0, 2, -2, -1, 1, 0, 1, 1, 2, 0, 4, -1, 2, 0, 2, -2, -1, 1, 0, 1, 1,
+							6, 0, 3, -2, -1, 2, 0, 1, 1, 4, 0, 3, -2, -1, 2, 0, 5, -2, -1, 2, 0, 5, -2, -1, 1, 0, 3, 3,
+							3, 0, 1, -2, -1, 1, 0, 1, 3, 3, 1, 2, 0, 2, -2, -1, 1, 3, 2, 0, 1, 1, 1, 0, 2, -2, -1, 1, 0,
+							2, 1, 1, 0, 5, -2, 0, 2, -1, 1, 0, 7, -2, 0, 1, -1, 2, 0, 8, -2, -1, 4, 0, 7, -2, -1, 3, 0,
+							1, 1, 5, 0, 2, -2, -1, 2, 0, 1, 1, 1, 0, 7, -2, 0, 10 });
+		}
+		return croucheImage;
+	}
+
+	public SpriteImage getCrouchePunchImage() {
+		if (crouchePunchImage == null) {
+			crouchePunchImage = new SpriteImageRLE(17, 24,
+					new int[] { -1, 3, 0, 4, -2, -1, 2, 0, 6, -2, -1, 2, 0, 6, -2, -1, 2, 0, 3, 1, 1, 2, 1, -1, 3, 0, 1,
+							-2, -1, 2, 0, 4, 1, 1, -1, 3, 0, 1, -2, -1, 3, 0, 5, -1, 1, 0, 2, -2, -1, 2, 0, 1, 1, 1, 0,
+							3, -1, 2, 0, 1, -2, -1, 2, 0, 2, 1, 2, -1, 2, 0, 1, -2, -1, 1, 0, 6, 1, 2, 0, 7, -2, -1, 1,
+							0, 2, 1, 4, 0, 8, 1, 1, 0, 1, -2, -1, 1, 0, 2, 1, 4, 0, 2, -1, 6, 0, 2, -2, -1, 2, 0, 2, 1,
+							2, 0, 1, -2, -1, 2, 0, 5, -2, -1, 2, 0, 5, -2, -1, 1, 0, 3, 3, 3, 0, 1, -2, -1, 1, 0, 1, 3,
+							3, 1, 2, 0, 2, -2, -1, 1, 3, 2, 0, 1, 1, 1, 0, 2, -2, -1, 1, 0, 2, 1, 1, 0, 5, -2, 0, 2, -1,
+							1, 0, 7, -2, 0, 1, -1, 2, 0, 8, -2, -1, 4, 0, 7, -2, -1, 3, 0, 1, 1, 5, 0, 2, -2, -1, 2, 0,
+							1, 1, 1, 0, 7, -2, 0, 10 });
+		}
+		return crouchePunchImage;
+	}
+
+	public SpriteImage getPunchImage() {
+		if (punchImage == null) {
+			punchImage = new SpriteImageRLE(17, 30, new int[] { -1, 3, 0, 4, -2, -1, 2, 0, 6, -2, -1, 2, 0, 6, -2, -1,
+					2, 0, 3, 1, 1, 2, 1, -1, 3, 0, 1, -2, -1, 2, 0, 4, 1, 1, -1, 3, 0, 1, -2, -1, 3, 0, 5, -1, 1, 0, 2,
+					-2, -1, 2, 0, 1, 1, 1, 0, 3, -1, 2, 0, 1, -2, -1, 2, 0, 2, 1, 2, -1, 2, 0, 1, -2, -1, 1, 0, 6, 1, 2,
+					0, 7, -2, -1, 1, 0, 2, 1, 4, 0, 8, 1, 1, 0, 1, -2, -1, 1, 0, 2, 1, 4, 0, 2, -1, 6, 0, 2, -2, -1, 2,
+					0, 2, 1, 2, 0, 1, -2, -1, 2, 0, 5, -2, -1, 2, 0, 5, -2, -1, 1, 0, 3, 3, 3, -2, -1, 1, 0, 1, 3, 3, 0,
+					2, -2, -1, 1, 3, 2, 0, 5, -2, -1, 1, 0, 3, 1, 2, 0, 3, -2, 0, 2, -1, 1, 1, 1, 0, 2, 1, 1, -1, 1, 0,
+					1, -2, 0, 1, -1, 2, 0, 4, -2, -1, 3, 0, 4, -2, -1, 3, 0, 4, -2, -1, 2, 0, 5, -2, -1, 2, 0, 5, -2,
+					-1, 2, 0, 4, -2, -1, 3, 0, 3, -2, -1, 3, 0, 3, -2, -1, 3, 0, 2, -2, -1, 3, 0, 3, -2, -1, 3, 0, 4 });
+		}
+		return punchImage;
+	}
+
+	public SpriteImage getKickImage() {
+		if (kickImage == null) {
+			kickImage = new SpriteImageRLE(14, 30, new int[] { -1, 1, 0, 4, -2, 0, 6, -1, 1, 0, 2, -2, 0, 6, -1, 1, 0,
+					2, -2, 0, 3, 1, 1, 2, 1, -1, 3, 0, 2, -2, 0, 4, 1, 1, -1, 3, 0, 2, -2, -1, 1, 0, 5, -1, 2, 0, 2, -2,
+					-1, 1, 1, 1, 0, 3, -1, 3, 0, 2, -2, 0, 2, 1, 2, -1, 3, 0, 2, -2, 0, 5, -1, 1, 0, 3, -2, -1, 1, 0, 1,
+					1, 2, 0, 2, 1, 1, 0, 1, -2, -1, 1, 0, 1, 1, 5, -2, -1, 1, 0, 2, 1, 3, 0, 1, -1, 4, 0, 1, -2, -1, 1,
+					0, 6, -1, 4, 0, 2, -2, -1, 2, 0, 5, -1, 4, 0, 3, -2, -1, 2, 0, 1, 3, 4, -1, 2, 0, 5, -2, -1, 1, 3,
+					3, 0, 1, 1, 2, 0, 6, -2, -1, 1, 0, 2, 1, 2, 0, 5, -2, 0, 2, 1, 1, 0, 5, -2, -1, 2, 0, 6, -2, -1, 2,
+					0, 5, -2, -1, 2, 0, 4, -2, -1, 1, 0, 1, 1, 1, 0, 2, -2, -1, 1, 0, 2, 1, 2, -2, -1, 1, 0, 4, -2, -1,
+					1, 0, 4, -2, -1, 2, 0, 3, -2, -1, 2, 0, 2, -2, -1, 2, 0, 2, -2, -1, 2, 0, 3, -2, -1, 2, 0, 4 });
+		}
+		return kickImage;
+	}
+
+	public SpriteImage getPunchKickImage() {
+		if (punchKickImage == null) {
+			punchKickImage = new SpriteImageRLE(16, 30,
+					new int[] { -1, 1, 0, 4, -2, 0, 6, -2, 0, 6, -2, 0, 3, 1, 1, 2, 1, -1, 4, 0, 1, -2, 0, 4, 1, 1, -1,
+							4, 0, 1, -2, -1, 1, 0, 5, -1, 2, 0, 2, -2, -1, 1, 1, 1, 0, 3, -1, 3, 0, 1, -2, 0, 2, 1, 2,
+							-1, 3, 0, 1, -2, 0, 5, -1, 1, 1, 2, 0, 7, -2, -1, 1, 0, 1, 1, 3, 0, 9, 1, 1, 0, 1, -2, -1,
+							1, 0, 1, 1, 5, 0, 1, -1, 6, 0, 2, -2, -1, 1, 0, 2, 1, 2, 0, 2, -1, 4, 0, 1, -2, -1, 1, 0, 6,
+							-1, 4, 0, 2, -2, -1, 2, 0, 5, -1, 4, 0, 3, -2, -1, 2, 0, 1, 3, 4, -1, 2, 0, 5, -2, -1, 1, 3,
+							3, 0, 1, 1, 2, 0, 6, -2, -1, 1, 0, 2, 1, 2, 0, 5, -2, 0, 2, 1, 1, 0, 5, -2, -1, 2, 0, 6, -2,
+							-1, 2, 0, 5, -2, -1, 2, 0, 4, -2, -1, 1, 0, 1, 1, 1, 0, 2, -2, -1, 1, 0, 2, 1, 2, -2, -1, 1,
+							0, 4, -2, -1, 1, 0, 4, -2, -1, 2, 0, 3, -2, -1, 2, 0, 2, -2, -1, 2, 0, 2, -2, -1, 2, 0, 3,
+							-2, -1, 2, 0, 4 });
+		}
+		return punchKickImage;
+	}
+
+	public SpriteImage getRoll1Image() {
+		if (roll1Image == null) {
+			roll1Image = new SpriteImageRLE(21, 27,
+					new int[] { -1, 12, 0, 4, -2, -1, 11, 0, 6, -2, -1, 10, 0, 7, -2, -1, 10, 0, 3, 1, 1, 2, 1, 1, 1, 0,
+							1, -1, 2, 0, 2, -2, -1, 10, 0, 4, 1, 1, -1, 3, 0, 3, -2, -1, 11, 0, 5, -1, 1, 0, 2, -2, -1,
+							7, 0, 3, 1, 1, 0, 4, -1, 1, 0, 2, -2, -1, 6, 0, 2, 1, 2, 0, 1, 1, 2, -1, 2, 0, 3, -2, -1, 6,
+							0, 2, 1, 3, 0, 6, -2, -1, 5, 0, 4, 1, 4, 0, 3, -2, -1, 5, 0, 5, 1, 1, 0, 3, -2, -1, 3, 0, 1,
+							3, 2, 0, 5, -2, -1, 2, 0, 3, 3, 2, 0, 3, -2, -1, 1, 0, 5, 3, 3, -2, 0, 2, 1, 3, 0, 4, -2, 0,
+							1, -1, 1, 0, 3, 1, 1, 0, 2, -2, -1, 1, 0, 5, -1, 1, 0, 1, -2, -1, 1, 0, 5, -1, 1, 0, 1, -2,
+							0, 6, -2, -1, 1, 0, 4, -2, 0, 4, -2, 0, 3, -2, 0, 3, -2, -1, 1, 0, 2, -2, -1, 1, 0, 2, -2,
+							-1, 1, 0, 3, -2, -1, 1, 0, 4 });
+		}
+		return roll1Image;
+	}
+
+	public SpriteImage getRoll2Image() {
+		if (roll2Image == null) {
+			roll2Image = new SpriteImageRLE(24, 21,
+					new int[] { -1, 9, 0, 3, -1, 1, 0, 1, -1, 2, 0, 1, -2, -1, 6, 0, 9, -1, 1, 0, 2, -2, -1, 4, 0, 11,
+							-1, 2, 0, 1, -2, -1, 3, 0, 12, 1, 1, 0, 3, -2, -1, 2, 0, 6, -1, 1, 0, 5, 1, 1, 0, 4, -2, -1,
+							2, 0, 3, -1, 5, 0, 2, 1, 2, 0, 3, 3, 2, -2, -1, 1, 0, 3, -1, 8, 0, 4, 3, 2, 0, 2, -2, -1, 1,
+							0, 2, -1, 8, 0, 2, -1, 1, 3, 3, 0, 4, -2, 0, 4, -1, 11, 0, 7, -2, -1, 1, 0, 3, -1, 11, 0, 2,
+							1, 3, 0, 3, -2, -1, 3, 0, 2, -1, 10, 0, 1, 1, 6, 0, 2, -2, -1, 14, 0, 3, 1, 1, 0, 1, 1, 3,
+							0, 2, -2, -1, 14, 0, 2, -1, 1, 0, 7, -2, -1, 14, 0, 1, -1, 2, 0, 1, 1, 3, 0, 2, -2, -1, 14,
+							0, 1, -1, 3, 0, 3, -2, -1, 14, 0, 2, -1, 1, 0, 5, -2, -1, 15, 0, 1, -1, 2, 1, 1, 0, 4, -2,
+							-1, 15, 0, 1, -1, 2, 2, 1, 1, 1, 0, 3, -2, -1, 14, 0, 2, -1, 1, 0, 6, -2, -1, 14, 0, 2, -1,
+							1, 0, 6, -2, -1, 18, 0, 4 });
+		}
+		return roll2Image;
+	}
+
+	public SpriteImage getRoll3Image() {
+		if (roll3Image == null) {
+			roll3Image = new SpriteImageRLE(24, 23,
+					new int[] { -1, 8, 0, 2, -2, -1, 8, 0, 2, -2, -1, 8, 0, 1, -2, -1, 1, 0, 4, -1, 2, 0, 2, -2, -1, 1,
+							0, 5, -1, 1, 0, 2, -2, 0, 4, 1, 1, -1, 2, 0, 2, -2, 0, 3, 1, 1, 2, 1, -1, 1, 0, 1, -1, 1, 0,
+							1, -2, 0, 7, -1, 1, 0, 1, -2, -1, 1, 0, 6, -1, 1, 0, 2, -1, 10, 0, 2, -2, -1, 2, 0, 4, -1,
+							2, 0, 2, -1, 11, 0, 2, -2, -1, 1, 0, 1, 1, 3, -1, 2, 0, 3, -1, 11, 0, 2, -2, 0, 7, 1, 1, 0,
+							2, -1, 11, 0, 3, -2, 0, 3, 1, 3, 0, 2, 1, 2, -1, 10, 0, 4, -2, -1, 1, 0, 2, 1, 6, 0, 1, -1,
+							4, 0, 1, -1, 4, 0, 3, -2, -1, 1, 0, 3, 1, 4, 0, 4, -1, 1, 0, 2, -1, 2, 0, 5, -2, -1, 2, 0,
+							10, 3, 1, 0, 1, -1, 2, 0, 5, -2, -1, 3, 0, 8, 3, 2, 1, 1, 0, 6, -2, -1, 5, 0, 6, 3, 1, 0, 1,
+							1, 1, 0, 5, -2, -1, 6, 0, 5, 3, 1, 0, 1, 1, 1, 0, 4, -2, -1, 9, 0, 2, 3, 1, 0, 1, 1, 1, 0,
+							3, -2, -1, 12, 0, 2, 1, 1, 0, 1, -2, -1, 13, 0, 2, -2, -1, 14, 0, 1 });
+		}
+		return roll3Image;
+	}
+
+	public SpriteImage getRoll4Image() {
+		if (roll4Image == null) {
+			roll4Image = new SpriteImageRLE(18, 29,
+					new int[] { -1, 2, 0, 4, -2, -1, 2, 0, 5, -1, 4, 0, 2, -2, -1, 1, 0, 4, 1, 1, -1, 5, 0, 2, -2, -1,
+							1, 0, 3, 1, 1, 2, 1, -1, 1, 0, 1, -1, 3, 0, 1, -2, -1, 1, 0, 7, -1, 3, 0, 1, -2, -1, 2, 0,
+							6, -1, 2, 0, 2, -2, -1, 3, 0, 4, -1, 3, 0, 2, -2, -1, 1, 0, 2, 1, 3, -1, 4, 0, 2, -2, 0, 7,
+							-1, 3, 0, 1, -2, 0, 2, 1, 3, 0, 3, -1, 2, 0, 1, -2, 0, 2, 1, 6, 0, 3, -2, -1, 1, 0, 2, 1, 5,
+							0, 3, -2, -1, 2, 0, 6, 1, 1, 0, 1, -2, -1, 2, 0, 6, -2, -1, 3, 0, 6, -2, -1, 3, 0, 1, 3, 4,
+							0, 1, -2, -1, 3, 3, 2, 0, 2, 3, 3, -2, -1, 3, 3, 1, 0, 7, -2, -1, 3, 0, 2, 1, 1, 0, 1, 1, 2,
+							-1, 1, 0, 1, -2, -1, 2, 0, 2, 1, 1, 0, 1, 1, 1, 0, 2, -2, -1, 2, 0, 1, -1, 1, 0, 5, -2, -1,
+							4, 0, 6, -2, -1, 5, 0, 6, -2, -1, 6, 0, 6, -2, -1, 8, 0, 5, -1, 4, 0, 1, -2, -1, 10, 0, 4,
+							-1, 2, 0, 2, -2, -1, 12, 0, 6, -2, -1, 14, 0, 3, -2, -1, 15, 0, 1 });
+		}
+		return roll4Image;
+	}
+
+	public SpriteImage getSpreadImage() {
+		if (spreadImage == null) {
+			spreadImage = new SpriteImageRLE(14, 30, new int[] { -1, 4, 0, 4, -2, -1, 3, 0, 6, -2, -1, 3, 0, 6, -2, -1,
+					3, 0, 3, 1, 1, 2, 1, -1, 3, 0, 2, -2, -1, 3, 0, 4, 1, 1, -1, 3, 0, 2, -2, -1, 4, 0, 5, -1, 3, 0, 1,
+					-2, -1, 3, 0, 1, 1, 1, 0, 3, -1, 2, 0, 1, -1, 1, 0, 2, -2, -1, 3, 0, 2, 1, 2, -1, 2, 0, 1, -1, 2, 0,
+					2, -2, -1, 2, 0, 6, -1, 1, 0, 1, -1, 1, 0, 2, -2, -1, 2, 0, 1, 1, 2, 0, 4, -1, 2, 0, 2, -2, -1, 2,
+					0, 1, 1, 6, 0, 3, -2, -1, 3, 0, 1, 1, 4, 0, 3, -2, -1, 3, 0, 5, -2, -1, 3, 0, 5, -2, -1, 2, 0, 3, 3,
+					3, -2, -1, 2, 0, 1, 3, 3, 0, 2, -2, -1, 2, 3, 2, 0, 5, -2, -1, 2, 0, 4, 1, 2, 0, 2, -2, -1, 1, 0, 2,
+					1, 1, 0, 1, 1, 1, 0, 2, 1, 1, 0, 1, -2, -1, 1, 0, 1, -1, 1, 0, 1, 1, 1, 0, 4, -2, -1, 3, 0, 1, 1, 1,
+					0, 5, -2, -1, 2, 0, 3, 1, 1, 0, 4, -2, -1, 2, 0, 3, -1, 1, 0, 4, -2, -1, 2, 0, 3, -1, 2, 0, 4, -2,
+					-1, 2, 0, 2, -1, 4, 0, 3, -2, -1, 1, 0, 3, -1, 5, 0, 2, -2, -1, 1, 0, 2, -1, 6, 0, 2, -2, 0, 2, -1,
+					7, 0, 2, -2, 0, 3, -1, 6, 0, 3, -2, -1, 1, 0, 3, -1, 5, 0, 4 });
+		}
+		return spreadImage;
+	}
+
+	public SpriteImage getSpreadPunchImage() {
+		if (spreadPunchImage == null) {
+			spreadPunchImage = new SpriteImageRLE(18, 30,
+					new int[] { -1, 4, 0, 4, -2, -1, 3, 0, 6, -2, -1, 3, 0, 6, -2, -1, 3, 0, 3, 1, 1, 2, 1, -1, 3, 0, 1,
+							-2, -1, 3, 0, 4, 1, 1, -1, 3, 0, 1, -2, -1, 4, 0, 5, -1, 1, 0, 2, -2, -1, 3, 0, 1, 1, 1, 0,
+							3, -1, 2, 0, 1, -2, -1, 3, 0, 2, 1, 2, -1, 2, 0, 1, -2, -1, 2, 0, 6, 1, 2, 0, 7, -2, -1, 2,
+							0, 2, 1, 4, 0, 8, 1, 1, 0, 1, -2, -1, 2, 0, 2, 1, 4, 0, 2, -1, 6, 0, 2, -2, -1, 3, 0, 2, 1,
+							2, 0, 1, -2, -1, 3, 0, 5, -2, -1, 3, 0, 5, -2, -1, 2, 0, 3, 3, 3, -2, -1, 2, 0, 1, 3, 3, 0,
+							2, -2, -1, 2, 3, 2, 0, 5, -2, -1, 2, 0, 4, 1, 2, 0, 2, -2, -1, 1, 0, 2, 1, 1, 0, 1, 1, 1, 0,
+							2, 1, 1, 0, 1, -2, -1, 1, 0, 1, -1, 1, 0, 1, 1, 1, 0, 4, -2, -1, 3, 0, 1, 1, 1, 0, 5, -2,
+							-1, 2, 0, 3, 1, 1, 0, 4, -2, -1, 2, 0, 3, -1, 1, 0, 4, -2, -1, 2, 0, 3, -1, 2, 0, 4, -2, -1,
+							2, 0, 2, -1, 4, 0, 3, -2, -1, 1, 0, 3, -1, 5, 0, 2, -2, -1, 1, 0, 2, -1, 6, 0, 2, -2, 0, 2,
+							-1, 7, 0, 2, -2, 0, 3, -1, 6, 0, 3, -2, -1, 1, 0, 3, -1, 5, 0, 4 });
+		}
+		return spreadPunchImage;
 	}
 
 	private class FreezeAnimation extends NinjaAnimation {

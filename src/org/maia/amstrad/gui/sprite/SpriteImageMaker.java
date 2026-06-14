@@ -14,7 +14,7 @@ public class SpriteImageMaker {
 	}
 
 	private static void makeImageEncodedAsRLE() {
-		BufferedImage image = UIResources.loadImage("animations/ninja/ninja-spread-punch_18x30.png");
+		BufferedImage image = UIResources.loadImage("animations/dragon/dragon-emblem_8x16.png");
 		EncoderRLE encoder = new EncoderRLE(initSpriteColorMap());
 		encoder.encode(image).print(System.out);
 	}
@@ -22,9 +22,6 @@ public class SpriteImageMaker {
 	private static SpriteColorMapImpl initSpriteColorMap() {
 		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
 		colorMap.setColor(0, new Color(0, 0, 0));
-		colorMap.setColor(1, new Color(80, 80, 80));
-		colorMap.setColor(2, new Color(234, 240, 251));
-		colorMap.setColor(3, new Color(241, 241, 223));
 		return colorMap;
 	}
 

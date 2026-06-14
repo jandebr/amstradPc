@@ -4,6 +4,8 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
@@ -75,7 +77,7 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 		renderPanorama(g);
 	}
 
-	private void renderPanorama(Graphics2D g) {
+	protected void renderPanorama(Graphics2D g) {
 		int pw = getPortholeWidth();
 		int ph = getPortholeHeight();
 		Panorama panorama = getPanorama();
@@ -89,7 +91,6 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 				g.drawImage(sky, 0, 0, pw, ph, null);
 			}
 		} else {
-			BufferedImage landscapeImg = landscape.getImage();
 			int y1 = Math.round(landscape.getBaseline() * ph);
 			int y0 = y1 - Math.round(landscape.getHeight() * ph) + 1;
 			if (sky == null) {
@@ -98,6 +99,19 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 				g.drawImage(sky, 0, 0, pw, y1 + 1, null);
 				g.fillRect(0, y1 + 1, pw, ph - y1 - 1);
 			}
+			Rectangle r = getLandscapeViewRegion();
+			g.drawImage(landscape.getImage(), r.x, r.y, r.width, r.height, null);
+		}
+	}
+
+	protected Rectangle getLandscapeViewRegion() {
+		Landscape landscape = getPanorama().getLandscape();
+		if (landscape != null) {
+			BufferedImage landscapeImg = landscape.getImage();
+			int pw = getPortholeWidth();
+			int ph = getPortholeHeight();
+			int y1 = Math.round(landscape.getBaseline() * ph);
+			int y0 = y1 - Math.round(landscape.getHeight() * ph) + 1;
 			int lanH = (y1 - y0 + 1);
 			int lanW = Math.round(lanH / (float) landscapeImg.getHeight() * landscapeImg.getWidth());
 			if (lanW > pw) {
@@ -106,10 +120,37 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 					lanOffset = getRandomizer().drawIntegerNumber(0, lanW - pw);
 					landscape.setHorizontalOffset(lanOffset);
 				}
-				g.drawImage(landscapeImg, -lanOffset, y0, lanW, lanH, null);
+				return new Rectangle(-lanOffset, y0, lanW, lanH);
 			} else {
-				g.drawImage(landscapeImg, 0, y0, pw, lanH, null);
+				return new Rectangle(0, y0, pw, lanH);
 			}
+		} else {
+			return null;
+		}
+	}
+
+	protected Point projectLandscapeCoordinateToView(Point coord) {
+		Rectangle r = getLandscapeViewRegion();
+		if (r != null) {
+			BufferedImage landscapeImg = getPanorama().getLandscape().getImage();
+			float rx = coord.x / (float) (ImageUtils.getWidth(landscapeImg) - 1);
+			float ry = coord.y / (float) (ImageUtils.getHeight(landscapeImg) - 1);
+			int vx = Math.round(r.x + rx * (r.width - 1));
+			int vy = Math.round(r.y + ry * (r.height - 1));
+			return new Point(vx, vy);
+		} else {
+			return null;
+		}
+	}
+
+	protected Rectangle projectLandscapeRegionToView(Rectangle region) {
+		Point p1 = projectLandscapeCoordinateToView(region.getLocation());
+		Point p2 = projectLandscapeCoordinateToView(
+				new Point(region.x + region.width - 1, region.y + region.height - 1));
+		if (p1 != null && p2 != null) {
+			return new Rectangle(p1.x, p1.y, p2.x - p1.x + 1, p2.y - p1.y + 1);
+		} else {
+			return null;
 		}
 	}
 

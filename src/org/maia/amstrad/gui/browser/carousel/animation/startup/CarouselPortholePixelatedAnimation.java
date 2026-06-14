@@ -1,9 +1,9 @@
 package org.maia.amstrad.gui.browser.carousel.animation.startup;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.gui.sprite.SpriteImageCatalog;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.graphics2d.image.ImageUtils;
 
@@ -11,11 +11,8 @@ public abstract class CarouselPortholePixelatedAnimation extends CarouselPorthol
 
 	private int pixelSize;
 
-	private SpriteImageCatalog spriteImageCatalog;
-
 	protected CarouselPortholePixelatedAnimation(AmstradMonitorMode monitorMode) {
 		super(monitorMode);
-		this.spriteImageCatalog = new SpriteImageCatalog();
 	}
 
 	@Override
@@ -41,6 +38,17 @@ public abstract class CarouselPortholePixelatedAnimation extends CarouselPorthol
 		return ImageUtils.pixelate(image, getPixelSize());
 	}
 
+	@Override
+	protected Point projectLandscapeCoordinateToView(Point coord) {
+		int ps = getPixelSize();
+		Point p = super.projectLandscapeCoordinateToView(coord);
+		if (p != null && ps != 1) {
+			return new Point(p.x / ps, p.y / ps);
+		} else {
+			return p;
+		}
+	}
+
 	protected int getPortholePixelWidth() {
 		return Math.round(getPortholeWidth() / (float) getPixelSize());
 	}
@@ -55,10 +63,6 @@ public abstract class CarouselPortholePixelatedAnimation extends CarouselPorthol
 
 	private void setPixelSize(int pixelSize) {
 		this.pixelSize = pixelSize;
-	}
-
-	protected SpriteImageCatalog getSpriteImageCatalog() {
-		return spriteImageCatalog;
 	}
 
 }

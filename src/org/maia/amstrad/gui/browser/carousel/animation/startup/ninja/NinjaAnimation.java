@@ -14,7 +14,7 @@ public abstract class NinjaAnimation extends SpriteAnimation {
 	}
 
 	@Override
-	public final void animate(AnimatedSprite sprite, float unitTime) {
+	public final void animate(AnimatedSprite sprite, float unitTime, long animationDurationMillis) {
 		animateNinja((Ninja) sprite, unitTime);
 	}
 

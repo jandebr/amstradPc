@@ -1,6 +1,7 @@
 package org.maia.amstrad.gui.sprite.animation;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.List;
 import java.util.Vector;
 
@@ -104,7 +105,7 @@ public class AnimatedSprite {
 		appendAnimation(new SpriteAnimation() {
 
 			@Override
-			public void animate(AnimatedSprite sprite, float unitTime) {
+			public void animate(AnimatedSprite sprite, float unitTime, long animationDurationMillis) {
 				// nothing
 			}
 		}, durationMillis);
@@ -128,7 +129,8 @@ public class AnimatedSprite {
 					}
 					if (animation.getEndTimeMillis() <= now || animation.getDurationMillis() == 0L) {
 						// passed
-						animation.getAnimation().animate(this, 1f); // ensure proper end state
+						animation.getAnimation().animate(this, 1f, animation.getDurationMillis()); // ensure proper end
+																									// state
 						getAnimationQueue().remove(0);
 						setCurrentTimedAnimation(null);
 						fireAnimationEnded(animation.getAnimation());
@@ -136,7 +138,7 @@ public class AnimatedSprite {
 					} else {
 						// current
 						float unitTime = (now - animation.getStartTimeMillis()) / (float) animation.getDurationMillis();
-						animation.getAnimation().animate(this, unitTime);
+						animation.getAnimation().animate(this, unitTime, animation.getDurationMillis());
 						animation = null;
 					}
 				}
@@ -161,7 +163,7 @@ public class AnimatedSprite {
 		draw(g);
 	}
 
-	void changeLook(SpriteLook look) {
+	protected void changeLook(SpriteLook look) {
 		setLook(look);
 		if (look != null) {
 			getTarget().changeImage(look.getImage());
@@ -237,6 +239,25 @@ public class AnimatedSprite {
 		return getTarget().getColorMap();
 	}
 
+	public Point getCenterLocation() {
+		int x = getX();
+		int y = getY();
+		SpriteLook look = getLook();
+		if (look != null) {
+			x += look.getImageOffsetX() + look.getImage().getWidth() / 2;
+			y += look.getImageOffsetY() + look.getImage().getHeight() / 2;
+		}
+		return new Point(x, y);
+	}
+
+	public int getX() {
+		return getTarget().getX();
+	}
+
+	public int getY() {
+		return getTarget().getY();
+	}
+
 	protected Sprite getTarget() {
 		return target;
 	}
@@ -253,7 +274,7 @@ public class AnimatedSprite {
 		return animationOffsetX;
 	}
 
-	private void setAnimationOffsetX(int x) {
+	protected void setAnimationOffsetX(int x) {
 		this.animationOffsetX = x;
 	}
 
@@ -261,7 +282,7 @@ public class AnimatedSprite {
 		return animationOffsetY;
 	}
 
-	private void setAnimationOffsetY(int y) {
+	protected void setAnimationOffsetY(int y) {
 		this.animationOffsetY = y;
 	}
 

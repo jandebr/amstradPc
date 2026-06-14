@@ -318,7 +318,11 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		if (action != null) {
 			action.startAnimationWhenAppropriate(width, height);
 			if (action.isAnimationStarted()) {
-				action.getAnimation().renderOntoDisplay(g, width, height, action.getAnimationElapsedTimeMillis());
+				try {
+					action.getAnimation().renderOntoDisplay(g, width, height, action.getAnimationElapsedTimeMillis());
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

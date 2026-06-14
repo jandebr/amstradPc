@@ -20,7 +20,7 @@ import org.maia.util.ColorUtils;
 
 public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimation {
 
-	private NinjaAnimationCatalog animationCatalog;
+	private NinjaCatalog catalog;
 
 	private PerpetualApproximatingFunction2D firstNinjaCombatFunction;
 
@@ -38,7 +38,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 
 	public CarouselNinjaFightAnimation(AmstradMonitorMode monitorMode) {
 		super(monitorMode);
-		this.animationCatalog = new NinjaAnimationCatalog(getSpriteImageCatalog());
+		this.catalog = new NinjaCatalog();
 	}
 
 	@Override
@@ -87,13 +87,13 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 	}
 
 	private void initNinjasAtHomebase() {
-		NinjaPose standardPose = getAnimationCatalog().getStandardPose();
+		NinjaPose standardPose = getCatalog().getStandardPose();
 		getFirstNinja().reset(standardPose.getLookRightFacing(), 20, 86);
-		getFirstNinja().appendAnimationRepeating(getAnimationCatalog().getFreezeAnimation(), 3);
-		getFirstNinja().appendAnimation(getAnimationCatalog().getBowAnimation());
+		getFirstNinja().appendAnimationRepeating(getCatalog().getFreezeAnimation(), 3);
+		getFirstNinja().appendAnimation(getCatalog().getBowAnimation());
 		getSecondNinja().reset(standardPose.getLookLeftFacing(), getPortholePixelWidth() - 20 - 13, 86);
-		getSecondNinja().appendAnimationRepeating(getAnimationCatalog().getFreezeAnimation(), 3);
-		getSecondNinja().appendAnimation(getAnimationCatalog().getBowAnimation());
+		getSecondNinja().appendAnimationRepeating(getCatalog().getFreezeAnimation(), 3);
+		getSecondNinja().appendAnimation(getCatalog().getBowAnimation());
 	}
 
 	private void initNinjasMidFight() {
@@ -103,7 +103,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 			x2 = getRandomizer().drawIntegerNumber(0, getPortholePixelWidth() - 13);
 			dx = Math.abs(x2 - x1);
 		} while (dx < 20 || dx > getPortholePixelWidth() / 3 * 2);
-		NinjaPose standardPose = getAnimationCatalog().getStandardPose();
+		NinjaPose standardPose = getCatalog().getStandardPose();
 		getFirstNinja().reset(
 				standardPose.getLook(
 						getRandomizer().drawBoolean() ? NinjaOrientation.RIGHT_FACING : NinjaOrientation.LEFT_FACING),
@@ -112,7 +112,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 				standardPose.getLook(
 						getRandomizer().drawBoolean() ? NinjaOrientation.RIGHT_FACING : NinjaOrientation.LEFT_FACING),
 				x2, 86);
-		List<NinjaAnimation> animations = new Vector<NinjaAnimation>(getAnimationCatalog().getInGameAnimations());
+		List<NinjaAnimation> animations = new Vector<NinjaAnimation>(getCatalog().getInGameAnimations());
 		getFirstNinja().appendAnimation(drawRandomAnimation(animations));
 		getSecondNinja().appendAnimation(drawRandomAnimation(animations));
 		getFirstNinja().setHealthLevel(0.5f + 0.5f * getRandomizer().drawFloatUnitNumber());
@@ -254,7 +254,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 		if (ninja.isOverlapping(otherNinja)) {
 			List<NinjaAnimation> candidateAnimations = selectDistanceIncreasingAnimations(animations, ninja,
 					otherNinja);
-			candidateAnimations.remove(getAnimationCatalog().getJumpRollAnimation()); // less jumping
+			candidateAnimations.remove(getCatalog().getJumpRollAnimation()); // less jumping
 			if (!candidateAnimations.isEmpty()) {
 				ninja.appendAnimation(drawRandomAnimation(candidateAnimations));
 			}
@@ -275,7 +275,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 			// approach opponent (no overlap)
 			candidateAnimations = selectAnimationsWithoutOverlap(selectForwardAdvancingAnimations(animations, ninja),
 					ninja, otherNinja);
-			candidateAnimations.remove(getAnimationCatalog().getJumpRollAnimation()); // less jumping
+			candidateAnimations.remove(getCatalog().getJumpRollAnimation()); // less jumping
 		} else {
 			// combat
 			candidateAnimations = selectCombativeAnimations(animations);
@@ -296,7 +296,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 
 	private List<NinjaAnimation> getApplicableInGameAnimations(FightingNinja ninja) {
 		List<NinjaAnimation> animations = new Vector<NinjaAnimation>();
-		for (NinjaAnimation animation : getAnimationCatalog().getInGameAnimations()) {
+		for (NinjaAnimation animation : getCatalog().getInGameAnimations()) {
 			if (animation.isApplicable(ninja)) {
 				animations.add(animation);
 			}
@@ -365,7 +365,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 			return null;
 		} else {
 			NinjaAnimation animation = animations.get(getRandomizer().drawIntegerNumber(0, animations.size() - 1));
-			while (getAnimationCatalog().getJumpRollAnimation().equals(animation)) {
+			while (getCatalog().getJumpRollAnimation().equals(animation)) {
 				// less jumping
 				if (getRandomizer().drawFloatUnitNumber() < 0.25f) {
 					return animation;
@@ -377,8 +377,8 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 		}
 	}
 
-	private NinjaAnimationCatalog getAnimationCatalog() {
-		return animationCatalog;
+	private NinjaCatalog getCatalog() {
+		return catalog;
 	}
 
 	private PerpetualApproximatingFunction2D getFirstNinjaCombatFunction() {
@@ -457,7 +457,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 		}
 
 		public void turn() {
-			appendAnimation(getAnimationCatalog().getTurnAnimation());
+			appendAnimation(getCatalog().getTurnAnimation());
 		}
 
 		@Override
@@ -537,14 +537,6 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 			} else {
 				return x1 - x2 - look2.getImage().getWidth();
 			}
-		}
-
-		public int getX() {
-			return getTarget().getX();
-		}
-
-		public int getY() {
-			return getTarget().getY();
 		}
 
 		private FightingNinjaShadow getShadow() {
