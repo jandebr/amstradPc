@@ -14,7 +14,7 @@ public class SpriteImageMaker {
 	}
 
 	private static void makeImageEncodedAsRLE() {
-		BufferedImage image = UIResources.loadImage("animations/dragon/dragon-emblem_8x16.png");
+		BufferedImage image = UIResources.loadImage("animations/waves/penguin-16x24.png");
 		EncoderRLE encoder = new EncoderRLE(initSpriteColorMap());
 		encoder.encode(image).print(System.out);
 	}
@@ -22,6 +22,7 @@ public class SpriteImageMaker {
 	private static SpriteColorMapImpl initSpriteColorMap() {
 		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
 		colorMap.setColor(0, new Color(0, 0, 0));
+		colorMap.setColor(1, new Color(255, 255, 255));
 		return colorMap;
 	}
 

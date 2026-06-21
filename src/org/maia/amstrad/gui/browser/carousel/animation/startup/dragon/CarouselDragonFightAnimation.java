@@ -29,8 +29,6 @@ import org.maia.util.Randomizer;
 
 public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnimation {
 
-	private AmstradSymbolRenderer symbolRenderer;
-
 	private DragonCatalog catalog;
 
 	private Castle castle;
@@ -42,8 +40,7 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 	private Emblem emblem;
 
 	public CarouselDragonFightAnimation(AmstradGraphicsContext graphicsContext) {
-		super(graphicsContext.getMonitorMode());
-		this.symbolRenderer = new AmstradSymbolRenderer(graphicsContext, null);
+		super(graphicsContext);
 		this.catalog = new DragonCatalog();
 		this.projectiles = new Vector<Projectile>();
 	}
@@ -195,12 +192,12 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 	}
 
 	protected void drawInSymbols(Graphics2D g, String str, int x, int y) {
-		AmstradSymbolRenderer symbolRenderer = getSymbolRenderer();
-		symbolRenderer.replaceGraphics2D(g);
-		symbolRenderer.color(toMonitorColor(Color.BLACK));
-		symbolRenderer.drawStr(str, 1 + x, 1 + y);
-		symbolRenderer.color(toMonitorColor(Color.WHITE));
-		symbolRenderer.drawStr(str, x, y);
+		AmstradSymbolRenderer renderer = getSymbolRenderer(g);
+		renderer.replaceGraphics2D(g);
+		renderer.color(toMonitorColor(Color.BLACK));
+		renderer.drawStr(str, 1 + x, 1 + y);
+		renderer.color(toMonitorColor(Color.WHITE));
+		renderer.drawStr(str, x, y);
 	}
 
 	@Override
@@ -210,10 +207,6 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 
 	private static Point2D toPoint2D(Point point) {
 		return new Point2D(point.getX(), point.getY());
-	}
-
-	private AmstradSymbolRenderer getSymbolRenderer() {
-		return symbolRenderer;
 	}
 
 	private DragonCatalog getCatalog() {

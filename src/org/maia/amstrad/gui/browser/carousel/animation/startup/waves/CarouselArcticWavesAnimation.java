@@ -8,7 +8,7 @@ import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.gui.sprite.SpriteImage;
 import org.maia.amstrad.gui.sprite.SpriteImageRLE;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D.ControlValueGenerator;
 
@@ -16,23 +16,35 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 
 	private SpriteImage orcaFinImage;
 
+	private SpriteImage penguinImage;
+
 	private OrcaFin orcaFin;
 
-	private static int orcaFinAboveWaveIndex = 1;
+	private Penguin penguin;
 
-	public CarouselArcticWavesAnimation(AmstradMonitorMode monitorMode) {
-		super(monitorMode);
+	private static int lifeAboveWaveIndex = 1;
+
+	public CarouselArcticWavesAnimation(AmstradGraphicsContext graphicsContext) {
+		super(graphicsContext);
 	}
 
 	@Override
 	public void init(int displayWidth, int displayHeight) {
 		super.init(displayWidth, displayHeight);
 		setOrcaFin(new OrcaFin());
+		setPenguin(new Penguin());
 	}
 
 	protected SpriteColorMap createOrcaFinColors() {
 		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
 		colorMap.setColor(0, new Color(10, 10, 10));
+		return toMonitorColors(colorMap);
+	}
+
+	protected SpriteColorMap createPenguinColors() {
+		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
+		colorMap.setColor(0, new Color(0, 0, 0));
+		colorMap.setColor(1, new Color(240, 240, 247));
 		return toMonitorColors(colorMap);
 	}
 
@@ -48,7 +60,8 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 
 	@Override
 	protected void renderPixelatedWaveOverlay(Graphics2D g, int waveIndex, long elapsedTimeMillis) {
-		if (waveIndex == orcaFinAboveWaveIndex) {
+		if (waveIndex == lifeAboveWaveIndex) {
+			renderPenguin(g, getPenguin(), elapsedTimeMillis);
 			renderOrcaFin(g, getOrcaFin(), elapsedTimeMillis);
 		}
 	}
@@ -56,6 +69,11 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 	protected void renderOrcaFin(Graphics2D g, OrcaFin orcaFin, long elapsedTimeMillis) {
 		orcaFin.update(elapsedTimeMillis);
 		orcaFin.draw(g);
+	}
+
+	protected void renderPenguin(Graphics2D g, Penguin penguin, long elapsedTimeMillis) {
+		penguin.update(elapsedTimeMillis);
+		penguin.draw(g);
 	}
 
 	private SpriteImage getOrcaFinImage() {
@@ -69,7 +87,22 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 		return orcaFinImage;
 	}
 
-	private OrcaFin getOrcaFin() {
+	private SpriteImage getPenguinImage() {
+		if (penguinImage == null) {
+			penguinImage = new SpriteImageRLE(16, 24,
+					new int[] { -1, 6, 0, 4, -2, -1, 5, 0, 6, -2, -1, 4, 0, 2, 1, 4, 0, 2, -2, -1, 4, 0, 1, 1, 1, 0, 1,
+							1, 2, 0, 1, 1, 1, 0, 1, -2, -1, 4, 0, 1, 1, 6, 0, 1, -2, -1, 4, 0, 2, 1, 1, 0, 2, 1, 1, 0,
+							2, -2, -1, 5, 0, 1, 1, 4, 0, 1, -2, -1, 4, 0, 8, -2, -1, 3, 0, 10, -2, -1, 2, 0, 12, -2, -1,
+							2, 0, 4, 1, 4, 0, 4, -2, -1, 1, 0, 5, 1, 4, 0, 5, -2, -1, 1, 0, 4, 1, 6, 0, 4, -2, 0, 5, 1,
+							6, 0, 5, -2, -1, 3, 0, 2, 1, 6, 0, 2, -2, -1, 3, 0, 2, 1, 6, 0, 2, -2, -1, 3, 0, 2, 1, 6, 0,
+							2, -2, -1, 3, 0, 2, 1, 6, 0, 2, -2, -1, 4, 0, 1, 1, 6, 0, 1, -2, -1, 4, 0, 1, 1, 6, 0, 1,
+							-2, -1, 4, 0, 2, 1, 4, 0, 2, -2, -1, 5, 0, 1, 1, 4, 0, 1, -2, -1, 3, 0, 10, -2, -1, 1, 0, 5,
+							-1, 4, 0, 5 });
+		}
+		return penguinImage;
+	}
+
+	protected OrcaFin getOrcaFin() {
 		return orcaFin;
 	}
 
@@ -77,7 +110,15 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 		this.orcaFin = orcaFin;
 	}
 
-	private class OrcaFin extends Sprite {
+	protected Penguin getPenguin() {
+		return penguin;
+	}
+
+	private void setPenguin(Penguin penguin) {
+		this.penguin = penguin;
+	}
+
+	protected class OrcaFin extends Sprite {
 
 		private PerpetualApproximatingFunction2D descendFunction;
 
@@ -91,7 +132,7 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 
 		public void update(long elapsedTimeMillis) {
 			double t = elapsedTimeMillis / 500.0;
-			int yUpper = getWavePixelBottom(orcaFinAboveWaveIndex + 1) - getHeight();
+			int yUpper = getWavePixelBottom(lifeAboveWaveIndex + 1) - getHeight();
 			int yDescend = (int) Math.round(getDescendFunction().evaluate(t) * getHeight() / 2.0);
 			int y = yUpper + yDescend;
 			int xOld = getX();
@@ -203,6 +244,20 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 
 		private void setTargetPositionDefined(boolean defined) {
 			this.targetPositionDefined = defined;
+		}
+
+	}
+
+	protected class Penguin extends Sprite {
+
+		public Penguin() {
+			super(getPenguinImage(), createPenguinColors());
+		}
+
+		public void update(long elapsedTimeMillis) {
+			int x = (getPortholePixelWidth() - getImage().getWidth()) / 2;
+			int y = 20;
+			move(x, y);
 		}
 
 	}

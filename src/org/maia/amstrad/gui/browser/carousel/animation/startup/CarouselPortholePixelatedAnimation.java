@@ -4,15 +4,15 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.graphics2d.image.ImageUtils;
 
 public abstract class CarouselPortholePixelatedAnimation extends CarouselPortholeStartupAnimation {
 
 	private int pixelSize;
 
-	protected CarouselPortholePixelatedAnimation(AmstradMonitorMode monitorMode) {
-		super(monitorMode);
+	protected CarouselPortholePixelatedAnimation(AmstradGraphicsContext graphicsContext) {
+		super(graphicsContext);
 	}
 
 	@Override

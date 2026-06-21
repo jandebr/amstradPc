@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholePixelatedAnimation;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.swing.animate.wave.PixelatedWavesComponent;
 import org.maia.swing.animate.wave.Wave;
 import org.maia.swing.animate.wave.WaveDynamics;
@@ -23,8 +23,8 @@ public abstract class CarouselWavesAnimation extends CarouselPortholePixelatedAn
 
 	private long elapsedTimeMillis;
 
-	protected CarouselWavesAnimation(AmstradMonitorMode monitorMode) {
-		super(monitorMode);
+	protected CarouselWavesAnimation(AmstradGraphicsContext graphicsContext) {
+		super(graphicsContext);
 	}
 
 	@Override

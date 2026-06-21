@@ -8,14 +8,14 @@ import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.gui.sprite.SpriteImage;
 import org.maia.amstrad.gui.sprite.SpriteImageRLE;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class DolphinTestAnimation extends CarouselPortholePixelatedAnimation {
 
 	private Dolphin dolphin;
 
-	public DolphinTestAnimation(AmstradMonitorMode monitorMode) {
-		super(monitorMode);
+	public DolphinTestAnimation(AmstradGraphicsContext graphicsContext) {
+		super(graphicsContext);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package org.maia.amstrad.gui.browser.carousel.animation.startup.waves;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.gui.sprite.SpriteImage;
 import org.maia.amstrad.gui.sprite.SpriteImageRLE;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.graphics2d.function.Function2D;
 import org.maia.graphics2d.function.SigmoidFunction2D;
 import org.maia.graphics2d.geometry.Radians;
@@ -35,8 +36,8 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 
 	private static float minHeightForLooping = 0.38f; // relative height
 
-	public CarouselTropicWavesAnimation(AmstradMonitorMode monitorMode) {
-		super(monitorMode);
+	public CarouselTropicWavesAnimation(AmstradGraphicsContext graphicsContext) {
+		super(graphicsContext);
 	}
 
 	@Override
@@ -44,6 +45,30 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		super.init(displayWidth, displayHeight);
 		initDolphins();
 		initJumpProfiles();
+	}
+
+	protected void initDolphins() {
+		int n = getDolphinCount();
+		for (int waveIndex = 0; waveIndex < n; waveIndex++) {
+			Dolphin dolphin = new Dolphin(waveIndex, drawValue(dolphinVelocityRange));
+			getDolphins().put(waveIndex, dolphin);
+		}
+	}
+
+	protected void initJumpProfiles() {
+		float bl = getWavesBaseline();
+		addJumpProfile(new JumpProfile(new Range(0.5f * bl, 0.6f * bl), new Range(-0.1f, 0f)));
+		addJumpProfile(new JumpProfile(new Range(0.2f, 0.3f), new Range(-0.1f, -0.2f)));
+		addJumpProfile(new JumpProfile(new Range(0.1f, 0.15f), new Range(-0.4f, -0.5f)));
+		if (!isEncouragedToJumpHigher()) {
+			for (int i = 0; i < 3; i++) {
+				addJumpProfile(new JumpProfile(new Range(0.1f, 0.1f), new Range(-0.7f, -0.9f)));
+			}
+		}
+	}
+
+	private void addJumpProfile(JumpProfile profile) {
+		getJumpProfiles().add(profile);
 	}
 
 	protected SpriteColorMap createDolphinColors(float brightness) {
@@ -97,30 +122,6 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		}
 	}
 
-	private void initDolphins() {
-		for (int waveIndex = 0; waveIndex < getWaveCount() - 1; waveIndex++) {
-			addDolphin(new Dolphin(waveIndex, drawValue(dolphinVelocityRange)));
-		}
-	}
-
-	private void addDolphin(Dolphin dolphin) {
-		getDolphins().put(dolphin.getWaveIndex(), dolphin);
-	}
-
-	private void initJumpProfiles() {
-		float bl = getWavesBaseline();
-		addJumpProfile(new JumpProfile(new Range(0.5f * bl, 0.6f * bl), new Range(-0.1f, 0f)));
-		addJumpProfile(new JumpProfile(new Range(0.2f, 0.3f), new Range(-0.1f, -0.2f)));
-		addJumpProfile(new JumpProfile(new Range(0.1f, 0.15f), new Range(-0.4f, -0.5f)));
-		for (int i = 0; i < 3; i++) {
-			addJumpProfile(new JumpProfile(new Range(0.1f, 0.1f), new Range(-0.7f, -0.9f)));
-		}
-	}
-
-	private void addJumpProfile(JumpProfile profile) {
-		getJumpProfiles().add(profile);
-	}
-
 	private Jump createJump() {
 		int pi = getRandomizer().drawIntegerNumber(0, getJumpProfiles().size() - 1);
 		return createJump(getJumpProfiles().get(pi));
@@ -137,12 +138,29 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		return range.getMin() + getRandomizer().drawFloatUnitNumber() * (range.getMax() - range.getMin());
 	}
 
+	protected int drawJumpCenterX(Jump jump) {
+		return getRandomizer().drawIntegerNumber(0, getPortholePixelWidth());
+	}
+
+	protected void announceDolphinJump(Dolphin dolphin, long elapsedTimeMillis) {
+		// Subclasses to extend
+	}
+
+	protected boolean isEncouragedToJumpHigher() {
+		// Subclasses to override
+		return false;
+	}
+
+	protected int getDolphinCount() {
+		return getWaveCount() - 1;
+	}
+
 	@Override
 	protected double getColorScalingFunctionLinearity() {
 		return 0.2;
 	}
 
-	private SpriteImage getDolphinImage() {
+	protected SpriteImage getDolphinImage() {
 		if (dolphinImage == null) {
 			dolphinImage = new SpriteImageRLE(33, 23, new int[] { -1, 23, 0, 1, -2, -1, 22, 0, 3, -2, -1, 22, 0, 4, -2,
 					-1, 23, 0, 4, -2, -1, 17, 0, 10, -2, -1, 14, 0, 14, -2, -1, 13, 0, 15, -2, -1, 12, 0, 16, -2, -1,
@@ -156,7 +174,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		return dolphinImage;
 	}
 
-	private Map<Integer, Dolphin> getDolphins() {
+	protected Map<Integer, Dolphin> getDolphins() {
 		return dolphins;
 	}
 
@@ -164,7 +182,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		return jumpProfiles;
 	}
 
-	private class Dolphin extends Sprite {
+	protected class Dolphin extends Sprite {
 
 		private int waveIndex;
 
@@ -190,29 +208,25 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 			setShowing(false);
 			Jump jump = getJump();
 			if (jump == null || elapsedTimeMillis > getJumpEndTimeMillis()) {
-				initJump(elapsedTimeMillis + getTimeToNextJumpMillis());
+				initJump(elapsedTimeMillis);
 			} else if (elapsedTimeMillis >= getJumpStartTimeMillis()) {
 				float r = (elapsedTimeMillis - getJumpStartTimeMillis()) / (float) getJumpDurationMillis();
-				float angle = jump.getArcRadianOffset() - r * jump.getArcRadians();
-				float horRadius = jump.getHorizontalRadius();
-				float verRadius = jump.getVerticalRadius();
-				if (jump.isLooping())
-					verRadius *= 1.2f;
-				int dx = (int) Math.round(horRadius * Math.cos(angle) * getPortholePixelWidth());
-				int dy = (int) Math.round((jump.getBase() + verRadius * Math.sin(angle)) * getPortholePixelHeight());
-				setX(getJumpCenterX() - getWidth() / 2 + dx);
-				setY(getWavePixelBottom(getWaveIndex()) - dy + 2);
-				setRotationDegrees(
-						0.8f * (90f - (float) Radians.radiansToDegrees(angle)) - 20f + jump.getLoopDegrees(r));
+				Point rLoc = jump.sampleRelativeLocation(r);
+				setX(getJumpCenterX() - getWidth() / 2 + rLoc.x);
+				setY(getWavePixelBottom(getWaveIndex()) + 2 + rLoc.y);
+				setRotationDegrees(0.8f * (90f - (float) Radians.radiansToDegrees(jump.sampleAngleRadians(r))) - 20f
+						+ jump.sampleLoopDegrees(r));
 				setShowing(true);
 			}
 		}
 
-		private void initJump(long jumpStartTimeMillis) {
+		private void initJump(long elapsedTimeMillis) {
 			setJump(createJump());
-			setJumpStartTimeMillis(jumpStartTimeMillis);
-			setJumpEndTimeMillis(jumpStartTimeMillis + Math.round(getJump().getArcDistance() / getVelocity() * 1000f));
-			setJumpCenterX(getRandomizer().drawIntegerNumber(0, getPortholePixelWidth()));
+			setJumpStartTimeMillis(elapsedTimeMillis + getTimeToNextJumpMillis());
+			setJumpEndTimeMillis(
+					getJumpStartTimeMillis() + Math.round(getJump().getHorizontalDistance() / getVelocity() * 1000f));
+			setJumpCenterX(drawJumpCenterX(getJump()));
+			announceDolphinJump(this, elapsedTimeMillis);
 		}
 
 		private long getTimeToNextJumpMillis() {
@@ -223,6 +237,10 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 			}
 		}
 
+		public int getCenterX() {
+			return getX() + getImage().getWidth() / 2;
+		}
+
 		public int getWaveIndex() {
 			return waveIndex;
 		}
@@ -231,7 +249,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 			return velocity;
 		}
 
-		private Jump getJump() {
+		public Jump getJump() {
 			return jump;
 		}
 
@@ -239,11 +257,11 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 			this.jump = jump;
 		}
 
-		private long getJumpDurationMillis() {
+		public long getJumpDurationMillis() {
 			return getJumpEndTimeMillis() - getJumpStartTimeMillis();
 		}
 
-		private long getJumpStartTimeMillis() {
+		public long getJumpStartTimeMillis() {
 			return jumpStartTimeMillis;
 		}
 
@@ -251,7 +269,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 			this.jumpStartTimeMillis = timeMillis;
 		}
 
-		private long getJumpEndTimeMillis() {
+		public long getJumpEndTimeMillis() {
 			return jumpEndTimeMillis;
 		}
 
@@ -259,7 +277,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 			this.jumpEndTimeMillis = timeMillis;
 		}
 
-		private int getJumpCenterX() {
+		public int getJumpCenterX() {
 			return jumpCenterX;
 		}
 
@@ -277,7 +295,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 
 	}
 
-	private static class Jump {
+	protected class Jump {
 
 		private float top; // above baseline, positive value, unit length
 
@@ -285,31 +303,43 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 
 		private boolean looping;
 
-		private static Function2D horizontalRadiusFt = new SigmoidFunction2D(0, 4.0, 1.0, -0.5); // relative to vertical
-																									// radius
+		private Function2D horizontalRadiusFt; // relative to vertical radius
 
-		private static Function2D loopingFt = SigmoidFunction2D.createCappedFunction(0, 1.0, 0, 1.0);
+		private Function2D loopingFt;
 
 		public Jump(float top, float base, boolean looping) {
 			this.top = top;
 			this.base = base;
 			this.looping = looping;
+			this.horizontalRadiusFt = new SigmoidFunction2D(0, 4.0, 1.0, -0.5);
+			this.loopingFt = SigmoidFunction2D.createCappedFunction(0, 1.0, 0, 1.0);
 		}
 
-		public float getLoopDegrees(float r) {
+		public Point sampleRelativeLocation(float r) {
+			float angle = sampleAngleRadians(r);
+			float horRadius = getHorizontalRadius();
+			float verRadius = getVerticalRadius();
+			if (isLooping())
+				verRadius *= 1.2f;
+			int dx = (int) Math.round(horRadius * Math.cos(angle) * getPortholePixelWidth());
+			int dy = -(int) Math.round((getBase() + verRadius * Math.sin(angle)) * getPortholePixelHeight());
+			return new Point(dx, dy);
+		}
+
+		public float sampleAngleRadians(float r) {
+			return getArcRadianOffset() - r * getArcRadians();
+		}
+
+		public float sampleLoopDegrees(float r) {
 			if (isLooping()) {
-				return (float) loopingFt.evaluate(r) * 360f;
+				return (float) getLoopingFt().evaluate(r) * 360f;
 			} else {
 				return 0f;
 			}
 		}
 
-		public float getArcDistance() {
+		public float getHorizontalDistance() {
 			return 2f * getHorizontalRadius() * (float) Math.sin(getArcRadians() / 2.0);
-		}
-
-		public float getArcLength() {
-			return getVerticalRadius() * getArcRadians();
 		}
 
 		public float getArcRadianOffset() {
@@ -321,7 +351,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 		}
 
 		public float getHorizontalRadius() {
-			return (float) horizontalRadiusFt.evaluate(getVerticalRadius());
+			return (float) getHorizontalRadiusFt().evaluate(getVerticalRadius());
 		}
 
 		public float getVerticalRadius() {
@@ -340,9 +370,17 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 			return looping;
 		}
 
+		private Function2D getHorizontalRadiusFt() {
+			return horizontalRadiusFt;
+		}
+
+		private Function2D getLoopingFt() {
+			return loopingFt;
+		}
+
 	}
 
-	private static class JumpProfile {
+	protected static class JumpProfile {
 
 		private Range topRange;
 
@@ -363,7 +401,7 @@ public class CarouselTropicWavesAnimation extends CarouselWavesAnimation {
 
 	}
 
-	private static class Range {
+	protected static class Range {
 
 		private float min;
 

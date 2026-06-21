@@ -4,12 +4,11 @@ import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
-import org.maia.amstrad.gui.browser.carousel.animation.startup.dragon.CarouselDragonFightAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselArcticWavesAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
@@ -24,8 +23,7 @@ public class CarouselAnimationFactory {
 
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
 		AmstradGraphicsContext graphicsContext = host.getGraphicsContext();
-		AmstradMonitorMode monitorMode = graphicsContext.getMonitorMode();
-		CarouselPortholeStartupAnimation animation = new CarouselDragonFightAnimation(graphicsContext);
+		CarouselPortholeStartupAnimation animation = new CarouselArcticWavesAnimation(graphicsContext);
 		animation.setMinimumDelayMillis(0L); // TODO
 		animation.setMinimumDurationMillis(80000L);
 		return animation;

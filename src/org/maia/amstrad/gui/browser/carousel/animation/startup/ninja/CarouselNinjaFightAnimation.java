@@ -13,7 +13,7 @@ import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.gui.sprite.animation.AnimatedSprite;
 import org.maia.amstrad.gui.sprite.animation.AnimatedSpriteAdapter;
 import org.maia.amstrad.gui.sprite.animation.SpriteAnimation;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D.ControlValueGenerator;
 import org.maia.util.ColorUtils;
@@ -36,8 +36,8 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 
 	private SpriteColorMap healthBarColors;
 
-	public CarouselNinjaFightAnimation(AmstradMonitorMode monitorMode) {
-		super(monitorMode);
+	public CarouselNinjaFightAnimation(AmstradGraphicsContext graphicsContext) {
+		super(graphicsContext);
 		this.catalog = new NinjaCatalog();
 	}
 
@@ -579,7 +579,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 			if (animation instanceof NinjaAnimation) {
 				previousAnimation = (NinjaAnimation) animation;
 				if (previousAnimation.isCombative()) {
-					updateHealthLevel(getOtherNinja(getNinja()));
+					updateHealthLevelsFollowingCombat();
 				}
 			}
 			if (!sprite.hasQueuedAnimations()) {
@@ -587,11 +587,17 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 			}
 		}
 
-		private void updateHealthLevel(FightingNinja opponent) {
+		private void updateHealthLevelsFollowingCombat() {
+			FightingNinja opponent = getOtherNinja(getNinja());
 			if (getNinja().getSpace(opponent) <= 6) {
+				// Hurt opponent
 				float health = opponent.getHealthLevel();
-				float updatedHealth = health * (0.95f - 0.15f * getRandomizer().drawFloatUnitNumber());
+				float updatedHealth = health * (0.95f - 0.1f * getRandomizer().drawFloatUnitNumber());
 				opponent.setHealthLevel(updatedHealth);
+				// Reset self
+				if (getNinja().getHealthLevel() < 0.05f && getRandomizer().drawBoolean()) {
+					getNinja().setHealthLevel(1f);
+				}
 			}
 		}
 

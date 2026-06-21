@@ -9,11 +9,13 @@ import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
+import org.maia.amstrad.gui.AmstradSymbolRenderer;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.animation.CarouselBaseAnimation;
 import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
+import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.graphics2d.function.Function2D;
 import org.maia.graphics2d.function.SigmoidFunction2D;
@@ -24,7 +26,11 @@ import org.maia.util.Randomizer;
 public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnimation
 		implements CarouselStartupAnimation {
 
+	private AmstradGraphicsContext graphicsContext;
+
 	private AmstradMonitorMode monitorMode;
+
+	private AmstradSymbolRenderer symbolRenderer;
 
 	private Function2D colorScalingFunction;
 
@@ -36,8 +42,9 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 
 	private Panorama panorama;
 
-	protected CarouselPortholeStartupAnimation(AmstradMonitorMode monitorMode) {
-		this.monitorMode = monitorMode;
+	protected CarouselPortholeStartupAnimation(AmstradGraphicsContext graphicsContext) {
+		this.graphicsContext = graphicsContext;
+		this.monitorMode = graphicsContext.getMonitorMode();
 		this.colorScalingFunction = createColorScalingFunction();
 		this.randomizer = new Randomizer();
 	}
@@ -262,8 +269,21 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 		return getPortholeSize().height;
 	}
 
+	protected AmstradGraphicsContext getGraphicsContext() {
+		return graphicsContext;
+	}
+
 	protected AmstradMonitorMode getMonitorMode() {
 		return monitorMode;
+	}
+
+	protected AmstradSymbolRenderer getSymbolRenderer(Graphics2D g) {
+		if (symbolRenderer == null) {
+			symbolRenderer = new AmstradSymbolRenderer(getGraphicsContext(), g);
+		} else {
+			symbolRenderer.replaceGraphics2D(g);
+		}
+		return symbolRenderer;
 	}
 
 	protected Function2D getColorScalingFunction() {
