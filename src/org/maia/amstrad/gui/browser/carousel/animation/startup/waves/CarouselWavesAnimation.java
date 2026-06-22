@@ -115,6 +115,14 @@ public abstract class CarouselWavesAnimation extends CarouselPortholePixelatedAn
 		return (int) Math.floor((wave.getTranslationY() + wave.getAmplitude()) * getPortholeHeight() / getPixelSize());
 	}
 
+	protected int getWavePixelY(int waveIndex, int x) {
+		Wave wave = getWavesComponent().getWave(waveIndex);
+		float wx = x / (float) getPortholePixelWidth();
+		float wy = wave.getTranslationY() - wave.getAmplitude()
+				* (float) Math.sin((wx - wave.getTranslationX()) / wave.getLength() * 2.0 * Math.PI);
+		return Math.round(wy * getPortholePixelHeight());
+	}
+
 	protected int getWaveCount() {
 		return getWavesComponent().getWaveCount();
 	}

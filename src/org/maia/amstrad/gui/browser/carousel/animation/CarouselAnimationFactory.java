@@ -25,7 +25,7 @@ public class CarouselAnimationFactory {
 		AmstradGraphicsContext graphicsContext = host.getGraphicsContext();
 		CarouselPortholeStartupAnimation animation = new CarouselArcticWavesAnimation(graphicsContext);
 		animation.setMinimumDelayMillis(0L); // TODO
-		animation.setMinimumDurationMillis(80000L);
+		animation.setMinimumDurationMillis(8000L);
 		return animation;
 	}
 

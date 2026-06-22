@@ -14,7 +14,7 @@ public class SpriteImageMaker {
 	}
 
 	private static void makeImageEncodedAsRLE() {
-		BufferedImage image = UIResources.loadImage("animations/waves/penguin-16x24.png");
+		BufferedImage image = UIResources.loadImage("animations/waves/penguin-left-8x24.png");
 		EncoderRLE encoder = new EncoderRLE(initSpriteColorMap());
 		encoder.encode(image).print(System.out);
 	}
