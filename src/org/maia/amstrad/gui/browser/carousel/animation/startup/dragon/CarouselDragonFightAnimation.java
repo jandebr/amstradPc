@@ -39,6 +39,8 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 
 	private Emblem emblem;
 
+	private static int WRAPPED_HIT_COUNT = 100;
+
 	public CarouselDragonFightAnimation(AmstradGraphicsContext graphicsContext) {
 		super(graphicsContext);
 		this.catalog = new DragonCatalog();
@@ -564,7 +566,7 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 		}
 
 		public boolean hits(FearsomeDragon dragon) {
-			return toPoint2D(getCenterLocation()).distanceTo(toPoint2D(dragon.getCenterLocation())) <= 5.0;
+			return toPoint2D(getCenterLocation()).distanceTo(toPoint2D(dragon.getCenterLocation())) <= 4.0;
 		}
 
 		@Override
@@ -661,7 +663,7 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 		}
 
 		public void incrementHitCount() {
-			setHitCount(getHitCount() + 1);
+			setHitCount(getHitCount() % (WRAPPED_HIT_COUNT - 1) + 1);
 			setLastHitTimeMillis(System.currentTimeMillis());
 		}
 

@@ -58,6 +58,8 @@ public class CarouselTropicWavesGamifiedAnimation extends CarouselTropicWavesAni
 
 	private static int LOOPED_RING_SCORE_FACTOR = 2;
 
+	private static int WRAPPED_RING_SCORE = 10000;
+
 	public CarouselTropicWavesGamifiedAnimation(AmstradGraphicsContext graphicsContext) {
 		super(graphicsContext);
 		this.maxHitRingCountFunction = PerpetualApproximatingFunction2D
@@ -427,7 +429,7 @@ public class CarouselTropicWavesGamifiedAnimation extends CarouselTropicWavesAni
 	}
 
 	private void setScore(int score) {
-		this.score = score;
+		this.score = score % WRAPPED_RING_SCORE;
 	}
 
 	private long getEarliestNextMissedRingTimeMillis() {

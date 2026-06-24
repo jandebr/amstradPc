@@ -3,7 +3,9 @@ package org.maia.amstrad.gui.browser.carousel.animation.startup;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
@@ -20,6 +22,9 @@ import org.maia.amstrad.pc.monitor.display.AmstradSystemColors;
 import org.maia.graphics2d.function.Function2D;
 import org.maia.graphics2d.function.SigmoidFunction2D;
 import org.maia.graphics2d.image.ImageUtils;
+import org.maia.swing.SwingUtils;
+import org.maia.swing.layout.HorizontalAlignment;
+import org.maia.swing.text.TextLabel;
 import org.maia.util.ColorUtils;
 import org.maia.util.Randomizer;
 
@@ -42,11 +47,34 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 
 	private Panorama panorama;
 
+	private boolean showLoadingMessage;
+
+	private Font loadingMessageFont;
+
+	private Color loadingMessageColor;
+
+	private TextLabel loadingLabelTop;
+
+	private TextLabel loadingLabelBottom;
+
+	private String loadingMessageTop;
+
+	private String loadingMessageBottom;
+
+	public static String DEFAULT_LOADING_MESSAGE_TOP = "loading";
+
+	public static String DEFAULT_LOADING_MESSAGE_BOTTOM = "browser";
+
 	protected CarouselPortholeStartupAnimation(AmstradGraphicsContext graphicsContext) {
 		this.graphicsContext = graphicsContext;
 		this.monitorMode = graphicsContext.getMonitorMode();
 		this.colorScalingFunction = createColorScalingFunction();
 		this.randomizer = new Randomizer();
+		this.showLoadingMessage = true;
+		this.loadingMessageFont = graphicsContext.getSystemFont();
+		this.loadingMessageColor = toMonitorColor(Color.WHITE);
+		this.loadingMessageTop = DEFAULT_LOADING_MESSAGE_TOP;
+		this.loadingMessageBottom = DEFAULT_LOADING_MESSAGE_BOTTOM;
 	}
 
 	@Override
@@ -54,10 +82,39 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 		super.init(displayWidth, displayHeight);
 		setPortholeSize(derivePortholeSize(displayWidth, displayHeight));
 		setPortholeMask(createPortholeMask());
+		if (isShowLoadingMessage()) {
+			initLoadingLabels(displayWidth);
+		}
+	}
+
+	private void initLoadingLabels(int displayWidth) {
+		String messageTop = getLoadingMessageTop();
+		String messageBottom = getLoadingMessageBottom();
+		Font font = getLoadingMessageFont();
+		int margin = Math.max(getPortholeHeight() / 15, 8);
+		int targetLabelWidth = getTargetLoadingMessageWidth();
+		float fontSizeTop = TextLabel.getFontSizeForLineWidth(font, messageTop, targetLabelWidth);
+		float fontSizeBottom = TextLabel.getFontSizeForLineWidth(font, messageBottom, targetLabelWidth);
+		float fontSize = Math.min(fontSizeTop, fontSizeBottom);
+		font = font.deriveFont(fontSize);
+		Insets insets = new Insets(margin, 0, margin, 0);
+		setLoadingLabelTop(
+				TextLabel.createLineLabel(messageTop, font, displayWidth, HorizontalAlignment.CENTER, insets));
+		setLoadingLabelBottom(
+				TextLabel.createLineLabel(messageBottom, font, displayWidth, HorizontalAlignment.CENTER, insets));
+		SwingUtils.fixSize(getLoadingLabelTop(), getLoadingLabelTop().getPreferredSize());
+		SwingUtils.fixSize(getLoadingLabelBottom(), getLoadingLabelBottom().getPreferredSize());
 	}
 
 	@Override
-	public final void renderOntoDisplay(Graphics2D g, int displayWidth, int displayHeight, long elapsedTimeMillis) {
+	public void renderOntoDisplay(Graphics2D g, int displayWidth, int displayHeight, long elapsedTimeMillis) {
+		renderPorthole(g, displayWidth, displayHeight, elapsedTimeMillis);
+		if (isShowLoadingMessage()) {
+			renderLoadingMessage(g, displayHeight, elapsedTimeMillis);
+		}
+	}
+
+	private void renderPorthole(Graphics2D g, int displayWidth, int displayHeight, long elapsedTimeMillis) {
 		// center porthole in display
 		int portholeWidth = getPortholeWidth();
 		int portholeHeight = getPortholeHeight();
@@ -81,10 +138,10 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 	}
 
 	protected void renderInPorthole(Graphics2D g, long elapsedTimeMillis) {
-		renderPanorama(g);
+		renderPanoramaInPorthole(g);
 	}
 
-	protected void renderPanorama(Graphics2D g) {
+	private void renderPanoramaInPorthole(Graphics2D g) {
 		int pw = getPortholeWidth();
 		int ph = getPortholeHeight();
 		Panorama panorama = getPanorama();
@@ -109,6 +166,32 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 			Rectangle r = getLandscapeViewRegion();
 			g.drawImage(landscape.getImage(), r.x, r.y, r.width, r.height, null);
 		}
+	}
+
+	private void renderLoadingMessage(Graphics2D g, int displayHeight, long elapsedTimeMillis) {
+		renderLoadingLabelTop(g, displayHeight, elapsedTimeMillis);
+		renderLoadingLabelBottom(g, displayHeight, elapsedTimeMillis);
+	}
+
+	private void renderLoadingLabelTop(Graphics2D g, int displayHeight, long elapsedTimeMillis) {
+		float tra = (float) Math.sqrt(0.7 + 0.28 * (0.5 + Math.sin(elapsedTimeMillis / 400.0 + Math.PI) / 2.0));
+		getLoadingLabelTop().setForeground(ColorUtils.setTransparency(getLoadingMessageColor(), tra));
+		int y = (displayHeight - getPortholeHeight()) / 2 - getLoadingLabelTop().getHeight();
+		renderLoadingLabel(getLoadingLabelTop(), g, y);
+	}
+
+	private void renderLoadingLabelBottom(Graphics2D g, int displayHeight, long elapsedTimeMillis) {
+		float tra = (float) Math.sqrt(0.7 + 0.28 * (0.5 + Math.sin(elapsedTimeMillis / 400.0) / 2.0));
+		getLoadingLabelBottom().setForeground(ColorUtils.setTransparency(getLoadingMessageColor(), tra));
+		int y = (displayHeight + getPortholeHeight()) / 2;
+		renderLoadingLabel(getLoadingLabelBottom(), g, y);
+	}
+
+	private void renderLoadingLabel(TextLabel label, Graphics2D g, int y) {
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.translate(0, y);
+		label.paint(g2);
+		g2.dispose();
 	}
 
 	protected Rectangle getLandscapeViewRegion() {
@@ -159,6 +242,10 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 		} else {
 			return null;
 		}
+	}
+
+	protected int getTargetLoadingMessageWidth() {
+		return Math.max(getPortholeWidth() / 3, 60);
 	}
 
 	protected Dimension derivePortholeSize(int displayWidth, int displayHeight) {
@@ -319,6 +406,62 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 			panorama = createPanorama();
 		}
 		return panorama;
+	}
+
+	public boolean isShowLoadingMessage() {
+		return showLoadingMessage;
+	}
+
+	public void setShowLoadingMessage(boolean show) {
+		this.showLoadingMessage = show;
+	}
+
+	public Font getLoadingMessageFont() {
+		return loadingMessageFont;
+	}
+
+	public void setLoadingMessageFont(Font font) {
+		this.loadingMessageFont = font;
+	}
+
+	public Color getLoadingMessageColor() {
+		return loadingMessageColor;
+	}
+
+	public void setLoadingMessageColor(Color color) {
+		this.loadingMessageColor = color;
+	}
+
+	public String getLoadingMessageTop() {
+		return loadingMessageTop;
+	}
+
+	public void setLoadingMessageTop(String msg) {
+		this.loadingMessageTop = msg;
+	}
+
+	public String getLoadingMessageBottom() {
+		return loadingMessageBottom;
+	}
+
+	public void setLoadingMessageBottom(String msg) {
+		this.loadingMessageBottom = msg;
+	}
+
+	private TextLabel getLoadingLabelTop() {
+		return loadingLabelTop;
+	}
+
+	private void setLoadingLabelTop(TextLabel label) {
+		this.loadingLabelTop = label;
+	}
+
+	private TextLabel getLoadingLabelBottom() {
+		return loadingLabelBottom;
+	}
+
+	private void setLoadingLabelBottom(TextLabel label) {
+		this.loadingLabelBottom = label;
 	}
 
 	public static class Panorama {

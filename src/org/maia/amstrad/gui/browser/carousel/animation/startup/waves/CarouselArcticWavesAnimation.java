@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.maia.amstrad.gui.sprite.Sprite;
 import org.maia.amstrad.gui.sprite.SpriteColorMap;
@@ -349,7 +348,8 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 		}
 
 		private int drawX() {
-			return Math.round(getPortholePixelWidth() * (getRandomizer().drawFloatUnitNumber() * 1.1f - 0.05f));
+			int w = getPenguinFrontImage().getWidth();
+			return getRandomizer().drawIntegerNumber(-w * 2, getPortholePixelWidth() + w);
 		}
 
 		private float getUnitDistanceToOrcaFin() {
@@ -376,18 +376,6 @@ public class CarouselArcticWavesAnimation extends CarouselWavesAnimation {
 			changeImage(getPenguinLeftImage());
 			if (!isMirroredX())
 				flipX();
-		}
-
-		private boolean isLookingForward() {
-			return Objects.equals(getImage(), getPenguinFrontImage());
-		}
-
-		private boolean isLookingLeft() {
-			return !isLookingForward() && !isMirroredX();
-		}
-
-		private boolean isLookingRight() {
-			return !isLookingForward() && isMirroredX();
 		}
 
 		public int getWaveIndex() {

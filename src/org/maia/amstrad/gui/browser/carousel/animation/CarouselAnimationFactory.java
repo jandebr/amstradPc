@@ -4,7 +4,11 @@ import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.dragon.CarouselDragonFightAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.ninja.CarouselNinjaFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselArcticWavesAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselTropicWavesAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselTropicWavesGamifiedAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
@@ -13,18 +17,36 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
+import org.maia.util.Randomizer;
 
 public class CarouselAnimationFactory {
 
 	private static CarouselAnimationFactory instance;
 
+	private Randomizer randomizer;
+
 	private CarouselAnimationFactory() {
+		this.randomizer = new Randomizer();
 	}
 
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
 		AmstradGraphicsContext graphicsContext = host.getGraphicsContext();
-		CarouselPortholeStartupAnimation animation = new CarouselArcticWavesAnimation(graphicsContext);
-		animation.setMinimumDelayMillis(0L); // TODO
+		CarouselPortholeStartupAnimation animation = null;
+		int i = getRandomizer().drawIntegerNumber(0, 3);
+		if (i == 0) {
+			animation = new CarouselArcticWavesAnimation(graphicsContext);
+		} else if (i == 1) {
+			if (getRandomizer().drawBoolean()) {
+				animation = new CarouselTropicWavesAnimation(graphicsContext);
+			} else {
+				animation = new CarouselTropicWavesGamifiedAnimation(graphicsContext);
+			}
+		} else if (i == 2) {
+			animation = new CarouselNinjaFightAnimation(graphicsContext);
+		} else {
+			animation = new CarouselDragonFightAnimation(graphicsContext);
+		}
+		animation.setMinimumDelayMillis(500L);
 		animation.setMinimumDurationMillis(8000L);
 		return animation;
 	}
@@ -55,6 +77,10 @@ public class CarouselAnimationFactory {
 		animation.setHighlightMaximumDelayMillis(12000L); // 12s
 		animation.setHighlightDurationMillis(800L); // 0.8s
 		return animation;
+	}
+
+	private Randomizer getRandomizer() {
+		return randomizer;
 	}
 
 	public static CarouselAnimationFactory getInstance() {
