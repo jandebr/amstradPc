@@ -141,7 +141,7 @@ public class AmstradFactory {
 
 	private DisplayRenderDelegate createDisplayRenderDelegate() {
 		DisplayRenderDelegate delegate = null;
-		String name = Settings.get(Settings.DISPLAY_RENDER_DELEGATE, DisplayClassicRenderDelegate.NAME).trim();
+		String name = Settings.get(Settings.DISPLAY_RENDER_DELEGATE, DisplayCanvasRenderDelegate.NAME).trim();
 		if (DisplayClassicRenderDelegate.NAME.equalsIgnoreCase(name)) {
 			delegate = new DisplayClassicRenderDelegate();
 		} else if (DisplayStagedRenderDelegate.NAME.equalsIgnoreCase(name)) {
