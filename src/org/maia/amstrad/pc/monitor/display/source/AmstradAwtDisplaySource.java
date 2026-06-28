@@ -12,11 +12,16 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.menu.AmstradMenuBar;
+import org.maia.amstrad.pc.menu.AmstradMenuBarListener;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
-public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySource {
+public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySource implements AmstradMenuBarListener {
 
 	private Color background = Color.BLACK;
+
+	private boolean forceRepaintMenuBar;
 
 	private boolean componentAdditionDeferred;
 
@@ -33,6 +38,9 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		setLayout(createLayoutManager());
 		buildUI();
 		validate();
+		AmstradMenuBar menuBar = getMenuBar();
+		if (menuBar != null)
+			menuBar.addListener(this);
 	}
 
 	@Override
@@ -45,6 +53,14 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		removeAll();
 		setLayout(null);
 		validate();
+		AmstradMenuBar menuBar = getMenuBar();
+		if (menuBar != null)
+			menuBar.removeListener(this);
+	}
+
+	@Override
+	public void menuBarSelectionChanged(AmstradMenuBar menuBar) {
+		setForceRepaintMenuBar(true);
 	}
 
 	@Override
@@ -60,6 +76,10 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		}
 		renderContent(g, width, height);
 		g.dispose();
+		if (isForceRepaintMenuBar()) {
+			getMenuBar().repaint();
+			setForceRepaintMenuBar(false);
+		}
 	}
 
 	private void paintBackground(Graphics2D g, int width, int height) {
@@ -147,12 +167,29 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 		getDisplayComponent().setLayout(layout);
 	}
 
+	private AmstradMenuBar getMenuBar() {
+		AmstradMenuBar menuBar = null;
+		AmstradPcFrame frame = getAmstradPc().getFrame();
+		if (frame != null) {
+			menuBar = frame.getInstalledMenuBar();
+		}
+		return menuBar;
+	}
+
 	public Color getBackground() {
 		return background;
 	}
 
 	public void setBackground(Color background) {
 		this.background = background;
+	}
+
+	private boolean isForceRepaintMenuBar() {
+		return forceRepaintMenuBar;
+	}
+
+	private void setForceRepaintMenuBar(boolean forceRepaint) {
+		this.forceRepaintMenuBar = forceRepaint;
 	}
 
 	protected boolean isComponentAdditionDeferred() {

@@ -2,6 +2,7 @@ package org.maia.amstrad.pc.menu.maker;
 
 import java.awt.Color;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.UIManager;
@@ -75,7 +76,7 @@ public class AmstradMenuDefaultLookAndFeel extends AmstradMenuLookAndFeel {
 
 	@Override
 	public void applyToMenuBar(AmstradMenuBar menuBar) {
-		// nothing special
+		menuBar.setBorder(BorderFactory.createEmptyBorder()); // fixes glitch
 	}
 
 	@Override
