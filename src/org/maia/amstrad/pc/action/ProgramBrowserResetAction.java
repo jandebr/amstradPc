@@ -7,7 +7,7 @@ import org.maia.amstrad.pc.AmstradPc;
 public class ProgramBrowserResetAction extends AmstradPcAction {
 
 	public ProgramBrowserResetAction(AmstradPc amstradPc) {
-		this(amstradPc, "Reset program browser");
+		this(amstradPc, "Reset browser");
 	}
 
 	public ProgramBrowserResetAction(AmstradPc amstradPc, String name) {

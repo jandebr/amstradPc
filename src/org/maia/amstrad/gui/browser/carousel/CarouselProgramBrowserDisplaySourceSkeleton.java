@@ -64,8 +64,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private AmstradGraphicsContext graphicsContext;
 
-	private ProgramBrowserStartupAnimationControl startupAnimationControl;
-
 	private AmstradProgramCoverImageProducer programCoverImageProducer;
 
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
@@ -102,7 +100,6 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
 		this.graphicsContext = getAmstradPc().getMonitor().getGraphicsContext();
-		this.startupAnimationControl = getAmstradContext().getStartupAnimationControl();
 		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 		setAutoPauseResume(true);
 	}
@@ -536,6 +533,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	public void reset() {
+		if (getCarouselComponent() == null)
+			return; // not yet initialized
 		clearProgramNodeFailedToRun();
 		AmstradProgramRepository repo = getProgramBrowser().getProgramRepository();
 		repo.refresh();
@@ -881,7 +880,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	}
 
 	private ProgramBrowserStartupAnimationControl getStartupAnimationControl() {
-		return startupAnimationControl;
+		return getAmstradContext().getStartupAnimationControl();
 	}
 
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {

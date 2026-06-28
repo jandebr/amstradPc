@@ -15,8 +15,8 @@ public class ProgramBrowserAction extends ToggleDisplaySourceAction implements A
 
 	public ProgramBrowserAction(AmstradPc amstradPc) {
 		super(amstradPc, new ToggleActionKey(KeyEvent.VK_B, CTRL_KEY_MODIFIER));
-		setNameToOpen(getSystemSettings().isProgramCentric() ? "Program browser" : "Open program browser");
-		setNameToClose(getSystemSettings().isProgramCentric() ? "Basic" : "Close program browser");
+		setNameToOpen(getSystemSettings().isProgramCentric() ? "Browser" : "Open browser");
+		setNameToClose(getSystemSettings().isProgramCentric() ? "Basic" : "Close browser");
 		updateProgramBrowser(AmstradFactory.getInstance().getProgramBrowserStyleManager().getDefaultStyle()
 				.createProgramBrowser(amstradPc));
 	}

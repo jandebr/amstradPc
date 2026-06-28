@@ -11,7 +11,7 @@ import org.maia.swing.dialog.ActionableDialog;
 public class ProgramBrowserSetupAction extends ActionableDialogAction {
 
 	public ProgramBrowserSetupAction(AmstradPc amstradPc) {
-		this(amstradPc, "Setup program browser...");
+		this(amstradPc, "Setup browser...");
 	}
 
 	public ProgramBrowserSetupAction(AmstradPc amstradPc, String name) {

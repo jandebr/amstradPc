@@ -3,6 +3,7 @@ package org.maia.amstrad.pc.action;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
@@ -21,6 +22,8 @@ public class AmstradPcActions {
 	private ProgramBrowserResetAction programBrowserResetAction;
 
 	private Map<AmstradProgramBrowserStyle, ProgramBrowserStyleAction> programBrowserStyleActions;
+
+	private Map<ProgramBrowserStartupAnimationControl, ProgramBrowserStartupAnimationControlAction> programBrowserStartupAnimationControlActions;
 
 	private ProgramInfoAction programInfoAction;
 
@@ -109,6 +112,7 @@ public class AmstradPcActions {
 	public AmstradPcActions(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 		this.programBrowserStyleActions = new HashMap<AmstradProgramBrowserStyle, ProgramBrowserStyleAction>();
+		this.programBrowserStartupAnimationControlActions = new HashMap<ProgramBrowserStartupAnimationControl, ProgramBrowserStartupAnimationControlAction>();
 		this.joystickSetupActions = new HashMap<AmstradJoystickID, JoystickSetupAction>();
 		this.joystickActivationActions = new HashMap<AmstradJoystickID, JoystickActivationAction>();
 	}
@@ -139,6 +143,16 @@ public class AmstradPcActions {
 		if (action == null) {
 			action = new ProgramBrowserStyleAction(style, getAmstradPc());
 			programBrowserStyleActions.put(style, action);
+		}
+		return action;
+	}
+
+	public ProgramBrowserStartupAnimationControlAction getProgramBrowserStartupAnimationControlAction(
+			ProgramBrowserStartupAnimationControl control) {
+		ProgramBrowserStartupAnimationControlAction action = programBrowserStartupAnimationControlActions.get(control);
+		if (action == null) {
+			action = new ProgramBrowserStartupAnimationControlAction(control, getAmstradPc());
+			programBrowserStartupAnimationControlActions.put(control, action);
 		}
 		return action;
 	}
