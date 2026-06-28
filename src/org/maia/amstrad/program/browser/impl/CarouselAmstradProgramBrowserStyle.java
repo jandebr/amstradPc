@@ -16,4 +16,9 @@ public class CarouselAmstradProgramBrowserStyle extends AmstradProgramBrowserSty
 		return new CarouselAmstradProgramBrowser(amstradPc, repository, this);
 	}
 
+	@Override
+	public boolean hasStartupAnimation() {
+		return true;
+	}
+
 }

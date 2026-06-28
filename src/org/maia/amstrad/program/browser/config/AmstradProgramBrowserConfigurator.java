@@ -24,6 +24,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.maia.amstrad.AmstradFactory;
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
 import org.maia.amstrad.pc.AmstradPcFrame;
 import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
@@ -45,6 +46,8 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 
 	private JComboBox<AmstradProgramBrowserStyle> styleSelectorField;
 
+	private JComboBox<ProgramBrowserStartupAnimationControl> startupAnimationControlSelectorField;
+
 	private FolderInputField rootFolderField;
 
 	private JCheckBox hideSequenceNumbersOption;
@@ -62,6 +65,7 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 	private AmstradProgramBrowserConfigurator(AmstradProgramBrowserConfiguration state) {
 		this.state = state;
 		this.styleSelectorField = createStyleSelectorField();
+		this.startupAnimationControlSelectorField = createStartupAnimationControlSelectorField();
 		this.rootFolderField = createRootFolderField();
 		this.hideSequenceNumbersOption = createHideSequenceNumbersOption();
 		this.searchByProgramNameOption = createSearchByProgramNameOption();
@@ -83,12 +87,15 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 		addTab("General", createGeneralTabComponent());
 		addTab("Search", createSearchTabComponent());
 		addTab("Facets", createFacetsTabComponent());
+		updateStartupAnimationControlEnablement();
 	}
 
 	private JComponent createGeneralTabComponent() {
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.setAlignmentX(LEFT_ALIGNMENT);
 		box.add(createStyleSelectorComponent());
+		box.add(Box.createVerticalStrut(12));
+		box.add(createStartupAnimationControlSelectorComponent());
 		box.add(Box.createVerticalStrut(12));
 		box.add(createRootFolderComponent());
 		box.add(Box.createVerticalStrut(4));
@@ -103,6 +110,16 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 		label.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 8));
 		box.add(label);
 		box.add(getStyleSelectorField());
+		return box;
+	}
+
+	private JComponent createStartupAnimationControlSelectorComponent() {
+		Box box = new Box(BoxLayout.X_AXIS);
+		box.setAlignmentX(LEFT_ALIGNMENT);
+		JLabel label = new JLabel("Startup animation:");
+		label.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 8));
+		box.add(label);
+		box.add(getStartupAnimationControlSelectorField());
 		return box;
 	}
 
@@ -169,10 +186,38 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 				if (e.getActionCommand().equals("comboBoxChanged")) {
 					AmstradProgramBrowserStyle selectedStyle = (AmstradProgramBrowserStyle) field.getSelectedItem();
 					getState().setStyle(selectedStyle);
+					updateStartupAnimationControlEnablement();
 				}
 			}
 		});
 		return field;
+	}
+
+	private JComboBox<ProgramBrowserStartupAnimationControl> createStartupAnimationControlSelectorField() {
+		JComboBox<ProgramBrowserStartupAnimationControl> field = new JComboBox<ProgramBrowserStartupAnimationControl>();
+		for (ProgramBrowserStartupAnimationControl control : ProgramBrowserStartupAnimationControl.values()) {
+			field.addItem(control);
+		}
+		field.setSelectedItem(getState().getStartupAnimationControl());
+		field.setRenderer(new StartupAnimationControlRenderer());
+		field.setEditable(false);
+		field.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("comboBoxChanged")) {
+					ProgramBrowserStartupAnimationControl selectedControl = (ProgramBrowserStartupAnimationControl) field
+							.getSelectedItem();
+					getState().setStartupAnimationControl(selectedControl);
+				}
+			}
+		});
+		return field;
+	}
+
+	private void updateStartupAnimationControlEnablement() {
+		AmstradProgramBrowserStyle style = (AmstradProgramBrowserStyle) getStyleSelectorField().getSelectedItem();
+		getStartupAnimationControlSelectorField().setEnabled(style.hasStartupAnimation());
 	}
 
 	private FolderInputField createRootFolderField() {
@@ -343,6 +388,10 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 		return styleSelectorField;
 	}
 
+	private JComboBox<ProgramBrowserStartupAnimationControl> getStartupAnimationControlSelectorField() {
+		return startupAnimationControlSelectorField;
+	}
+
 	private FolderInputField getRootFolderField() {
 		return rootFolderField;
 	}
@@ -394,6 +443,30 @@ public class AmstradProgramBrowserConfigurator extends JTabbedPane {
 		@Override
 		public Component getListCellRendererComponent(JList<? extends AmstradProgramBrowserStyle> list,
 				AmstradProgramBrowserStyle value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel label = new JLabel(value.getDisplayName());
+			label.setOpaque(true);
+			if (isSelected) {
+				label.setBackground(list.getSelectionBackground());
+				label.setForeground(list.getSelectionForeground());
+			} else {
+				label.setBackground(list.getBackground());
+				label.setForeground(list.getForeground());
+			}
+			label.setFont(list.getFont());
+			return label;
+		}
+
+	}
+
+	private static class StartupAnimationControlRenderer
+			implements ListCellRenderer<ProgramBrowserStartupAnimationControl> {
+
+		public StartupAnimationControlRenderer() {
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends ProgramBrowserStartupAnimationControl> list,
+				ProgramBrowserStartupAnimationControl value, int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel label = new JLabel(value.getDisplayName());
 			label.setOpaque(true);
 			if (isSelected) {

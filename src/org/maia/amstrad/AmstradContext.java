@@ -3,6 +3,7 @@ package org.maia.amstrad;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.ProgramBrowserAction;
@@ -57,6 +58,8 @@ public abstract class AmstradContext {
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED = "program_repo.file.dir-managed";
 
 	private static final String SETTING_PROGRAM_REPO_DIR_MANAGED_CLEANUP = "program_repo.file.dir-managed.cleanup.enable";
+
+	private static final String SETTING_PROGRAM_BROWSER_STARTUP_ANIMATION_CONTROL = "program_browser.startup_animation.control";
 
 	private static final String SETTING_LOWPERFORMANCE = "lowperformance";
 
@@ -255,15 +258,27 @@ public abstract class AmstradContext {
 		settings.set(SETTING_PROGRAM_REPO_FACETS, FacetFactory.getInstance().toExternalForm(configuration.getFacets()));
 	}
 
+	public ProgramBrowserStartupAnimationControl getStartupAnimationControl() {
+		return ProgramBrowserStartupAnimationControl
+				.valueOf(getUserSettings().get(SETTING_PROGRAM_BROWSER_STARTUP_ANIMATION_CONTROL,
+						ProgramBrowserStartupAnimationControl.DELAYED.name()).toUpperCase());
+	}
+
+	public void setStartupAnimationControl(ProgramBrowserStartupAnimationControl control) {
+		getUserSettings().set(SETTING_PROGRAM_BROWSER_STARTUP_ANIMATION_CONTROL, control.name());
+	}
+
 	public AmstradProgramBrowserConfiguration getProgramBrowserConfiguration(AmstradPc amstradPc) {
 		AmstradProgramBrowserConfiguration configuration = new AmstradProgramBrowserConfiguration(
 				getProgramRepositoryConfiguration());
 		configuration.setStyle(getProgramBrowserStyleManager().getStyle(amstradPc));
+		configuration.setStartupAnimationControl(getStartupAnimationControl());
 		return configuration;
 	}
 
 	public void setProgramBrowserConfiguration(AmstradProgramBrowserConfiguration configuration, AmstradPc amstradPc) {
 		setProgramRepositoryConfiguration(configuration.getRepositoryConfiguration());
+		setStartupAnimationControl(configuration.getStartupAnimationControl());
 		AmstradProgramBrowserStyleManager styleManager = getProgramBrowserStyleManager();
 		AmstradProgramBrowserStyle style = configuration.getStyle();
 		if (!style.equals(styleManager.getStyle(amstradPc))) {

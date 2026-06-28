@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
 import org.maia.amstrad.gui.browser.carousel.CarouselCoverImageFactory.CassetteCoverImageFactory;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselAction;
@@ -63,6 +64,8 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private AmstradGraphicsContext graphicsContext;
 
+	private ProgramBrowserStartupAnimationControl startupAnimationControl;
+
 	private AmstradProgramCoverImageProducer programCoverImageProducer;
 
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
@@ -93,10 +96,13 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private CarouselHighlightItemAction itemHighlightActionInProgress;
 
+	private static final String SETTING_STARTUP_ANIMATION_COLOR = "program_browser.startup_animation.force_color";
+
 	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
 		this.graphicsContext = getAmstradPc().getMonitor().getGraphicsContext();
+		this.startupAnimationControl = getAmstradContext().getStartupAnimationControl();
 		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 		setAutoPauseResume(true);
 	}
@@ -105,7 +111,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		setTheme(createTheme(graphicsContext));
 		setBackground(getTheme().getBackgroundColor());
-		startup();
+		if (getUserSettings().getBool(SETTING_STARTUP_ANIMATION_COLOR, false)) {
+			getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR); // ahead of startup action
+		}
+		initStartupAction();
 		super.init(displayComponent, graphicsContext); // invokes createLayoutManager() and buildUI()
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		setFocusManager(createFocusManager());
@@ -198,7 +207,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	protected void initFocusManager() {
 		CarouselFocusManager focusManager = getFocusManager();
-		focusManager.addListener(new FocusTracker());
+		focusManager.addListener(new BreadcrumbController());
 		focusManager.addFocusTransferBidirectional(getCarouselComponent().getUI(), Direction.DOWN,
 				getCarouselBreadcrumb().getUI());
 		focusManager.clearFocusOwner();
@@ -214,7 +223,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		}
 	}
 
-	protected void startup() {
+	protected void initStartupAction() {
 		CarouselStartupAnimation animation = createAnimationToStartup();
 		CarouselStartupAction action = new CarouselStartupAction(this, animation);
 		setStartupActionInProgress(action);
@@ -281,15 +290,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 	protected void renderContent(Graphics2D g, int width, int height) {
 		CarouselStartupAction startup = getStartupActionInProgress();
 		if (startup != null) {
-			renderAnimation(g, width, height, startup);
-			if (startup.isAnimationStarted()) {
-				if (startup.getAnimationElapsedTimeMillis() >= startup.getMinimumAnimationDurationMillis()
-						&& getEnterFolderActionInProgress() == null) {
-					clearStartupActionInProgress();
-				}
-			} else if (getEnterFolderActionInProgress() == null) {
-				clearStartupActionInProgress();
-			}
+			renderStartupAnimation(g, width, height, startup);
 		} else {
 			super.renderContent(g, width, height);
 			renderFocus(g);
@@ -298,6 +299,23 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 			renderAnimation(g, width, height, getItemHighlightActionInProgress());
 			renderCarouselOutline();
 			renderCarouselCursor(g);
+		}
+	}
+
+	private void renderStartupAnimation(Graphics2D g, int width, int height, CarouselStartupAction startup) {
+		boolean browserReady = getEnterFolderActionInProgress() == null;
+		boolean endAnimation = browserReady;
+		ProgramBrowserStartupAnimationControl control = getStartupAnimationControl();
+		if (!ProgramBrowserStartupAnimationControl.NEVER.equals(control)) {
+			renderAnimation(g, width, height, startup);
+			if (ProgramBrowserStartupAnimationControl.ALWAYS.equals(control) || startup.isAnimationStarted()) {
+				boolean minAnimationElapsedTime = startup.isAnimationStarted()
+						&& startup.getAnimationElapsedTimeMillis() >= startup.getMinimumAnimationDurationMillis();
+				endAnimation = browserReady && minAnimationElapsedTime;
+			}
+		}
+		if (endAnimation) {
+			clearStartupActionInProgress();
 		}
 	}
 
@@ -862,6 +880,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 		this.itemHighlightActionInProgress = action;
 	}
 
+	private ProgramBrowserStartupAnimationControl getStartupAnimationControl() {
+		return startupAnimationControl;
+	}
+
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {
 
 		public CarouselComponentItemTracker() {
@@ -896,11 +918,11 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	}
 
-	private class FocusTracker implements FocusListener {
+	private class BreadcrumbController implements FocusListener {
 
 		private SlidingCursor breadcrumbCursor;
 
-		public FocusTracker() {
+		public BreadcrumbController() {
 			this.breadcrumbCursor = getCarouselBreadcrumb().getSlidingCursor();
 		}
 

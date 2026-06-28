@@ -37,6 +37,8 @@ public abstract class AmstradProgramBrowserStyle {
 	protected abstract AmstradProgramBrowser createProgramBrowser(AmstradPc amstradPc,
 			AmstradProgramRepository repository);
 
+	public abstract boolean hasStartupAnimation();
+
 	public String getDisplayName() {
 		return displayName;
 	}

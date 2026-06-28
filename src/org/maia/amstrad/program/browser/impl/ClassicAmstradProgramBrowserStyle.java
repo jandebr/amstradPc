@@ -16,4 +16,9 @@ public class ClassicAmstradProgramBrowserStyle extends AmstradProgramBrowserStyl
 		return new ClassicAmstradProgramBrowser(amstradPc, repository, this);
 	}
 
+	@Override
+	public boolean hasStartupAnimation() {
+		return false;
+	}
+
 }
