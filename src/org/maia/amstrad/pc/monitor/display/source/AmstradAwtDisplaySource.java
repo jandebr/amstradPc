@@ -21,7 +21,7 @@ public abstract class AmstradAwtDisplaySource extends AmstradAbstractDisplaySour
 
 	private Color background = Color.BLACK;
 
-	private boolean forceRepaintMenuBar;
+	private boolean forceRepaintMenuBar; // fixes glitches
 
 	private boolean componentAdditionDeferred;
 
