@@ -95,7 +95,7 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 		int targetLabelWidth = getTargetLoadingMessageWidth();
 		float fontSizeTop = TextLabel.getFontSizeForLineWidth(font, messageTop, targetLabelWidth);
 		float fontSizeBottom = TextLabel.getFontSizeForLineWidth(font, messageBottom, targetLabelWidth);
-		float fontSize = Math.min(fontSizeTop, fontSizeBottom);
+		float fontSize = Math.max(Math.min(fontSizeTop, fontSizeBottom), 10f);
 		font = font.deriveFont(fontSize);
 		Insets insets = new Insets(margin, 0, margin, 0);
 		setLoadingLabelTop(
