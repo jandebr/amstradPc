@@ -5,10 +5,12 @@ import java.io.PrintStream;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
+import org.maia.amstrad.pc.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySource;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
 import org.maia.amstrad.program.browser.AmstradProgramBrowserStyleManager;
 import org.maia.amstrad.program.browser.config.AmstradProgramBrowserConfiguration;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
@@ -262,7 +264,15 @@ public abstract class AmstradContext {
 
 	public void setProgramBrowserConfiguration(AmstradProgramBrowserConfiguration configuration, AmstradPc amstradPc) {
 		setProgramRepositoryConfiguration(configuration.getRepositoryConfiguration());
-		getProgramBrowserStyleManager().applyStyle(configuration.getStyle(), amstradPc);
+		AmstradProgramBrowserStyleManager styleManager = getProgramBrowserStyleManager();
+		AmstradProgramBrowserStyle style = configuration.getStyle();
+		if (!style.equals(styleManager.getStyle(amstradPc))) {
+			styleManager.applyStyle(style, amstradPc); // updates the program browser
+		} else {
+			// update the program browser
+			ProgramBrowserAction browserAction = amstradPc.getActions().getProgramBrowserAction();
+			browserAction.reset(style.createProgramBrowser(amstradPc));
+		}
 	}
 
 	public AmstradProgramBrowserStyleManager getProgramBrowserStyleManager() {
