@@ -89,7 +89,7 @@ public class AmstradFactory {
 
 	private AmstradProgramBrowserStyleManager createProgramBrowserStyleManager() {
 		AmstradProgramBrowserStyleManager manager = new AmstradProgramBrowserStyleManager();
-		manager.addStyle(new ClassicAmstradProgramBrowserStyle());
+		manager.addStyle(new ClassicAmstradProgramBrowserStyle()); // first added is fallback default
 		manager.addStyle(new CarouselAmstradProgramBrowserStyle());
 		return manager;
 	}

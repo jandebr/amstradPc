@@ -55,7 +55,7 @@ import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 
-public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends AmstradAwtDisplaySource
+public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource, CarouselStartupHost, CarouselEnterFolderHost, CarouselRunProgramHost {
 
 	private CarouselAmstradProgramBrowser programBrowser;
@@ -96,7 +96,7 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private static final String SETTING_STARTUP_ANIMATION_COLOR = "program_browser.startup_animation.force_color";
 
-	protected CarouselProgramBrowserDisplaySourceSkeleton(CarouselAmstradProgramBrowser programBrowser) {
+	protected CarouselProgramBrowserDisplaySourceBase(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
 		this.graphicsContext = getAmstradPc().getMonitor().getGraphicsContext();
@@ -533,12 +533,12 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	@Override
 	public void reset() {
-		if (getCarouselComponent() == null)
-			return; // not yet initialized
-		clearProgramNodeFailedToRun();
-		AmstradProgramRepository repo = getProgramBrowser().getProgramRepository();
-		repo.refresh();
-		enterFolderAsync(repo.getRootNode());
+		if (isInitialized()) {
+			clearProgramNodeFailedToRun();
+			AmstradProgramRepository repo = getProgramBrowser().getProgramRepository();
+			repo.refresh();
+			enterFolderAsync(repo.getRootNode());
+		}
 	}
 
 	@Override
@@ -700,6 +700,10 @@ public abstract class CarouselProgramBrowserDisplaySourceSkeleton extends Amstra
 
 	private boolean isBreadcrumbComponent(Component comp) {
 		return getCarouselBreadcrumb().getUI().equals(comp);
+	}
+
+	private boolean isInitialized() {
+		return getCarouselComponent() != null;
 	}
 
 	public boolean isStartupInProgress() {

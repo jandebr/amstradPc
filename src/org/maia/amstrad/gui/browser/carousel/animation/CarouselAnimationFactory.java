@@ -46,7 +46,7 @@ public class CarouselAnimationFactory {
 		} else {
 			animation = new CarouselDragonFightAnimation(graphicsContext);
 		}
-		animation.setMinimumDelayMillis(500L);
+		animation.setMinimumDelayMillis(1000L);
 		animation.setMinimumDurationMillis(8000L);
 		return animation;
 	}

@@ -20,7 +20,7 @@ import org.maia.swing.animate.imageslide.show.SlidingImageShow;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.swing.animate.textslide.SlidingTextLabel;
 
-public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserDisplaySourceSkeleton {
+public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserDisplaySourceBase {
 
 	private AmstradSymbolRenderer symbolRenderer;
 
