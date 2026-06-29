@@ -38,6 +38,11 @@ import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserDefault
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.sprite.Sprite;
+import org.maia.amstrad.gui.sprite.SpriteColorMap;
+import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
+import org.maia.amstrad.gui.sprite.SpriteImage;
+import org.maia.amstrad.gui.sprite.SpriteImageRLE;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
@@ -54,6 +59,7 @@ import org.maia.swing.animate.itemslide.SlidingCursor;
 import org.maia.swing.animate.itemslide.SlidingItem;
 import org.maia.swing.animate.itemslide.SlidingItemListAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
+import org.maia.util.ColorUtils;
 
 public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource, CarouselStartupHost, CarouselEnterFolderHost, CarouselRunProgramHost {
@@ -93,6 +99,10 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	private CarouselRunProgramAction runProgramActionInProgress;
 
 	private CarouselHighlightItemAction itemHighlightActionInProgress;
+
+	private ProlongedStartupAnimationIndicator prolongedStartupAnimationIndicator;
+
+	private boolean prolongedStartupAnimation;
 
 	private static final String SETTING_STARTUP_ANIMATION_COLOR = "program_browser.startup_animation.force_color";
 
@@ -221,9 +231,11 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	}
 
 	protected void initStartupAction() {
+		setProlongedStartupAnimation(false);
 		CarouselStartupAnimation animation = createAnimationToStartup();
 		CarouselStartupAction action = new CarouselStartupAction(this, animation);
 		setStartupActionInProgress(action);
+		setProlongedStartupAnimationIndicator(new ProlongedStartupAnimationIndicator(animation));
 		action.perform();
 	}
 
@@ -305,15 +317,36 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		ProgramBrowserStartupAnimationControl control = getStartupAnimationControl();
 		if (!ProgramBrowserStartupAnimationControl.NEVER.equals(control)) {
 			renderAnimation(g, width, height, startup);
+			if (isProlongedStartupAnimation()) {
+				renderStartupAnimationProlongedIndication(g, width, height);
+			}
 			if (ProgramBrowserStartupAnimationControl.ALWAYS.equals(control) || startup.isAnimationStarted()) {
 				boolean minAnimationElapsedTime = startup.isAnimationStarted()
 						&& startup.getAnimationElapsedTimeMillis() >= startup.getMinimumAnimationDurationMillis();
-				endAnimation = browserReady && minAnimationElapsedTime;
+				endAnimation = browserReady && minAnimationElapsedTime && !isProlongedStartupAnimation();
 			}
 		}
 		if (endAnimation) {
 			clearStartupActionInProgress();
 		}
+	}
+
+	private void renderStartupAnimationProlongedIndication(Graphics2D g, int width, int height) {
+		ProlongedStartupAnimationIndicator ind = getProlongedStartupAnimationIndicator();
+		int w = ind.getWidth();
+		int h = ind.getHeight();
+		ind.move(0, 0);
+		ind.draw(g);
+		ind.move(width - w, 0);
+		ind.flipX();
+		ind.draw(g);
+		ind.move(width - w, height - h);
+		ind.flipY();
+		ind.draw(g);
+		ind.move(0, height - h);
+		ind.flipX();
+		ind.draw(g);
+		ind.flipY();
 	}
 
 	private void renderFocus(Graphics2D g) {
@@ -381,7 +414,9 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	@Override
 	protected void keyboardKeyPressed(KeyEvent e) {
 		Component focusOwner = getFocusManager().getFocusOwner();
-		if (focusOwner != null) {
+		if (getStartupActionInProgress() != null && getStartupActionInProgress().isAnimationStarted()) {
+			handleKeyboardKeyInStartupAnimation(e);
+		} else if (focusOwner != null) {
 			handleKeyboardKeyInFocusOwner(e, focusOwner);
 		}
 		if (!e.isConsumed()) {
@@ -478,6 +513,16 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 				enterFolderAsync(item.getFolderNode());
 				e.consume();
 			}
+		}
+	}
+
+	private void handleKeyboardKeyInStartupAnimation(KeyEvent e) {
+		if (isProlongedStartupAnimation()) {
+			setProlongedStartupAnimation(false);
+			e.consume();
+		} else if (e.getKeyCode() == KeyEvent.VK_ADD) {
+			setProlongedStartupAnimation(true);
+			e.consume();
 		}
 	}
 
@@ -631,6 +676,7 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	private void clearStartupActionInProgress() {
 		clearCarouselAction(getStartupActionInProgress());
 		setStartupActionInProgress(null);
+		setProlongedStartupAnimation(false);
 	}
 
 	private void clearItemHighlightActionInProgress() {
@@ -855,6 +901,10 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		this.startupActionInProgress = action;
 	}
 
+	private ProgramBrowserStartupAnimationControl getStartupAnimationControl() {
+		return getAmstradContext().getStartupAnimationControl();
+	}
+
 	@Override
 	public CarouselEnterFolderAction getEnterFolderActionInProgress() {
 		return enterFolderActionInProgress;
@@ -883,8 +933,20 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		this.itemHighlightActionInProgress = action;
 	}
 
-	private ProgramBrowserStartupAnimationControl getStartupAnimationControl() {
-		return getAmstradContext().getStartupAnimationControl();
+	private boolean isProlongedStartupAnimation() {
+		return prolongedStartupAnimation;
+	}
+
+	private void setProlongedStartupAnimation(boolean extended) {
+		this.prolongedStartupAnimation = extended;
+	}
+
+	private ProlongedStartupAnimationIndicator getProlongedStartupAnimationIndicator() {
+		return prolongedStartupAnimationIndicator;
+	}
+
+	private void setProlongedStartupAnimationIndicator(ProlongedStartupAnimationIndicator indicator) {
+		this.prolongedStartupAnimationIndicator = indicator;
 	}
 
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {
@@ -951,6 +1013,48 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 		private SlidingCursor getBreadcrumbCursor() {
 			return breadcrumbCursor;
+		}
+
+	}
+
+	private static class ProlongedStartupAnimationIndicator extends Sprite {
+
+		public ProlongedStartupAnimationIndicator(CarouselStartupAnimation animation) {
+			super(createIndicatorImage(), createColorMap(animation));
+		}
+
+		@Override
+		public void draw(Graphics2D g) {
+			float r = (1f + (float) Math.sin(System.currentTimeMillis() / 500.0)) / 2f;
+			getColorMap().setColor(0, ColorUtils.interpolate(getColorMap().getColor(1), getColorMap().getColor(2), r));
+			super.draw(g);
+		}
+
+		@Override
+		public SpriteColorMapImpl getColorMap() {
+			return (SpriteColorMapImpl) super.getColorMap();
+		}
+
+		private static SpriteImage createIndicatorImage() {
+			return new SpriteImageRLE(16, 16,
+					new int[] { -1, 15, 0, 1, -2, -1, 15, 0, 1, -2, -1, 15, 0, 1, -2, -1, 5, 0, 5, -1, 5, 0, 1, -2, -1,
+							6, 0, 1, -1, 1, 0, 1, -1, 6, 0, 1, -2, -1, 3, 0, 1, -1, 2, 0, 1, -1, 1, 0, 1, -1, 2, 0, 1,
+							-1, 3, 0, 1, -2, -1, 3, 0, 4, -1, 1, 0, 4, -1, 3, 0, 1, -2, -1, 3, 0, 1, -1, 7, 0, 1, -1, 3,
+							0, 1, -2, -1, 3, 0, 4, -1, 1, 0, 4, -1, 3, 0, 1, -2, -1, 3, 0, 1, -1, 2, 0, 1, -1, 1, 0, 1,
+							-1, 2, 0, 1, -1, 3, 0, 1, -2, -1, 6, 0, 1, -1, 1, 0, 1, -1, 6, 0, 1, -2, -1, 5, 0, 5, -1, 4,
+							0, 1, -2, -1, 14, 0, 1, -2, -1, 13, 0, 1, -2, -1, 11, 0, 2, -2, 0, 11 });
+		}
+
+		private static SpriteColorMap createColorMap(CarouselStartupAnimation animation) {
+			Color bg = animation.getDisplayBackgroundColor();
+			SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
+			if (ColorUtils.getBrightness(bg) < 0.5f) {
+				colorMap.setColor(1, ColorUtils.adjustBrightness(bg, 0.5f));
+			} else {
+				colorMap.setColor(1, ColorUtils.adjustBrightness(bg, -0.5f));
+			}
+			colorMap.setColor(2, bg);
+			return colorMap;
 		}
 
 	}

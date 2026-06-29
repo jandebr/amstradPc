@@ -182,7 +182,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 		int w = Math.round(h * bounds.width);
 		if (w > 0) {
 			Color c = getHealthBarColors().getColor(ninja.isFirstNinja() ? 2 : 3);
-			if (h < 0.4f) {
+			if (h < 0.3f) {
 				float r = (float) Math.pow((Math.sin(elapsedTimeMillis / 100.0) + 1.0) / 2.0, 2.0);
 				float t1 = ColorUtils.getTransparency(c);
 				float t2 = t1 + 0.5f * (1f - t1);

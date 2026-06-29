@@ -345,7 +345,7 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 
 	@Override
 	public Color getDisplayBackgroundColor() {
-		return toMonitorColor(Color.BLACK);
+		return Color.BLACK; // matches the porthole mask
 	}
 
 	protected int getPortholeWidth() {

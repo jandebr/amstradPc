@@ -14,15 +14,14 @@ public class SpriteImageMaker {
 	}
 
 	private static void makeImageEncodedAsRLE() {
-		BufferedImage image = UIResources.loadImage("animations/waves/penguin-left-8x24.png");
+		BufferedImage image = UIResources.loadImage("animations/prolonged-indicator-alt-16x16.png");
 		EncoderRLE encoder = new EncoderRLE(initSpriteColorMap());
 		encoder.encode(image).print(System.out);
 	}
 
 	private static SpriteColorMapImpl initSpriteColorMap() {
 		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
-		colorMap.setColor(0, new Color(0, 0, 0));
-		colorMap.setColor(1, new Color(255, 255, 255));
+		colorMap.setColor(0, new Color(255, 255, 255));
 		return colorMap;
 	}
 
