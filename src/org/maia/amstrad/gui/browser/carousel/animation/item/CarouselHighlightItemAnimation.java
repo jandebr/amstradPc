@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.browser.carousel.animation;
+package org.maia.amstrad.gui.browser.carousel.animation.item;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -18,24 +18,19 @@ public class CarouselHighlightItemAnimation extends CarouselItemAnimation {
 
 	private long highlightNextStartTimeMillis; // in elapsed time
 
-	private Image highlightOverlayImage;
-
 	private Shape highlightOverlayClip;
 
 	private int highlightOverlayClipHeight;
 
-	public CarouselHighlightItemAnimation(CarouselItem item, Rectangle itemBounds) {
-		super(item, itemBounds);
+	public CarouselHighlightItemAnimation(CarouselItem item, Rectangle itemCarouselBounds) {
+		super(item, itemCarouselBounds);
 	}
 
 	@Override
 	public void init(int displayWidth, int displayHeight) {
 		super.init(displayWidth, displayHeight);
-		if (getItem() != null) {
-			setHighlightOverlayImage(getItem().getHighlightOverlayImage());
-		}
-		if (getItemBounds() != null) {
-			setHighlightOverlayClip(createHighlightOverlayClip(getItemBounds()));
+		if (getItemCarouselBounds() != null) {
+			setHighlightOverlayClip(createHighlightOverlayClip(getItemCarouselBounds()));
 			setHighlightOverlayClipHeight(getHighlightOverlayClip().getBounds().height);
 		}
 		defineNextStartTime(0L);
@@ -69,8 +64,8 @@ public class CarouselHighlightItemAnimation extends CarouselItemAnimation {
 	}
 
 	protected void renderHighlight(Graphics2D g, float timeFraction) {
-		Rectangle bounds = getItemBounds();
-		Image overlay = getHighlightOverlayImage();
+		Rectangle bounds = getItemCarouselBounds();
+		Image overlay = getItemHighlightOverlayImage();
 		if (bounds != null && overlay != null) {
 			Shape clip = getHighlightOverlayClip();
 			int clipHeight = getHighlightOverlayClipHeight();
@@ -80,15 +75,6 @@ public class CarouselHighlightItemAnimation extends CarouselItemAnimation {
 			g2.setClip(clip);
 			g2.drawImage(overlay, 0, -dy, null);
 			g2.dispose();
-		}
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-		Image overlay = getHighlightOverlayImage();
-		if (overlay != null) {
-			overlay.flush();
 		}
 	}
 
@@ -129,14 +115,6 @@ public class CarouselHighlightItemAnimation extends CarouselItemAnimation {
 
 	private void setHighlightNextStartTimeMillis(long timeMillis) {
 		this.highlightNextStartTimeMillis = timeMillis;
-	}
-
-	private Image getHighlightOverlayImage() {
-		return highlightOverlayImage;
-	}
-
-	private void setHighlightOverlayImage(Image overlay) {
-		this.highlightOverlayImage = overlay;
 	}
 
 	private Shape getHighlightOverlayClip() {

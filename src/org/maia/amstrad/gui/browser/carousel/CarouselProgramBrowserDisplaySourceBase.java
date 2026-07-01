@@ -706,11 +706,30 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	@Override
 	public Rectangle getCarouselItemBounds(Node node) {
 		Rectangle bounds = null;
-		CarouselItem item = getCarouselComponent().getItem(node);
+		CarouselItem item = getCarouselItem(node);
 		if (item != null) {
 			bounds = getCarouselComponent().getItemBoundsInComponent(item);
 			if (bounds != null) {
 				Point loc = getCarouselComponent().getUI().getLocation();
+				bounds.translate(loc.x, loc.y);
+			}
+		}
+		return bounds;
+	}
+
+	@Override
+	public CarouselBreadcrumbItem getBreadcrumbItem(FolderNode folderNode) {
+		return getCarouselBreadcrumb().getItem(folderNode);
+	}
+
+	@Override
+	public Rectangle getBreadcrumbItemBounds(FolderNode folderNode) {
+		Rectangle bounds = null;
+		CarouselBreadcrumbItem item = getBreadcrumbItem(folderNode);
+		if (item != null) {
+			bounds = getCarouselBreadcrumb().getItemBoundsInComponent(item);
+			if (bounds != null) {
+				Point loc = getCarouselBreadcrumb().getUI().getLocation();
 				bounds.translate(loc.x, loc.y);
 			}
 		}

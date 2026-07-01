@@ -2,6 +2,10 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 
 import java.awt.Rectangle;
 
+import org.maia.amstrad.gui.browser.carousel.animation.breadcrumb.CarouselBreadcrumbEnterFolderAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselEnterFolderAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselHighlightItemAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselRunProgramAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.dragon.CarouselDragonFightAnimation;
@@ -10,6 +14,7 @@ import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselArc
 import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselTropicWavesAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselTropicWavesGamifiedAnimation;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
+import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
@@ -52,30 +57,49 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
-		CarouselEnterFolderAnimation animation = new CarouselEnterFolderAnimation(
-				(CarouselFolderItem) host.getCarouselItem(folderNode), host.getCarouselItemBounds(folderNode));
-		animation.setMinimumDelayMillis(400L);
-		animation.setMinimumDurationMillis(1000L);
+		CarouselBaseAnimation animation = null;
+		CarouselItem item = host.getCarouselItem(folderNode);
+		Rectangle itemBounds = host.getCarouselItemBounds(folderNode);
+		if (item != null && itemBounds != null) {
+			animation = new CarouselEnterFolderAnimation((CarouselFolderItem) item, itemBounds);
+		} else {
+			CarouselBreadcrumbItem breadcrumbItem = host.getBreadcrumbItem(folderNode);
+			itemBounds = host.getBreadcrumbItemBounds(folderNode);
+			if (breadcrumbItem != null && itemBounds != null) {
+				animation = new CarouselBreadcrumbEnterFolderAnimation(breadcrumbItem, itemBounds);
+			}
+		}
+		if (animation != null) {
+			animation.setMinimumDelayMillis(400L);
+			animation.setMinimumDurationMillis(1000L);
+		}
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToRunProgram(ProgramNode programNode, CarouselHost host) {
-		CarouselRunProgramAnimation animation = new CarouselRunProgramAnimation(
-				(CarouselProgramItem) host.getCarouselItem(programNode), host.getCarouselItemBounds(programNode));
-		animation.setMinimumDelayMillis(0L);
-		animation.setMinimumDurationMillis(1000L);
+		CarouselRunProgramAnimation animation = null;
+		CarouselItem item = host.getCarouselItem(programNode);
+		Rectangle itemBounds = host.getCarouselItemBounds(programNode);
+		if (item != null && itemBounds != null) {
+			animation = new CarouselRunProgramAnimation((CarouselProgramItem) item, itemBounds);
+			animation.setMinimumDelayMillis(0L);
+			animation.setMinimumDurationMillis(1000L);
+		}
 		return animation;
 	}
 
 	public CarouselAnimation createAnimationToHighlightNode(Node node, CarouselHost host) {
+		CarouselHighlightItemAnimation animation = null;
 		CarouselItem item = host.getCarouselItem(node);
 		Rectangle itemBounds = host.getCarouselItemBounds(node);
-		CarouselHighlightItemAnimation animation = new CarouselHighlightItemAnimation(item, itemBounds);
-		animation.setMinimumDelayMillis(0L); // instant, builtin random delay in animation
-		animation.setMinimumDurationMillis(1000000000L); // a very long time since animation repeats
-		animation.setHighlightMinimumDelayMillis(6000L); // 6s
-		animation.setHighlightMaximumDelayMillis(12000L); // 12s
-		animation.setHighlightDurationMillis(800L); // 0.8s
+		if (item != null && itemBounds != null) {
+			animation = new CarouselHighlightItemAnimation(item, itemBounds);
+			animation.setMinimumDelayMillis(0L); // instant, builtin random delay in animation
+			animation.setMinimumDurationMillis(1000000000L); // a very long time since animation repeats
+			animation.setHighlightMinimumDelayMillis(6000L); // 6s
+			animation.setHighlightMaximumDelayMillis(12000L); // 12s
+			animation.setHighlightDurationMillis(800L); // 0.8s
+		}
 		return animation;
 	}
 
