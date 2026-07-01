@@ -68,6 +68,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 		AmstradSystemProgramBrowserScreen screen = new AmstradSystemProgramBrowserScreen(this);
 		screen.setPopupMenu(createPopupMenu());
 		screen.setShowControlKeys(false);
+		screen.setShowTurbo(false);
 		return screen;
 	}
 

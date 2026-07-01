@@ -83,7 +83,7 @@ public class CarouselAnimationFactory {
 		if (item != null && itemBounds != null) {
 			animation = new CarouselRunProgramAnimation((CarouselProgramItem) item, itemBounds);
 			animation.setMinimumDelayMillis(0L);
-			animation.setMinimumDurationMillis(1000L);
+			animation.setMinimumDurationMillis(2000L);
 		}
 		return animation;
 	}
