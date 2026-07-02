@@ -8,17 +8,35 @@ import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
 
 public class CarouselBreadcrumbEnterFolderAnimation extends CarouselBreadcrumbItemAnimation {
 
-	public static Color itemBoundsColor = new Color(249, 212, 37);
+	private Color boundsColor;
 
-	public CarouselBreadcrumbEnterFolderAnimation(CarouselBreadcrumbItem item, Rectangle itemBreadcrumbBounds) {
+	public CarouselBreadcrumbEnterFolderAnimation(CarouselBreadcrumbItem item, Rectangle itemBreadcrumbBounds,
+			Color boundsColor) {
 		super(item, itemBreadcrumbBounds);
+		this.boundsColor = boundsColor;
 	}
 
 	@Override
 	public void renderOntoDisplay(Graphics2D displayGraphics, int displayWidth, int displayHeight,
 			long elapsedTimeMillis) {
-		displayGraphics.setColor(itemBoundsColor);
-		renderItemBoundsBlinking(displayGraphics, elapsedTimeMillis);
+		if (elapsedTimeMillis % 400L < 200L) {
+			displayGraphics.setColor(getBoundsColor());
+		} else {
+			displayGraphics.setColor(getItem().getCarouselBreadcrumb().getBackground());
+		}
+		renderItemBounds(displayGraphics);
+	}
+
+	protected void renderItemBounds(Graphics2D g) {
+		Rectangle bounds = getItemBreadcrumbBounds();
+		if (bounds != null) {
+			g.drawRect(bounds.x - 1, bounds.y - 1, bounds.width + 2, bounds.height + 2);
+			g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+		}
+	}
+
+	public Color getBoundsColor() {
+		return boundsColor;
 	}
 
 }

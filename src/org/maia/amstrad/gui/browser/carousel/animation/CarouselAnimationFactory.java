@@ -1,5 +1,6 @@
 package org.maia.amstrad.gui.browser.carousel.animation;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 
 import org.maia.amstrad.gui.browser.carousel.animation.breadcrumb.CarouselBreadcrumbEnterFolderAnimation;
@@ -18,6 +19,7 @@ import org.maia.amstrad.gui.browser.carousel.breadcrumb.CarouselBreadcrumbItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselFolderItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselItem;
 import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
+import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
@@ -26,11 +28,12 @@ import org.maia.util.Randomizer;
 
 public class CarouselAnimationFactory {
 
-	private static CarouselAnimationFactory instance;
+	private CarouselProgramBrowserTheme theme;
 
 	private Randomizer randomizer;
 
-	private CarouselAnimationFactory() {
+	public CarouselAnimationFactory(CarouselProgramBrowserTheme theme) {
+		this.theme = theme;
 		this.randomizer = new Randomizer();
 	}
 
@@ -66,7 +69,8 @@ public class CarouselAnimationFactory {
 			CarouselBreadcrumbItem breadcrumbItem = host.getBreadcrumbItem(folderNode);
 			itemBounds = host.getBreadcrumbItemBounds(folderNode);
 			if (breadcrumbItem != null && itemBounds != null) {
-				animation = new CarouselBreadcrumbEnterFolderAnimation(breadcrumbItem, itemBounds);
+				Color color = getTheme().getBreadcrumbCursorColor();
+				animation = new CarouselBreadcrumbEnterFolderAnimation(breadcrumbItem, itemBounds, color);
 			}
 		}
 		if (animation != null) {
@@ -103,21 +107,12 @@ public class CarouselAnimationFactory {
 		return animation;
 	}
 
+	protected CarouselProgramBrowserTheme getTheme() {
+		return theme;
+	}
+
 	private Randomizer getRandomizer() {
 		return randomizer;
-	}
-
-	public static CarouselAnimationFactory getInstance() {
-		if (instance == null) {
-			setInstance(new CarouselAnimationFactory());
-		}
-		return instance;
-	}
-
-	private static synchronized void setInstance(CarouselAnimationFactory factory) {
-		if (instance == null) {
-			instance = factory;
-		}
 	}
 
 }

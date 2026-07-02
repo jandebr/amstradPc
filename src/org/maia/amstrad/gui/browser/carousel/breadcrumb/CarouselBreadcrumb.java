@@ -44,8 +44,10 @@ public class CarouselBreadcrumb extends SlidingItemListComponent {
 	public CarouselBreadcrumbItem getItem(FolderNode folderNode) {
 		for (int i = 0; i < getItemCount(); i++) {
 			CarouselBreadcrumbItem item = getItem(i);
-			if (item.getFolderNode().equals(folderNode)) {
-				return item;
+			if (!item.isSeparator()) {
+				if (item.getFolderNode().equals(folderNode)) {
+					return item;
+				}
 			}
 		}
 		return null;

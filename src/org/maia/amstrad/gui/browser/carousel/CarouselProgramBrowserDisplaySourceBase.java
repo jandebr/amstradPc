@@ -80,6 +80,8 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 	private CarouselComponentFactory componentFactory;
 
+	private CarouselAnimationFactory animationFactory;
+
 	private CarouselCursorRenderer carouselCursorRenderer;
 
 	private CarouselComponent carouselComponent;
@@ -118,6 +120,7 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	public void init(JComponent displayComponent, AmstradGraphicsContext graphicsContext) {
 		setTheme(createTheme(graphicsContext));
 		setBackground(getTheme().getBackgroundColor());
+		setAnimationFactory(createAnimationFactory());
 		if (getUserSettings().getBool(SETTING_STARTUP_ANIMATION_COLOR, false)) {
 			getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR); // ahead of startup action
 		}
@@ -175,6 +178,10 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	protected CarouselComponentFactory createComponentFactory() {
 		return new CarouselComponentFactory(getTheme(), getLayout(), getProgramCoverImageProducer(),
 				getFolderCoverImageProducer());
+	}
+
+	protected CarouselAnimationFactory createAnimationFactory() {
+		return new CarouselAnimationFactory(getTheme());
 	}
 
 	private void buildCarousel() {
@@ -247,19 +254,19 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	}
 
 	protected CarouselStartupAnimation createAnimationToStartup() {
-		return CarouselAnimationFactory.getInstance().createAnimationToStartup(this);
+		return getAnimationFactory().createAnimationToStartup(this);
 	}
 
 	protected CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode) {
-		return CarouselAnimationFactory.getInstance().createAnimationToEnterFolder(folderNode, this);
+		return getAnimationFactory().createAnimationToEnterFolder(folderNode, this);
 	}
 
 	protected CarouselAnimation createAnimationToRunProgram(ProgramNode programNode) {
-		return CarouselAnimationFactory.getInstance().createAnimationToRunProgram(programNode, this);
+		return getAnimationFactory().createAnimationToRunProgram(programNode, this);
 	}
 
 	protected CarouselAnimation createAnimationToHighlightNode(Node node) {
-		return CarouselAnimationFactory.getInstance().createAnimationToHighlightNode(node, this);
+		return getAnimationFactory().createAnimationToHighlightNode(node, this);
 	}
 
 	@Override
@@ -861,6 +868,14 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 	private void setComponentFactory(CarouselComponentFactory factory) {
 		this.componentFactory = factory;
+	}
+
+	protected CarouselAnimationFactory getAnimationFactory() {
+		return animationFactory;
+	}
+
+	private void setAnimationFactory(CarouselAnimationFactory factory) {
+		this.animationFactory = factory;
 	}
 
 	private CarouselCursorRenderer getCarouselCursorRenderer() {
