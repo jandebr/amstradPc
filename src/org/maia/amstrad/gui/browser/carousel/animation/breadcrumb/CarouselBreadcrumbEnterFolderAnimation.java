@@ -17,14 +17,13 @@ public class CarouselBreadcrumbEnterFolderAnimation extends CarouselBreadcrumbIt
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D displayGraphics, int displayWidth, int displayHeight,
-			long elapsedTimeMillis) {
+	public void renderOntoDisplay(Graphics2D g, int displayWidth, int displayHeight, long elapsedTimeMillis) {
 		if (elapsedTimeMillis % 400L < 200L) {
-			displayGraphics.setColor(getBoundsColor());
+			g.setColor(getBoundsColor());
 		} else {
-			displayGraphics.setColor(getItem().getCarouselBreadcrumb().getBackground());
+			g.setColor(getItem().getCarouselBreadcrumb().getBackground());
 		}
-		renderItemBounds(displayGraphics);
+		renderItemBounds(g);
 	}
 
 	protected void renderItemBounds(Graphics2D g) {

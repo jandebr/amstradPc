@@ -32,6 +32,8 @@ public interface CarouselHost {
 
 	Rectangle getCarouselItemBounds(Node node);
 
+	Rectangle getCarouselOutlineBounds();
+
 	CarouselBreadcrumbItem getBreadcrumbItem(FolderNode folderNode);
 
 	Rectangle getBreadcrumbItemBounds(FolderNode folderNode);

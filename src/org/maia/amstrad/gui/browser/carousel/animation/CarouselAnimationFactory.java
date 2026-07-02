@@ -9,6 +9,7 @@ import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselHighlightIte
 import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselRunProgramAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.startup.RocketTestAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.dragon.CarouselDragonFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.ninja.CarouselNinjaFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselArcticWavesAnimation;
@@ -38,6 +39,8 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
+		return new RocketTestAnimation(); // TODO
+		/*
 		AmstradGraphicsContext graphicsContext = host.getGraphicsContext();
 		CarouselPortholeStartupAnimation animation = null;
 		int i = getRandomizer().drawIntegerNumber(0, 3);
@@ -57,6 +60,7 @@ public class CarouselAnimationFactory {
 		animation.setMinimumDelayMillis(1000L);
 		animation.setMinimumDurationMillis(8000L);
 		return animation;
+		*/
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
@@ -85,7 +89,10 @@ public class CarouselAnimationFactory {
 		CarouselItem item = host.getCarouselItem(programNode);
 		Rectangle itemBounds = host.getCarouselItemBounds(programNode);
 		if (item != null && itemBounds != null) {
-			animation = new CarouselRunProgramAnimation((CarouselProgramItem) item, itemBounds);
+			Rectangle outlineBounds = host.getCarouselOutlineBounds();
+			Rectangle leadingBounds = new Rectangle(itemBounds.x, outlineBounds.y, itemBounds.width,
+					outlineBounds.height);
+			animation = new CarouselRunProgramAnimation((CarouselProgramItem) item, itemBounds, leadingBounds);
 			animation.setMinimumDelayMillis(0L);
 			animation.setMinimumDurationMillis(2000L);
 		}

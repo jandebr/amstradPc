@@ -11,7 +11,7 @@ public abstract class CarouselItemAnimation extends CarouselBaseAnimation {
 
 	private CarouselItem item;
 
-	private Rectangle itemCarouselBounds; // nullable
+	private Rectangle itemCarouselBounds;
 
 	private Image itemHighlightOverlayImage; // nullable
 

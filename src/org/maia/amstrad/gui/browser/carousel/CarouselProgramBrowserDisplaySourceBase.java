@@ -124,7 +124,7 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		if (getUserSettings().getBool(SETTING_STARTUP_ANIMATION_COLOR, false)) {
 			getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR); // ahead of startup action
 		}
-		initStartupAction();
+		initStartupAction(); // ahead of buildUI()
 		super.init(displayComponent, graphicsContext); // invokes createLayoutManager() and buildUI()
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		setFocusManager(createFocusManager());
@@ -399,7 +399,7 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		CarouselCursorRenderer renderer = getCarouselCursorRenderer();
 		if (renderer != null && !isCarouselOutlineShowing()) {
 			Rectangle cursorBounds = getCarouselComponent().getCursorOuterBoundsInComponent();
-			Rectangle outlineBounds = getLayout().getCarouselOutlineBounds();
+			Rectangle outlineBounds = getCarouselOutlineBounds();
 			int width = cursorBounds.width;
 			int height = outlineBounds.height;
 			Graphics2D g2 = (Graphics2D) g.create(cursorBounds.x, outlineBounds.y, width, height);
@@ -722,6 +722,11 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 			}
 		}
 		return bounds;
+	}
+
+	@Override
+	public Rectangle getCarouselOutlineBounds() {
+		return getLayout().getCarouselOutlineBounds();
 	}
 
 	@Override
