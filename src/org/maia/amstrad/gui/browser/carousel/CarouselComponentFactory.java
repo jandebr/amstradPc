@@ -72,6 +72,8 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
 
+	public static boolean outlineBorderClippingFix = true; // tries to fix outline border clipping on some displays
+
 	public CarouselComponentFactory(CarouselProgramBrowserTheme theme, CarouselLayoutManager layout,
 			AmstradProgramCoverImageProducer programCoverImageProducer,
 			AmstradFolderCoverImageProducer folderCoverImageProducer) {
@@ -317,6 +319,10 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	public CarouselOutline createCarouselOutline(CarouselComponent comp) {
 		int thickness = getLayout().getCarouselOutlineBounds().height;
 		CarouselOutline outline = comp.createOutline(thickness);
+		if (outlineBorderClippingFix) {
+			Insets margin = outline.getMargin();
+			outline.getMargin().set(margin.top, margin.left, margin.bottom + 2, margin.right + 2);
+		}
 		outline.setBorder(getTheme().getCarouselOutlineBorderColor() != null
 				? BorderFactory.createLineBorder(getTheme().getCarouselOutlineBorderColor())
 				: null);

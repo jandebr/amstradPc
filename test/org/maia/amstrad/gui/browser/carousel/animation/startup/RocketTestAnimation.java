@@ -8,7 +8,7 @@ import org.maia.amstrad.gui.browser.carousel.animation.CarouselBaseAnimation;
 public class RocketTestAnimation extends CarouselBaseAnimation implements CarouselStartupAnimation {
 
 	public RocketTestAnimation() {
-		setMinimumDurationMillis(120000L);
+		setMinimumDurationMillis(100L);
 	}
 
 	@Override

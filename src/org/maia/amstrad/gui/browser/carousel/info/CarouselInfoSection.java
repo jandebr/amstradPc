@@ -6,6 +6,7 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
+import org.maia.amstrad.gui.browser.carousel.CarouselComponentFactory;
 import org.maia.amstrad.gui.browser.carousel.CarouselLayoutManager;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
@@ -50,6 +51,10 @@ public abstract class CarouselInfoSection extends InfoSection implements Sliding
 		int thickness = getSizeOfInfoOutlineView().width;
 		SlidingItemListOutlineView outline = getSlidingInfoView()
 				.createOutlineViewMatchingOrientationAndLength(thickness);
+		if (CarouselComponentFactory.outlineBorderClippingFix) {
+			Insets margin = outline.getMargin();
+			outline.getMargin().set(margin.top, margin.left, margin.bottom + 2, margin.right + 2);
+		}
 		outline.setBorder(BorderFactory.createLineBorder(getTheme().getInfoOutlineBorderColor()));
 		outline.setExtentMargin(new Insets(1, 1, 1, 1));
 		outline.setExtentBorder(BorderFactory.createLineBorder(getTheme().getInfoOutlineCursorBorderColor()));
