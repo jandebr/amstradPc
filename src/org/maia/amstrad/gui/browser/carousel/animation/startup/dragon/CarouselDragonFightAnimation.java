@@ -195,7 +195,6 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 
 	protected void drawInSymbols(Graphics2D g, String str, int x, int y) {
 		AmstradSymbolRenderer renderer = getSymbolRenderer(g);
-		renderer.replaceGraphics2D(g);
 		renderer.color(toMonitorColor(Color.BLACK));
 		renderer.drawStr(str, 1 + x, 1 + y);
 		renderer.color(toMonitorColor(Color.WHITE));

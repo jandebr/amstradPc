@@ -7,9 +7,9 @@ import org.maia.amstrad.gui.browser.carousel.animation.breadcrumb.CarouselBreadc
 import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselEnterFolderAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselHighlightItemAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselRunProgramAnimation;
+import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselRunProgramRocketAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselPortholeStartupAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.CarouselStartupAnimation;
-import org.maia.amstrad.gui.browser.carousel.animation.startup.RocketTestAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.dragon.CarouselDragonFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.ninja.CarouselNinjaFightAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.startup.waves.CarouselArcticWavesAnimation;
@@ -39,10 +39,8 @@ public class CarouselAnimationFactory {
 	}
 
 	public CarouselStartupAnimation createAnimationToStartup(CarouselHost host) {
-		return new RocketTestAnimation(); // TODO
-		/*
-		AmstradGraphicsContext graphicsContext = host.getGraphicsContext();
 		CarouselPortholeStartupAnimation animation = null;
+		AmstradGraphicsContext graphicsContext = host.getGraphicsContext();
 		int i = getRandomizer().drawIntegerNumber(0, 3);
 		if (i == 0) {
 			animation = new CarouselArcticWavesAnimation(graphicsContext);
@@ -60,7 +58,6 @@ public class CarouselAnimationFactory {
 		animation.setMinimumDelayMillis(1000L);
 		animation.setMinimumDurationMillis(8000L);
 		return animation;
-		*/
 	}
 
 	public CarouselAnimation createAnimationToEnterFolder(FolderNode folderNode, CarouselHost host) {
@@ -90,11 +87,12 @@ public class CarouselAnimationFactory {
 		Rectangle itemBounds = host.getCarouselItemBounds(programNode);
 		if (item != null && itemBounds != null) {
 			Rectangle outlineBounds = host.getCarouselOutlineBounds();
-			Rectangle leadingBounds = new Rectangle(itemBounds.x, outlineBounds.y, itemBounds.width,
-					outlineBounds.height);
-			animation = new CarouselRunProgramAnimation((CarouselProgramItem) item, itemBounds, leadingBounds);
+			Rectangle rocketViewBounds = new Rectangle(itemBounds.x, outlineBounds.y - 4, itemBounds.width,
+					outlineBounds.height + 8);
+			animation = new CarouselRunProgramRocketAnimation((CarouselProgramItem) item, itemBounds, rocketViewBounds,
+					host.getGraphicsContext(), getTheme().getBackgroundColor());
 			animation.setMinimumDelayMillis(0L);
-			animation.setMinimumDurationMillis(2000L);
+			animation.setMinimumDurationMillis(2200L);
 		}
 		return animation;
 	}

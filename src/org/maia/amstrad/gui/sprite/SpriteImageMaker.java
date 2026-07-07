@@ -14,14 +14,16 @@ public class SpriteImageMaker {
 	}
 
 	private static void makeImageEncodedAsRLE() {
-		BufferedImage image = UIResources.loadImage("animations/prolonged-indicator-alt-16x16.png");
+		BufferedImage image = UIResources.loadImage("animations/item/rocket_41x19.png");
 		EncoderRLE encoder = new EncoderRLE(initSpriteColorMap());
 		encoder.encode(image).print(System.out);
 	}
 
 	private static SpriteColorMapImpl initSpriteColorMap() {
 		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
-		colorMap.setColor(0, new Color(255, 255, 255));
+		colorMap.setColor(0, new Color(127, 127, 127));
+		colorMap.setColor(1, new Color(255, 255, 255));
+		colorMap.setColor(2, new Color(45, 56, 103));
 		return colorMap;
 	}
 

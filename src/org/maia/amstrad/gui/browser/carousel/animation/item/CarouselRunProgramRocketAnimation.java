@@ -1,8 +1,9 @@
-package org.maia.amstrad.gui.browser.carousel.animation.startup;
+package org.maia.amstrad.gui.browser.carousel.animation.item;
 
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.maia.amstrad.gui.AmstradSymbolRenderer;
-import org.maia.amstrad.gui.browser.carousel.animation.CarouselBaseAnimation;
+import org.maia.amstrad.gui.browser.carousel.item.CarouselProgramItem;
 import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.gui.sprite.SpriteImage;
@@ -19,13 +20,17 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.util.ColorUtils;
 import org.maia.util.Randomizer;
 
-public class RocketTestAnimation extends CarouselBaseAnimation implements CarouselStartupAnimation {
+public class CarouselRunProgramRocketAnimation extends CarouselRunProgramAnimation {
+
+	private Rectangle rocketViewBounds;
 
 	private AmstradGraphicsContext graphicsContext;
 
 	private AmstradSymbolRenderer symbolRenderer;
 
 	private Color backgroundColor;
+
+	private Color viewBorderColor;
 
 	private Color rocketTailColor;
 
@@ -35,31 +40,21 @@ public class RocketTestAnimation extends CarouselBaseAnimation implements Carous
 
 	private String rocketMessage;
 
-	private List<Rocket> rockets;
+	private Rocket rocket;
 
 	public static String DEFAULT_ROCKET_MESSAGE = "RUN";
 
-	public RocketTestAnimation(AmstradGraphicsContext graphicsContext, Color backgroundColor) {
-		setMinimumDurationMillis(120000L);
+	public CarouselRunProgramRocketAnimation(CarouselProgramItem item, Rectangle itemCarouselBounds,
+			Rectangle rocketViewBounds, AmstradGraphicsContext graphicsContext, Color backgroundColor) {
+		super(item, itemCarouselBounds);
+		float bri = ColorUtils.getBrightness(backgroundColor);
+		this.rocketViewBounds = rocketViewBounds;
 		this.graphicsContext = graphicsContext;
 		this.backgroundColor = backgroundColor;
-		this.rocketTailColor = ColorUtils.getBrightness(backgroundColor) <= 0.5f ? Color.WHITE : Color.BLACK;
+		this.viewBorderColor = ColorUtils.adjustBrightness(backgroundColor, bri <= 0.5f ? 0.1f : -0.1f);
+		this.rocketTailColor = ColorUtils.adjustBrightness(backgroundColor, bri <= 0.5f ? 1.0f : -1.0f);
 		this.rocketColorMap = createRocketColors();
 		this.rocketMessage = DEFAULT_ROCKET_MESSAGE;
-		this.rockets = new Vector<Rocket>();
-	}
-
-	@Override
-	public void init(int displayWidth, int displayHeight) {
-		super.init(displayWidth, displayHeight);
-		initRockets(displayWidth, displayHeight);
-	}
-
-	private void initRockets(int displayWidth, int displayHeight) {
-		int w = Math.round(0.6f * displayWidth);
-		getRockets().add(new Rocket(w, Math.round(0.1f * w)));
-		getRockets().add(new Rocket(w, Math.round(0.2f * w)));
-		getRockets().add(new Rocket(w, Math.round(0.4f * w)));
 	}
 
 	private SpriteColorMap createRocketColors() {
@@ -72,37 +67,44 @@ public class RocketTestAnimation extends CarouselBaseAnimation implements Carous
 	}
 
 	@Override
-	public void renderOntoDisplay(Graphics2D g, int displayWidth, int displayHeight, long elapsedTimeMillis) {
-		float unitTime = elapsedTimeMillis / 4000f;
-		int n = getRockets().size();
-		for (int i = 0; i < n; i++) {
-			Rocket rocket = getRockets().get(i);
-			int x0 = (displayWidth - rocket.getViewportWidth()) / 2;
-			int y0 = Math.round((0.1f * displayHeight) + i * (0.8f * displayHeight) / n);
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.translate(x0, y0);
-			renderRocket(rocket, g2, unitTime);
-			g2.dispose();
-		}
+	public void init(int displayWidth, int displayHeight) {
+		super.init(displayWidth, displayHeight);
+		initRocket(displayWidth, displayHeight);
 	}
 
-	private void renderRocket(Rocket rocket, Graphics2D g, float unitTime) {
-		renderBox(g, rocket.getViewportWidth(), rocket.getViewportHeight(), unitTime);
-		rocket.render(g, unitTime);
-	}
-
-	private void renderBox(Graphics2D g, int width, int height, float unitTime) {
-		g.setColor(new Color(80, 80, 80));
-		g.drawRect(0, 0, width, height);
+	private void initRocket(int displayWidth, int displayHeight) {
+		Rectangle bounds = getRocketViewBounds();
+		setRocket(new Rocket(bounds.width, bounds.height));
 	}
 
 	@Override
-	public Color getDisplayBackgroundColor() {
-		return getBackgroundColor();
+	public void renderOntoDisplay(Graphics2D g, int displayWidth, int displayHeight, long elapsedTimeMillis) {
+		super.renderOntoDisplay(g, displayWidth, displayHeight, elapsedTimeMillis);
+		renderRocket(g, elapsedTimeMillis);
+		renderViewBorder(g);
+	}
+
+	private void renderRocket(Graphics2D g, long elapsedTimeMillis) {
+		float unitTime = (elapsedTimeMillis - 200L) / (getMinimumDurationMillis() * 0.5f);
+		Rectangle bounds = getRocketViewBounds();
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.translate(bounds.x, bounds.y);
+		getRocket().render(g2, unitTime);
+		g2.dispose();
+	}
+
+	private void renderViewBorder(Graphics2D g) {
+		Rectangle bounds = getRocketViewBounds();
+		g.setColor(getViewBorderColor());
+		g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
 	private int getMaximumRocketScaleFactor() {
 		return 2;
+	}
+
+	public Rectangle getRocketViewBounds() {
+		return rocketViewBounds;
 	}
 
 	private AmstradSymbolRenderer getSymbolRenderer(Graphics2D g) {
@@ -120,6 +122,10 @@ public class RocketTestAnimation extends CarouselBaseAnimation implements Carous
 
 	private Color getBackgroundColor() {
 		return backgroundColor;
+	}
+
+	private Color getViewBorderColor() {
+		return viewBorderColor;
 	}
 
 	private Color getRocketTailColor() {
@@ -155,8 +161,12 @@ public class RocketTestAnimation extends CarouselBaseAnimation implements Carous
 		this.rocketMessage = msg;
 	}
 
-	private List<Rocket> getRockets() {
-		return rockets;
+	private Rocket getRocket() {
+		return rocket;
+	}
+
+	private void setRocket(Rocket rocket) {
+		this.rocket = rocket;
 	}
 
 	private class Rocket {
