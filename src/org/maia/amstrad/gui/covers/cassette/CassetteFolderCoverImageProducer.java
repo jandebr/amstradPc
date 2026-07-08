@@ -23,7 +23,7 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 
 	private AmstradFolderPosterImageMaker folderImageMaker;
 
-	private static final String SETTING_SHOW_FEATURED_PROGRAMS = "program_browser.modern.covers.show_featured_programs";
+	private static final String SETTING_SHOW_FEATURED_PROGRAMS = "program_browser.modern.cover_images.show_featured_programs";
 
 	public CassetteFolderCoverImageProducer(Dimension imageSize, Color backgroundColor, Font titleFont,
 			Color titleColor, CassetteProgramCoverImageProducer programImageMaker,
