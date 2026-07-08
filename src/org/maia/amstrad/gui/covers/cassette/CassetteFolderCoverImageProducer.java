@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradFolderPosterImageMaker;
 import org.maia.amstrad.gui.covers.ImageDetailLevel;
@@ -21,6 +22,8 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 	private CassetteProgramCoverImageProducer programImageMaker;
 
 	private AmstradFolderPosterImageMaker folderImageMaker;
+
+	private static final String SETTING_SHOW_FEATURED_PROGRAMS = "program_browser.modern.covers.show_featured_programs";
 
 	public CassetteFolderCoverImageProducer(Dimension imageSize, Color backgroundColor, Font titleFont,
 			Color titleColor, CassetteProgramCoverImageProducer programImageMaker,
@@ -46,7 +49,7 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 	}
 
 	protected Image producePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension posterSize) {
-		if (featuredProgramNode != null) {
+		if (featuredProgramNode != null && isShowFeaturedPrograms()) {
 			return getProgramImageMaker().producePosterImage(featuredProgramNode, posterSize, ImageDetailLevel.MINIMAL)
 					.getImage();
 		} else {
@@ -76,6 +79,11 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 	@Override
 	public int getCoverImageBaselineMeasuredFromBottom() {
 		return getImageMaker().getCoverImageBaselineMeasuredFromBottom(getEmbedding());
+	}
+
+	protected boolean isShowFeaturedPrograms() {
+		return AmstradFactory.getInstance().getAmstradContext().getUserSettings()
+				.getBool(SETTING_SHOW_FEATURED_PROGRAMS, true);
 	}
 
 	private OpenCassetteCoverImageMaker getImageMaker() {
