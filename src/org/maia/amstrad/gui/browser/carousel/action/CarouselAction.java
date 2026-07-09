@@ -30,9 +30,13 @@ public abstract class CarouselAction {
 
 	public synchronized void startAnimationWhenAppropriate(int displayWidth, int displayHeight) {
 		if (!isAnimationStarted() && !isAnimationSuppressed() && isPassedAnimationDelay() && getAnimation() != null) {
-			setAnimationStartTimeMillis(System.currentTimeMillis());
-			getAnimation().init(displayWidth, displayHeight);
+			startAnimation(displayWidth, displayHeight);
 		}
+	}
+
+	protected void startAnimation(int displayWidth, int displayHeight) {
+		setAnimationStartTimeMillis(System.currentTimeMillis());
+		getAnimation().init(displayWidth, displayHeight);
 	}
 
 	public synchronized void stopAnimation() {

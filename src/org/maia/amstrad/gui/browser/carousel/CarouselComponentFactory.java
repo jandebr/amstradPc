@@ -209,6 +209,10 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 			builder.withMaxToMinZoomFactorRatio(3.0);
 			builder.withRepaintClientDriven(true);
 			builder.withImageOverlay(createImageShowOverlay(size));
+			builder.withMinimumImageDisplayTimeMillis(10000L);
+			builder.withMaximumImageDisplayTimeMillis(14000L);
+			builder.withImageFadeInDurationMillis(1000L);
+			builder.withImageFadeOutDurationMillis(1000L);
 			show = builder.build();
 		}
 		return show;
@@ -259,7 +263,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	private Image createImageShowOverlay(Dimension size) {
 		int w = size.width, h = size.height;
-		int tw = Math.max(w / 4, 8), th = Math.max(h / 4, 8);
+		int tw = Math.max(w / 8, 8), th = Math.max(h / 8, 8);
 		Color c1 = getTheme().getBackgroundColor();
 		Color c2 = ColorUtils.setTransparency(c1, 1f);
 		GradientFunction function = GradientImageFactory.createSigmoidGradientFunction();

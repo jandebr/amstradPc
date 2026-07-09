@@ -17,7 +17,12 @@ public class CarouselStartupAction extends CarouselAction {
 	protected void doPerform() {
 		getHost().pauseBuildingUI();
 		setOriginalDisplayBackgroundColor(getHost().getDisplayBackgroundColor());
+	}
+
+	@Override
+	protected void startAnimation(int displayWidth, int displayHeight) {
 		getHost().setDisplayBackgroundColor(getAnimation().getDisplayBackgroundColor());
+		super.startAnimation(displayWidth, displayHeight);
 	}
 
 	@Override
