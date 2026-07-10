@@ -52,7 +52,7 @@ public class CarouselRunProgramRocketAnimation extends CarouselRunProgramAnimati
 		this.graphicsContext = graphicsContext;
 		this.backgroundColor = backgroundColor;
 		this.viewBorderColor = ColorUtils.adjustBrightness(backgroundColor, bri <= 0.5f ? 0.1f : -0.1f);
-		this.rocketTailColor = ColorUtils.adjustBrightness(backgroundColor, bri <= 0.5f ? 1.0f : -1.0f);
+		this.rocketTailColor = ColorUtils.adjustBrightness(backgroundColor, bri <= 0.5f ? 0.95f : -0.95f);
 		this.rocketColorMap = createRocketColors();
 		this.rocketMessage = DEFAULT_ROCKET_MESSAGE;
 	}
