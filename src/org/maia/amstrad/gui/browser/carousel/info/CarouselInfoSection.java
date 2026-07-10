@@ -51,7 +51,7 @@ public abstract class CarouselInfoSection extends InfoSection implements Sliding
 		int thickness = getSizeOfInfoOutlineView().width;
 		SlidingItemListOutlineView outline = getSlidingInfoView()
 				.createOutlineViewMatchingOrientationAndLength(thickness);
-		if (CarouselComponentFactory.outlineBorderClippingFix) {
+		if (CarouselComponentFactory.isOutlinesBorderClippingFix()) {
 			Insets margin = outline.getMargin();
 			outline.getMargin().set(margin.top, margin.left, margin.bottom + 2, margin.right + 2);
 		}

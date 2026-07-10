@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
 import org.maia.amstrad.gui.browser.carousel.api.CarouselHost;
@@ -72,7 +73,15 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
 
-	public static boolean outlineBorderClippingFix = true; // tries to fix outline border clipping on some displays
+	/**
+	 * Tries to fix outline border clipping on some displays
+	 */
+	private static final String SETTING_OUTLINES_BORDER_CLIPPING_FIX = "program_browser.modern.outlines.border_clipping_fix";
+
+	public static boolean isOutlinesBorderClippingFix() {
+		return AmstradFactory.getInstance().getAmstradContext().getUserSettings()
+				.getBool(SETTING_OUTLINES_BORDER_CLIPPING_FIX, true);
+	}
 
 	public CarouselComponentFactory(CarouselProgramBrowserTheme theme, CarouselLayoutManager layout,
 			AmstradProgramCoverImageProducer programCoverImageProducer,
@@ -323,7 +332,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 	public CarouselOutline createCarouselOutline(CarouselComponent comp) {
 		int thickness = getLayout().getCarouselOutlineBounds().height;
 		CarouselOutline outline = comp.createOutline(thickness);
-		if (outlineBorderClippingFix) {
+		if (isOutlinesBorderClippingFix()) {
 			Insets margin = outline.getMargin();
 			outline.getMargin().set(margin.top, margin.left, margin.bottom + 2, margin.right + 2);
 		}

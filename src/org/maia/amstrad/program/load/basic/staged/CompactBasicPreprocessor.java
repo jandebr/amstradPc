@@ -67,7 +67,7 @@ public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 	}
 
 	private boolean shouldPrintStatistics() {
-		return getAmstradSettings().getBool("basic_staging.minify.printStats", false);
+		return getAmstradSettings().getBool("basic_staging.minify.print_stats", false);
 	}
 
 	private int getMinificationLevel() {

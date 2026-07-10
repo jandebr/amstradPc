@@ -15,7 +15,7 @@ import org.maia.util.SystemUtils;
 public abstract class FileCommandBasicPreprocessor extends StagedBasicPreprocessor
 		implements ErrorOutCodes, FileCommandDelays {
 
-	private static final String SETTING_DELAYS = "basic_staging.delayFileOperations";
+	private static final String SETTING_DELAYS = "basic_staging.delay_file_operations";
 
 	protected FileCommandBasicPreprocessor() {
 	}
