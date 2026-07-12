@@ -1,20 +1,29 @@
 package org.maia.amstrad.pc.impl.jemu;
 
-import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
+import java.awt.event.KeyEvent;
+
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardController;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEventFilter;
 
+import jemu.ui.KeyDispatcher;
+import jemu.ui.KeyDispatcherFilter;
 import jemu.ui.Switches;
 
-public abstract class JemuKeyboardController extends AmstradKeyboardAdapter
-		implements AmstradKeyboardController {
+public class JemuKeyboardController extends AmstradKeyboardAdapter implements AmstradKeyboardController {
+
+	private JemuKeyboard keyboard;
+
+	private KeyDispatcher keyDispatcher;
 
 	private int lastKeyModifiers;
 
 	private boolean blockKeyboardPending;
 
-	protected JemuKeyboardController(JemuKeyboard keyboard) {
+	public JemuKeyboardController(JemuKeyboard keyboard, KeyDispatcher keyDispatcher) {
+		this.keyboard = keyboard;
+		this.keyDispatcher = keyDispatcher;
 		keyboard.addKeyboardListener(this);
 	}
 
@@ -44,11 +53,33 @@ public abstract class JemuKeyboardController extends AmstradKeyboardAdapter
 	}
 
 	@Override
-	public synchronized final void resetKeyModifiers() {
-		lastKeyModifiers = 0;
-		doResetKeyModifiers();
+	public void installKeyboardEventToComputerFilter(AmstradKeyboardEventFilter filter) {
+		getKeyDispatcher().setKeyFilter(new KeyDispatcherFilter() {
+
+			@Override
+			public boolean accept(KeyEvent event) {
+				return filter.accept(new AmstradKeyboardEvent(getKeyboard(), event));
+			}
+		});
 	}
 
-	protected abstract void doResetKeyModifiers();
+	@Override
+	public void uninstallKeyboardEventToComputerFilter() {
+		getKeyDispatcher().setKeyFilter(null);
+	}
+
+	@Override
+	public synchronized final void resetKeyModifiers() {
+		lastKeyModifiers = 0;
+		getKeyDispatcher().resetKeyModifiers();
+	}
+
+	private JemuKeyboard getKeyboard() {
+		return keyboard;
+	}
+
+	private KeyDispatcher getKeyDispatcher() {
+		return keyDispatcher;
+	}
 
 }

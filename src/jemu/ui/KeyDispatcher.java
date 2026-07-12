@@ -14,6 +14,8 @@ public class KeyDispatcher implements KeyListener {
 
 	private Computer destination;
 
+	private KeyDispatcherFilter keyFilter;
+
 	private boolean ctrlDown;
 
 	private boolean shiftDown;
@@ -258,6 +260,9 @@ public class KeyDispatcher implements KeyListener {
 			return false;
 		if (isAlphabeticKey(e) && (isCtrlDown() || isAltDown()))
 			return false;
+		KeyDispatcherFilter filter = getKeyFilter();
+		if (filter != null && !filter.accept(e))
+			return false;
 		return true;
 	}
 
@@ -340,6 +345,14 @@ public class KeyDispatcher implements KeyListener {
 
 	private void setDestination(Computer destination) {
 		this.destination = destination;
+	}
+
+	public KeyDispatcherFilter getKeyFilter() {
+		return keyFilter;
+	}
+
+	public void setKeyFilter(KeyDispatcherFilter keyFilter) {
+		this.keyFilter = keyFilter;
 	}
 
 	public boolean isCtrlDown() {

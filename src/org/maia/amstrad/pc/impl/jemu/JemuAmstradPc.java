@@ -401,6 +401,11 @@ public abstract class JemuAmstradPc extends AmstradPc
 		}
 
 		@Override
+		public boolean isKeyboardInputModus() {
+			return getKeyboardForBasic().isOnBasicPrompt() && !getKeyboardForBasic().isInBasicInterpretModus();
+		}
+
+		@Override
 		protected void loadByteCode(BasicByteCode code) throws BasicMemoryFullException {
 			super.loadByteCode(code);
 			fireProgramLoaded();

@@ -423,7 +423,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 		@Override
 		protected JemuKeyboardController createController() {
-			return new JemuKeyboardControllerImpl(this);
+			return new JemuKeyboardController(this, getKeyDispatcher());
 		}
 
 		@Override
@@ -445,19 +445,6 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		@Override
 		public void releaseKey(KeyEvent keyEvent) {
 			getKeyDispatcher().keyReleased(keyEvent);
-		}
-
-	}
-
-	private class JemuKeyboardControllerImpl extends JemuKeyboardController {
-
-		public JemuKeyboardControllerImpl(JemuKeyboardImpl keyboard) {
-			super(keyboard);
-		}
-
-		@Override
-		protected void doResetKeyModifiers() {
-			getKeyDispatcher().resetKeyModifiers();
 		}
 
 	}

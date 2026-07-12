@@ -27,6 +27,7 @@ import jemu.ui.Display;
 import jemu.ui.FrameAdapter;
 import jemu.ui.JEMU;
 import jemu.ui.JEMU.PauseListener;
+import jemu.ui.KeyDispatcher;
 
 public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener {
 
@@ -153,6 +154,10 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 	@Override
 	protected Font getJemuDisplayFont() {
 		return getJemuInstance().getDisplay().getDisplayFont();
+	}
+
+	protected KeyDispatcher getKeyDispatcher() {
+		return getJemuInstance().getKeyDispatcher();
 	}
 
 	private JemuFrameBridge getFrameBridge() {
@@ -389,7 +394,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 
 		@Override
 		protected JemuKeyboardController createController() {
-			return new JemuKeyboardControllerImpl(this);
+			return new JemuKeyboardController(this, getKeyDispatcher());
 		}
 
 		@Override
@@ -400,30 +405,17 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 
 		@Override
 		protected void doBreakEscape() {
-			getJemuInstance().breakEscape();
+			getKeyDispatcher().breakEscape();
 		}
 
 		@Override
 		public void pressKey(KeyEvent keyEvent) {
-			getJemuInstance().keyPressed(keyEvent);
+			getKeyDispatcher().keyPressed(keyEvent);
 		}
 
 		@Override
 		public void releaseKey(KeyEvent keyEvent) {
-			getJemuInstance().keyReleased(keyEvent);
-		}
-
-	}
-
-	private class JemuKeyboardControllerImpl extends JemuKeyboardController {
-
-		public JemuKeyboardControllerImpl(JemuKeyboardImpl keyboard) {
-			super(keyboard);
-		}
-
-		@Override
-		protected void doResetKeyModifiers() {
-			getJemuInstance().resetKeyModifiers();
+			getKeyDispatcher().keyReleased(keyEvent);
 		}
 
 	}

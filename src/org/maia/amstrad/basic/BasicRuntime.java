@@ -18,15 +18,34 @@ public abstract class BasicRuntime {
 	 * Tells whether Basic is operating in "direct modus" and ready to accept instructions from the keyboard
 	 * 
 	 * @return <code>true</code> when in direct modus and ready for typing, <code>false</code> otherwise
+	 * @see #isDirectModus()
 	 */
 	public abstract boolean isReady();
 
 	/**
 	 * Tells whether Basic is operating in "direct modus"
 	 * 
+	 * <p>
+	 * In direct modus, Basic will interpret what is typed, for example execute instructions or record program code
+	 * lines in memory
+	 * </p>
+	 * 
 	 * @return <code>true</code> when in direct modus, <code>false</code> otherwise
 	 */
 	public abstract boolean isDirectModus();
+
+	/**
+	 * Tells whether Basic is operating in "keyboard input modus"
+	 * 
+	 * <p>
+	 * In keyboard input modus, the Basic prompt is accepting input from the keyboard. Unlike the "direct modus", Basic
+	 * will not interpret what is typed but for instance, store the input in a variable
+	 * </p>
+	 * 
+	 * @return <code>true</code> when in keyboard input modus, <code>false</code> otherwise
+	 * @see #isDirectModus()
+	 */
+	public abstract boolean isKeyboardInputModus();
 
 	public void waitUntilReady() {
 		while (!isReady()) {

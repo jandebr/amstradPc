@@ -30,7 +30,6 @@ public abstract class JemuKeyboard extends AmstradKeyboard
 
 	protected JemuKeyboard(JemuAmstradPc amstradPc) {
 		super(amstradPc);
-		this.controller = createController();
 		amstradPc.addStateListener(this);
 	}
 
@@ -164,6 +163,9 @@ public abstract class JemuKeyboard extends AmstradKeyboard
 
 	@Override
 	public JemuKeyboardController getController() {
+		if (controller == null) {
+			controller = createController();
+		}
 		return controller;
 	}
 
