@@ -31,10 +31,9 @@ public class FolderInfoSection extends CarouselInfoSection {
 				String name = node.getName();
 				if (node.isFolder()) {
 					infoText.appendText("> " + name, theme.getFolderInfoSubfolderColor(),
-							theme.getFolderInfoSubfolderFont(), 0.6f);
+							theme.getFolderInfoSubfolderFont());
 				} else if (node.isProgram()) {
-					infoText.appendText(name, theme.getFolderInfoProgramColor(), theme.getFolderInfoProgramFont(),
-							0.6f);
+					infoText.appendText(name, theme.getFolderInfoProgramColor(), theme.getFolderInfoProgramFont());
 				}
 			}
 		}

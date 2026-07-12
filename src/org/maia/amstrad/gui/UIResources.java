@@ -1,9 +1,12 @@
 package org.maia.amstrad.gui;
 
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -114,6 +117,14 @@ public class UIResources {
 
 	public static ImageIcon tapeWriteOverlayIcon = loadIcon("overlay/record22.png");
 
+	public static Font boldPlayfulFont = loadFont("MinnePetat.otf");
+
+	public static Font boldAngularFont = loadFont("CostaRica.otf").deriveFont(40f);
+
+	public static Font boldRoundedFont = loadFont("Tondu.ttf").deriveFont(40f);
+
+	public static Font regularFont = loadFont("Cuprum.ttf");
+
 	public static ImageIcon loadIcon(String resourceName) {
 		ImageIcon icon = null;
 		Image image = loadImage("icons/" + resourceName);
@@ -125,6 +136,18 @@ public class UIResources {
 
 	public static BufferedImage loadImage(String resourceName) {
 		return ImageUtils.readFromStream(UIResources.class.getResourceAsStream("images/" + resourceName));
+	}
+
+	public static Font loadFont(String resourceName) {
+		Font font = null;
+		try {
+			font = Font.createFont(Font.TRUETYPE_FONT, UIResources.class.getResourceAsStream("fonts/" + resourceName));
+		} catch (FontFormatException e) {
+			System.err.println("No supported font file '" + resourceName + "': " + e.getMessage());
+		} catch (IOException e) {
+			System.err.println("Cannot read font file '" + resourceName + "': " + e.getMessage());
+		}
+		return font;
 	}
 
 	private static class ButtonStateIcon implements Icon {

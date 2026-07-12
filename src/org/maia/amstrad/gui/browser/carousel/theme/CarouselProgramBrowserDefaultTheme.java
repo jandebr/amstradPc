@@ -3,6 +3,7 @@ package org.maia.amstrad.gui.browser.carousel.theme;
 import java.awt.Color;
 import java.awt.Font;
 
+import org.maia.amstrad.gui.UIResources;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.util.ColorUtils;
 
@@ -10,14 +11,11 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	private AmstradGraphicsContext graphicsContext;
 
-	private static Font defaultFont = Font.decode("Arial-PLAIN-20");
-
-	private static Font carouselFolderFont = Font.decode("Dialog-BOLD-24");
-
-	private static Font breadcrumbFont = Font.decode("Century-PLAIN-24");
+	private Font defaultFontInBold;
 
 	public CarouselProgramBrowserDefaultTheme(AmstradGraphicsContext graphicsContext) {
 		this.graphicsContext = graphicsContext;
+		this.defaultFontInBold = getDefaultFont().deriveFont(Font.BOLD);
 	}
 
 	@Override
@@ -27,12 +25,12 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getDefaultFont() {
-		return defaultFont;
+		return UIResources.regularFont;
 	}
 
 	@Override
 	public Font getHeadingFont() {
-		return getDefaultFont().deriveFont(Font.BOLD);
+		return UIResources.boldPlayfulFont;
 	}
 
 	@Override
@@ -42,7 +40,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getCaptionFont() {
-		return getDefaultFont().deriveFont(Font.BOLD);
+		return getDefaultFontInBold();
 	}
 
 	@Override
@@ -132,7 +130,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getProgramControlHeadingFont() {
-		return getDefaultFont().deriveFont(Font.BOLD);
+		return getDefaultFontInBold();
 	}
 
 	@Override
@@ -172,7 +170,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getProgramAuthoringKeyFont() {
-		return getDefaultFont().deriveFont(Font.BOLD);
+		return getDefaultFontInBold();
 	}
 
 	@Override
@@ -222,7 +220,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getCarouselFolderTitleFont() {
-		return carouselFolderFont;
+		return UIResources.boldRoundedFont;
 	}
 
 	@Override
@@ -242,7 +240,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getCarouselProgramTitleFont() {
-		return getHeadingFont();
+		return UIResources.boldAngularFont;
 	}
 
 	@Override
@@ -292,7 +290,7 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 
 	@Override
 	public Font getBreadcrumbFont() {
-		return breadcrumbFont;
+		return getHeadingFont();
 	}
 
 	@Override
@@ -321,11 +319,15 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 	}
 
 	protected Font getFolderInfoFont() {
-		return getGraphicsContext().getSystemFont();
+		return UIResources.boldAngularFont;
 	}
 
 	private AmstradGraphicsContext getGraphicsContext() {
 		return graphicsContext;
+	}
+
+	private Font getDefaultFontInBold() {
+		return defaultFontInBold;
 	}
 
 }
