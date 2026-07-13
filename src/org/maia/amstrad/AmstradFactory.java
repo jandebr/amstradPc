@@ -1,5 +1,6 @@
 package org.maia.amstrad;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -24,6 +25,8 @@ import org.maia.amstrad.pc.impl.joystick.AmstradJoystickDevice;
 import org.maia.amstrad.pc.impl.keyboard.virtual.AmstradVirtualKeyboardImpl;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
+import org.maia.amstrad.pc.keyboard.AmstradKeyboardEventFilter;
 import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboard;
 import org.maia.amstrad.pc.menu.maker.AmstradMenuDefaultLookAndFeel;
 import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
@@ -324,6 +327,30 @@ public class AmstradFactory {
 			actions.getSaveBasicSourceFileAction().setEnabled(!protective);
 			actions.getSaveBasicBinaryFileAction().setEnabled(!protective);
 			actions.getSaveSnapshotFileAction().setEnabled(!protective);
+			if (protective) {
+				denyBreakEscapeInInputMode(amstradPc);
+			} else {
+				allowBreakEscapeInInputMode(amstradPc);
+			}
+		}
+
+		private void denyBreakEscapeInInputMode(AmstradPc amstradPc) {
+			amstradPc.getKeyboard().getController()
+					.installKeyboardEventToComputerFilter(new AmstradKeyboardEventFilter() {
+
+						@Override
+						public boolean accept(AmstradKeyboardEvent event) {
+							if (event.getKeyCode() == KeyEvent.VK_ESCAPE
+									&& amstradPc.getBasicRuntime().isKeyboardInputModus()) {
+								return false;
+							}
+							return true;
+						}
+					});
+		}
+
+		private void allowBreakEscapeInInputMode(AmstradPc amstradPc) {
+			amstradPc.getKeyboard().getController().uninstallKeyboardEventToComputerFilter();
 		}
 
 	}

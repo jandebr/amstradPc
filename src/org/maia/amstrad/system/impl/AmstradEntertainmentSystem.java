@@ -39,7 +39,6 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 	@Override
 	protected void doPostStartupActions(AmstradPc amstradPc) {
 		super.doPostStartupActions(amstradPc);
-		blockBreakEscapeInInputMode(amstradPc);
 		AmstradMonitor monitor = amstradPc.getMonitor();
 		monitor.setMode(AmstradMonitorMode.COLOR);
 		monitor.setWindowAlwaysOnTop(false); // Keep system windows accessible (e.g. Bluetooth manager) since fullscreen

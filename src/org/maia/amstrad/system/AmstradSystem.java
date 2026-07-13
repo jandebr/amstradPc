@@ -1,15 +1,11 @@
 package org.maia.amstrad.system;
 
-import java.awt.event.KeyEvent;
-
 import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradException;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
-import org.maia.amstrad.pc.keyboard.AmstradKeyboardEventFilter;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
@@ -74,20 +70,6 @@ public abstract class AmstradSystem {
 	protected void doPostStartupActions(AmstradPc amstradPc) {
 		notifyInitialScreen(getCurrentScreen());
 		// Subclasses may extend this method
-	}
-
-	protected void blockBreakEscapeInInputMode(AmstradPc amstradPc) {
-		amstradPc.getKeyboard().getController().installKeyboardEventToComputerFilter(new AmstradKeyboardEventFilter() {
-
-			@Override
-			public boolean accept(AmstradKeyboardEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ESCAPE
-						&& getAmstradPc().getBasicRuntime().isKeyboardInputModus()) {
-					return false;
-				}
-				return true;
-			}
-		});
 	}
 
 	protected void notifyInitialScreen(AmstradSystemScreen currentScreen) {
