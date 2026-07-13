@@ -92,7 +92,7 @@ public class CarouselAnimationFactory {
 			animation = new CarouselRunProgramRocketAnimation((CarouselProgramItem) item, itemBounds, rocketViewBounds,
 					host.getGraphicsContext(), getTheme().getBackgroundColor());
 			animation.setMinimumDelayMillis(0L);
-			animation.setMinimumDurationMillis(2200L);
+			animation.setMinimumDurationMillis(1800L);
 		}
 		return animation;
 	}
