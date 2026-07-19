@@ -23,7 +23,7 @@ public class MemoryOutlineBuilder {
 	private MemoryOutline createBasicMemoryOutline(BasicRuntime rt) {
 		MemoryOutline outline = new MemoryOutline();
 		outline.appendSegment(rt.getUsedMemory(), "Used", 26);
-		outline.appendSegment(rt.getFreeMemory(), LABEL_FREE, 22);
+		outline.appendSegment(rt.getFreeMemory(), LABEL_FREE, 9);
 		outline.appendSegment(Math.max(65536 - outline.getByteLength(), 0), "System", 5);
 		return outline;
 	}
@@ -32,8 +32,9 @@ public class MemoryOutlineBuilder {
 		MemoryOutline outline = new MemoryOutline();
 		outline.appendSegment(rt.getUsedMemoryForByteCode(), "Code", 15);
 		outline.appendSegment(rt.getUsedMemoryForVariables(), "Variables", 26);
-		outline.appendSegment(rt.getFreeMemory(), LABEL_FREE, 22);
-		outline.appendSegment(rt.getUsedMemoryForHeap(), "Heap", 17);
+		outline.appendSegment(rt.getFreeMemory(), LABEL_FREE, 9);
+		outline.appendSegment(rt.getUsedMemoryForHeap(), "Heap", 22);
+		outline.appendSegment(rt.getCustomSymbolsMemory(), "Symbols", 17);
 		outline.appendSegment(rt.getReservedMemory(), "Reserved", 7);
 		outline.appendSegment(Math.max(65536 - 16384 - outline.getByteLength(), 0), "System", 5);
 		outline.appendSegment(16384, "Display", 11);

@@ -47,7 +47,7 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 	public static int SYMBOL_CODE_REFRESH = 176;
 
 	public BasicMemoryDisplaySource(AmstradPc amstradPc) {
-		super(amstradPc, "64K Basic Memory");
+		super(amstradPc, "Basic Memory 64K");
 		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 	}
 

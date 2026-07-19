@@ -11,12 +11,14 @@ public interface LocomotiveBasicMemoryMap {
 	int ADDRESS_VARIABLE_SPACE_END_POINTER = 0xAE87; // points to memory address following variable space
 
 	int ADDRESS_VARIABLE_SPACE_END_POINTER_BIS = 0xAE89;
-	
+
 	int ADDRESS_HEAP_SPACE_POINTER = 0xB08D; // points to memory address preceding heap space
 
 	int ADDRESS_HIMEM_POINTER = 0xAE7B; // points to HIMEM memory address
 
-	int INITIAL_HIMEM = 0xA67B;
+	int ADDRESS_SYMBOL_AFTER = 0xB294; // SYMBOL AFTER <b>
+
+	int ADDRESS_UPPER_HIMEM = 0xA6FB; // maximum HIMEM (when SYMBOL AFTER 256)
 
 	int ADDRESS_GRAPHICS_DISPLAY_START = 0xC000;
 

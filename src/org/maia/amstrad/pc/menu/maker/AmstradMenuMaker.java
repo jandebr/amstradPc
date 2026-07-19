@@ -167,6 +167,7 @@ public abstract class AmstradMenuMaker {
 		JMenu menu = new JMenu("Emulator");
 		menu.add(createAmstradSystemColorsDisplayMenuItem());
 		menu.add(createBasicMemoryDisplayMenuItem());
+		menu.add(createBasicSymbolsDisplayMenuItem());
 		menu.add(createShowSystemLogsMenuItem());
 		menu.add(new JSeparator());
 		menu.add(createAudioMenuItem());
@@ -188,6 +189,10 @@ public abstract class AmstradMenuMaker {
 
 	protected JMenuItem createBasicMemoryDisplayMenuItem() {
 		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getBasicMemoryDisplayAction()));
+	}
+
+	protected JMenuItem createBasicSymbolsDisplayMenuItem() {
+		return updateMenuItemLookAndFeel(new JMenuItem(getActions().getBasicSymbolsDisplayAction()));
 	}
 
 	protected JMenuItem createShowSystemLogsMenuItem() {

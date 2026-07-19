@@ -1,6 +1,7 @@
 package org.maia.amstrad.basic.locomotive;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.maia.amstrad.basic.BasicByteCode;
 import org.maia.amstrad.basic.BasicException;
@@ -8,6 +9,7 @@ import org.maia.amstrad.basic.BasicLanguage;
 import org.maia.amstrad.basic.BasicLineNumberLinearMapping;
 import org.maia.amstrad.basic.BasicMemoryFullException;
 import org.maia.amstrad.basic.BasicRuntime;
+import org.maia.amstrad.basic.BasicSymbol;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 
@@ -226,8 +228,9 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	private void printMemoryUsage() {
 		System.out.println("Basic user memory: code " + getUsedMemoryForByteCode() + "B | vars "
-				+ getUsedMemoryForVariables() + "B | heap " + getUsedMemoryForHeap() + "B | reserved "
-				+ getReservedMemory() + "B | free " + getFreeMemory() + "B (total " + getTotalMemory() + "B)");
+				+ getUsedMemoryForVariables() + "B | heap " + getUsedMemoryForHeap() + "B | symbols "
+				+ getCustomSymbolsMemory() + "B | reserved " + getReservedMemory() + "B | free " + getFreeMemory()
+				+ "B (total " + getTotalMemory() + "B)");
 	}
 
 	public LocomotiveBasicVariableSpace getVariableSpace() {
@@ -239,17 +242,13 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 
 	@Override
 	public int getHimem() {
-		int himem = getMemory().readWord(ADDRESS_HIMEM_POINTER);
-		if (himem > 0 && himem <= INITIAL_HIMEM) {
-			return himem;
-		} else {
-			return INITIAL_HIMEM;
-		}
+		return getMemory().readWord(ADDRESS_HIMEM_POINTER);
 	}
 
 	@Override
 	public int getUsedMemory() {
-		return getUsedMemoryForByteCode() + getUsedMemoryForVariables() + getUsedMemoryForHeap() + getReservedMemory();
+		return getUsedMemoryForByteCode() + getUsedMemoryForVariables() + getUsedMemoryForHeap()
+				+ getCustomSymbolsMemory() + getReservedMemory();
 	}
 
 	public int getUsedMemoryForByteCode() {
@@ -280,13 +279,52 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 		}
 	}
 
+	public int getCustomSymbolsMemory() {
+		return 8 * getCustomizableSymbolsCount();
+	}
+
 	public int getReservedMemory() {
-		return INITIAL_HIMEM - getHimem();
+		return ADDRESS_UPPER_HIMEM - getHimem() - getCustomSymbolsMemory();
 	}
 
 	@Override
 	public int getTotalMemory() {
-		return INITIAL_HIMEM - ADDRESS_BYTECODE_START;
+		return ADDRESS_UPPER_HIMEM - ADDRESS_BYTECODE_START + 1;
+	}
+
+	@Override
+	public List<BasicSymbol> getSystemSymbols() {
+		return LocomotiveBasicSymbols.getInstance().getSymbols();
+	}
+
+	@Override
+	public List<BasicSymbol> getCustomizableSymbols() {
+		AmstradMemory memory = getMemory();
+		memory.startThreadExclusiveSession();
+		int addr = getHimem();
+		int n = getCustomizableSymbolsCount();
+		List<BasicSymbol> symbols = new Vector<BasicSymbol>(n);
+		try {
+			for (int i = 0; i < n; i++) {
+				int number = 256 - n + i;
+				int[] values = new int[8];
+				for (int j = 0; j < values.length; j++) {
+					values[j] = memory.readByte(++addr) & 0xff;
+				}
+				symbols.add(new BasicSymbol(number, values));
+			}
+		} finally {
+			memory.endThreadExclusiveSession();
+		}
+		return symbols;
+	}
+
+	@Override
+	public int getCustomizableSymbolsCount() {
+		int c = getMemory().readByte(ADDRESS_SYMBOL_AFTER) & 0xff;
+		if (c > 0)
+			c = 256 - c;
+		return c;
 	}
 
 	@Override

@@ -1,40 +1,51 @@
-  HEX	   DEC	Description
------	------	-----------------------------
+  HEX	   DEC	TYPE	Description
+-----	------	----	-------------------------
 
-&0000	     0	First address	
+&0000	     0	BYTE	First address	
 
------	------	-----------------------------
+-----	------	----	-------------------------
 
-&0170	   368	Basic first address
-				Code ends with word 0 (&0000) then followed by variables
-				Default available memory is 42.249 bytes = FRE(0)
-&A67B	42.619	Default upper bound of the Basic memory space = HIMEM
+&0170	   368	BYTE	Start of Basic code
+						Code ends with word 0 (&0000) then followed by variables
+						Default available memory is 42.249 bytes = FRE(0)
+&A67B	42.619	BYTE	Default upper bound of the Basic memory space <--- HIMEM
 
------	------	-----------------------------
+-----	------	----	-------------------------
 
-				??? text input processing
-
------	------	-----------------------------
-
-&AE7B	44.667	Pointer to current HIMEM address
-&AE83	44.675	Pointer to address following Basic code (after ending word 0)
-&AE85	44.677	Pointer to address following Basic code (after ending word 0)
-&AE87	44.679	Pointer to address following Basic variable space (start of next variable)
-&AE89	44.681	Pointer to address following Basic variable space (start of next variable)
-&B08D	45.197	Pointer to address preceding Basic heap space (first available heap byte, with heap growing down)
-
------	------	-----------------------------
-
-&C000	49.152	Start of graphics display
-				First byte of 1st scanline of graphics display
-&C7CF	51.151	Last byte of 1st scanline of graphics display
-&C7D0	51.152	48 bytes between scanlines
-&C800	51.200	First byte of 2nd scanline of graphics display
-&CFCF	53.199	Last byte of 2nd scanline of graphics display
-&CFD0	53.200	48 bytes between scanlines
+&A67C	42.620	BYTE	First line of SYMBOL 240
+&A683	42.627	BYTE	Last (8th) line of SYMBOL 240
+&A684	42.628	BYTE	First line of SYMBOL 241
+&A68B	42.635	BYTE	Last (8th) line of SYMBOL 241
 ...
-&FFCF	65.487	Last byte of 8th scanline of graphics display
-&FFD0	65.488	48 bytes between scanlines
-&FFFF	65.535	End of graphics display
+&A6F4	42.740	BYTE	First line of SYMBOL 255
+&A6FB	42.747	BYTE	Last (8th) line of SYMBOL 255
 
------	------	-----------------------------
+-----	------	----	-------------------------
+
+						??? text input processing
+
+-----	------	----	-------------------------
+
+&AE7B	44.667	WORD	Pointer to current HIMEM address
+&AE83	44.675	WORD	Pointer to address following Basic code (after ending word 0)
+&AE85	44.677	WORD	Pointer to address following Basic code (after ending word 0)
+&AE87	44.679	WORD	Pointer to address following Basic variable space (start of next variable)
+&AE89	44.681	WORD	Pointer to address following Basic variable space (start of next variable)
+&B08D	45.197	WORD	Pointer to address preceding Basic used heap space (first available heap byte, with heap growing down)
+&B294	45.716	BYTE	SYMBOL AFTER <n> (where 256 becomes 0)
+
+-----	------	----	-------------------------
+
+&C000	49.152	BYTE	Start of graphics display
+						First byte of 1st scanline of graphics display
+&C7CF	51.151	BYTE	Last byte of 1st scanline of graphics display
+&C7D0	51.152	BYTE	48 bytes between scanlines
+&C800	51.200	BYTE	First byte of 2nd scanline of graphics display
+&CFCF	53.199	BYTE	Last byte of 2nd scanline of graphics display
+&CFD0	53.200	BYTE	48 bytes between scanlines
+...
+&FFCF	65.487	BYTE	Last byte of 8th scanline of graphics display
+&FFD0	65.488	BYTE	48 bytes between scanlines
+&FFFF	65.535	BYTE	End of graphics display
+
+-----	------	----	-------------------------

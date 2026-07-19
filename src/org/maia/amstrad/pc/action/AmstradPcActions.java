@@ -47,6 +47,8 @@ public class AmstradPcActions {
 
 	private BasicMemoryDisplayAction basicMemoryDisplayAction;
 
+	private BasicSymbolsDisplayAction basicSymbolsDisplayAction;
+
 	private ShowSystemLogsAction showSystemLogsAction;
 
 	private Map<AmstradJoystickID, JoystickSetupAction> joystickSetupActions;
@@ -253,6 +255,13 @@ public class AmstradPcActions {
 			basicMemoryDisplayAction = new BasicMemoryDisplayAction(getAmstradPc());
 		}
 		return basicMemoryDisplayAction;
+	}
+
+	public BasicSymbolsDisplayAction getBasicSymbolsDisplayAction() {
+		if (basicSymbolsDisplayAction == null) {
+			basicSymbolsDisplayAction = new BasicSymbolsDisplayAction(getAmstradPc());
+		}
+		return basicSymbolsDisplayAction;
 	}
 
 	public BreakEscapeAction getBreakEscapeAction() {

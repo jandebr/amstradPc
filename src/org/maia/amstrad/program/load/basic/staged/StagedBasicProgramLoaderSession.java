@@ -51,7 +51,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 
 	public StagedBasicProgramLoaderSession(StagedBasicProgramLoader loader, AmstradProgramRuntime programRuntime) {
 		super(loader, programRuntime);
-		setHimemAddress(INITIAL_HIMEM);
+		setHimemAddress(ADDRESS_UPPER_HIMEM);
 		this.macrosAdded = new HashSet<StagedBasicMacro>();
 		this.chainedPrograms = new Vector<AmstradProgram>();
 		addProgramToChain(getProgram());
@@ -113,7 +113,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 	}
 
 	public synchronized int getReservedMemoryInBytes() {
-		return INITIAL_HIMEM - getHimemAddress();
+		return ADDRESS_UPPER_HIMEM - getHimemAddress();
 	}
 
 	public synchronized int acquireSmallestAvailablePreambleLineNumber() {

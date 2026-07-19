@@ -189,8 +189,8 @@ public abstract class AmstradDisplayCanvas {
 		int x2 = projectX(xLeft + width - 1);
 		int y2 = projectY(yTop - height + 1);
 		Graphics2D g2 = getGraphics2D();
-		g2.setBackground(fillColor);
-		g2.clearRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1);
+		g2.setColor(fillColor);
+		g2.fillRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1);
 		return this;
 	}
 

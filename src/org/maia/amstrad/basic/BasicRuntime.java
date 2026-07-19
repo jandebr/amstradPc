@@ -232,6 +232,12 @@ public abstract class BasicRuntime {
 		getMemory().writeByte(memoryAddress, value);
 	}
 
+	public abstract List<BasicSymbol> getSystemSymbols();
+
+	public abstract List<BasicSymbol> getCustomizableSymbols();
+
+	public abstract int getCustomizableSymbolsCount();
+
 	public abstract int getDisplayCanvasWidth();
 
 	public abstract int getDisplayCanvasHeight();
