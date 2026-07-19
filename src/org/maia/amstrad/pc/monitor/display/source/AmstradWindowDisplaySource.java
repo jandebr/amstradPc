@@ -17,6 +17,10 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	private String windowTitle;
 
+	private boolean showRefreshButton;
+
+	private int refreshSymbolCode;
+
 	private boolean mouseOverButton;
 
 	private boolean modalWindowOpen;
@@ -26,6 +30,8 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 	private long itemListCursorBlinkOffsetTime;
 
 	private static long itemListCursorBlinkTimeInterval = 500L;
+
+	private static int DEFAULT_REFRESH_SYMBOL_CODE = 176;
 
 	protected AmstradWindowDisplaySource(AmstradPc amstradPc, String windowTitle) {
 		super(amstradPc);
@@ -38,6 +44,17 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		resetItemListCursorBlinkOffsetTime();
 	}
 
+	protected void setupRefreshButton(AmstradDisplayCanvas canvas) {
+		int code = DEFAULT_REFRESH_SYMBOL_CODE;
+		canvas.symbol(code, 46, 76, 138, 129, 81, 50, 116, 0);
+		setupRefreshButton(canvas, code);
+	}
+
+	protected void setupRefreshButton(AmstradDisplayCanvas canvas, int symbolCode) {
+		setShowRefreshButton(true);
+		setRefreshSymbolCode(symbolCode);
+	}
+
 	@Override
 	protected final void renderContent(AmstradDisplayCanvas canvas) {
 		setMouseOverButton(false);
@@ -48,6 +65,9 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	protected void renderWindowTitleBar(AmstradDisplayCanvas canvas) {
 		renderWindowTitle(canvas);
+		if (isShowRefreshButton()) {
+			renderRefreshButton(canvas);
+		}
 		renderWindowCloseButton(canvas);
 	}
 
@@ -55,6 +75,19 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		canvas.pen(getWindowTitleColorIndex());
 		canvas.locate(1, 1).print(StringUtils.fitWidthCenterAlign(getWindowTitle(), 40));
 		canvas.locate(1, 2).printChrHorizontalRepeat(216, 40);
+	}
+
+	private void renderRefreshButton(AmstradDisplayCanvas canvas) {
+		if (isFocusOnRefreshButton(canvas)) {
+			setMouseOverButton(true);
+			canvas.paper(14).pen(24);
+		} else if (isModalWindowOpen()) {
+			canvas.paper(5).pen(13);
+		} else {
+			canvas.paper(5).pen(26);
+		}
+		canvas.locate(1, 1).print("  ");
+		canvas.move(8, 399).drawChrMonospaced(getRefreshSymbolCode());
 	}
 
 	private void renderWindowCloseButton(AmstradDisplayCanvas canvas) {
@@ -68,6 +101,14 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		}
 		canvas.locate(39, 1).print("  ");
 		canvas.move(616, 399).drawChrMonospaced('x');
+	}
+
+	private boolean isFocusOnRefreshButton(AmstradDisplayCanvas canvas) {
+		return !isModalWindowOpen() && isMouseOverRefreshButton(canvas);
+	}
+
+	private boolean isMouseOverRefreshButton(AmstradDisplayCanvas canvas) {
+		return isShowRefreshButton() && isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(1, 1, 2, 1));
 	}
 
 	private boolean isFocusOnWindowCloseButton(AmstradDisplayCanvas canvas) {
@@ -232,6 +273,8 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			closeModalWindow();
 		} else if (isFocusOnWindowCloseButton(canvas)) {
 			closeMainWindow();
+		} else if (isFocusOnRefreshButton(canvas)) {
+			refresh();
 		}
 	}
 
@@ -246,6 +289,8 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 			} else {
 				closeMainWindow();
 			}
+		} else if (keyCode == KeyEvent.VK_F5) {
+			refresh();
 		}
 	}
 
@@ -275,6 +320,10 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 		close();
 	}
 
+	public void refresh() {
+		// Subclasses may override this method
+	}
+
 	private void updateCursor() {
 		if (isMouseOverButton()) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -289,6 +338,22 @@ public abstract class AmstradWindowDisplaySource extends AmstradEmulatedDisplayS
 
 	public void setWindowTitle(String windowTitle) {
 		this.windowTitle = windowTitle;
+	}
+
+	private boolean isShowRefreshButton() {
+		return showRefreshButton;
+	}
+
+	private void setShowRefreshButton(boolean show) {
+		this.showRefreshButton = show;
+	}
+
+	private int getRefreshSymbolCode() {
+		return refreshSymbolCode;
+	}
+
+	private void setRefreshSymbolCode(int code) {
+		this.refreshSymbolCode = code;
 	}
 
 	protected boolean isMouseOverButton() {

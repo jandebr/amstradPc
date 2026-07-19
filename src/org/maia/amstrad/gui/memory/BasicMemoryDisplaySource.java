@@ -1,6 +1,5 @@
 package org.maia.amstrad.gui.memory;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
@@ -44,8 +43,6 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 
 	private static int COLOR_OUTLINE_BG = 0;
 
-	public static int SYMBOL_CODE_REFRESH = 176;
-
 	public BasicMemoryDisplaySource(AmstradPc amstradPc) {
 		super(amstradPc, "Basic Memory 64K");
 		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
@@ -56,37 +53,12 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 		super.init(canvas);
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
-		canvas.symbol(SYMBOL_CODE_REFRESH, 46, 76, 138, 129, 81, 50, 116, 0); // refresh
+		setupRefreshButton(canvas);
 		refresh();
 	}
 
 	@Override
-	protected void renderWindowTitleBar(AmstradDisplayCanvas canvas) {
-		super.renderWindowTitleBar(canvas);
-		renderRefreshButton(canvas);
-	}
-
-	private void renderRefreshButton(AmstradDisplayCanvas canvas) {
-		if (isFocusOnRefreshButton(canvas)) {
-			setMouseOverButton(true);
-			canvas.paper(14).pen(24);
-		} else {
-			canvas.paper(5).pen(26);
-		}
-		canvas.locate(1, 1).print("  ").paper(COLOR_PAPER);
-		canvas.move(8, 399).drawChrMonospaced(SYMBOL_CODE_REFRESH);
-	}
-
-	private boolean isFocusOnRefreshButton(AmstradDisplayCanvas canvas) {
-		return !isModalWindowOpen() && isMouseOverRefreshButton(canvas);
-	}
-
-	private boolean isMouseOverRefreshButton(AmstradDisplayCanvas canvas) {
-		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(1, 1, 2, 1));
-	}
-
-	@Override
-	protected void renderWindowContent(AmstradDisplayCanvas canvas) {
+	protected synchronized void renderWindowContent(AmstradDisplayCanvas canvas) {
 		renderMemoryOutline(getMemoryOutline(), canvas);
 		renderBasicVariables(canvas);
 	}
@@ -133,20 +105,14 @@ public class BasicMemoryDisplaySource extends AmstradWindowDisplaySource {
 	}
 
 	@Override
-	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		super.mouseClickedOnCanvas(canvas, canvasPosition);
-		if (isFocusOnRefreshButton(canvas)) {
-			refresh();
-		}
-	}
-
-	@Override
 	protected void keyboardKeyPressed(KeyEvent e) {
 		super.keyboardKeyPressed(e);
 		handleKeyboardKeyInItemList(e, getVariablesTextArea());
 	}
 
-	public void refresh() {
+	@Override
+	public synchronized void refresh() {
+		super.refresh();
 		setMemoryOutline(new MemoryOutlineBuilder().buildFor(getAmstradPc()));
 		setVariablesTextArea(createVariablesTextArea());
 	}

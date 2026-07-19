@@ -17,7 +17,9 @@ public class BasicSymbolsDisplaySource extends AmstradWindowDisplaySource {
 
 	private BasicSymbol[] systemSymbols;
 
-	private BasicSymbol[] customSymbols;
+	private BasicSymbol[] customizableSymbols;
+
+	private int customizableSymbolsCount;
 
 	private int gridCursorRow;
 
@@ -57,32 +59,19 @@ public class BasicSymbolsDisplaySource extends AmstradWindowDisplaySource {
 	@Override
 	protected void init(AmstradDisplayCanvas canvas) {
 		super.init(canvas);
-		initSymbols();
 		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		canvas.border(COLOR_BORDER).paper(COLOR_PAPER);
-	}
-
-	private void initSymbols() {
-		BasicRuntime rt = getAmstradPc().getBasicRuntime();
-		this.systemSymbols = indexSymbols(rt.getSystemSymbols());
-		this.customSymbols = indexSymbols(rt.getCustomizableSymbols());
-	}
-
-	private BasicSymbol[] indexSymbols(List<BasicSymbol> symbols) {
-		BasicSymbol[] index = new BasicSymbol[SYMBOL_RANGE_TO + 1];
-		for (BasicSymbol symbol : symbols) {
-			index[symbol.getNumber()] = symbol;
-		}
-		return index;
+		setupRefreshButton(canvas);
+		refresh();
 	}
 
 	@Override
-	protected void renderWindowContent(AmstradDisplayCanvas canvas) {
+	protected synchronized void renderWindowContent(AmstradDisplayCanvas canvas) {
 		renderMenu(canvas);
 		renderSymbolsGrid(canvas);
 		renderCurrentSymbolIdentifier(canvas);
 		renderCurrentSymbolMagnified(canvas);
-		renderCurrentSymbolValues(canvas);
+		renderSymbolAfter(canvas);
 	}
 
 	private void renderMenu(AmstradDisplayCanvas canvas) {
@@ -173,18 +162,17 @@ public class BasicSymbolsDisplaySource extends AmstradWindowDisplaySource {
 		if (symbol != null) {
 			canvas.paper(COLOR_CURSOR_DARK).pen(COLOR_CURSOR);
 			renderSymbol(canvas, symbol, 464, 239, 6, true);
-		}
-	}
-
-	private void renderCurrentSymbolValues(AmstradDisplayCanvas canvas) {
-		BasicSymbol symbol = getSymbol(getGridCursorNumber());
-		if (symbol != null) {
 			canvas.pen(COLOR_CURSOR_DARK);
 			for (int i = 0; i < symbol.getValues().length; i++) {
 				canvas.move(568, 236 - i * 12);
 				canvas.drawStrProportional(String.valueOf(symbol.getValue(i)), 0.5f);
 			}
 		}
+	}
+
+	private void renderSymbolAfter(AmstradDisplayCanvas canvas) {
+		canvas.pen(COLOR_SYMBOL_CUSTOM);
+		canvas.locate(8, 25).print("SYMBOL AFTER " + (256 - getCustomizableSymbolsCount()), true);
 	}
 
 	private void renderSymbol(AmstradDisplayCanvas canvas, BasicSymbol symbol, int xLeft, int yTop) {
@@ -265,12 +253,29 @@ public class BasicSymbolsDisplaySource extends AmstradWindowDisplaySource {
 		}
 	}
 
-	private void toggleShowSystemSymbols() {
+	public void toggleShowSystemSymbols() {
 		setShowSystemSymbols(!isShowSystemSymbols());
 	}
 
-	private void toggleShowCustomSymbols() {
+	public void toggleShowCustomSymbols() {
 		setShowCustomSymbols(!isShowCustomSymbols());
+	}
+
+	@Override
+	public synchronized void refresh() {
+		super.refresh();
+		BasicRuntime rt = getAmstradPc().getBasicRuntime();
+		setSystemSymbols(indexSymbols(rt.getSystemSymbols()));
+		setCustomizableSymbols(indexSymbols(rt.getCustomizableSymbols()));
+		setCustomizableSymbolsCount(rt.getCustomizableSymbolsCount());
+	}
+
+	private BasicSymbol[] indexSymbols(List<BasicSymbol> symbols) {
+		BasicSymbol[] index = new BasicSymbol[SYMBOL_RANGE_TO + 1];
+		for (BasicSymbol symbol : symbols) {
+			index[symbol.getNumber()] = symbol;
+		}
+		return index;
 	}
 
 	private boolean isMouseOverMenuSystemToggle(AmstradDisplayCanvas canvas) {
@@ -304,7 +309,7 @@ public class BasicSymbolsDisplaySource extends AmstradWindowDisplaySource {
 			return false;
 		if (number < SYMBOL_RANGE_FROM || number > SYMBOL_RANGE_TO)
 			return false;
-		BasicSymbol symbol = getCustomSymbols()[number];
+		BasicSymbol symbol = getCustomizableSymbols()[number];
 		if (symbol == null)
 			return false;
 		if (symbol.equals(getSystemSymbols()[number]))
@@ -317,7 +322,7 @@ public class BasicSymbolsDisplaySource extends AmstradWindowDisplaySource {
 		if (isSystemSymbol(number)) {
 			symbol = getSystemSymbols()[number];
 		} else if (isCustomSymbol(number)) {
-			symbol = getCustomSymbols()[number];
+			symbol = getCustomizableSymbols()[number];
 		}
 		return symbol;
 	}
@@ -326,8 +331,24 @@ public class BasicSymbolsDisplaySource extends AmstradWindowDisplaySource {
 		return systemSymbols;
 	}
 
-	private BasicSymbol[] getCustomSymbols() {
-		return customSymbols;
+	private void setSystemSymbols(BasicSymbol[] symbols) {
+		this.systemSymbols = symbols;
+	}
+
+	private BasicSymbol[] getCustomizableSymbols() {
+		return customizableSymbols;
+	}
+
+	private void setCustomizableSymbols(BasicSymbol[] symbols) {
+		this.customizableSymbols = symbols;
+	}
+
+	private int getCustomizableSymbolsCount() {
+		return customizableSymbolsCount;
+	}
+
+	private void setCustomizableSymbolsCount(int count) {
+		this.customizableSymbolsCount = count;
 	}
 
 	private int getGridCursorNumber() {

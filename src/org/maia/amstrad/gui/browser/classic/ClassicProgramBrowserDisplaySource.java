@@ -2,7 +2,6 @@ package org.maia.amstrad.gui.browser.classic;
 
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
@@ -97,6 +96,9 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		canvas.border(getTheme().getMainWindowBorderInk()).paper(getTheme().getMainWindowBackgroundInk());
 		canvas.symbol(SYMBOL_CODE_MONITOR, 255, 129, 129, 129, 255, 24, 126, 0); // monitor icon
 		canvas.symbol(SYMBOL_CODE_HOME, 24, 60, 126, 255, 126, 110, 110, 124); // home icon
+		if (!isStandaloneInfo()) {
+			setupRefreshButton(canvas, SYMBOL_CODE_HOME);
+		}
 	}
 
 	protected void initCoverImageProducers(AmstradDisplayCanvas canvas) {
@@ -117,31 +119,12 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	protected void renderWindowTitleBar(AmstradDisplayCanvas canvas) {
 		if (!isStandaloneInfo()) {
 			super.renderWindowTitleBar(canvas);
-			renderHomeButton(canvas);
 		}
-	}
-
-	private void renderHomeButton(AmstradDisplayCanvas canvas) {
-		if (isFocusOnHomeButton(canvas)) {
-			setMouseOverButton(true);
-			canvas.paper(14).pen(24);
-		} else {
-			canvas.paper(5).pen(26);
-		}
-		canvas.locate(1, 1).print("  ").paper(getTheme().getMainWindowBackgroundInk());
-		canvas.move(8, 399).drawChrMonospaced(SYMBOL_CODE_HOME);
-	}
-
-	private boolean isFocusOnHomeButton(AmstradDisplayCanvas canvas) {
-		return !isModalWindowOpen() && isMouseOverHomeButton(canvas);
-	}
-
-	private boolean isMouseOverHomeButton(AmstradDisplayCanvas canvas) {
-		return isMouseInCanvasBounds(canvas.getTextAreaBoundsOnCanvas(1, 1, 2, 1));
 	}
 
 	@Override
 	protected void renderWindowContent(AmstradDisplayCanvas canvas) {
+		canvas.paper(getTheme().getMainWindowBackgroundInk());
 		if (isStandaloneInfo()) {
 			renderProgramSheet(getProgramInfoSheet(), canvas);
 		} else {
@@ -409,14 +392,6 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	}
 
 	@Override
-	protected void mouseClickedOnCanvas(AmstradDisplayCanvas canvas, Point canvasPosition) {
-		super.mouseClickedOnCanvas(canvas, canvasPosition);
-		if (isFocusOnHomeButton(canvas)) {
-			reset();
-		}
-	}
-
-	@Override
 	public boolean isAutoRepeatAccepted(AmstradJoystickCommand command) {
 		return AmstradJoystickCommand.UP.equals(command) || AmstradJoystickCommand.DOWN.equals(command);
 	}
@@ -461,7 +436,7 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 				close();
 			}
 		} else if (keyCode == KeyEvent.VK_F5) {
-			reset();
+			refresh();
 		}
 	}
 
@@ -570,6 +545,12 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 		} else {
 			super.closeMainWindow();
 		}
+	}
+
+	@Override
+	public void refresh() {
+		super.refresh();
+		reset();
 	}
 
 	@Override
