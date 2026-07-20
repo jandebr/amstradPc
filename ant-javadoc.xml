@@ -10,6 +10,7 @@
 				<pathelement location="lib/maiaSwing.jar" />
 				<pathelement location="lib/maiaInputDevice.jar" />
 				<pathelement location="lib/maia2d.jar" />
+				<pathelement location="lib/phylopicSvg.jar" />
 			</classpath>
 		</javadoc>
 	</target>
