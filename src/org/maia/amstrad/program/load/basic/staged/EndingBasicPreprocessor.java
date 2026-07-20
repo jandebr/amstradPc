@@ -78,8 +78,8 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		BasicLineNumberScope scope = session.getSnapshotScopeOfCodeExcludingMacros(sourceCode);
 		invokeEndingMacroOnBreak(sourceCode, scope, session);
 		invokeEndingMacroOnEndInstructions(sourceCode, scope, session);
-		// invokeEndingMacroOnGotoLoops(sourceCode, scope, session);
-		// invokeEndingMacroAtCodeHorizon(sourceCode, session);
+		// invokeEndingMacroOnGotoLoops(sourceCode, scope, session); -> preserve GOTO loop
+		// invokeEndingMacroAtCodeHorizon(sourceCode, session); -> preserve GOTO loop from ProgramBridgeMacro
 	}
 
 	private void invokeEndingMacroOnBreak(BasicSourceCode sourceCode, BasicLineNumberScope scope,
