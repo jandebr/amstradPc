@@ -111,6 +111,14 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	}
 
 	@Override
+	protected void notifyCarouselStartSliding() {
+		super.notifyCarouselStartSliding();
+		if (getAmstradContext().isLowPerformance()) {
+			unloadImageShow();
+		}
+	}
+
+	@Override
 	public void runProgramAsync(ProgramNode programNode) {
 		super.runProgramAsync(programNode);
 		if (getRunProgramActionInProgress().getAnimation() != null) {

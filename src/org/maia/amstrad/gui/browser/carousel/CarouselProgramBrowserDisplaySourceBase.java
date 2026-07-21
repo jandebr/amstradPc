@@ -642,6 +642,17 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		// Subclasses may extend
 	}
 
+	protected void notifyCarouselStartSliding() {
+		clearItemHighlightActionInProgress();
+		setCarouselOutlineShowTimeMillis(System.currentTimeMillis() + 1000L);
+		// Subclasses may extend
+	}
+
+	protected void notifyCarouselStopSliding() {
+		clearCarouselOutlineShowTimeMillis();
+		// Subclasses may extend
+	}
+
 	private void clearEnterFolderActionInProgress(CarouselEnterFolderAction action) {
 		if (action.equals(getEnterFolderActionInProgress())) {
 			clearEnterFolderActionInProgress();
@@ -651,6 +662,10 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	private void clearEnterFolderActionInProgress() {
 		clearCarouselAction(getEnterFolderActionInProgress());
 		setEnterFolderActionInProgress(null);
+	}
+
+	private void clearCarouselOutlineShowTimeMillis() {
+		setCarouselOutlineShowTimeMillis(Long.MAX_VALUE);
 	}
 
 	@Override
@@ -1001,10 +1016,6 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		this.carouselOutlineShowTimeMillis = timeMillis;
 	}
 
-	private void clearCarouselOutlineShowTimeMillis() {
-		setCarouselOutlineShowTimeMillis(Long.MAX_VALUE);
-	}
-
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {
 
 		public CarouselComponentItemTracker() {
@@ -1034,17 +1045,12 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 		@Override
 		public void notifyStartSliding(SlidingItemListComponent component) {
-			setCarouselOutlineShowTimeMillis(System.currentTimeMillis() + 1000L);
-			if (getAmstradContext().isLowPerformance()) {
-				notifyCursorLeftRepositoryNode();
-			} else {
-				clearItemHighlightActionInProgress();
-			}
+			notifyCarouselStartSliding();
 		}
 
 		@Override
 		public void notifyStopSliding(SlidingItemListComponent component) {
-			clearCarouselOutlineShowTimeMillis();
+			notifyCarouselStopSliding();
 		}
 
 	}
