@@ -60,8 +60,8 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 	protected Color getCassettePrintColor(FolderNode folderNode) {
 		Randomizer rnd = createRandomizer(folderNode);
 		float hue = rnd.drawFloatUnitNumber();
-		float sat = 0.5f + 0.4f * rnd.drawFloatUnitNumber();
-		float bri = 0.1f + 0.2f * rnd.drawFloatUnitNumber();
+		float sat = 0.7f + 0.2f * rnd.drawFloatUnitNumber();
+		float bri = 0.2f + 0.2f * rnd.drawFloatUnitNumber();
 		return Color.getHSBColor(hue, sat, bri);
 	}
 
