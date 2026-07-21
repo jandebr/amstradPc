@@ -25,6 +25,7 @@ resource = images/launcher-icon.png
 resource = images/splash.png
 resource = images/amstrad.ico
 resource = images/amstrad-green.ico
+resource = images/phylopic-db.zip
 
 # System resources
 uresource = system/system.jar
@@ -46,6 +47,7 @@ jvmarg = -Djavacpc-version=%AMSTRADPC_VERSION%
 jvmarg = -Djavacpc-ini-read=javacpc.ini
 jvmarg = -Djavacpc-ini-write=javacpc.ini
 jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
+jvmarg = -Djavacpc.images.phylopic.db-path=images/phylopic-db.zip
 desktop.jvmarg = -Djavacpc.mode=DESKTOP
 desktop.jvmarg = -Djavacpc.images.cache_capacity=50
 entertainment.jvmarg = -Djavacpc.mode=ENTERTAINMENT
