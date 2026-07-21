@@ -108,6 +108,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		label.setSlidingSpeed(40.0);
 		label.setSuspensionAtEndsMillis(1000L);
 		label.setRepaintClientDriven(true);
+		label.setHigherQualityRenderingEnabled(!isLowPerformance());
 		return label;
 	}
 
@@ -296,6 +297,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		comp.setSlidingDynamics(SlidingDynamicsFactory.createAdaptiveSpeedDynamics(comp, 0.004, 1.5, 0.5));
 		comp.setSteadyLandingMinimumTimeDelayMillis(100L);
 		comp.setRepaintClientDriven(true);
+		comp.setHigherQualityRenderingEnabled(!isLowPerformance());
 		return comp;
 	}
 
@@ -365,6 +367,7 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		comp.setShade(SlidingShadeFactory.createGradientShadeRelativeLength(comp, 0.15));
 		comp.setSlidingCursor(SlidingCursorFactory.createSolidOutlineCursor(getTheme().getBreadcrumbCursorColor(), 1));
 		comp.setRepaintClientDriven(true);
+		comp.setHigherQualityRenderingEnabled(!isLowPerformance());
 		return comp;
 	}
 
@@ -393,6 +396,10 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		label.setBackground(getTheme().getBackgroundColor());
 		label.setForeground(textColor);
 		return new CarouselBreadcrumbItemImpl(breadcrumb, folderNode, label, margin, selectedTextColor);
+	}
+
+	protected boolean isLowPerformance() {
+		return AmstradFactory.getInstance().getAmstradContext().isLowPerformance();
 	}
 
 	protected CarouselProgramBrowserTheme getTheme() {

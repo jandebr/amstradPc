@@ -148,15 +148,22 @@ public class CarouselProgramBrowserDisplaySource extends CarouselProgramBrowserD
 	}
 
 	private void loadImageShow(Node node) {
-		synchronized (getImageShowSemaphore()) {
-			unloadImageShow();
-			SlidingImageShow show = getComponentFactory().createImageShow(node);
-			if (show != null) {
-				setImageShow(show);
-				add(show.getUI(), CarouselLayoutManager.PREVIEW);
-				show.startAnimating();
+		unloadImageShow();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				SlidingImageShow show = getComponentFactory().createImageShow(node);
+				if (show != null) {
+					synchronized (getImageShowSemaphore()) {
+						if (node.equals(getCurrentRepositoryNode()) && getImageShow() == null) {
+							setImageShow(show);
+							add(show.getUI(), CarouselLayoutManager.PREVIEW);
+							show.startAnimating();
+						}
+					}
+				}
 			}
-		}
+		}).start();
 	}
 
 	private void unloadImageShow() {

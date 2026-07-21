@@ -174,14 +174,14 @@ public abstract class CarouselPortholeStartupAnimation extends CarouselBaseAnima
 	}
 
 	private void renderLoadingLabelTop(Graphics2D g, int displayHeight, long elapsedTimeMillis) {
-		float tra = (float) Math.sqrt(0.7 + 0.28 * (0.5 + Math.sin(elapsedTimeMillis / 400.0 + Math.PI) / 2.0));
+		float tra = (float) Math.sqrt(0.5 + 0.48 * (0.5 + Math.sin(elapsedTimeMillis / 400.0 + Math.PI) / 2.0));
 		getLoadingLabelTop().setForeground(ColorUtils.setTransparency(getLoadingMessageColor(), tra));
 		int y = (displayHeight - getPortholeHeight()) / 2 - getLoadingLabelTop().getHeight();
 		renderLoadingLabel(getLoadingLabelTop(), g, y);
 	}
 
 	private void renderLoadingLabelBottom(Graphics2D g, int displayHeight, long elapsedTimeMillis) {
-		float tra = (float) Math.sqrt(0.7 + 0.28 * (0.5 + Math.sin(elapsedTimeMillis / 400.0) / 2.0));
+		float tra = (float) Math.sqrt(0.5 + 0.48 * (0.5 + Math.sin(elapsedTimeMillis / 400.0) / 2.0));
 		getLoadingLabelBottom().setForeground(ColorUtils.setTransparency(getLoadingMessageColor(), tra));
 		int y = (displayHeight + getPortholeHeight()) / 2;
 		renderLoadingLabel(getLoadingLabelBottom(), g, y);

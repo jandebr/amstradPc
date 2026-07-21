@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.swing.animate.textslide.SlidingTextComponent;
 import org.maia.swing.animate.textslide.SlidingTextComponent.TextSpacer;
@@ -77,7 +78,12 @@ public class InfoText {
 				theme.getInfoMinimumFontSize() * magnifier, theme.getInfoMaximumFontSize() * magnifier));
 		builder.withMaximumSize(size);
 		builder.withRepaintClientDriven(true);
+		builder.withHigherQualityRenderingEnabled(!isLowPerformance());
 		return builder.build();
+	}
+
+	private boolean isLowPerformance() {
+		return AmstradFactory.getInstance().getAmstradContext().isLowPerformance();
 	}
 
 	private TextSpacer consumeTextSeparator() {

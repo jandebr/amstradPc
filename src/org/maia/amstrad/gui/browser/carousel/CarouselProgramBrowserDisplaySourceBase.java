@@ -106,6 +106,8 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 	private boolean prolongedStartupAnimation;
 
+	private long carouselOutlineShowTimeMillis;
+
 	private static final String SETTING_STARTUP_ANIMATION_COLOR = "program_browser.startup_animation.force_color";
 
 	protected CarouselProgramBrowserDisplaySourceBase(CarouselAmstradProgramBrowser programBrowser) {
@@ -121,6 +123,7 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		setTheme(createTheme(graphicsContext));
 		setBackground(getTheme().getBackgroundColor());
 		setAnimationFactory(createAnimationFactory());
+		clearCarouselOutlineShowTimeMillis();
 		if (getUserSettings().getBool(SETTING_STARTUP_ANIMATION_COLOR, false)) {
 			getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR); // ahead of startup action
 		}
@@ -296,6 +299,7 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 	protected void hideCarouselOutline() {
 		remove(getCarouselOutline());
+		clearCarouselOutlineShowTimeMillis();
 	}
 
 	protected boolean isCarouselOutlineShowing() {
@@ -383,14 +387,15 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	}
 
 	protected void renderCarouselOutline() {
-		double speed = getCarouselComponent().getSlidingSpeed();
 		if (isCarouselOutlineShowing()) {
-			if (speed == 0) {
+			if (getCarouselComponent().isStationary()) {
 				hideCarouselOutline();
 			}
 		} else {
-			if (speed == 1.0 && !getCarouselComponent().isItemListFitsInsideViewport()) {
+			long now = System.currentTimeMillis();
+			if (now >= getCarouselOutlineShowTimeMillis() && !getCarouselComponent().isItemListFitsInsideViewport()) {
 				showCarouselOutline();
+				clearCarouselOutlineShowTimeMillis();
 			}
 		}
 	}
@@ -988,6 +993,18 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		this.prolongedStartupAnimationIndicator = indicator;
 	}
 
+	private long getCarouselOutlineShowTimeMillis() {
+		return carouselOutlineShowTimeMillis;
+	}
+
+	private void setCarouselOutlineShowTimeMillis(long timeMillis) {
+		this.carouselOutlineShowTimeMillis = timeMillis;
+	}
+
+	private void clearCarouselOutlineShowTimeMillis() {
+		setCarouselOutlineShowTimeMillis(Long.MAX_VALUE);
+	}
+
 	private class CarouselComponentItemTracker extends SlidingItemListAdapter {
 
 		public CarouselComponentItemTracker() {
@@ -1017,7 +1034,17 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 		@Override
 		public void notifyStartSliding(SlidingItemListComponent component) {
-			clearItemHighlightActionInProgress();
+			setCarouselOutlineShowTimeMillis(System.currentTimeMillis() + 1000L);
+			if (getAmstradContext().isLowPerformance()) {
+				notifyCursorLeftRepositoryNode();
+			} else {
+				clearItemHighlightActionInProgress();
+			}
+		}
+
+		@Override
+		public void notifyStopSliding(SlidingItemListComponent component) {
+			clearCarouselOutlineShowTimeMillis();
 		}
 
 	}

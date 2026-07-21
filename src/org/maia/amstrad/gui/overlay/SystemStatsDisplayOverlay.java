@@ -76,7 +76,7 @@ public class SystemStatsDisplayOverlay extends AbstractDisplayOverlay implements
 		int boxHeight = lines.size() * lineHeight + 10;
 		int xcenter = displayBounds.x + displayBounds.width / 2;
 		int xleft = xcenter - boxWidth / 2;
-		int ytop = displayBounds.y + Math.min(monitorInsets.top, displayBounds.height / 17) - 4;
+		int ytop = displayBounds.y + Math.max(Math.min(monitorInsets.top, displayBounds.height / 17) - 4, 4);
 		Graphics2D g = displayView.createDisplayViewport(xleft, ytop, boxWidth, boxHeight);
 		g.setFont(font);
 		g.setColor(BOX_COLOR);
