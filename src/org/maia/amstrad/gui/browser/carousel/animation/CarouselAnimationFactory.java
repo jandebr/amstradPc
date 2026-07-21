@@ -3,6 +3,7 @@ package org.maia.amstrad.gui.browser.carousel.animation;
 import java.awt.Color;
 import java.awt.Rectangle;
 
+import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.carousel.animation.breadcrumb.CarouselBreadcrumbEnterFolderAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselEnterFolderAnimation;
 import org.maia.amstrad.gui.browser.carousel.animation.item.CarouselHighlightItemAnimation;
@@ -45,7 +46,7 @@ public class CarouselAnimationFactory {
 		if (i == 0) {
 			animation = new CarouselArcticWavesAnimation(graphicsContext);
 		} else if (i == 1) {
-			if (getRandomizer().drawBoolean()) {
+			if (isLowPerformance()) {
 				animation = new CarouselTropicWavesAnimation(graphicsContext);
 			} else {
 				animation = new CarouselTropicWavesGamifiedAnimation(graphicsContext);
@@ -110,6 +111,10 @@ public class CarouselAnimationFactory {
 			animation.setHighlightDurationMillis(800L); // 0.8s
 		}
 		return animation;
+	}
+
+	protected boolean isLowPerformance() {
+		return AmstradFactory.getInstance().getAmstradContext().isLowPerformance();
 	}
 
 	protected CarouselProgramBrowserTheme getTheme() {
