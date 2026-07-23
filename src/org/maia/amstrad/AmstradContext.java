@@ -23,6 +23,8 @@ import org.maia.graphics2d.image.pool.ImagePool;
 import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase;
 import org.maia.util.SystemUtils;
 
+import jemu.settings.Settings;
+
 public abstract class AmstradContext {
 
 	private AmstradSystem amstradSystem;
@@ -68,6 +70,8 @@ public abstract class AmstradContext {
 	private static final String SETTING_LOWPERFORMANCE_ALLOW_BILINEAR_EFFECT = "lowperformance.allow_bilinear";
 
 	private static final String SETTING_LOWPERFORMANCE_ALLOW_SCANLINES_EFFECT = "lowperformance.allow_scanlines";
+
+	private static final String SETTING_DISPLAY_RENDER_MAXFPS = Settings.DISPLAY_RENDER_MAXFPS;
 
 	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
 
@@ -163,6 +167,10 @@ public abstract class AmstradContext {
 
 	public void activateLowPerformance(AmstradPc amstradPc) {
 		getUserSettings().setBool(SETTING_LOWPERFORMANCE, true);
+		// Cap frames per second when not set
+		if (getUserSettings().get(SETTING_DISPLAY_RENDER_MAXFPS, null) == null) {
+			getUserSettings().set(SETTING_DISPLAY_RENDER_MAXFPS, "25");
+		}
 		// Turn off cpu-intensive monitor options
 		AmstradMonitor monitor = amstradPc.getMonitor();
 		boolean allowMonitor = getUserSettings().getBool(SETTING_LOWPERFORMANCE_ALLOW_MONITOR_EFFECT, false);

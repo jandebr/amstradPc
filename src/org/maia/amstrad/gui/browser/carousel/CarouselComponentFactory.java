@@ -73,6 +73,8 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
 
+	private ImageShowGradientOverlay imageShowGradientOverlay;
+
 	/**
 	 * Tries to fix outline border clipping on some displays
 	 */
@@ -218,12 +220,13 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 			builder.withImageIterator(iterator);
 			builder.withMaxToMinZoomFactorRatio(3.0);
 			builder.withRepaintClientDriven(true);
-			builder.withImageOverlay(createImageShowOverlay(size));
+			builder.withImageOverlay(createImageShowOverlay(size, getTheme().getBackgroundColor()));
 			builder.withMinimumImageDisplayTimeMillis(10000L);
 			builder.withMaximumImageDisplayTimeMillis(14000L);
-			builder.withImageFadeInDurationMillis(1000L);
-			builder.withImageFadeOutDurationMillis(1000L);
+			builder.withImageFadeInDurationMillis(2000L);
+			builder.withImageFadeOutDurationMillis(2000L);
 			show = builder.build();
+			show.getUI().setOpaque(false); // improves rendering performance
 		}
 		return show;
 	}
@@ -271,19 +274,16 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 		}
 	}
 
-	private Image createImageShowOverlay(Dimension size) {
-		int w = size.width, h = size.height;
-		int tw = Math.max(w / 8, 8), th = Math.max(h / 8, 8);
-		Color c1 = getTheme().getBackgroundColor();
-		Color c2 = ColorUtils.setTransparency(c1, 1f);
-		GradientFunction function = GradientImageFactory.createSigmoidGradientFunction();
-		BufferedImage left = ImageUtils.addPadding(
-				GradientImageFactory.createLeftToRightGradientImage(new Dimension(tw, h), c1, c2, function),
-				new Insets(0, 0, 0, w - tw), c2);
-		BufferedImage bottom = ImageUtils.addPadding(
-				GradientImageFactory.createBottomToTopGradientImage(new Dimension(w, th), c1, c2, function),
-				new Insets(h - th, 0, 0, 0), c2);
-		return ImageUtils.combineByTransparency(left, bottom);
+	private Image createImageShowOverlay(Dimension size, Color color) {
+		ImageShowGradientOverlay overlay = getImageShowGradientOverlay();
+		if (overlay == null) {
+			overlay = new ImageShowGradientOverlay(size, color);
+		} else if (!overlay.matches(size, color)) {
+			overlay.getImage().flush();
+			overlay = new ImageShowGradientOverlay(size, color);
+		}
+		setImageShowGradientOverlay(overlay);
+		return overlay.getImage();
 	}
 
 	public CarouselComponent createCarouselComponent(CarouselHost host) {
@@ -416,6 +416,62 @@ public class CarouselComponentFactory implements CarouselItemMaker, CarouselBrea
 
 	protected AmstradFolderCoverImageProducer getFolderCoverImageProducer() {
 		return folderCoverImageProducer;
+	}
+
+	private ImageShowGradientOverlay getImageShowGradientOverlay() {
+		return imageShowGradientOverlay;
+	}
+
+	private void setImageShowGradientOverlay(ImageShowGradientOverlay overlay) {
+		this.imageShowGradientOverlay = overlay;
+	}
+
+	private static class ImageShowGradientOverlay {
+
+		private Dimension size;
+
+		private Color color;
+
+		private Image image;
+
+		public ImageShowGradientOverlay(Dimension size, Color color) {
+			this.size = size;
+			this.color = color;
+			this.image = createImage();
+		}
+
+		private Image createImage() {
+			int w = getSize().width;
+			int h = getSize().height;
+			int tw = Math.max(w / 8, 8), th = Math.max(h / 8, 8);
+			Color c1 = getColor();
+			Color c2 = ColorUtils.setTransparency(c1, 1f);
+			GradientFunction function = GradientImageFactory.createSigmoidGradientFunction();
+			BufferedImage left = ImageUtils.addPadding(
+					GradientImageFactory.createLeftToRightGradientImage(new Dimension(tw, h), c1, c2, function),
+					new Insets(0, 0, 0, w - tw), c2);
+			BufferedImage bottom = ImageUtils.addPadding(
+					GradientImageFactory.createBottomToTopGradientImage(new Dimension(w, th), c1, c2, function),
+					new Insets(h - th, 0, 0, 0), c2);
+			return ImageUtils.combineByTransparency(left, bottom);
+		}
+
+		public boolean matches(Dimension size, Color color) {
+			return getSize().equals(size) && getColor().equals(color);
+		}
+
+		public Dimension getSize() {
+			return size;
+		}
+
+		public Color getColor() {
+			return color;
+		}
+
+		public Image getImage() {
+			return image;
+		}
+
 	}
 
 }

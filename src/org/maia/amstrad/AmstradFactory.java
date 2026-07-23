@@ -164,8 +164,9 @@ public class AmstradFactory {
 
 	private AmstradPc customizeAmstradPc(AmstradPc amstradPc) {
 		amstradPc.getMonitor().setCustomDisplayOverlay(createCustomDisplayOverlay(amstradPc));
-		if (getAmstradContext().isLowPerformance())
+		if (getAmstradContext().isLowPerformance()) {
 			getAmstradContext().activateLowPerformance(amstradPc);
+		}
 		return amstradPc;
 	}
 
