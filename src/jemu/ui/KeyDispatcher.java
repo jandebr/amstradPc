@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.util.Arrays;
 
 import jemu.core.device.Computer;
+import jemu.settings.Settings;
 
 public class KeyDispatcher implements KeyListener {
 
@@ -60,7 +61,7 @@ public class KeyDispatcher implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// Console.println("KEY PRESSED " + formatKeyEvent(e));
+		debugPrintKeyEvent("KEY PRESSED", e);
 		// Remember modifiers
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_CONTROL) {
@@ -80,7 +81,7 @@ public class KeyDispatcher implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// Console.println("KEY RELEASED " + formatKeyEvent(e));
+		debugPrintKeyEvent("KEY RELEASED", e);
 		// Map & handle key release
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;
@@ -242,6 +243,7 @@ public class KeyDispatcher implements KeyListener {
 
 	protected void dispatchKeyToDestination(KeyEvent e) {
 		if (hasDestination() && e != null) {
+			debugPrintKeyEvent("KEY DISPATCHED", e);
 			getDestination().processKeyEvent(e);
 		}
 	}
@@ -279,6 +281,12 @@ public class KeyDispatcher implements KeyListener {
 	private KeyEvent cloneKeyEvent(KeyEvent e) {
 		return new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiersEx(), e.getKeyCode(),
 				e.getKeyChar(), e.getKeyLocation());
+	}
+
+	private void debugPrintKeyEvent(String message, KeyEvent e) {
+		if (Settings.getBoolean(Settings.DEBUG_KEYS, false)) {
+			Console.println(message + " - " + formatKeyEvent(e));
+		}
 	}
 
 	public static String formatKeyEvent(KeyEvent e) {

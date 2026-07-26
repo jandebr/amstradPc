@@ -61,18 +61,18 @@ public abstract class DisplayRenderDelegate {
 	public abstract void paintDisplayOffscreen(Graphics g, boolean monitorEffect);
 
 	protected void repaintDisplayImmediately() {
-		if (isDisplayShowing()) {
-			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
 
-					@Override
-					public void run() {
+				@Override
+				public void run() {
+					if (isDisplayShowing()) {
 						getDisplay().paintImmediately(getImageRect());
 						Toolkit.getDefaultToolkit().sync();
 					}
-				});
-			} catch (InvocationTargetException | InterruptedException e) {
-			}
+				}
+			});
+		} catch (InvocationTargetException | InterruptedException e) {
 		}
 	}
 

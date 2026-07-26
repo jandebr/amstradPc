@@ -46,6 +46,7 @@ jvmarg = -Djava.library.path=system/jinput
 jvmarg = -Djavacpc-version=%AMSTRADPC_VERSION%
 jvmarg = -Djavacpc-ini-read=javacpc.ini
 jvmarg = -Djavacpc-ini-write=javacpc.ini
+jvmarg = -Djavacpc.console.file=??amstradPc.log
 jvmarg = -Djavacpc.program_repo.file.dir-managed=%AMSTRADPC_PROGRAMBASE%
 jvmarg = -Djavacpc.images.phylopic.db-path=images/phylopic-db.zip
 desktop.jvmarg = -Djavacpc.mode=DESKTOP

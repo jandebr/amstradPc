@@ -85,6 +85,7 @@ public class Settings {
 	public static final String NOTEBOOK = "notebook";
 	public static final String STANDALONE = "standalone";
 	public static final String CONSOLE = "console";
+	public static final String DEBUG_KEYS = "debug.keys";
 
 	public static final String SYSTEM_DIR = "system_dir";
 	public static final String SNAPSHOT_FILE = "snapshot_file";
