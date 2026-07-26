@@ -1,6 +1,7 @@
 package org.maia.amstrad.pc.joystick;
 
 import java.awt.event.KeyEvent;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
 
@@ -177,14 +178,18 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 			if (!event.isFiredByAutoRepeat() || displaySource.isAutoRepeatAccepted(event.getCommand())) {
 				AmstradJoystickKeyEvent keyEvent = getMenuAdapter().translateToKeyEvent(event);
 				if (keyEvent != null) {
-					SwingUtilities.invokeLater(new Runnable() {
+					try {
+						SwingUtilities.invokeAndWait(new Runnable() {
 
-						@Override
-						public void run() {
-							dispatchKeyEvent(keyEvent, displaySource);
-						}
-					});
-					event.consume();
+							@Override
+							public void run() {
+								dispatchKeyEvent(keyEvent, displaySource);
+							}
+						});
+					} catch (InvocationTargetException | InterruptedException e) {
+					} finally {
+						event.consume();
+					}
 				}
 			}
 		}
