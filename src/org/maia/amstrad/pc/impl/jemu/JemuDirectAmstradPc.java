@@ -617,9 +617,13 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 				super.doSwapDisplaySource(displaySource);
 				getFrame().addPaddingAroundDisplay();
 			} else if (isFullscreen() && !oldStretching && newStretching) {
+				Display display = getDisplay();
+				display.setVisible(false);
 				getFrame().removePaddingAroundDisplay();
 				updateDisplaySize(true);
 				super.doSwapDisplaySource(displaySource);
+				display.setVisible(true);
+				display.grabFocus();
 			} else {
 				super.doSwapDisplaySource(displaySource);
 			}
