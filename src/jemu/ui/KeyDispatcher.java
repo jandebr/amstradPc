@@ -29,6 +29,8 @@ public class KeyDispatcher implements KeyListener {
 
 	private KeyEvent virtualShiftKeyEventReleased;
 
+	private static final String SETTING_DEBUG_KEYS = "debug.keys";
+
 	public KeyDispatcher(Component source) {
 		this(source, null);
 	}
@@ -284,7 +286,7 @@ public class KeyDispatcher implements KeyListener {
 	}
 
 	private void debugPrintKeyEvent(String message, KeyEvent e) {
-		if (Settings.getBoolean(Settings.DEBUG_KEYS, false)) {
+		if (Settings.getBoolean(SETTING_DEBUG_KEYS, false)) {
 			Console.println(message + " - " + formatKeyEvent(e));
 		}
 	}
