@@ -17,6 +17,8 @@ import org.maia.amstrad.tape.model.AudioRange;
 import org.maia.amstrad.tape.model.Bit;
 import org.maia.amstrad.tape.read.AudioFile;
 
+import jemu.ui.Console;
+
 public class AudioFileWaveformView extends AudioFilePositionSource {
 
 	private AudioRange displayRange;
@@ -81,7 +83,7 @@ public class AudioFileWaveformView extends AudioFilePositionSource {
 				paintSelectionBitLabels(g2, selectedBits);
 				paintSelectionRangeInfo(g2);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Console.printStackTrace(e);
 			}
 		}
 	}

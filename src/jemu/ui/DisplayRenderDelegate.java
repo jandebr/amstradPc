@@ -45,11 +45,11 @@ public abstract class DisplayRenderDelegate {
 	}
 
 	public void displayChangedSize(int width, int height) {
-		System.out.println("Display size " + width + "x" + height);
+		Console.println("Display size " + width + "x" + height);
 	}
 
 	public void displayImageChangedSize(int imageWidth, int imageHeight) {
-		System.out.println("Display image size " + imageWidth + "x" + imageHeight);
+		Console.println("Display image size " + imageWidth + "x" + imageHeight);
 	}
 
 	public abstract void displayPixelsReadyForPainting();

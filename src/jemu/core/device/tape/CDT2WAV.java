@@ -1,6 +1,7 @@
 package jemu.core.device.tape;
 
 import jemu.core.Util;
+import jemu.ui.Console;
 
 /**
  * CDT2WAV conversion utilities
@@ -124,7 +125,7 @@ public class CDT2WAV {
 		datalen= get3(inpbuf, data+15);
 		data+=18;
         if (debug)
-        System.out.println("Pilot is: " +pilot + " pause is: " + pause + " Length is: " + datalen);
+        Console.println("Pilot is: " +pilot + " pause is: " + pause + " Length is: " + datalen);
 	}
 	
 	// ...Pure Tone
@@ -199,12 +200,12 @@ public class CDT2WAV {
 		pause=get2(inpbuf, data+0);
 		output.setAmpLow();
 		if (debug)
-			System.out.println("Pause is " + pause);
+			Console.println("Pause is " + pause);
 		if (pause != 0) {
 			output.pause(pause);
 		} else {
 			output.pause(5000); // 5 seconds of pause in "Stop Tape" wave output
-			System.out.println("Pause is added: 5 secs");
+			Console.println("Pause is added: 5 secs");
 		}
 		output.setAmpLow();
 	}
@@ -378,7 +379,7 @@ public class CDT2WAV {
 			// Get ID of next block and start position in input byte array
 			id = inpbuf[blockStart[currentBlock]];
             if (debug)
-                System.out.println("ID is " + Util.hex(id));
+                Console.println("ID is " + Util.hex(id));
 			data = blockStart[currentBlock]+1;
 			
 			switch (id) {
@@ -446,7 +447,7 @@ public class CDT2WAV {
 				case 0x17: // C64 Turbo Tape Data Block
 				case 0x28: // Select Block
 				default:{
-					System.out.println("ERR_TZX_UNSUPPORTED");
+					Console.println("ERR_TZX_UNSUPPORTED");
 					break;
                 }
 			}
@@ -517,12 +518,12 @@ public class CDT2WAV {
 		// 5 seconds of pause in "Stop Tape" wave output
 		output.pause(5000);
 		if (debug)
-			System.out.println("End of tape... 5 seconds pause added");
+			Console.println("End of tape... 5 seconds pause added");
 		
 		output.stop();
 		
 		if (debug)
-			System.out.println(" OK");
+			Console.println(" OK");
 	}
 
 	/**
@@ -534,14 +535,14 @@ public class CDT2WAV {
 		// Sanity checks
 		// ...check input and output
 		if (inpbuf == null || inpbuf.length < 10) {
-			System.out.println("ERR_ILLEGAL_ARGUMENT") ;
+			Console.println("ERR_ILLEGAL_ARGUMENT") ;
             return null;
 		}
 
 		// ...check for TZX header
 		for (int i = 0; i < ZXTAPE_HEADER.length; i++) {
 			if (inpbuf[i] != ZXTAPE_HEADER[i]) {
-				System.out.println("ERR_NOT_TZX");
+				Console.println("ERR_NOT_TZX");
                 return null;
 			}
 		}
@@ -549,7 +550,7 @@ public class CDT2WAV {
 		// ...check TZX version is supported
 		int cdt_major = inpbuf[8];
 		if (cdt_major == 0) {
-			System.out.println("ERR_TZX_UNSUPPORTED");
+			Console.println("ERR_TZX_UNSUPPORTED");
             return null;
 		}
 
@@ -557,7 +558,7 @@ public class CDT2WAV {
 		currentBlock = 0;
 		numBlocks = countBlocks(null);
 		if (numBlocks < 0) {
-			System.out.println("ERR_TZX_UNSUPPORTED");
+			Console.println("ERR_TZX_UNSUPPORTED");
             return null;
 		}
 		

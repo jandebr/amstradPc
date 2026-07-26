@@ -25,6 +25,8 @@ import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.program.load.basic.staged.EndingBasicCodeDisclosure;
 import org.maia.amstrad.tape.model.AudioTapeProgram;
 
+import jemu.ui.Console;
+
 public class AmstradPcPlugin {
 
 	private AmstradPc amstradPc;
@@ -251,7 +253,7 @@ public class AmstradPcPlugin {
 						getTapeProgram().saveModifiedSourceCode(modifiedSourceCode);
 						fireModifiedSourceCodeSaved(getTapeProgram());
 					} catch (Exception e) {
-						System.err.println(e);
+						Console.printlnErr(e);
 					}
 				}
 			});
@@ -274,7 +276,7 @@ public class AmstradPcPlugin {
 					try {
 						runStaged(getTapeProgram());
 					} catch (AmstradProgramException e) {
-						System.err.println(e);
+						Console.printlnErr(e);
 					}
 				}
 			});

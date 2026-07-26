@@ -33,7 +33,7 @@ public class BugReport {
       URLConnection c = u.openConnection();
       c.setDoInput(false); 
       c.setDoOutput(true);
-      System.out.println("Connecting...");
+      Console.println("Connecting...");
       System.out.flush();
       c.connect();
       PrintWriter out =
@@ -68,12 +68,12 @@ public class BugReport {
       }
 
       out.close();
-      System.out.println("Bug report sent.");
+      Console.println("Bug report sent.");
       System.out.flush();
     }
     catch (Exception e) {
-      System.err.println(e.getMessage());
-      System.err.println("Mailserver does not respond");
+      Console.printlnErr(e.getMessage());
+      Console.printlnErr("Mailserver does not respond");
     }
   }
 }

@@ -3,6 +3,7 @@ package jemu.core.breakpoint;
 import jemu.core.Util;
 import jemu.core.cpu.Processor;
 import jemu.core.samples.Samples;
+import jemu.ui.Console;
 
 /**
  * Breakpoint implementation to stop execution when a
@@ -26,7 +27,7 @@ public class StopBreakpoint extends ProcessorBreakpoint {
 			getProcessor().shouldStop();
 			// TODO: remove direct reference to debugger
 			jemu.ui.Debugger.setDisass(address);
-            System.out.println("StopBreakpoint at address &"+Util.hex(address));
+            Console.println("StopBreakpoint at address &"+Util.hex(address));
             Samples.BREAK.play();
 		}
 	}

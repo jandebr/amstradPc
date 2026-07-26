@@ -19,6 +19,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSessio
 import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 
+import jemu.ui.Console;
+
 public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public BinarySaveBasicPreprocessor() {
@@ -40,7 +42,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 		try {
 			return Arrays.asList(stf.createBasicKeyword("SAVE"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -86,7 +88,7 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected void handleBinarySave(BinarySaveCommand command, FileReference fileReference, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		if (fileReference == null) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
@@ -97,9 +99,9 @@ public class BinarySaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 						command.getMemoryOffset(), command.getMemoryLength());
 				delayFileOperation(DELAYMILLIS_BINARY_SAVE);
 				resumeRun(macro, session);
-				System.out.println("Completed " + command);
+				Console.println("Completed " + command);
 			} catch (Exception e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 				endWithError(ERR_BINARY_SAVE_FAILURE, sourceCode, macro, session);
 			} finally {
 				stopFileOperation(session);

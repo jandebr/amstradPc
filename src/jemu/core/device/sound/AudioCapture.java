@@ -86,7 +86,7 @@ public class AudioCapture extends JComponent{
     public void Capture(byte[] input, int length){
         flashCol++;
         if ((input[1] != -128 || input[2] != -128) && !doStartCapture){
-            System.out.println("recording started...");
+            jemu.ui.Console.println("recording started...");
             doStartCapture = true;
         }
         if (doStartCapture)
@@ -126,7 +126,7 @@ public class AudioCapture extends JComponent{
             File file2 = new File(filename+".wav");
             file1.renameTo(file2);
         }
-        catch (IOException e){System.err.println("error writing header!");}
+        catch (IOException e){jemu.ui.Console.printlnErr("error writing header!");}
     }
 
     public void showCapture(){

@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import jemu.core.device.Device;
 import jemu.core.device.floppy.DiscImage;
 import jemu.core.device.floppy.UPD765A;
+import jemu.ui.Console;
 
 /**
  * CPC disc image.
@@ -366,7 +367,7 @@ public class CPCDiscImageForMerge extends DiscImage {
       }
     }
 
-    System.out.println("store dsk file to " + savedImage);
+    Console.println("store dsk file to " + savedImage);
     JOptionPane.showMessageDialog(null, "Sucessfully saved " + savedImage);
     this.name = savedImage.getAbsolutePath();
 
@@ -425,9 +426,9 @@ public class CPCDiscImageForMerge extends DiscImage {
             final int dataSize = sd.getData().length;
             bos.write(dataSize & 0xFF);
             bos.write((dataSize / 256) & 0xFF);
-            // System.out.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
+            // Console.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
             // + UPD765A.getCommandSize(sd.getSize()) + " size=" + sd.getData().length);
-            // System.out.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
+            // Console.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
           }
           unused = 0x100 - 0x18 - 8 * numberOfSectors;
           for (int i = 0; i < unused; i++) {
@@ -441,7 +442,7 @@ public class CPCDiscImageForMerge extends DiscImage {
       bos.close();
 
     } catch (final IOException iox) {
-      System.out.println("can't write to file " + savedImage + ": " + iox.getMessage());
+      Console.println("can't write to file " + savedImage + ": " + iox.getMessage());
     }
   }
   
@@ -483,7 +484,7 @@ public class CPCDiscImageForMerge extends DiscImage {
       }
     }
 
-    System.out.println("store dsk file to " + savedImage);
+    Console.println("store dsk file to " + savedImage);
     this.name = savedImage.getAbsolutePath();
 
     // save data to file
@@ -541,9 +542,9 @@ public class CPCDiscImageForMerge extends DiscImage {
             final int dataSize = sd.getData().length;
             bos.write(dataSize & 0xFF);
             bos.write((dataSize / 256) & 0xFF);
-            // System.out.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
+            // Console.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
             // + UPD765A.getCommandSize(sd.getSize()) + " size=" + sd.getData().length);
-            // System.out.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
+            // Console.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
           }
           unused = 0x100 - 0x18 - 8 * numberOfSectors;
           for (int i = 0; i < unused; i++) {
@@ -557,7 +558,7 @@ public class CPCDiscImageForMerge extends DiscImage {
       bos.close();
 
     } catch (final IOException iox) {
-      System.out.println("can't write to file " + savedImage + ": " + iox.getMessage());
+      Console.println("can't write to file " + savedImage + ": " + iox.getMessage());
     }
   }
 

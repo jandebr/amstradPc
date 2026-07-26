@@ -22,6 +22,8 @@ import org.maia.amstrad.system.impl.screen.AmstradSystemProgramBrowserScreen;
 import org.maia.amstrad.system.impl.screen.AmstradSystemScreenSetImpl;
 import org.maia.amstrad.system.impl.screen.AmstradSystemUnknownScreen;
 
+import jemu.ui.Console;
+
 public class AmstradDesktopSystem extends AmstradSystem {
 
 	public static final AmstradSystemSettings SETTINGS = new DesktopSystemSettings();
@@ -38,7 +40,7 @@ public class AmstradDesktopSystem extends AmstradSystem {
 		} else if (args.length == 1) {
 			amstradPc.launch(new AmstradProgramStoredInFile(new File(args[0])));
 		} else {
-			System.err.println("Invalid startup arguments");
+			Console.printlnErr("Invalid startup arguments");
 			System.exit(1);
 		}
 	}

@@ -4,6 +4,7 @@ import jemu.core.device.BasicKeyboardPromptModus;
 import jemu.core.device.Computer;
 import jemu.core.device.memory.DynamicMemory;
 import jemu.core.device.memory.MemoryWriteObserver;
+import jemu.ui.Console;
 import jemu.ui.Switches;
 
 /**
@@ -83,7 +84,7 @@ public class CPCMemory extends DynamicMemory {
 	}
 
 	public int getRAMType() {
-		System.out.println("RAM-type is " + type);
+		Console.println("RAM-type is " + type);
 		return type;
 	}
 
@@ -112,7 +113,7 @@ public class CPCMemory extends DynamicMemory {
 					Switches.ROM = "CPC6128";
 				else
 					Switches.ROM = "UNKNOWN";
-				System.out.println("Your selected Basic ROM is for " + Switches.ROM);
+				Console.println("Your selected Basic ROM is for " + Switches.ROM);
 			}
 
 			base = getMem(base, 16 * 1024);

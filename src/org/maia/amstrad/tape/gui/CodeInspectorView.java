@@ -27,6 +27,8 @@ import org.maia.amstrad.tape.model.SourceCodePosition;
 import org.maia.amstrad.tape.model.SourceCodeRange;
 import org.maia.amstrad.tape.read.AudioFile;
 
+import jemu.ui.Console;
+
 public class CodeInspectorView extends JPanel implements SourceCodeView.SourceCodeCaretListener {
 
 	private AudioTapeProgram audioTapeProgram;
@@ -131,7 +133,7 @@ public class CodeInspectorView extends JPanel implements SourceCodeView.SourceCo
 				getAudioPane().add(rangeView);
 				rangeViews.add(rangeView);
 			} catch (IOException e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 		}
 		if (!rangeViews.isEmpty()) {

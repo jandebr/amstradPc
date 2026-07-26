@@ -44,6 +44,7 @@ import jemu.system.cpc.CPCPrinter;
 import jemu.system.cpc.GateArray;
 import jemu.system.cpc.RomSetter;
 import jemu.ui.Autotype;
+import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.JEMU;
 import jemu.ui.KeyDispatcher;
@@ -106,7 +107,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 
 	@Override
 	protected void doStart() {
-		System.out.println("Starting Jemu DIRECT pc");
+		Console.println("Starting Jemu DIRECT pc");
 		initJemu();
 		initMonitor();
 		Computer computer = getComputer();
@@ -122,7 +123,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		primaryDisplaySourceResolutionChanged(display,
 				new Dimension(display.getImageWidth(), display.getImageHeight()));
 		display.requestFocus();
-		System.out.println("Started Jemu DIRECT pc");
+		Console.println("Started Jemu DIRECT pc");
 	}
 
 	private void initJemu() {
@@ -139,7 +140,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 		new RomSetter().prepareRomsetter();
 		new Autotype();
 		new CPCPrinter();
-		System.out.println("JavaCPC [v." + JEMU.version + "]\n\n[" + Calendar.getInstance().getTime() + "]\n");
+		Console.println("JavaCPC [v." + JEMU.version + "]\n\n[" + Calendar.getInstance().getTime() + "]\n");
 		Switches.availmem = Runtime.getRuntime().freeMemory();
 		Switches.overrideP = Settings.getBoolean(Settings.OVERRIDEP, false);
 		Switches.changePolarity = Settings.getBoolean(Settings.POLARITY, false);
@@ -197,14 +198,14 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 	protected void doPauseImmediately() {
 		Display.showpause = 1;
 		getComputer().stop();
-		System.out.println("System halted");
+		Console.println("System halted");
 	}
 
 	@Override
 	protected void doResume() {
 		Display.showpause = 0;
 		getComputer().start();
-		System.out.println("System resumed");
+		Console.println("System resumed");
 	}
 
 	@Override
@@ -390,7 +391,7 @@ public class JemuDirectAmstradPc extends JemuAmstradPc {
 				if (monitor.isFullscreen()) {
 					int attempts = 0;
 					while (isDisplayPaddedOnAllSides() && ++attempts <= 3) {
-						System.out.println("Display is forced fullscreen");
+						Console.println("Display is forced fullscreen");
 						monitor.toggleFullscreen();
 						monitor.toggleFullscreen();
 						SystemUtils.sleep(500L);

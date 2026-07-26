@@ -194,7 +194,7 @@ public void init(){
         group.add(KAYOut);
         Switches.volume = (double)Integer.parseInt(Settings.get(Settings.VOLUME, "1000"))/1000;
         volumeslider.setValue((float)Switches.volume);
-        System.out.println("Volume is set to:" + volumeslider.getValue());
+        Console.println("Volume is set to:" + volumeslider.getValue());
         volumeslider.setPreferredSize(new Dimension(110, 110));
         volumeslider.setBackground(Color.DARK_GRAY);
         volumeslider.setForeground(new Color(255, 255, 255));
@@ -314,7 +314,7 @@ public void init(){
             lastValue = vholdslider.getValue ();
              Switches.vhold = lastValue;
              Settings.set(Settings.VHOLD, Util.hex(lastValue));
-            // System.out.println(lastValue);
+            // Console.println(lastValue);
              vholdslider.repaint ();
              }
           });
@@ -339,7 +339,7 @@ public void init(){
           public void stateChanged (ChangeEvent e) {
             lastValue = diagnoseslider.getValue ();
              Switches.diagnose = lastValue;
-             System.out.println("diagnostic = " + Util.hex(lastValue));
+             Console.println("diagnostic = " + Util.hex(lastValue));
              Settings.set(Settings.DIAGNOSE, Util.hex(lastValue));
              diagnoseslider.repaint ();
              }

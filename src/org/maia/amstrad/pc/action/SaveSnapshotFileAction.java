@@ -9,6 +9,8 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
+import jemu.ui.Console;
+
 public class SaveSnapshotFileAction extends SnapshotFileAction {
 
 	public SaveSnapshotFileAction(AmstradPc amstradPc) {
@@ -34,7 +36,7 @@ public class SaveSnapshotFileAction extends SnapshotFileAction {
 						try {
 							getAmstradPc().save(AmstradFactory.getInstance().createCpcSnapshotProgram(file));
 						} catch (Exception e) {
-							System.err.println("Failed to save snapshot file: " + e.getMessage());
+							Console.printlnErr("Failed to save snapshot file: " + e.getMessage());
 							showErrorMessageDialog("Error saving snapshot file", "Failed to save " + file.getName(), e);
 						}
 					}

@@ -15,6 +15,8 @@ import jemu.core.device.*;
 import jemu.ui.Switches;
 import java.net.URL;
 import java.applet.*;
+
+import jemu.ui.Console;
 import jemu.ui.JEMU;
 
 /**
@@ -240,7 +242,7 @@ protected int 			sectorcount;				// sector count for format
   public final int readPort(int port) {   // Port 0 is main status, 1 is data
     if ((port & 0x01) == 0) {
        // if (DEBUG)
-      //System.out.println("FDC Status Read: " + Util.hex((byte)status));
+      //Console.println("FDC Status Read: " + Util.hex((byte)status));
       return status;
     }
 
@@ -252,8 +254,8 @@ protected int 			sectorcount;				// sector count for format
       }
       else if (action == READ && (status & REQ_MASTER) != 0) {
         status &= ~REQ_MASTER;
-        //System.out.println("FDC Data read: " + Util.hex((byte)data));
-        //System.out.print(" " + Util.hex((byte)data));
+        //Console.println("FDC Data read: " + Util.hex((byte)data));
+        //Console.print(" " + Util.hex((byte)data));
       }
       return data;
     }
@@ -263,7 +265,7 @@ protected int 			sectorcount;				// sector count for format
   public final void writePort(int port, int value) {  // Port 0 is main status, 1 is data
     if ((port & 0x01) != 0) {
       data = (byte)value;
-      //System.out.println("FDC write: " + Util.hex((short)port) + "," + Util.hex((byte)value));
+      //Console.println("FDC write: " + Util.hex((short)port) + "," + Util.hex((byte)value));
       if ((status & (REQ_MASTER | DATA_IN_OUT)) == REQ_MASTER) {
         if ((status & EXEC_MODE) != 0)
           status &= ~REQ_MASTER;
@@ -288,7 +290,7 @@ protected int 			sectorcount;				// sector count for format
                   status &= ~(1 << drive);
                   rcount = 2;
                   if (DEBUG_SENSE)
-                  System.out.println("Sense Interrupt: " + Util.hex((byte)result[0]) + "," +  Util.hex((byte)result[1]));
+                  Console.println("Sense Interrupt: " + Util.hex((byte)result[0]) + "," +  Util.hex((byte)result[1]));
                   break;
                 }
             }
@@ -304,35 +306,35 @@ protected int 			sectorcount;				// sector count for format
             switch(command & 0x1f) {
             case 0x02:
               if (DEBUG) {
-                System.out.println(msg + " (read track)");
+                Console.println(msg + " (read track)");
               }
               readTrack();
               break;
             case 0x03:
               // specify
               if (DEBUG) {
-                System.out.println(msg + " (specify)");
+                Console.println(msg + " (specify)");
               }
               specify();
               break;
             case 0x04:
               // sense actualDrive
               if (DEBUG) {
-                System.out.println(msg + " (senseDrive)");
+                Console.println(msg + " (senseDrive)");
               }
               senseDrive();
               break;
             case 0x05:
               // write sector
               if (DEBUG) {
-                System.out.println(msg + " (writeSector)");
+                Console.println(msg + " (writeSector)");
               }
               writeSector();
               break;
             case 0x06:
               // read sector
               if (DEBUG) {
-                System.out.println(msg + " (readSector)");
+                Console.println(msg + " (readSector)");
               }
                 readDel = false;
               readSector();
@@ -340,34 +342,34 @@ protected int 			sectorcount;				// sector count for format
             case 0x07:
               // re-calibrate
               if (DEBUG) {
-                System.out.println(msg + " (re-calibrate)");
+                Console.println(msg + " (re-calibrate)");
               }
               seek(0, 77);
               break;
             case 0x08:
               // get status register 0
               if (DEBUG) {
-                System.out.println(msg + " (get status register 0)");
+                Console.println(msg + " (get status register 0)");
               }
               break;
             case 0x09:
               // TODO: write deleted data
               if (DEBUG) {
-                System.out.println(msg + " (write deleted data)");
+                Console.println(msg + " (write deleted data)");
               }
               //writeSector();
               break;
             case 0x0a:
               // read id
               if (DEBUG) {
-                System.out.println(msg + " (read id)");
+                Console.println(msg + " (read id)");
               }
               readID();
               break;
             case 0x0c:
               // TODO: read deleted data
               if (DEBUG) {
-                System.out.println(msg + " (read deleted data)");
+                Console.println(msg + " (read deleted data)");
               }
               readDel = true;
               readSector();
@@ -375,7 +377,7 @@ protected int 			sectorcount;				// sector count for format
             case 0x0d:
               // TODO: format track
               if (DEBUG) {
-                System.out.println(msg + " (format track)");
+                Console.println(msg + " (format track)");
               }
 		sectorcount = 0;
               formatTrack();
@@ -384,7 +386,7 @@ protected int 			sectorcount;				// sector count for format
             case 0x0f:
               // seek track
               if (DEBUG) {
-                System.out.println(msg + " (seek track)");
+                Console.println(msg + " (seek track)");
               }
               seek(params[1], -1);
               break;
@@ -393,7 +395,7 @@ protected int 			sectorcount;				// sector count for format
             case 0x1d:
               // verify
               if (DEBUG) {
-                System.out.println(msg + " (verify)");
+                Console.println(msg + " (verify)");
               }
               break;
 
@@ -435,7 +437,7 @@ protected int 			sectorcount;				// sector count for format
     int select = params[0] & 0x07;
     int drv = select & 0x03;
     if (DEBUG_SENSE) {
-      System.out.println("senseDrive(" + Integer.toString(select, 2) + ") " + activeDrive.getName() + " / "
+      Console.println("senseDrive(" + Integer.toString(select, 2) + ") " + activeDrive.getName() + " / "
           + activeDrive.getType());
     }
     activeDrive = drives[drv];
@@ -458,7 +460,7 @@ protected int 			sectorcount;				// sector count for format
     rcount = 1;
     status |= DATA_IN_OUT;
     if (DEBUG_SENSE) {
-      System.out.println(" -> " + Integer.toString(result[0], 2));
+      Console.println(" -> " + Integer.toString(result[0], 2));
     }
   }
 
@@ -585,7 +587,7 @@ protected int 			sectorcount;				// sector count for format
 
   protected final void getNextID() {
       if (DEBUG)
-          System.out.println("this is getNextID");
+          Console.println("this is getNextID");
 
     int[] id = activeDrive.getNextSectorID();
     if (id != null) {
@@ -609,7 +611,7 @@ protected int 			sectorcount;				// sector count for format
      endBuffer(READ);
     else {
       data = buffer[offset++];
-      //System.out.print("(" + Util.hex((byte)data) + ")");
+      //Console.print("(" + Util.hex((byte)data) + ")");
       next = count + countMFM;
       status |= REQ_MASTER;
     }
@@ -681,23 +683,23 @@ protected final void endFormatID() {
 
   protected final void getNextSector(int direction) {
       if (DEBUG) {
-          System.out.println("This is getNextSector");
-          System.out.println(params[1] + params[2]+ params[3]+ params[4]);
+          Console.println("This is getNextSector");
+          Console.println(String.valueOf(params[1] + params[2]+ params[3]+ params[4]));
       }
    //   if (!readtrack)
     buffer = activeDrive.getSector(params[1], params[2], params[3], params[4]);
       //else
     if(readtrack){
           buffer = null;
-    System.out.println("Buffer cleared...");
+    Console.println("Buffer cleared...");
     }
       readtrack = false;
     if (DEBUG_BUFFER){
-        System.out.println("Buffer is:");
-        System.out.println(Util.dumpBytes(buffer));
+        Console.println("Buffer is:");
+        Console.println(Util.dumpBytes(buffer));
     }
     if (DEBUG)
-    System.out.println("Got sector " + Util.hex((byte)params[3]) + " " + (buffer != null) + " " +
+    Console.println("Got sector " + Util.hex((byte)params[3]) + " " + (buffer != null) + " " +
       (buffer == null ? "" : Integer.toString(buffer.length)));
     if (buffer != null) {
         //String sector = Util.hex(params[3]).substring(6);
@@ -715,7 +717,7 @@ protected final void endFormatID() {
       action = direction;  // TODO: Accurate matching/timing
       if (direction == READ){
           if (DEBUG)
-              System.out.println("status:"+status+" REQ_MASTER:"+REQ_MASTER+" DATA_IN_OUT:"+DATA_IN_OUT+" EXEC_MODE:"+EXEC_MODE);
+              Console.println("status:"+status+" REQ_MASTER:"+REQ_MASTER+" DATA_IN_OUT:"+DATA_IN_OUT+" EXEC_MODE:"+EXEC_MODE);
           status = (status & ~REQ_MASTER) | DATA_IN_OUT | EXEC_MODE;
         Switches.write = false;
       }
@@ -823,7 +825,7 @@ int oldtrack;
     if (++count == next) {
               if (Switches.floppyturbo)
               jemu.ui.Display.turbotimer = 10;
-      // System.out.println("FDC Count ended");
+      // Console.println("FDC Count ended");
       switch (action) {
       case SEEK:
         seekStep();

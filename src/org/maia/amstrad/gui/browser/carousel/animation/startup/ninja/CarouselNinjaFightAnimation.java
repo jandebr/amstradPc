@@ -18,6 +18,8 @@ import org.maia.graphics2d.function.PerpetualApproximatingFunction2D;
 import org.maia.graphics2d.function.PerpetualApproximatingFunction2D.ControlValueGenerator;
 import org.maia.util.ColorUtils;
 
+import jemu.ui.Console;
+
 public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimation {
 
 	private NinjaCatalog catalog;
@@ -361,7 +363,7 @@ public class CarouselNinjaFightAnimation extends CarouselPortholePixelatedAnimat
 
 	private NinjaAnimation drawRandomAnimation(List<NinjaAnimation> animations) {
 		if (animations.isEmpty()) {
-			System.err.println("No animations to draw from");
+			Console.printlnErr("No animations to draw from");
 			return null;
 		} else {
 			NinjaAnimation animation = animations.get(getRandomizer().drawIntegerNumber(0, animations.size() - 1));

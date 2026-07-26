@@ -50,6 +50,7 @@ import jemu.core.device.tape.TapeDeck;
 import jemu.core.samples.Samples;
 import jemu.settings.Settings;
 import jemu.ui.Autotype;
+import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.Switches;
 import jemu.ui.UpdateInfo;
@@ -369,7 +370,7 @@ public class CPC extends Computer {
 		else
 			memory = new CPCMemory(this, CPCMemory.TYPE_512K);
 		//
-		System.out.println("Memory choosen: " + Switches.Memory);
+		Console.println("Memory choosen: " + Switches.Memory);
 		if ("CPC464".equals(name)) {
 			lowerROM = "OS464.zip";
 			upperROMs.put("0", "BASIC1-0.zip");
@@ -596,7 +597,7 @@ public class CPC extends Computer {
 		if (YM_Play) {
 			YM_Play = false;
 			YM_Stop = true;
-			System.out.println("Playback stopped...");
+			Console.println("Playback stopped...");
 		}
 
 		turbo = false;
@@ -850,7 +851,7 @@ public class CPC extends Computer {
 
 	public void TapeSound(int value) {
 		if ((z80.getPC() > 0x02800 && z80.getPC() < 0x03000) && !savecheck) {
-			System.out.println("Tape is saving...");
+			Console.println("Tape is saving...");
 			savecheck = true;
 		}
 
@@ -870,7 +871,7 @@ public class CPC extends Computer {
 		previousPortValue = value;
 		if ((value) == 0x10 && !relay) {
 			relay = true;
-			System.out.println("Tape-relay on");
+			Console.println("Tape-relay on");
 			savecheck = false;
 			if (Switches.FloppySound && !Bypass) {
 				Samples.RELAIS.play();
@@ -1034,7 +1035,7 @@ public class CPC extends Computer {
 		if (tapeloaded) {
 			if (rew) {
 				if (TapeDeck.isMem && (TapeDeck.memCount >= TapeDeck.counter)) {
-					System.out.println("Tape REW stopped");
+					Console.println("Tape REW stopped");
 					TapeDrive.btnREW.setBorder(new BevelBorder(BevelBorder.RAISED));
 					TapeDrive.btnREW.setBackground(Color.DARK_GRAY);
 					play = false;
@@ -1062,7 +1063,7 @@ public class CPC extends Computer {
 			}
 			if (ffwd) {
 				if (TapeDeck.isMem && (TapeDeck.memCount <= TapeDeck.counter)) {
-					System.out.println("Tape FF stopped");
+					Console.println("Tape FF stopped");
 					TapeDrive.btnFF.setBorder(new BevelBorder(BevelBorder.RAISED));
 					TapeDrive.btnFF.setBackground(Color.DARK_GRAY);
 					play = false;
@@ -1112,7 +1113,7 @@ public class CPC extends Computer {
 		if (Switches.floppyturbo) {
 			Switches.turbo = 1;
 		}
-		System.out.println("Tape-relay off");
+		Console.println("Tape-relay off");
 		TapeDrive.showText();
 		if (Switches.FloppySound && !Bypass) {
 			Samples.RELAISOFF.play();
@@ -1121,9 +1122,9 @@ public class CPC extends Computer {
 	}
 
 	public static void Download(String download) {
-		System.out.println("Downloading " + download + "...");
+		Console.println("Downloading " + download + "...");
 		String ending = download.substring((download.length() - 4), download.length());
-		System.out.println("Downloading to buffer" + ending);
+		Console.println("Downloading to buffer" + ending);
 		String savename = "buffer" + ending;
 		downloadname = download;
 		Switches.booter = 1;
@@ -1340,7 +1341,7 @@ public class CPC extends Computer {
 	public void SaveDSK() {
 		dskImage = null;
 		int drive = getCurrentDrive();
-		System.out.println("Saving image from drive DF" + drive);
+		Console.println("Saving image from drive DF" + drive);
 		if (drive == 0) {
 			if (dskImageA != null)
 				dskImage = dskImageA;
@@ -1365,13 +1366,13 @@ public class CPC extends Computer {
 			fdc.getDrive(drive).setDisc(heads, dskImage);
 			dskImage.saveImage();
 		} else
-			System.out.println("Failed to save... Probably drive empty?");
+			Console.println("Failed to save... Probably drive empty?");
 		setCurrentDrive(0);
 	}
 
 	public void AutoSave(int drive) {
 		dskImage = null;
-		System.out.println("Saving image from drive DF" + drive);
+		Console.println("Saving image from drive DF" + drive);
 		if (drive == 0) {
 			if (dskImageA != null)
 				dskImage = dskImageA;
@@ -1395,7 +1396,7 @@ public class CPC extends Computer {
 			fdc.getDrive(drive).setDisc(heads, dskImage);
 			dskImage.saveImage();
 		} else
-			System.out.println("Failed to save... Probably drive empty?");
+			Console.println("Failed to save... Probably drive empty?");
 		setCurrentDrive(0);
 	}
 
@@ -1440,7 +1441,7 @@ public class CPC extends Computer {
 			autotyper++;
 			if (autotyper == 3) {
 				try {
-					// System.out.println("KeyRelease: " + readkey);
+					// Console.println("KeyRelease: " + readkey);
 					keyboarda.keyReleased(eventArray[readkey]);
 					if (shifter[readkey + 1])
 						keyboarda.keyPressed(KeyEvent.VK_SHIFT);
@@ -1461,7 +1462,7 @@ public class CPC extends Computer {
 
 			if (autotyper == 5) {
 				try {
-					// System.out.println("KeyPress: " + readkey);
+					// Console.println("KeyPress: " + readkey);
 					readkey++;
 					keyboarda.keyPressed(eventArray[readkey]);
 					autotyper = 1;
@@ -1548,7 +1549,7 @@ public class CPC extends Computer {
 		switch (port) {
 		case PPI_PORT_C:
 			result = 1;
-			System.out.println("Port read..." + Util.hex(port) + " result:" + result);
+			Console.println("Port read..." + Util.hex(port) + " result:" + result);
 			break;
 		case PPI_PORT_B:
 			result = (((Switches.Printer ? 0x00 : 0x040) | 0x010) | (Switches.computername * 2)
@@ -1563,14 +1564,14 @@ public class CPC extends Computer {
 				if (keyNumber >= 10000000) {
 					keyNumber = 0;
 					recordKeys = false;
-					System.out.println("Recording stopped... Buffer full");
+					Console.println("Recording stopped... Buffer full");
 				}
 			}
 			if (playKeys) {
 				result = keyStroke[keyNumber];
 				keyNumber++;
 				if (keyNumber >= totalKeyNumber) {
-					System.out.println("Playback finished");
+					Console.println("Playback finished");
 					keyNumber = 0;
 					playKeys = false;
 				}
@@ -1621,7 +1622,7 @@ public class CPC extends Computer {
 			// FDC Motor control
 			if ((port & 0x0581) == 0) {
 				if (port >= 0xfa00) {
-					System.out.println("Floppy-motor " + ((value & 0x01) == 0 ? "off" : "on"));
+					Console.println("Floppy-motor " + ((value & 0x01) == 0 ? "off" : "on"));
 					if ((value & 0x01) == 0) {
 						if (Switches.FloppySound && Switches.audioenabler == 1 && !Bypass)
 							Samples.MOTOR.play();
@@ -1869,49 +1870,49 @@ public class CPC extends Computer {
 	public void loadFile(int type, String name) throws Exception {
 		Switches.name = name;
 		if (!Switches.loaded)
-			System.out.println("opening: " + name);
+			Console.println("opening: " + name);
 		byte[] data = getFile(name);
 		if (SNA_HEADER.equals(new String(data, 0, SNA_HEADER.length()).toUpperCase())) {
 			SNA_Load(name, data);
-			System.out.println("Loading MV - SNA snapshot file...");
+			Console.println("Loading MV - SNA snapshot file...");
 			jemu.ui.JEMU.isTape = true;
 		} else if (SNK_HEADER.equals(new String(data, 0, SNK_HEADER.length()).toUpperCase())) {
 			SNK_Load(name, data);
-			System.out.println("Loading MV - SNP snapshot record file...");
+			Console.println("Loading MV - SNP snapshot record file...");
 			jemu.ui.JEMU.isTape = true;
 		} else if (DSK_HEADER.equals(new String(data, 0, DSK_HEADER.length()).toUpperCase())) {
 			DSK_Load(name, data);
-			System.out.println("Loading MV - CPCEMU DSK file...");
+			Console.println("Loading MV - CPCEMU DSK file...");
 		} else if (DSK_HEADER_EXT.equals(new String(data, 0, DSK_HEADER_EXT.length()).toUpperCase())) {
 			DSK_Load(name, data);
-			System.out.println("Loading EXTENDED CPC DSK file...");
+			Console.println("Loading EXTENDED CPC DSK file...");
 		} else if (CDT_HEADER.equals(new String(data, 0, CDT_HEADER.length()).toUpperCase())) {
-			System.out.println("Loading ZXTAPE file...");
+			Console.println("Loading ZXTAPE file...");
 			CDT_Load(name, data);
 		} else if (WAV_HEADER.equals(new String(data, 0, WAV_HEADER.length()).toUpperCase())) {
 			Switches.booter = 0;
-			System.out.println("Loading WAV-tape file...");
+			Console.println("Loading WAV-tape file...");
 			TapeLoad(name, data);
 			jemu.ui.JEMU.isTape = true;
 		} else if (CSW_HEADER.equals(new String(data, 0, CSW_HEADER.length())) || name.toUpperCase().endsWith(".CSW")) {
 			Switches.booter = 0;
-			System.out.println("Loading CSW-compressed square wave tape file...");
+			Console.println("Loading CSW-compressed square wave tape file...");
 			CSWLoad(name, data);
 			jemu.ui.JEMU.isTape = true;
 		} else if (MP3_HEADER_A.equals(new String(data, 0, MP3_HEADER_A.length()).toUpperCase())) {
 			Switches.booter = 1;
-			System.out.println("Loading and converting MP3 file...");
+			Console.println("Loading and converting MP3 file...");
 			MP3Load(name);
 			jemu.ui.JEMU.isTape = true;
 		} else if (MP3_HEADER_B.equals(new String(data, 0, MP3_HEADER_B.length()).toUpperCase())) {
 			Switches.booter = 1;
-			System.out.println("Loading and converting MP3 file...");
+			Console.println("Loading and converting MP3 file...");
 			MP3Load(name);
 			jemu.ui.JEMU.isTape = true;
 
 		} else if (name.toUpperCase().endsWith("MP3")) {
 			Switches.booter = 1;
-			System.out.println("Loading and converting MP3 file...");
+			Console.println("Loading and converting MP3 file...");
 			MP3Load(name);
 			jemu.ui.JEMU.isTape = true;
 		} else if (name.toUpperCase().endsWith("YM")) {
@@ -1924,7 +1925,7 @@ public class CPC extends Computer {
 			jemu.ui.JEMU.isTape = true;
 		} else if (!jemu.ui.JEMU.isTape)
 			BIN_Load(name, data);
-		// System.out.println("Unrecognized file format");
+		// Console.println("Unrecognized file format");
 		reSync();
 	}
 
@@ -1940,8 +1941,8 @@ public class CPC extends Computer {
 			freq = 11025;
 		if (!Switches.khz11 && !Switches.khz44)
 			freq = 22050;
-		System.out.println("Converting CDT to " + freq + "hz WAV...");
-		System.out.println("CDT size is:" + data.length);
+		Console.println("Converting CDT to " + freq + "hz WAV...");
+		Console.println("CDT size is:" + data.length);
 		isCDT = true;
 		Switches.booter = 0;
 
@@ -1965,7 +1966,7 @@ public class CPC extends Computer {
 		recordcount = tapesample.length;
 		TapeDeck.positionslider.setMaximum(recordcount);
 		TapeDeck.positionslider.setValue(0);
-		System.out.println("Tape size is:" + tapesample.length + " bytes");
+		Console.println("Tape size is:" + tapesample.length + " bytes");
 
 		TapeDrive.showText(name.toUpperCase());
 		reSync();
@@ -1974,7 +1975,7 @@ public class CPC extends Computer {
 	public void DSK_Load(String name, byte[] data) throws Exception {
 		Switches.booter = 0;
 		CPCDiscImage image = new CPCDiscImage(name, data);
-		System.out.println("data length:" + data.length);
+		Console.println("data length:" + data.length);
 		int drive = getCurrentDrive();
 		if (drive == 0) {
 			checkDF0();
@@ -2021,7 +2022,7 @@ public class CPC extends Computer {
 		Switches.booter = 1;
 		totalKeyNumber = getDWord(data, 20);
 		System.arraycopy(data, 0x100, keyStroke, 0, totalKeyNumber);
-		System.out.println("Length is " + totalKeyNumber);
+		Console.println("Length is " + totalKeyNumber);
 		playKeys();
 	}
 
@@ -2046,14 +2047,14 @@ public class CPC extends Computer {
 		z80.setHL1(getWord(data, HL1));
 
 		gateArray.setSelectedInk(data[GA_PEN]);
-		System.out.print("INK READ: ");
+		Console.print("INK READ: ");
 		for (int i = 0; i < 0x11; i++) {
 			gateArray.setInk(i, data[GA_INKS + i]);
-			System.out.print(data[GA_INKS + i]);
+			Console.print(String.valueOf(data[GA_INKS + i]));
 			if (i >= 0x10)
-				System.out.println("");
+				Console.println("");
 			else
-				System.out.print(",");
+				Console.print(",");
 		}
 		gateArray.setModeAndROMEnable(memory, data[GA_ROM]);
 		memory.setRAMBank(data[GA_RAM]);
@@ -2076,7 +2077,7 @@ public class CPC extends Computer {
 		int memSize = (data[MEM_SIZE] & 0xff) * 1024;
 		memSize = Math.min(memSize, memory.getRAMType() == CPCMemory.TYPE_512K ? 0x100000 : 0x200000);
 		int length = data.length;
-		System.out.println("Snapshot length is " + length);
+		Console.println("Snapshot length is " + length);
 		if (length <= 65800)
 			memSize = 0x10000;
 		else if (length <= 131400)
@@ -2085,7 +2086,7 @@ public class CPC extends Computer {
 			memSize = 0x40000;
 		else if (length <= 524600)
 			memSize = 0x80000;
-		System.out.println("Calculated length is " + memSize);
+		Console.println("Calculated length is " + memSize);
 		byte[] mem = memory.getMemory();
 		System.arraycopy(data, 0x100, mem, 0, memSize);
 	}
@@ -2122,7 +2123,7 @@ public class CPC extends Computer {
 				System.arraycopy(SNK_EYECATCHER.getBytes("UTF-8"), 0, data, 0xe0, SNK_EYECATCHER.length());
 			} catch (final Exception iox) {
 			}
-			System.out.println("Length is " + totalKeyNumber);
+			Console.println("Length is " + totalKeyNumber);
 			putDWord(data, 20, totalKeyNumber);
 			System.arraycopy(keyStroke, 0, data, 0x0100, totalKeyNumber);
 			try {
@@ -2139,7 +2140,7 @@ public class CPC extends Computer {
 					bos.write(data);
 					bos.close();
 				} catch (final IOException iox) {
-					System.out.println("can't write to file ");
+					Console.println("can't write to file ");
 				}
 			else {
 				savename = "";
@@ -2233,12 +2234,12 @@ public class CPC extends Computer {
 
 		// inks and pens
 		data[GA_PEN] = (byte) gateArray.getSelectedInk();
-		System.out.print("CPC Palette is: ");
+		Console.print("CPC Palette is: ");
 		for (int i = 0; i < 0x11; i++) {
 			data[GA_INKS + i] = (byte) gateArray.getInks(i);
-			System.out.print((byte) gateArray.getInks(i) + " ");
+			Console.print((byte) gateArray.getInks(i) + " ");
 		}
-		System.out.println();
+		Console.println();
 		// CRTC registers
 		data[CRTC_REG] = (byte) crtc.getSelectedRegister();
 		for (int i = 0; i < 18; i++)
@@ -2279,7 +2280,7 @@ public class CPC extends Computer {
 				bos.write(data);
 				bos.close();
 			} catch (final IOException iox) {
-				System.out.println("can't write to file ");
+				Console.println("can't write to file ");
 			}
 		else {
 			if (!file.toString().toLowerCase().endsWith(".snz"))
@@ -2341,7 +2342,7 @@ public class CPC extends Computer {
 		if (Switches.uncompressed) {
 			if (!filename.toUpperCase().endsWith(".WAV"))
 				filename = filename + ".wav";
-			System.out.println("Saving to " + filename);
+			Console.println("Saving to " + filename);
 			try {
 				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filename));
 				if (!WAV_HEADER.equals(new String(tapesample, 0, WAV_HEADER.length()).toUpperCase())) {
@@ -2375,7 +2376,7 @@ public class CPC extends Computer {
 					bos.write(tapesample);
 				bos.close();
 			} catch (final IOException iox) {
-				System.out.println("can't write to file ");
+				Console.println("can't write to file ");
 			}
 			try {
 				loadFile(0, filename);
@@ -2385,7 +2386,7 @@ public class CPC extends Computer {
 			String savename = "";
 			if (!filename.toLowerCase().endsWith(".taz"))
 				savename = savename + ".taz";
-			System.out.println("Saving to " + filename);
+			Console.println("Saving to " + filename);
 			File gzip_output = new File(filename + savename);
 			GZIPOutputStream gzip_out_stream;
 			try {
@@ -3029,10 +3030,10 @@ public class CPC extends Computer {
 		CalculatedChecksum = ChecksumAMSDOS(pHeader);
 		ChecksumFromHeader = (pHeader[67] & 0x0ff) | (pHeader[68] & 0x0ff) << 8;
 		if (ChecksumFromHeader == CalculatedChecksum) {
-			System.out.println("With header");
+			Console.println("With header");
 			return true;
 		}
-		System.out.println("Without header");
+		Console.println("Without header");
 		return false;
 	}
 
@@ -3117,7 +3118,7 @@ public class CPC extends Computer {
 		if (YM_Play) {
 			YM_Play = false;
 			YM_Stop = true;
-			System.out.println("Playback stopped...");
+			Console.println("Playback stopped...");
 		}
 		Switches.turbo = 1;
 		super.reset();
@@ -3212,7 +3213,7 @@ public class CPC extends Computer {
 			}
 
 			if (ymcount >= 999980) {
-				System.out.println("Recording stopped... Buffer full!");
+				Console.println("Recording stopped... Buffer full!");
 				YM_Rec = false;
 				ymcount = 0;
 			}
@@ -3239,7 +3240,7 @@ public class CPC extends Computer {
 				YM_Seconds = 0;
 				YM_Minutes++;
 			}
-			// System.out.println("playing..." + minutes + ":" + seconds);
+			// Console.println("playing..." + minutes + ":" + seconds);
 		}
 		String minutes = "" + YM_Minutes;
 		if (YM_Minutes <= 9)
@@ -3276,7 +3277,7 @@ public class CPC extends Computer {
 			psg.changeClockSpeed(CYCLES_PER_SECOND_CPC);
 			st_mode = false;
 			YM_Play = false;
-			System.out.println("Sorry, no playback-data in buffer");
+			Console.println("Sorry, no playback-data in buffer");
 		}
 	}
 
@@ -3337,21 +3338,21 @@ public class CPC extends Computer {
 							oldYM = true;
 							atari_st_mode = true;
 							spectrum_mode = false;
-							System.out.println("opening YM3! file...");
+							Console.println("opening YM3! file...");
 						}
 						if (ym_read_byte == 0x035) {
 							YM_registers = 16;
 							oldYM = false;
-							System.out.println("opening YM5! file...");
+							Console.println("opening YM5! file...");
 						}
 						if (ym_read_byte == 0x036) {
 							YM_registers = 16;
 							oldYM = false;
-							System.out.println("opening YM6! file...");
+							Console.println("opening YM6! file...");
 						}
 					} else {
 
-						System.out.println("Wrong format... Cannot playback!");
+						Console.println("Wrong format... Cannot playback!");
 						YM_Interleaved = false;
 						atari_st_mode = false;
 						spectrum_mode = false;
@@ -3436,21 +3437,21 @@ public class CPC extends Computer {
 					}
 				}
 			}
-			System.out.println("Interleaved is " + YM_Interleaved);
+			Console.println("Interleaved is " + YM_Interleaved);
 			Display.title = YMtitle;
 			Display.author = YMauthor;
 			Display.creator = YMcreator;
-			System.out.println("Title: " + YMtitle);
-			System.out.println("Author: " + YMauthor);
-			System.out.println("Creator: " + YMcreator);
+			Console.println("Title: " + YMtitle);
+			Console.println("Author: " + YMauthor);
+			Console.println("Creator: " + YMcreator);
 			if (atari_st_mode)
-				System.out.println("AY speed is 2000000 hz!");
+				Console.println("AY speed is 2000000 hz!");
 			else if (spectrum_mode)
-				System.out.println("AY speed is 1773400 hz!");
+				Console.println("AY speed is 1773400 hz!");
 			else
-				System.out.println("AY speed is 1000000 hz!");
+				Console.println("AY speed is 1000000 hz!");
 		} catch (final IOException iox) {
-			System.out.println("can't read file ");
+			Console.println("can't read file ");
 		}
 
 	}
@@ -3470,7 +3471,7 @@ public class CPC extends Computer {
 				saveYM(savename);
 			}
 		} else
-			System.out.println("Sorry, no data in buffer, cannot save!");
+			Console.println("Sorry, no data in buffer, cannot save!");
 		jemu.ui.JEMU.ymControl.setVisible(true);
 	}
 
@@ -3574,7 +3575,7 @@ public class CPC extends Computer {
 
 			bos.close();
 		} catch (final IOException iox) {
-			System.out.println("can't write to file ");
+			Console.println("can't write to file ");
 		}
 	}
 
@@ -3631,16 +3632,16 @@ public class CPC extends Computer {
 		else
 			tape_stereo = false;
 		tape_delay = 1010000 / (frequency);
-		System.out.println("Tape delay is: " + tape_delay);
+		Console.println("Tape delay is: " + tape_delay);
 
 		bitrate = bits;
 		if (tapelength > (int) Switches.availmem) {
-			System.out.println("Sorry, the file is too large");
+			Console.println("Sorry, the file is too large");
 			tapesample = new byte[0];
 			return;
 		}
 		tapesample = getFile(loadname, tapelength);
-		System.out.println("Stream has " + frequency + " hz, " + tapelength + " bytes, " + channels + " channels, "
+		Console.println("Stream has " + frequency + " hz, " + tapelength + " bytes, " + channels + " channels, "
 				+ bits + " bits");
 		play = true;
 		TapeDrive.btnPLAY.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -3709,11 +3710,11 @@ public class CPC extends Computer {
 				BufferedOutputStream boss = new BufferedOutputStream(new FileOutputStream(name + "_optimized.wav"));
 				boss.write(tapesample);
 				boss.close();
-				System.out.println("Successfully optimized");
+				Console.println("Successfully optimized");
 			}
 
 			catch (final IOException iox) {
-				System.out.println("can't read/write file ");
+				Console.println("can't read/write file ");
 			}
 		} catch (final Exception err) {
 		}
@@ -3728,7 +3729,7 @@ public class CPC extends Computer {
 		int length = data.length;
 		int frequency = getWord(data, 25);
 		if (data[27] != 1) {
-			System.err.println("Wrong compression format!");
+			Console.printlnErr("Wrong compression format!");
 			return;
 		}
 
@@ -3745,9 +3746,9 @@ public class CPC extends Computer {
 		 * if (n != 0) odd = true; else odd = false;
 		 */
 		tape_delay = 1010000 / (frequency);
-		System.out.println("CSW loaded.");
-		System.out.println("polarity  = " + pol);
-		System.out.println("frequency = " + frequency);
+		Console.println("CSW loaded.");
+		Console.println("polarity  = " + pol);
+		Console.println("frequency = " + frequency);
 		int size = 0;
 		// loop1
 		int i = 32;
@@ -3810,7 +3811,7 @@ public class CPC extends Computer {
 			loadFile(0, "buffer.wav");
 			mp3.setVisible(false);
 		} catch (Exception error) {
-			System.out.println(error.getMessage());
+			Console.println(error.getMessage());
 		}
 		reSync();
 	}

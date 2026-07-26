@@ -21,6 +21,8 @@ import javax.swing.text.StyledDocument;
 import org.maia.amstrad.tape.model.ByteCodeRange;
 import org.maia.amstrad.tape.model.ByteSequence;
 
+import jemu.ui.Console;
+
 public class ByteCodeView extends JPanel {
 
 	private ByteSequence byteCode;
@@ -83,7 +85,7 @@ public class ByteCodeView extends JPanel {
 			doc.insertString(doc.getLength(), getByteCode().toHumanReadableString(120, null, this.byteCodeOffsets),
 					style);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 		pane.setEditable(false);
 		pane.setCaretPosition(0);
@@ -114,7 +116,7 @@ public class ByteCodeView extends JPanel {
 				Rectangle2D r = getByteCodePane().modelToView2D(offset);
 				getByteCodePane().scrollRectToVisible(r.getBounds());
 			} catch (BadLocationException e) {
-				e.printStackTrace();
+				Console.printStackTrace(e);
 			}
 		}
 	}

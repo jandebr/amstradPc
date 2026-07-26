@@ -10,6 +10,8 @@ import org.maia.amstrad.tape.model.BlockData;
 import org.maia.amstrad.tape.model.BlockHeader;
 import org.maia.amstrad.tape.model.ByteSequence;
 
+import jemu.ui.Console;
+
 public class BlockReader {
 
 	private List<BlockReaderListener> listeners;
@@ -71,23 +73,23 @@ public class BlockReader {
 	}
 
 	private boolean seekSilence(TapeInputStream tape) throws IOException {
-		System.out.println("\tSeeking silence: " + tape);
+		Console.println("\tSeeking silence: " + tape);
 		boolean found = tape.seekSilence();
 		if (found) {
-			System.out.println("\tMoved to start of silence: " + tape);
+			Console.println("\tMoved to start of silence: " + tape);
 		} else {
-			System.out.println("\tNo silence ahead");
+			Console.println("\tNo silence ahead");
 		}
 		return found;
 	}
 
 	private boolean skipSilence(TapeInputStream tape) throws IOException {
-		System.out.println("\tSkipping silence: " + tape);
+		Console.println("\tSkipping silence: " + tape);
 		boolean found = tape.skipSilence();
 		if (found) {
-			System.out.println("\tMoved to end of silence: " + tape);
+			Console.println("\tMoved to end of silence: " + tape);
 		} else {
-			System.out.println("\tNo signal ahead");
+			Console.println("\tNo signal ahead");
 		}
 		return found;
 	}
@@ -100,9 +102,9 @@ public class BlockReader {
 		if (bite == null)
 			return null;
 		if ((bite.byteValue() & 0xff) != 44)
-			System.err.println("Expected block header cue byte 44 but read " + bite);
+			Console.printlnErr("Expected block header cue byte 44 but read " + bite);
 		// Read program name
-		System.out.println("\tStart reading block header: " + tape);
+		Console.println("\tStart reading block header: " + tape);
 		StringBuilder programName = new StringBuilder(16);
 		for (int i = 0; i < 16; i++) {
 			bite = tape.nextByte();
@@ -119,7 +121,7 @@ public class BlockReader {
 		if (bite == null)
 			return null;
 		int blockNumber = bite.byteValue() & 0xff;
-		System.out.println("\tEnd reading block header: " + tape);
+		Console.println("\tEnd reading block header: " + tape);
 		return new BlockHeader(programName.toString(), blockNumber);
 	}
 
@@ -131,7 +133,7 @@ public class BlockReader {
 		if (bite == null)
 			return false;
 		if ((bite.byteValue() & 0xff) != 22)
-			System.err.println("Expected block payload cue byte 22 but read " + bite);
+			Console.printlnErr("Expected block payload cue byte 22 but read " + bite);
 		// Read payload
 		ByteSequence blockData = new ByteSequence();
 		int dataBufferPreviousLength = dataBuffer.getLength();
@@ -141,7 +143,7 @@ public class BlockReader {
 		boolean isAudioTape = tape instanceof AudioTapeInputStream;
 		long audioSampleOffset = 0L;
 		long audioSampleLength = 0L;
-		System.out.println("\tStart reading block data: " + tape);
+		Console.println("\tStart reading block data: " + tape);
 		do {
 			if (isAudioTape) {
 				audioSampleOffset = ((AudioTapeInputStream) tape).getSamplePosition();
@@ -164,7 +166,7 @@ public class BlockReader {
 				}
 			}
 		} while (bite != null && blockData.getLength() < maxDataBytes);
-		System.out.println("\tEnd reading block data: " + tape);
+		Console.println("\tEnd reading block data: " + tape);
 		// Truncate to complete chunks
 		int nchunks = blockData.getLength() / CHUNK_DATA_SIZE;
 		int nchunkBytes = nchunks * CHUNK_DATA_SIZE;
@@ -173,8 +175,8 @@ public class BlockReader {
 		dataBuffer.truncate(dataBufferPreviousLength + nchunkBytes);
 		fireOverflowBytes(dataBuffer, dataBuffer.getLength());
 		// Print block info
-		System.out.println("\tBlock data byte count: " + nchunkBytes);
-		System.out.println("\tBlock data: "
+		Console.println("\tBlock data byte count: " + nchunkBytes);
+		Console.println("\tBlock data: "
 				+ (nchunkBytes == 0 ? "(empty)" : blockData.subSequence(0, 16).toHumanReadableString()
 						+ "....."
 						+ blockData.subSequence(blockData.getLength() - 16, blockData.getLength())
@@ -184,7 +186,7 @@ public class BlockReader {
 		while ((bite = tape.nextByte()) != null) {
 			residue.addByte(bite);
 		}
-		System.out.println("\tBlock residue bytes: " + residue.toHumanReadableString());
+		Console.println("\tBlock residue bytes: " + residue.toHumanReadableString());
 		return true;
 	}
 

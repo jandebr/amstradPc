@@ -25,6 +25,8 @@ import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.util.GenericListenerList;
 
+import jemu.ui.Console;
+
 public abstract class AmstradPc {
 
 	private AmstradPcFrame frame;
@@ -69,12 +71,12 @@ public abstract class AmstradPc {
 		}
 		AmstradProgramLoader loader = AmstradProgramLoaderFactory.getInstance().createLoaderFor(program, this);
 		if (loader != null) {
-			System.out.println("Loading program " + program.getProgramName());
+			Console.println("Loading program " + program.getProgramName());
 			AmstradProgramRuntime rt = loader.load(program);
-			System.out.println("Launching program " + program.getProgramName());
+			Console.println("Launching program " + program.getProgramName());
 			rt.run();
 		} else {
-			System.err.println("No loader found for program " + program.getProgramName());
+			Console.printlnErr("No loader found for program " + program.getProgramName());
 		}
 	}
 

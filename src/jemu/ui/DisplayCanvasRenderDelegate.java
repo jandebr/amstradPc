@@ -229,7 +229,7 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 
 	private void log(String msg) {
 		if (logEnabled)
-			System.out.println(msg);
+			Console.println(msg);
 	}
 
 	private void logVerbose(String msg) {

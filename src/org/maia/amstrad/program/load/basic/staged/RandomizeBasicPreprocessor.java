@@ -19,6 +19,8 @@ import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 
+import jemu.ui.Console;
+
 public class RandomizeBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public RandomizeBasicPreprocessor() {
@@ -112,7 +114,7 @@ public class RandomizeBasicPreprocessor extends StagedBasicPreprocessor {
 				try {
 					varSpace.setValue(getRndSeedVariable(), generateRandomSeed(), false);
 				} catch (VariableNotFoundException e) {
-					System.err.println(e);
+					Console.printlnErr(e);
 				}
 			}
 			WaitResumeMacro macro = getSession().getMacroAdded(WaitResumeMacro.class);

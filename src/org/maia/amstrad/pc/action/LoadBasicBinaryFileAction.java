@@ -8,6 +8,8 @@ import javax.swing.JFileChooser;
 import org.maia.amstrad.basic.BasicRuntime;
 import org.maia.amstrad.pc.AmstradPc;
 
+import jemu.ui.Console;
+
 public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
 
 	public LoadBasicBinaryFileAction(AmstradPc amstradPc) {
@@ -35,7 +37,7 @@ public class LoadBasicBinaryFileAction extends BasicBinaryFileAction {
 						try {
 							getAmstradPc().getTape().loadByteCodeFromFile(file);
 						} catch (Exception e) {
-							System.err.println("Failed to load Basic binary file: " + e.getMessage());
+							Console.printlnErr("Failed to load Basic binary file: " + e.getMessage());
 							showErrorMessageDialog("Error loading Basic binary file",
 									"Failed to load " + file.getName(), e);
 						}

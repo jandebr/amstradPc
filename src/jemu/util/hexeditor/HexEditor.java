@@ -1110,7 +1110,7 @@ label1:
             searchReplaceThis();
         } else
         {
-            System.err.println("Error in HexEdit1 userButton(): ActionEvent not recognized: " + event);
+            jemu.ui.Console.printlnErr("Error in HexEdit1 userButton(): ActionEvent not recognized: " + event);
         }
     }
 

@@ -21,6 +21,8 @@ import org.maia.amstrad.pc.action.ProgramBrowserAction;
 import org.maia.amstrad.pc.action.VirtualKeyboardAction;
 import org.maia.graphics2d.image.ImageUtils;
 
+import jemu.ui.Console;
+
 public class UIResources {
 
 	public static ImageIcon aboutBackdrop = loadIcon("about.png");
@@ -143,9 +145,9 @@ public class UIResources {
 		try {
 			font = Font.createFont(Font.TRUETYPE_FONT, UIResources.class.getResourceAsStream("fonts/" + resourceName));
 		} catch (FontFormatException e) {
-			System.err.println("No supported font file '" + resourceName + "': " + e.getMessage());
+			Console.printlnErr("No supported font file '" + resourceName + "': " + e.getMessage());
 		} catch (IOException e) {
-			System.err.println("Cannot read font file '" + resourceName + "': " + e.getMessage());
+			Console.printlnErr("Cannot read font file '" + resourceName + "': " + e.getMessage());
 		}
 		return font;
 	}

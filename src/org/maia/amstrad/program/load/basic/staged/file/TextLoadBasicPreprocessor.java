@@ -27,6 +27,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.load.basic.staged.file.InputStreamCommand.Argument;
 
+import jemu.ui.Console;
+
 public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public TextLoadBasicPreprocessor() {
@@ -49,7 +51,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 			return Arrays.asList(stf.createBasicKeyword("OPENIN"), stf.createBasicKeyword("INPUT"),
 					stf.createBasicKeyword("CLOSEIN"), stf.createBasicKeyword("EOF"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -236,7 +238,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 	protected void handleOpenin(OpeninCommand command, FileReference fileReference,
 			IntegerTypedVariableToken eofVariable, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		if (fileReference == null || !fileReference.getTargetFile().exists()) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
@@ -248,9 +250,9 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 				vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0, false);
 				delayFileOperation(DELAYMILLIS_OPENIN);
 				resumeRun(macro, session);
-				System.out.println("Completed " + command);
+				Console.println("Completed " + command);
 			} catch (Exception e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 				stopFileOperation(session);
 				endWithError(ERR_TEXT_LOAD_FAILURE, sourceCode, macro, session);
 			}
@@ -260,7 +262,7 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 	protected void handleInputStream(InputStreamCommand command, StringTypedVariableToken textBufferVariable,
 			IntegerTypedVariableToken textLengthVariable, IntegerTypedVariableToken eofVariable,
 			BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			LocomotiveBasicVariableSpace vars = getRuntimeVariables(session);
@@ -274,9 +276,9 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 			vars.setValue(eofVariable, reader.isEndOfFile() ? -1 : 0, false);
 			delayFileOperation(DELAYMILLIS_INPUTSTREAM);
 			resumeRun(macro, session);
-			System.out.println("Completed " + command);
+			Console.println("Completed " + command);
 		} catch (Exception e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 			stopFileOperation(session);
 			endWithError(ERR_TEXT_LOAD_FAILURE, sourceCode, macro, session);
 		}
@@ -284,15 +286,15 @@ public class TextLoadBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected void handleClosein(CloseinCommand command, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			session.closeTextFileReader();
 			delayFileOperation(DELAYMILLIS_CLOSEIN);
 			resumeRun(macro, session);
-			System.out.println("Completed " + command);
+			Console.println("Completed " + command);
 		} catch (Exception e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 			endWithError(ERR_TEXT_LOAD_FAILURE, sourceCode, macro, session);
 		} finally {
 			stopFileOperation(session);

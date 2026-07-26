@@ -288,7 +288,7 @@ public class Display extends JComponent {
 		Arrays.fill(pixels, 0xff000000);
 		if (scale == null)
 			scale = SCALE_1;
-		// System.out.println("Display image size " + size.width + "x" + size.height + " with scale " + scale.width +
+		// Console.println("Display image size " + size.width + "x" + size.height + " with scale " + scale.width +
 		// "x"+ scale.height);
 		scaleWidth = imageWidth * scale.width;
 		scaleHeight = imageHeight * scale.height;
@@ -393,7 +393,7 @@ public class Display extends JComponent {
 
 	public boolean processGun() {
 		int rgb = getRGB(mouseX, mouseY);
-		System.out.println("Colour is:" + Util.hex(rgb));
+		Console.println("Colour is:" + Util.hex(rgb));
 		if (rgb == 0xFFFFFFFF)
 			return true;
 		return false;
@@ -531,9 +531,9 @@ public class Display extends JComponent {
 	protected void processFocusEvent(FocusEvent e) {
 		super.processFocusEvent(e);
 		if (e.getID() == FocusEvent.FOCUS_GAINED) {
-			// System.out.println("Display Focused");
+			// Console.println("Display Focused");
 		} else {
-			// System.out.println("Display Lost Focus");
+			// Console.println("Display Lost Focus");
 		}
 	}
 

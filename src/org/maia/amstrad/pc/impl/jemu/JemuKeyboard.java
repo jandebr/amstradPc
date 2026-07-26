@@ -12,6 +12,7 @@ import jemu.core.device.BasicKeyboardPromptModus;
 import jemu.core.device.Computer;
 import jemu.core.device.ComputerKeyboardListener;
 import jemu.ui.Autotype;
+import jemu.ui.Console;
 
 public abstract class JemuKeyboard extends AmstradKeyboard
 		implements KeyListener, ComputerKeyboardListener, AmstradPcStateListener {
@@ -170,12 +171,12 @@ public abstract class JemuKeyboard extends AmstradKeyboard
 	}
 
 	private void notifyAutotypeStarted() {
-		System.out.println("Autotype started");
+		Console.println("Autotype started");
 		setAutotyping(true);
 	}
 
 	private synchronized void notifyAutotypeEnded() {
-		System.out.println("Autotype ended");
+		Console.println("Autotype ended");
 		setAutotyping(false);
 		notifyAll();
 	}

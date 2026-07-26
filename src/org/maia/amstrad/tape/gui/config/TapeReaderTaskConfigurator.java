@@ -46,6 +46,8 @@ import org.maia.swing.input.FolderInputField;
 import org.maia.swing.input.GenericFileInputField;
 import org.maia.swing.input.GenericFileInputFieldListener;
 
+import jemu.ui.Console;
+
 public class TapeReaderTaskConfigurator extends JPanel implements SelectionListener {
 
 	private TapeReaderTaskConfiguration state;
@@ -156,7 +158,7 @@ public class TapeReaderTaskConfigurator extends JPanel implements SelectionListe
 							getOutputDirectoryField().setCurrentDirectory(inputField.getFile().getParentFile());
 						}
 					} catch (IOException e) {
-						System.err.println(e);
+						Console.printlnErr(e);
 					}
 				}
 				getState().setSelectionInAudioFile(null); // initially no selection
@@ -368,7 +370,7 @@ public class TapeReaderTaskConfigurator extends JPanel implements SelectionListe
 				view.getAudioFileView().addSelectionListener(this);
 				view.makeVisible(range);
 			} catch (IOException e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 		}
 		return view;

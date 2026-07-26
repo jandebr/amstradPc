@@ -13,6 +13,8 @@ import org.maia.amstrad.basic.BasicSymbol;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 
+import jemu.ui.Console;
+
 public abstract class LocomotiveBasicRuntime extends BasicRuntime implements LocomotiveBasicMemoryMap {
 
 	private LocomotiveBasicVariableSpace variableSpace;
@@ -69,7 +71,7 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_VARIABLE_SPACE_END_POINTER_BIS, addrEnd);
 			// Info
-			System.out.println("Loaded Basic byte code");
+			Console.println("Loaded Basic byte code");
 			printMemoryUsage();
 		} finally {
 			memory.endThreadExclusiveSession();
@@ -104,7 +106,7 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER, addrEnd);
 			memory.writeWord(ADDRESS_BYTECODE_END_POINTER_BIS, addrEnd);
 			// Info
-			System.out.println("Swapped Basic byte code");
+			Console.println("Swapped Basic byte code");
 			printMemoryUsage();
 		} finally {
 			memory.endThreadExclusiveSession();
@@ -227,7 +229,7 @@ public abstract class LocomotiveBasicRuntime extends BasicRuntime implements Loc
 	}
 
 	private void printMemoryUsage() {
-		System.out.println("Basic user memory: code " + getUsedMemoryForByteCode() + "B | vars "
+		Console.println("Basic user memory: code " + getUsedMemoryForByteCode() + "B | vars "
 				+ getUsedMemoryForVariables() + "B | heap " + getUsedMemoryForHeap() + "B | symbols "
 				+ getCustomSymbolsMemory() + "B | reserved " + getReservedMemory() + "B | free " + getFreeMemory()
 				+ "B (total " + getTotalMemory() + "B)");

@@ -11,6 +11,8 @@ import org.maia.amstrad.basic.locomotive.LocomotiveBasicByteCode;
 import org.maia.amstrad.basic.locomotive.LocomotiveBasicDecompiler;
 import org.maia.util.io.IOUtils;
 
+import jemu.ui.Console;
+
 public class PartialSourceCodeRestorer {
 
 	public PartialSourceCodeRestorer() {
@@ -29,11 +31,11 @@ public class PartialSourceCodeRestorer {
 				BasicByteCode byteCode = new LocomotiveBasicByteCode(bytes);
 				BasicSourceCode sourceCode = decompiler.decompile(byteCode);
 				if (!sourceCode.isEmpty()) {
-					System.out.println(sourceCode.getText());
+					Console.println(sourceCode.getText());
 					success = true;
 				}
 			} catch (BasicException e) {
-				System.out.println(e);
+				Console.printlnErr(e);
 			}
 			if (!success)
 				offset++;

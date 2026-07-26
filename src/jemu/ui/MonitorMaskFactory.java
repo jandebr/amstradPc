@@ -38,7 +38,7 @@ public class MonitorMaskFactory {
 			try {
 				image = ImageIO.read(getClass().getResource("image/ctm644.png"));
 			} catch (IOException e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 			CTM644 = new MonitorMask("CTM644", image, new Insets(24, 25, 24, 25));
 		}
@@ -51,7 +51,7 @@ public class MonitorMaskFactory {
 			try {
 				image = ImageIO.read(getClass().getResource("image/gt65.png"));
 			} catch (IOException e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 			GT65 = new MonitorMask("GT65", image, new Insets(40, 48, 64, 48));
 		}
@@ -64,7 +64,7 @@ public class MonitorMaskFactory {
 			try {
 				image = ImageIO.read(getClass().getResource("image/tv-minimal.png"));
 			} catch (IOException e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 			MINIMAL = new MonitorMask("MINIMAL", image, new Insets(16, 15, 12, 15));
 		}

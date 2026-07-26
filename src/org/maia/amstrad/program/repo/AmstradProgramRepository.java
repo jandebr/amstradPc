@@ -10,6 +10,8 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.image.AmstradProgramImage;
 import org.maia.util.KeyedCacheLRU;
 
+import jemu.ui.Console;
+
 public abstract class AmstradProgramRepository {
 
 	private static AmstradProgramCache programCache;
@@ -26,7 +28,7 @@ public abstract class AmstradProgramRepository {
 		} catch (NumberFormatException e) {
 			// use default
 		}
-		System.out.println("Init program repository cache, capacity=" + capacity);
+		Console.println("Init program repository cache, capacity=" + capacity);
 		programCache = new AmstradProgramCache(capacity * 2); // considering renaming programs
 	}
 
@@ -220,7 +222,7 @@ public abstract class AmstradProgramRepository {
 		protected void evicted(ProgramNode node, AmstradProgram program) {
 			super.evicted(node, program);
 			program.dispose();
-			// System.out.println("CACHE-EVICTED program " + program.getProgramName());
+			// Console.println("CACHE-EVICTED program " + program.getProgramName());
 		}
 
 	}

@@ -10,6 +10,9 @@ package jemu.ui.gfx;
  * @author Markus
  */
 import javax.swing.*;
+
+import jemu.ui.Console;
+
 import java.awt.*;
 
 
@@ -23,7 +26,7 @@ public class WindowUtilities {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch(Exception e) {
-      System.out.println("Error setting native LAF: " + e);
+      Console.println("Error setting native LAF: " + e);
     }
   }
 
@@ -31,7 +34,7 @@ public class WindowUtilities {
     try {
       UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
     } catch(Exception e) {
-      System.out.println("Error setting Java LAF: " + e);
+      Console.println("Error setting Java LAF: " + e);
     }
   }
 
@@ -39,7 +42,7 @@ public class WindowUtilities {
     try {
       UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
     } catch(Exception e) {
-      System.out.println("Error setting Motif LAF: " + e);
+      Console.println("Error setting Motif LAF: " + e);
     }
   }
 

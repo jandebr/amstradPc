@@ -38,6 +38,8 @@ import org.maia.amstrad.tape.read.TapeReaderListener;
 import org.maia.amstrad.tape.write.TapeProgramMetaDataWriter;
 import org.maia.util.io.IOUtils;
 
+import jemu.ui.Console;
+
 /**
  * Task that reconstructs programs from an Amstrad audio tape file
  * 
@@ -91,38 +93,38 @@ public class TapeReaderTask implements TapeReaderListener {
 
 	@Override
 	public void startReadingTape() {
-		System.out.println("Start reading tape");
-		System.out.println();
+		Console.println("Start reading tape");
+		Console.println();
 	}
 
 	@Override
 	public void endReadingTape() {
-		System.out.println("End reading tape");
-		System.out.println();
-		System.out.println(getTapeProfile());
+		Console.println("End reading tape");
+		Console.println();
+		Console.println(getTapeProfile().toString());
 		saveProgramIndex();
 	}
 
 	@Override
 	public void foundNewBlock(Block block) {
 		BlockData data = block.getData();
-		System.out.println();
-		System.out.println("Found " + block + " containing " + data.getByteSequence().getLength() + " bytes ("
+		Console.println();
+		Console.println("Found " + block + " containing " + data.getByteSequence().getLength() + " bytes ("
 				+ data.getNumberOfDataChunks() + " chunks)");
-		System.out.println();
+		Console.println();
 	}
 
 	@Override
 	public void startReadingProgram(TapeProgram program) {
-		System.out.println();
-		System.out.println("Start reading program \"" + program.getProgramName() + "\"");
+		Console.println();
+		Console.println("Start reading program \"" + program.getProgramName() + "\"");
 	}
 
 	@Override
 	public void endReadingProgram(TapeProgram program, BytecodeAudioDecorator byteCodeDecorator) {
-		System.out.println();
-		System.out.println("End reading program \"" + program.getProgramName() + "\"");
-		System.out.println();
+		Console.println();
+		Console.println("End reading program \"" + program.getProgramName() + "\"");
+		Console.println();
 		// Decompile
 		ByteSequence codeBytes = program.getByteCode();
 		DecoratingLocomotiveBasicDecompiler decompiler = new DecoratingLocomotiveBasicDecompiler();
@@ -131,7 +133,7 @@ public class TapeReaderTask implements TapeReaderListener {
 		try {
 			sourceCode = decompiler.decompile(byteCode);
 		} catch (BasicException e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 		}
 		SourcecodeBytecodeDecorator sourceCodeDecorator = decompiler.getSourceCodeDecorator();
 		// Assemble
@@ -203,7 +205,7 @@ public class TapeReaderTask implements TapeReaderListener {
 			new TapeProgramMetaDataWriter().writeMetaData(metaData, program, metaDataFile);
 			program.setFileStoringProgramMetadata(metaDataFile);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 	}
 
@@ -215,7 +217,7 @@ public class TapeReaderTask implements TapeReaderListener {
 			program.setFileStoringSourceCodeOnTape(sourceCodeFile);
 			program.setFileStoringModifiedSourceCode(new File(programFolder, "code-remastered" + extension));
 		} catch (IOException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 	}
 
@@ -225,7 +227,7 @@ public class TapeReaderTask implements TapeReaderListener {
 			byteCode.save(new File(programFolder, "bytes-on-tape.dat"));
 			byteCode.saveAsText(new File(programFolder, "bytes-on-tape.txt"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 	}
 
@@ -242,7 +244,7 @@ public class TapeReaderTask implements TapeReaderListener {
 			}
 			pw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 	}
 

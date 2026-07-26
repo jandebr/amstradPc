@@ -61,6 +61,8 @@ import org.maia.swing.animate.itemslide.SlidingItemListAdapter;
 import org.maia.swing.animate.itemslide.SlidingItemListComponent;
 import org.maia.util.ColorUtils;
 
+import jemu.ui.Console;
+
 public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwtDisplaySource
 		implements ProgramBrowserDisplaySource, CarouselStartupHost, CarouselEnterFolderHost, CarouselRunProgramHost {
 
@@ -380,7 +382,7 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 				try {
 					action.getAnimation().renderOntoDisplay(g, width, height, action.getAnimationElapsedTimeMillis());
 				} catch (RuntimeException e) {
-					e.printStackTrace();
+					Console.printStackTrace(e);
 				}
 			}
 		}

@@ -28,6 +28,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSessio
 import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramRuntime;
 import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 
+import jemu.ui.Console;
+
 public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public ChainRunBasicPreprocessor() {
@@ -49,7 +51,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		try {
 			return Arrays.asList(stf.createBasicKeyword("CHAIN"), stf.createBasicKeyword("RUN"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -121,7 +123,7 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 	protected void handleChainRun(ChainRunCommand command, AmstradProgram chainedProgram,
 			FileReference chainedProgramReference, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		ChainRunMacro macro = session.getMacroAdded(ChainRunMacro.class);
 		if (chainedProgram == null) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
@@ -132,9 +134,9 @@ public class ChainRunBasicPreprocessor extends FileCommandBasicPreprocessor {
 				waitUntilBasicInterpreterInWaitLoop(); // save to swap code
 				session.getAmstradPc().pauseImmediately();
 				performChainRun(command, chainedProgram, session.getLoader());
-				System.out.println("Completed " + command);
+				Console.println("Completed " + command);
 			} catch (Exception e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 				endWithError(ERR_CHAIN_RUN_FAILURE, sourceCode, macro, session);
 			} finally {
 				stopFileOperation(session);

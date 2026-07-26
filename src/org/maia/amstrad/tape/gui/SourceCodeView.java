@@ -27,6 +27,8 @@ import org.maia.amstrad.basic.BasicSourceCodeLine;
 import org.maia.amstrad.tape.model.SourceCodePosition;
 import org.maia.amstrad.tape.model.SourceCodeRange;
 
+import jemu.ui.Console;
+
 public class SourceCodeView extends JPanel implements CaretListener {
 
 	private BasicSourceCode sourceCode;
@@ -123,7 +125,7 @@ public class SourceCodeView extends JPanel implements CaretListener {
 				doc.insertString(doc.getLength(), String.valueOf(lineNumber), style);
 			}
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 		pane.setEditable(false);
 		pane.setCaretPosition(0);
@@ -146,7 +148,7 @@ public class SourceCodeView extends JPanel implements CaretListener {
 				doc.insertString(doc.getLength(), lineCode, style);
 			}
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 		pane.setEditable(false);
 		pane.setCaretPosition(0);

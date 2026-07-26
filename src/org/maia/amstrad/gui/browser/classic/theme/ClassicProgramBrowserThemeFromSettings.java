@@ -3,6 +3,8 @@ package org.maia.amstrad.gui.browser.classic.theme;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 
+import jemu.ui.Console;
+
 public class ClassicProgramBrowserThemeFromSettings implements ClassicProgramBrowserTheme {
 
 	private static final String SETTING_PREFIX = "program_browser.classic.theme.";
@@ -113,7 +115,7 @@ public class ClassicProgramBrowserThemeFromSettings implements ClassicProgramBro
 		try {
 			ink = Integer.parseInt(getSettings().get(key, String.valueOf(defaultInk)));
 		} catch (NumberFormatException e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 		}
 		return ink;
 	}

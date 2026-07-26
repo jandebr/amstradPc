@@ -28,6 +28,8 @@ import org.maia.amstrad.program.AmstradProgramMetaDataConstants;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.util.SystemUtils;
 
+import jemu.ui.Console;
+
 /**
  * Direct joystick Basic preprocessor
  * 
@@ -100,7 +102,7 @@ public class DirectJoystickBasicPreprocessor extends StagedBasicPreprocessor {
 		try {
 			return Arrays.asList(stf.createBasicKeyword("JOY"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}

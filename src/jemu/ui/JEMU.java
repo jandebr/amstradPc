@@ -488,7 +488,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		// Screen size
 		winx1 = getFrameAdapter().getSize().width;
 		winy1 = getFrameAdapter().getSize().height;
-		// System.out.println("Window is " + winx1 + " pixels wide & " + winy1 + " pixels high");
+		// Console.println("Window is " + winx1 + " pixels wide & " + winy1 + " pixels high");
 		// Fullscreen
 		fullscreen = Settings.getBoolean(Settings.FULLSCREEN, false);
 		fullscreen = Util.getBoolean(getParameter("FULLSCREEN", Boolean.toString(fullscreen)));
@@ -721,15 +721,15 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		new CPCPrinter();
 		if (useConsole)
 			Console.init();
-		System.out.println("JavaCPC [v." + version + "]\n\n[" + cal.getTime() + "]\n");
-		System.out.println("executable is " + executable);
+		Console.println("JavaCPC [v." + version + "]\n\n[" + cal.getTime() + "]\n");
+		Console.println("executable is " + executable);
 		Runtime r = Runtime.getRuntime();
 		long free = r.totalMemory() - r.freeMemory();
 		Switches.availmem = free * 10;
 		if (!executable)
 			Switches.availmem = 34000000;
 
-		System.out.println("Avail mem is " + Switches.availmem);
+		Console.println("Avail mem is " + Switches.availmem);
 
 		if (checkupdate)
 			try {
@@ -740,7 +740,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 		try {
 
-			System.out.println("init()");
+			Console.println("init()");
 			removeAll();
 			this.background = getBackground();
 			setBackground(Color.BLACK);
@@ -1032,9 +1032,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				computer.start();
 			}
 
-			System.out.println("DEBUG=" + debug + ", PAUSE=" + pause + ", LARGE=" + large);
+			Console.println("DEBUG=" + debug + ", PAUSE=" + pause + ", LARGE=" + large);
 
-			System.out.println("System Set: " + computer);
+			Console.println("System Set: " + computer);
 			Display.model = "System: " + computer.getName();
 			Display.showmodel = 100;
 
@@ -1134,21 +1134,21 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			if (audioon) {
 				Switches.audioenabler = 1;
 				checkAudio.setState(true);
-				System.out.println("Audio Enabled");
+				Console.println("Audio Enabled");
 			} else {
 				Switches.audioenabler = 0;
 				checkAudio.setState(false);
-				System.out.println("Audio Disabled");
+				Console.println("Audio Disabled");
 			}
 
 			fsoundInit();
 
 			if (notebook) {
 				Switches.notebook = true;
-				System.out.println("Notebook Enabled");
+				Console.println("Notebook Enabled");
 			} else {
 				Switches.notebook = false;
-				System.out.println("Notebook Disabled");
+				Console.println("Notebook Disabled");
 			}
 
 			if (alternativejoy)
@@ -1156,10 +1156,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 			if (autosave) {
 				Switches.autosave = true;
-				System.out.println("Autosave Enabled");
+				Console.println("Autosave Enabled");
 			} else {
 				Switches.autosave = false;
-				System.out.println("Autosave Disabled");
+				Console.println("Autosave Disabled");
 			}
 
 			if (autoboot)
@@ -1229,7 +1229,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 		displayheight = display.getHeight();
 		displaywidth = display.getWidth();
-		System.out.println("Display is " + displaywidth + "," + displayheight + " pixels");
+		Console.println("Display is " + displaywidth + "," + displayheight + " pixels");
 		checkDisplay();
 		makeshot.addActionListener(this);
 		cancelshot.addActionListener(this);
@@ -1348,7 +1348,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public void doAutoOpen(File file) {
 		if (doAutoopen == 0) {
 			Autoopen = file.getAbsolutePath();
-			System.out.println("Autoopen this file: " + Autoopen);
+			Console.println("Autoopen this file: " + Autoopen);
 			doAutoopen = 1;
 		}
 	}
@@ -1375,7 +1375,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 		displaywidth = display.getWidth();
 		displayheight = display.getHeight();
-		System.out.println("Display is " + displaywidth + "," + displayheight + " pixels");
+		Console.println("Display is " + displaywidth + "," + displayheight + " pixels");
 		if (!fullscreen && executable)
 			getFrameAdapter().pack();
 	}
@@ -1431,7 +1431,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 		updateP++;
 		if (updateP == 8) {
-			// System.out.println("Display double buffer is:"+display.isDoubleBuffered());
+			// Console.println("Display double buffer is:"+display.isDoubleBuffered());
 			updateP = 0;
 			if (initRec)
 				screencapture();
@@ -1516,7 +1516,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		if (simpletimer != 0) {
 			simpletimer++;
 			if (simpletimer == 2) {
-				System.out.println("SimpleBoot active. Trying to boot " + DSKfile);
+				Console.println("SimpleBoot active. Trying to boot " + DSKfile);
 				loadFile(DSKfile + ".dsk");
 				loadFile(DSKfile + ".zip");
 				simpletimer = 0;
@@ -1554,7 +1554,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void autoBoot() {
 		computer.reset();
-		System.out.print("Trying to autoboot " + compsys);
+		Console.print("Trying to autoboot " + compsys);
 		if (compsys.equals("CPC664"))
 			loadFile("autoboot664.sna");
 		else if (compsys.equals("CPC464"))
@@ -1606,7 +1606,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			loaddrive = Settings.getBoolean(Settings.LOADDRIVE + Integer.toString(i), false);
 			if (loaddrive == true) {
 				if (fileName != null) {
-					System.out.println("auto load drive " + i + ": " + "*" + fileName + "*");
+					Console.println("auto load drive " + i + ": " + "*" + fileName + "*");
 					computer.setCurrentDrive(i);
 					loadFile(Computer.TYPE_SNAPSHOT, fileName, false);
 				}
@@ -1617,7 +1617,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		loaddrive = Settings.getBoolean(Settings.LOADTAPE, false);
 		if (loaddrive == true) {
 			if (fileName != null) {
-				System.out.println("auto load tape: " + "*" + fileName + "*");
+				Console.println("auto load tape: " + "*" + fileName + "*");
 				loadFile(Computer.TYPE_SNAPSHOT, fileName, false);
 			}
 		}
@@ -1699,14 +1699,14 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 		if (Switches.lightGun) {
 			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
-				System.out.println("X = " + e.getX() + " Y = " + e.getY());
+				Console.println("X = " + e.getX() + " Y = " + e.getY());
 				display.mouseX = e.getX() / 2;
 				display.mouseY = e.getY() / 2;
 				if (display.processGun()) {
-					System.out.println("Fire possible");
+					Console.println("Fire possible");
 					computer.MouseFire1();
 				} else {
-					System.out.println("No fire possible");
+					Console.println("No fire possible");
 				}
 			}
 		}
@@ -1737,13 +1737,13 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public void showDebugger() {
 		// Switches.showPalette = true;
 		try {
-			System.out.println("showDebugger");
+			Console.println("showDebugger");
 			if (debugger == null) {
 				JEMU.debugger = (Debugger) Util.secureConstructor(Debugger.class, new Class[] {}, new Object[] {});
 				JEMU.debugger.setBounds(0, 0, 640, 480);
 				debugger.setComputer(computer);
 			}
-			System.out.println("Showing Debugger");
+			Console.println("Showing Debugger");
 			debugger.setVisible(true);
 			debugger.toFront();
 		} catch (Exception e) {
@@ -1878,7 +1878,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		Display.showpause = 0;
 		computer.start();
 		setPaused(0);
-		System.out.println("System resumed");
+		Console.println("System resumed");
 	}
 
 	public void stopComputer() {
@@ -1890,7 +1890,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	public void pauseComputer() {
 		computer.stop();
 		setPaused(1);
-		System.out.println("System halted");
+		Console.println("System halted");
 	}
 
 	private void pauseComputerOutsideAwtEventDispatchThread() {
@@ -1907,7 +1907,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		if (fsound == false) {
 			Switches.FloppySound = true;
 			Settings.setBoolean(Settings.FLOPPYSOUND, true);
-			System.out.println("Drive mechanic noise enabled");
+			Console.println("Drive mechanic noise enabled");
 			Display.automessage = "Drive mechanic noise emulation is ON";
 			Display.showauto = 150;
 			drivesound.setState(true);
@@ -1915,7 +1915,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else {
 			Switches.FloppySound = false;
 			Settings.setBoolean(Settings.FLOPPYSOUND, false);
-			System.out.println("Drive mechanic noise disabled");
+			Console.println("Drive mechanic noise disabled");
 			Display.automessage = "Drive mechanic noise emulation is OFF";
 			Display.showauto = 150;
 			drivesound.setState(false);
@@ -1929,15 +1929,15 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		if (notebook == false) {
 			Switches.notebook = true;
 			Settings.setBoolean(Settings.NOTEBOOK, true);
-			System.out.println("Notebook Enabled");
-			System.out.println("Q, A, O, P = Direction-control, SPACE, CTRL = Firebutton 1,2");
+			Console.println("Notebook Enabled");
+			Console.println("Q, A, O, P = Direction-control, SPACE, CTRL = Firebutton 1,2");
 			Display.automessage = "Notebook is ON";
 			Display.showauto = 150;
 			notebook = true;
 		} else {
 			Switches.notebook = false;
 			Settings.setBoolean(Settings.NOTEBOOK, false);
-			System.out.println("Notebook Disabled");
+			Console.println("Notebook Disabled");
 			Display.automessage = "Notebook is OFF";
 			Display.showauto = 150;
 			notebook = false;
@@ -1977,7 +1977,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		if (Switches.joystick == 1) {
 			Switches.joystick = 0;
 			Settings.setBoolean(Settings.JOYSTICK, false);
-			System.out.println("Joystick emulation disabled");
+			Console.println("Joystick emulation disabled");
 			Display.automessage = "Joystick is OFF";
 			Display.showauto = 150;
 		} else {
@@ -1985,7 +1985,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			Settings.setBoolean(Settings.JOYSTICK, true);
 			Display.automessage = "Joystick is ON";
 			Display.showauto = 150;
-			System.out.println(
+			Console.println(
 					"Joystick emulation enabled\nuse seperate number-block with NUM-Lock on\n4, 8, 6, 2 - directions, 5, 0 - fire-buttons");
 		}
 	}
@@ -1994,7 +1994,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 		if (Switches.audioenabler == 0) {
 			Switches.audioenabler = 1;
-			System.out.println("Audio Enabled");
+			Console.println("Audio Enabled");
 			Settings.setBoolean(Settings.AUDIO, true);
 			Display.automessage = "Audio enabled";
 			Display.showauto = 150;
@@ -2003,7 +2003,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		} else {
 			if (Switches.audioenabler == 1) {
 				Switches.audioenabler = 0;
-				System.out.println("Audio Disabled");
+				Console.println("Audio Disabled");
 				Settings.setBoolean(Settings.AUDIO, false);
 				Display.automessage = "Audio disabled";
 				Display.showauto = 150;
@@ -2020,14 +2020,14 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void autosavecheck() {
 		if (autosave) {
-			System.out.println("Autosave Disabled");
+			Console.println("Autosave Disabled");
 			Settings.setBoolean(Settings.AUTOSAVE, false);
 			Display.automessage = "Autosave is OFF";
 			Display.showauto = 150;
 			autosave = false;
 			Switches.autosave = false;
 		} else {
-			System.out.println("Autosave Enabled");
+			Console.println("Autosave Enabled");
 			Settings.setBoolean(Settings.AUTOSAVE, true);
 			Display.automessage = "Autosave is ON";
 			Display.showauto = 150;
@@ -2102,7 +2102,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		Switches.loaddriveb = "Drive is empty.";
 		Switches.loaddrivec = "Drive is empty.";
 		Switches.loaddrived = "Drive is empty.";
-		System.out.println(name + " choosen.");
+		Console.println(name + " choosen.");
 		setComputer(name, true);
 		Display.model = "System: " + computer.getName();
 		Display.showmodel = 100;
@@ -2142,7 +2142,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				runtime.gc();
 				runtime.runFinalization();
 				runtime.gc();
-				System.out.println("Computer Disposed");
+				Console.println("Computer Disposed");
 			}
 			computer = newComputer;
 			getJemuKeyDispatcher().changeDestination(newComputer);
@@ -3049,7 +3049,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			display.changePerformance();
 		}
 		if (e.getSource() == checkTurbo) {
-			System.out.println("Turbo is set " + checkTurbo.getState());
+			Console.println("Turbo is set " + checkTurbo.getState());
 			setTurbo(checkTurbo.getState());
 		} else if (e.getSource() == shouldBoot) {
 			jemu.system.cpc.CPC.shouldBoot = shouldBoot.getState();
@@ -3440,7 +3440,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					imager.saveImage(savefile);
 					String insertdisk = savename;
 					loadFile(Computer.TYPE_SNAPSHOT, insertdisk, false);
-					System.out.println("loaded " + insertdisk);
+					Console.println("loaded " + insertdisk);
 					applyAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null, "Sucessfully saved as " + filedia.getFile());
 					applyAlwaysOnTop(onTop);
@@ -3501,7 +3501,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 		computer.stop();
 		Switches.stretch = false;
-		System.out.println("Resizing Window...");
+		Console.println("Resizing Window...");
 		if (large == true) {
 			large = false;
 			setFullSize(large);
@@ -3513,12 +3513,12 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		}
 
 		if (large) {
-			System.out.println("Double size - Gare Array is double");
+			Console.println("Double size - Gare Array is double");
 			Display.automessage = "Double size - Gare Array is double";
 			Display.showauto = 150;
 		} else {
 
-			System.out.println("Simple size - Gare Array is half");
+			Console.println("Simple size - Gare Array is half");
 			Display.automessage = "Simple size - Gare Array is half";
 			Display.showauto = 150;
 		}
@@ -3530,9 +3530,9 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		winx1 = getFrameAdapter().getSize().width;
 		winy1 = getFrameAdapter().getSize().height;
 
-		System.out.println("Window is " + winx1 + " pixels wide & " + winy1 + " pixels high");
+		Console.println("Window is " + winx1 + " pixels wide & " + winy1 + " pixels high");
 		computer.start();
-		System.out.println("You can stretch the window now.");
+		Console.println("You can stretch the window now.");
 		togglesize = true;
 		stretcher = false;
 		defaultSize();
@@ -4284,10 +4284,10 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 	protected void fsoundInit() {
 		if (fsound) {
 			Switches.FloppySound = true;
-			System.out.println("Floppysound Enabled");
+			Console.println("Floppysound Enabled");
 		} else {
 			Switches.FloppySound = false;
-			System.out.println("Audio Disabled");
+			Console.println("Audio Disabled");
 		}
 	}
 
@@ -4421,7 +4421,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				encoder.setDelay(200);
 				encoder.setRepeat(0);
 				// encoder.setTransparent(Color.BLACK);
-				System.out.println("recording started...");
+				Console.println("recording started...");
 				flasher = 0;
 			}
 			if (startR) {
@@ -4451,7 +4451,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					doRec = false;
 					initRec = false;
 					screenpreview.dispose();
-					System.out.println("recording finished...");
+					Console.println("recording finished...");
 				}
 			}
 		} else {
@@ -4513,8 +4513,8 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			update = update + inputLine;
 		}
 
-		System.out.println("Your version is: " + version);
-		System.out.println("Latest version on server is " + update);
+		Console.println("Your version is: " + version);
+		Console.println("Latest version on server is " + update);
 
 		String versId = version.substring(2);
 		String versNo = version.substring(0, 1);
@@ -4523,7 +4523,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 		int versionno = Integer.parseInt(versId + versNo);
 		int updateno = Integer.parseInt(upId + upNo);
 		if (version.equals(update) && !checkupdate) {
-			System.out.println("Your are using the latest version of JavaCPC.");
+			Console.println("Your are using the latest version of JavaCPC.");
 			JOptionPane.showMessageDialog(null, "Dear JavaCPC-user,\n" + "you are using actual version " + version
 					+ ".\n" + "No update available.");
 		} else {
@@ -4542,7 +4542,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				return;
 
 			} else if (!version.equals(update)) {
-				System.out.println("Please update your copy of JavaCPC...");
+				Console.println("Please update your copy of JavaCPC...");
 				JOptionPane.showMessageDialog(null,
 						"Dear JavaCPC-user,\n" + "you are using version " + version + " of JavaCPC.\n"
 								+ "Please visit http://cpc-live.com\n" + "and download JavaCPC version " + update
@@ -4574,7 +4574,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			update = update + inputLine + "\n";
 		}
 
-		System.out.println(update);
+		Console.println(update);
 		JOptionPane.showMessageDialog(null, update);
 	}
 
@@ -4592,7 +4592,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 
 	public void ExpansionRom() {
 		String oldSys = getComputer().getName();
-		System.out.println("Oldsys is:" + oldSys);
+		Console.println("Oldsys is:" + oldSys);
 		try {
 			setComputer(oldSys);
 		} catch (final Exception ex) {
@@ -4950,7 +4950,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 					dtde.dropComplete(true);
 				}
 			} catch (Exception ex) {
-				System.out.println("[MainForm::DropListener]" + ex);
+				Console.println("[MainForm::DropListener]" + ex);
 			}
 		}
 	}
@@ -4988,7 +4988,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				try {
 					loadFile(0, filename, false);
 				} catch (Exception er) {
-					System.out.println("Error while loading");
+					Console.println("Error while loading");
 				}
 				ask.dispose();
 			}
@@ -5000,7 +5000,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				try {
 					loadFile(0, filename, false);
 				} catch (Exception er) {
-					System.out.println("Error while loading");
+					Console.println("Error while loading");
 				}
 				ask.dispose();
 			}
@@ -5070,7 +5070,7 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 			if (device instanceof UPD765A) {
 				final UPD765A FDC = (UPD765A) device;
 				FDC.setForcedHead(head, drive);
-				System.out.println("Floppy head choosen: Drive " + drive + " - Head " + head);
+				Console.println("Floppy head choosen: Drive " + drive + " - Head " + head);
 			}
 		}
 	}
@@ -5310,18 +5310,18 @@ public class JEMU extends Applet implements KeyListener, MouseListener, ItemList
 				if (KeyRec && isCtrlDown()) {
 					if (keyCode == KeyEvent.VK_NUMPAD1) {
 						setCtrlDown(false);
-						System.out.println("keyboard input recording...");
+						Console.println("keyboard input recording...");
 						computer.stopKeys();
 						computer.recordKeys();
 						return;
 					} else if (keyCode == KeyEvent.VK_NUMPAD2) {
 						setCtrlDown(false);
-						System.out.println("keyboard input stopped...");
+						Console.println("keyboard input stopped...");
 						computer.stopKeys();
 						return;
 					} else if (keyCode == KeyEvent.VK_NUMPAD3) {
 						setCtrlDown(false);
-						System.out.println("keyboard input playing...");
+						Console.println("keyboard input playing...");
 						computer.stopKeys();
 						computer.playKeys();
 						return;

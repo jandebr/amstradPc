@@ -10,6 +10,8 @@ import org.maia.amstrad.program.AmstradProgramStoredInFile;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemSettings;
 
+import jemu.ui.Console;
+
 public class AmstradJavaCpcSystem extends AmstradSystem {
 
 	public static final AmstradSystemSettings SETTINGS = new JavaCpcSystemSettings();
@@ -25,7 +27,7 @@ public class AmstradJavaCpcSystem extends AmstradSystem {
 		} else if (args.length == 1) {
 			amstradPc.launch(new AmstradProgramStoredInFile(new File(args[0])));
 		} else {
-			System.err.println("Invalid startup arguments");
+			Console.printlnErr("Invalid startup arguments");
 			System.exit(1);
 		}
 	}

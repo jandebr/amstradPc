@@ -13,6 +13,8 @@ import org.maia.io.inputdevice.joystick.Joystick;
 import org.maia.io.inputdevice.joystick.JoystickCommand;
 import org.maia.io.inputdevice.joystick.JoystickListener;
 
+import jemu.ui.Console;
+
 public class AmstradJoystickDevice extends AmstradJoystick implements JoystickListener {
 
 	private Joystick joystickDelegate;
@@ -90,7 +92,7 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 	synchronized void disposeJoystickDelegate() {
 		Joystick joy = getJoystickDelegate();
 		if (joy != null) {
-			System.out.println("Disposing " + getJoystickId().getDisplayName());
+			Console.println("Disposing " + getJoystickId().getDisplayName());
 			joy.removeJoystickListener(this);
 			joy.dispose();
 			setJoystickDelegate(null);
@@ -100,7 +102,7 @@ public class AmstradJoystickDevice extends AmstradJoystick implements JoystickLi
 
 	synchronized void installJoystickDelegate(Joystick newDelegate) {
 		if (newDelegate != null) {
-			System.out.println("Activating " + getJoystickId().getDisplayName());
+			Console.println("Activating " + getJoystickId().getDisplayName());
 			setJoystickDelegate(newDelegate);
 			if (isActive()) {
 				newDelegate.deactivateDuring(500L); // delayed activation to suppress noisy events

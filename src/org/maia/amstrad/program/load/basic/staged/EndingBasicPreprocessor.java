@@ -24,6 +24,8 @@ import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.amstrad.program.load.basic.BasicProgramLoader;
 import org.maia.amstrad.program.load.basic.staged.ProgramBridgeBasicPreprocessor.ProgramBridgeMacro;
 
+import jemu.ui.Console;
+
 public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public EndingBasicPreprocessor() {
@@ -46,7 +48,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 			return Arrays.asList(stf.createBasicKeyword("ON BREAK"), stf.createBasicKeyword("END"),
 					stf.createBasicKeyword("STOP"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -194,7 +196,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 				loader.load(session.getProgram());
 			}
 		} catch (BasicException | AmstradProgramException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 	}
 
@@ -266,7 +268,7 @@ public class EndingBasicPreprocessor extends StagedBasicPreprocessor {
 		public void handleMemoryTrap(AmstradMemory memory, int memoryAddress, byte memoryValue) {
 			getSession().getBasicRuntime().waitUntilReady();
 			int errorCode = memory.readByte(getSession().getEndingMacro().getErrorCodeAddress()) & 0xff;
-			System.out.println("Basic program ended" + (errorCode != 0 ? " with error code " + errorCode : ""));
+			Console.println("Basic program ended" + (errorCode != 0 ? " with error code " + errorCode : ""));
 			getSession().getProgramRuntime().dispose(true, errorCode);
 			handleProgramEnded(getSession());
 		}

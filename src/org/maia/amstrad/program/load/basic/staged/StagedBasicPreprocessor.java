@@ -19,6 +19,8 @@ import org.maia.amstrad.program.load.basic.BasicPreprocessor;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.util.SystemUtils;
 
+import jemu.ui.Console;
+
 public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 
 	private static final long DELAYMILLIS_ENTER_MACRO_WAIT_LOOP = 100L;
@@ -107,14 +109,14 @@ public abstract class StagedBasicPreprocessor extends BasicPreprocessor {
 
 	protected void endWithError(int errorCode, BasicSourceCode sourceCode, ResumableMacro macro,
 			StagedBasicProgramLoaderSession session) {
-		System.err.println("Staged Basic program ended with ERROR " + errorCode);
+		Console.printlnErr("Staged Basic program ended with ERROR " + errorCode);
 		try {
 			substituteErrorCode(errorCode, sourceCode, session);
 			addCodeLine(sourceCode, macro.getLineNumberTo(), "GOTO " + session.getErrorOutMacroLineNumber());
 			waitUntilBasicInterpreterInWaitLoop(); // save to swap code
 			resumeWithNewSourceCode(sourceCode, macro, session);
 		} catch (BasicException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 	}
 

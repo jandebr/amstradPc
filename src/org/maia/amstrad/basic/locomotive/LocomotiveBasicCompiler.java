@@ -27,6 +27,8 @@ import org.maia.amstrad.basic.locomotive.token.SingleDigitDecimalToken;
 import org.maia.amstrad.basic.locomotive.token.StringTypedVariableToken;
 import org.maia.amstrad.basic.locomotive.token.UntypedVariableToken;
 
+import jemu.ui.Console;
+
 public class LocomotiveBasicCompiler implements BasicCompiler {
 
 	public LocomotiveBasicCompiler() {
@@ -160,7 +162,7 @@ public class LocomotiveBasicCompiler implements BasicCompiler {
 				getByteBuffer().appendWord(LocomotiveBasicNumericRepresentation.integerToWord(token.getValue()));
 			} catch (NumberOverflowException e) {
 				// should not occur
-				e.printStackTrace();
+				Console.printStackTrace(e);
 				getByteBuffer().appendWord(0);
 			}
 		}

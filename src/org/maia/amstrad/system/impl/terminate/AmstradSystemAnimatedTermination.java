@@ -17,6 +17,8 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.util.SystemUtils;
 
+import jemu.ui.Console;
+
 public class AmstradSystemAnimatedTermination extends AmstradSystemCoreTermination
 		implements AmstradKeyboardListener {
 
@@ -77,7 +79,7 @@ public class AmstradSystemAnimatedTermination extends AmstradSystemCoreTerminati
 
 	private void setCommandCancelled(boolean cancel) {
 		if (cancel)
-			System.out.println("Cancelled termination command");
+			Console.println("Cancelled termination command");
 		this.commandCancelled = cancel;
 	}
 

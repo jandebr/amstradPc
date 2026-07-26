@@ -7,6 +7,8 @@ import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.basic.staged.file.DiscoveredFileReference;
 import org.maia.amstrad.program.load.basic.staged.file.FileReferenceDiscoveryService;
 
+import jemu.ui.Console;
+
 public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 
 	private Collection<DiscoveredFileReference> references;
@@ -31,7 +33,7 @@ public class ProgramFileReferencesMenuItem extends ProgramMenuItem {
 				}
 			}
 		} catch (AmstradProgramException e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 			failed = true;
 		}
 	}

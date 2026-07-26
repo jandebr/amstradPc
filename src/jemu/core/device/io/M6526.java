@@ -78,7 +78,7 @@ public class M6526 extends Device {
   
   public int readPort(int port) {
     // RS0 .. RS3 in port
-    //System.out.println("CIA Read: " + Util.hex((byte)port));
+    //Console.println("CIA Read: " + Util.hex((byte)port));
     switch(port & 0x0f) {
       case 0x00: return ports[PORT_A].read();
       
@@ -122,7 +122,7 @@ public class M6526 extends Device {
   
   public void writePort(int port, int value) {
     // RS0 .. RS3 in port
-    //System.out.println("CIA Write: " + Util.hex((byte)port) + "=" + Util.hex((byte)value));
+    //Console.println("CIA Write: " + Util.hex((byte)port) + "=" + Util.hex((byte)value));
     switch(port & 0x0f) {
       case 0x00: ports[PORT_A].write(value); break;
       

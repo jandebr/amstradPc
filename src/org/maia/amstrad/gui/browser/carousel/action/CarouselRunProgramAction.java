@@ -13,6 +13,8 @@ import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.amstrad.program.load.basic.staged.EndingBasicAction;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
+import jemu.ui.Console;
+
 public class CarouselRunProgramAction extends CarouselAction {
 
 	private ProgramNode programNode;
@@ -42,7 +44,7 @@ public class CarouselRunProgramAction extends CarouselAction {
 						amstradPc.getMonitor().setMode(mode);
 					}
 				} catch (AmstradProgramException exc) {
-					exc.printStackTrace();
+					Console.printStackTrace(exc);
 					host.acquireKeyboard();
 					host.notifyProgramRunFailState(getProgramNode(), true);
 				}

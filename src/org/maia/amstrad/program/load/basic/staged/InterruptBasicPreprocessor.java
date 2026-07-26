@@ -18,6 +18,8 @@ import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.InstructionSeparatorToken;
 import org.maia.amstrad.program.load.basic.BasicLanguageKit;
 
+import jemu.ui.Console;
+
 public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public InterruptBasicPreprocessor() {
@@ -39,7 +41,7 @@ public class InterruptBasicPreprocessor extends StagedBasicPreprocessor {
 		try {
 			return Arrays.asList(stf.createBasicKeyword("CLEAR"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}

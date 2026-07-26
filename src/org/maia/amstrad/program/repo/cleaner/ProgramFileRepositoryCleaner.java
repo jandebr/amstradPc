@@ -4,39 +4,41 @@ import java.io.File;
 import java.util.List;
 import java.util.Vector;
 
+import jemu.ui.Console;
+
 public abstract class ProgramFileRepositoryCleaner {
 
 	protected ProgramFileRepositoryCleaner() {
 	}
 
 	public void cleanProgramRepository(File rootFolder, boolean removeEmptySubfolders) {
-		System.out.println("Cleaning program repository at " + rootFolder.getAbsolutePath());
+		Console.println("Cleaning program repository at " + rootFolder.getAbsolutePath());
 		removeObsoleteProgramFiles(rootFolder);
 		if (removeEmptySubfolders) {
 			removeEmptyProgramSubfolders(rootFolder);
 		}
-		System.out.println();
+		Console.println();
 	}
 
 	private void removeObsoleteProgramFiles(File rootFolder) {
 		List<File> filesToRemove = new Vector<File>();
 		gatherFilesEligibleForRemoval(rootFolder, filesToRemove);
 		if (!filesToRemove.isEmpty()) {
-			System.out.println("Attempting to remove " + filesToRemove.size() + " obsolete program file(s)");
+			Console.println("Attempting to remove " + filesToRemove.size() + " obsolete program file(s)");
 			int removed = 0;
 			for (File file : filesToRemove) {
-				System.out.println("Removing " + file.getAbsolutePath());
+				Console.println("Removing " + file.getAbsolutePath());
 				if (file.delete())
 					removed++;
 			}
-			System.out.println("Removed " + removed + " obsolete program file(s)");
+			Console.println("Removed " + removed + " obsolete program file(s)");
 		}
 	}
 
 	private void removeEmptyProgramSubfolders(File folder) {
-		System.out.println("Attempting to remove empty program subfolders");
+		Console.println("Attempting to remove empty program subfolders");
 		int removed = removeEmptySubfolders(folder);
-		System.out.println("Removed " + removed + " empty program subfolder(s)");
+		Console.println("Removed " + removed + " empty program subfolder(s)");
 	}
 
 	private int removeEmptySubfolders(File folder) {
@@ -45,7 +47,7 @@ public abstract class ProgramFileRepositoryCleaner {
 			if (child.isDirectory()) {
 				removed += removeEmptySubfolders(child);
 				if (isEmptyFolder(child)) {
-					System.out.println("Removing " + child.getAbsolutePath());
+					Console.println("Removing " + child.getAbsolutePath());
 					if (child.delete())
 						removed++;
 				}

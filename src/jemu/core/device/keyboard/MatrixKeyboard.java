@@ -44,7 +44,7 @@ public class MatrixKeyboard extends Device {
     int oldValue = keyMap[row][col];
     if (oldValue != value) {
       keyMap[row][col] = value;
-      //System.out.println("Key Changed: " + col + ", " + row);
+      //Console.println("Key Changed: " + col + ", " + row);
       keyChanged(col,row,oldValue,value);
     }
   }
@@ -117,7 +117,7 @@ public void addKeyMapping(String key, int col, int row) {
   }
   
   protected void keyChange(int key, int location, int step) {
-//    System.out.println("key=" + Util.hex((short)key));
+//    Console.println("key=" + Util.hex((short)key));
     int mask = 0x01 << (key & 0x1f);
     boolean right = location == KeyEvent.KEY_LOCATION_RIGHT;
     int offs = right ? 0x800 + key / 32 : key / 32;

@@ -17,6 +17,8 @@ import org.maia.amstrad.basic.locomotive.token.VariableToken;
 import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.util.StringUtils;
 
+import jemu.ui.Console;
+
 public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 
 	private AmstradMemory memory;
@@ -390,7 +392,7 @@ public class LocomotiveBasicVariableSpace implements LocomotiveBasicMemoryMap {
 			Method method = variableType.getDeclaredMethod("forName", String.class);
 			variable = variableType.cast(method.invoke(null, variableNameWithoutTypeIndicator));
 		} catch (Exception e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 		return variable;
 	}

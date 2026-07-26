@@ -19,6 +19,7 @@ import java.util.zip.*;
 import jemu.core.device.Device;
 import jemu.core.device.floppy.DiscImage;
 import jemu.core.device.floppy.UPD765A;
+import jemu.ui.Console;
 import jemu.ui.Switches;
 
 
@@ -149,7 +150,7 @@ public class CPCDiscImage extends DiscImage {
     this.creator = new String(data, 0x22, 0x0E);
     this.numberOfTracks = data[0x30] & 0xff;
     Switches.numberOfTracks = numberOfTracks;
-    System.out.println("Numberof tracks is:" + numberOfTracks);
+    Console.println("Numberof tracks is:" + numberOfTracks);
     this.numberOfSides = data[0x31] & 0xff;
     this.sizeOfTrack = Device.getWord(data, 0x32);
     this.extended = this.discId.toUpperCase().startsWith(EXTENDED_EYECATCHER);
@@ -261,7 +262,7 @@ public class CPCDiscImage extends DiscImage {
   //@Override
   public byte[] readSector(final int track, final int side, final int c, final int h, final int r, final int n) {
       if (DEBUG){
-          System.out.println("TRACK: " + track + " SIDE:" + side + " C:"+c+" H:"+h+" R:"+r+" N:"+n);
+          Console.println("TRACK: " + track + " SIDE:" + side + " C:"+c+" H:"+h+" R:"+r+" N:"+n);
       }
     if (track <= MAX_TRACK) {
       return this.tracks[track][side & SIDE_MASK].getSectorData(c, h, r, n); // n = UPD765A size
@@ -393,7 +394,7 @@ public class CPCDiscImage extends DiscImage {
       }
     }
 
-    System.out.println("store dsk file to " + savedImage);
+    Console.println("store dsk file to " + savedImage);
     this.name = savedImage.getAbsolutePath();
     if (name.toLowerCase().endsWith(".zip"))
         name = name+"_"+Switches.choosenname;
@@ -454,9 +455,9 @@ public class CPCDiscImage extends DiscImage {
             final int dataSize = sd.getData().length;
             bos.write(dataSize & 0xFF);
             bos.write((dataSize / 256) & 0xFF);
-            // System.out.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
+            // Console.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
             // + UPD765A.getCommandSize(sd.getSize()) + " size=" + sd.getData().length);
-            // System.out.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
+            // Console.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
           }
           unused = 0x100 - 0x18 - 8 * numberOfSectors;
           for (int i = 0; i < unused; i++) {
@@ -470,7 +471,7 @@ public class CPCDiscImage extends DiscImage {
       bos.close();
 
     } catch (final IOException iox) {
-      System.out.println("can't write to file " + savedImage + ": " + iox.getMessage());
+      Console.println("can't write to file " + savedImage + ": " + iox.getMessage());
     }
   }
 
@@ -484,7 +485,7 @@ public class CPCDiscImage extends DiscImage {
       }
     }
 
-    System.out.println("store dsk file to " + savedImage);
+    Console.println("store dsk file to " + savedImage);
     this.name = savedImage.getAbsolutePath();
     if (name.toLowerCase().endsWith(".zip") || name.toLowerCase().endsWith(".dsk"))
         name = name.substring(0, name.length()-4);
@@ -550,9 +551,9 @@ public class CPCDiscImage extends DiscImage {
             final int dataSize = sd.getData().length;
             bos.write(dataSize & 0xFF);
             bos.write((dataSize / 256) & 0xFF);
-            // System.out.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
+            // Console.println("sec " + sd.getTrack() + "/" + sd.getSide() + "/" + sd.getId() + "/"
             // + UPD765A.getCommandSize(sd.getSize()) + " size=" + sd.getData().length);
-            // System.out.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
+            // Console.println(" -> " + (dataSize & 0xFF) + " / " + ((dataSize / 256) & 0xFF));
           }
           unused = 0x100 - 0x18 - 8 * numberOfSectors;
           for (int i = 0; i < unused; i++) {
@@ -566,7 +567,7 @@ public class CPCDiscImage extends DiscImage {
       bos.close();
 
     } catch (final IOException iox) {
-      System.out.println("can't write to file " + savedImage + ": " + iox.getMessage());
+      Console.println("can't write to file " + savedImage + ": " + iox.getMessage());
     }
   }
 

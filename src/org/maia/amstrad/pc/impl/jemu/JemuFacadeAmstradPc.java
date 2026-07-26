@@ -23,6 +23,7 @@ import org.maia.util.SystemUtils;
 
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
+import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.FrameAdapter;
 import jemu.ui.JEMU;
@@ -74,7 +75,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 
 	@Override
 	protected void doStart() {
-		System.out.println("Starting Jemu FACADE pc");
+		Console.println("Starting Jemu FACADE pc");
 		JEMU jemu = getJemuInstance();
 		jemu.init();
 		jemu.start();
@@ -86,7 +87,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 		primaryDisplaySourceResolutionChanged(display,
 				new Dimension(display.getImageWidth(), display.getImageHeight()));
 		getFrameBridge().pack();
-		System.out.println("Started Jemu FACADE pc");
+		Console.println("Started Jemu FACADE pc");
 	}
 
 	@Override
@@ -181,7 +182,7 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 			if (monitor.isFullscreen()) {
 				// Force full screen as it is not consistently working
 				if (getContentComponent().getLocationOnScreen().getX() != 0) {
-					System.out.println("Force center display on screen");
+					Console.println("Force center display on screen");
 					monitor.toggleFullscreen();
 					monitor.toggleFullscreen();
 				}
@@ -210,13 +211,13 @@ public class JemuFacadeAmstradPc extends JemuAmstradPc implements PauseListener 
 					int expectedX = (getScreenSize().width - displayComp.getWidth()) / 2;
 					int attempts = 0;
 					while (Math.abs(displayComp.getLocationOnScreen().x - expectedX) > 2 && ++attempts <= 3) {
-						System.out.println("Display is forced fullscreen");
+						Console.println("Display is forced fullscreen");
 						monitor.toggleFullscreen();
 						monitor.toggleFullscreen();
 						SystemUtils.sleep(500L);
 					}
 				} else if (extendsOutsideScreen()) {
-					System.out.println("Display is centered on screen");
+					Console.println("Display is centered on screen");
 					centerOnScreen();
 				}
 			}

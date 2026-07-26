@@ -2,6 +2,7 @@ package jemu.core.cpu;
 
 import jemu.core.*;
 import jemu.core.device.*;
+import jemu.ui.Console;
 
 /**
  * Title:        JEMU
@@ -211,7 +212,7 @@ public class MC6502 extends Processor {
   }
   
   public final void illegal(int opcode) {
-    System.out.println("Illegal Opcode: " + Util.hex((byte)opcode) + " at " + Util.hex((short)(PC - 1)));
+    Console.println("Illegal Opcode: " + Util.hex((byte)opcode) + " at " + Util.hex((short)(PC - 1)));
   }
 
   protected final void step(int opcode) {

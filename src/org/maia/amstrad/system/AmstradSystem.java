@@ -16,6 +16,7 @@ import org.maia.amstrad.system.impl.screen.AmstradSystemScreenSetImpl;
 import org.maia.amstrad.system.impl.terminate.AmstradSystemCoreTermination;
 
 import jemu.settings.Settings;
+import jemu.ui.Console;
 
 public abstract class AmstradSystem {
 
@@ -48,7 +49,7 @@ public abstract class AmstradSystem {
 	}
 
 	public final void launch(String[] args) throws AmstradException {
-		System.out.println("Launching Amstrad system " + getName());
+		Console.println("Launching Amstrad system " + getName());
 		overrideUserSettingsBeforeLaunch();
 		getAmstradPc().addStateListener(new AmstradPcPostStartupActionInvoker());
 		getAmstradPc().getMonitor().addMonitorListener(new AmstradMonitorDisplaySourceTracker());
@@ -56,7 +57,7 @@ public abstract class AmstradSystem {
 	}
 
 	public final void terminate() {
-		System.out.println("Terminating Amstrad system");
+		Console.println("Terminating Amstrad system");
 		createTermination().terminate(this);
 	}
 
@@ -120,7 +121,7 @@ public abstract class AmstradSystem {
 	private void handleAutoPauseResume(AmstradSystemScreen previousScreen, AmstradSystemScreen currentScreen) {
 		if (currentScreen.isNativeScreen()) {
 			if (autoResumeOnReturnToNativeScreen && getAmstradPc().isPaused()) {
-				System.out.println("Auto resume");
+				Console.println("Auto resume");
 				getAmstradPc().resume();
 			}
 			autoResumeOnReturnToNativeScreen = false;
@@ -128,7 +129,7 @@ public abstract class AmstradSystem {
 			AmstradAlternativeDisplaySource ds = getAmstradPc().getMonitor().getCurrentAlternativeDisplaySource();
 			autoResumeOnReturnToNativeScreen = ds != null && ds.isAutoPauseResume() && !getAmstradPc().isPaused();
 			if (autoResumeOnReturnToNativeScreen) {
-				System.out.println("Auto pause");
+				Console.println("Auto pause");
 				getAmstradPc().pause();
 			}
 		}

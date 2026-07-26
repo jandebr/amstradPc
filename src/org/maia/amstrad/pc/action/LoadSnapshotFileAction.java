@@ -8,6 +8,8 @@ import javax.swing.JFileChooser;
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
 
+import jemu.ui.Console;
+
 public class LoadSnapshotFileAction extends SnapshotFileAction {
 
 	public LoadSnapshotFileAction(AmstradPc amstradPc) {
@@ -30,7 +32,7 @@ public class LoadSnapshotFileAction extends SnapshotFileAction {
 					try {
 						getAmstradPc().load(AmstradFactory.getInstance().createCpcSnapshotProgram(file));
 					} catch (Exception e) {
-						System.err.println("Failed to load snapshot file: " + e.getMessage());
+						Console.printlnErr("Failed to load snapshot file: " + e.getMessage());
 						showErrorMessageDialog("Error loading snapshot file", "Failed to load " + file.getName(), e);
 					}
 				}

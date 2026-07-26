@@ -60,7 +60,7 @@ public class KeyDispatcher implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// System.out.println("KEY PRESSED " + formatKeyEvent(e));
+		// Console.println("KEY PRESSED " + formatKeyEvent(e));
 		// Remember modifiers
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_CONTROL) {
@@ -80,7 +80,7 @@ public class KeyDispatcher implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// System.out.println("KEY RELEASED " + formatKeyEvent(e));
+		// Console.println("KEY RELEASED " + formatKeyEvent(e));
 		// Map & handle key release
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;

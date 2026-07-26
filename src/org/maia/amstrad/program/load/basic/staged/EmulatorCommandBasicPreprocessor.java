@@ -16,6 +16,8 @@ import org.maia.amstrad.pc.memory.AmstradMemory;
 import org.maia.amstrad.program.load.AmstradProgramRuntime;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 
+import jemu.ui.Console;
+
 public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static final String COMMAND_PREFIX = "_";
@@ -141,7 +143,7 @@ public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
 			if (isTurboEnabledByCommand()) {
 				// restore initial turbo mode (e.g., break between turbo ON and OFF commands)
 				programRuntime.getAmstradPc().setTurboMode(isInitialTurboMode());
-				System.out.println("Restored turbo mode: " + isInitialTurboMode());
+				Console.println("Restored turbo mode: " + isInitialTurboMode());
 			}
 		}
 
@@ -180,7 +182,7 @@ public class EmulatorCommandBasicPreprocessor extends StagedBasicPreprocessor {
 		}
 
 		private void executeEmulatorCommand(EmulatorCommand command) {
-			System.out.println("Handling emulator command " + command.getName());
+			Console.println("Handling emulator command " + command.getName());
 			command.execute(getSession());
 		}
 

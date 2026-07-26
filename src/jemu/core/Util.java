@@ -381,7 +381,7 @@ public class Util {
       else
         return ((Constructor)routine).newInstance(params);
     } catch (InvocationTargetException i) {
-      System.out.println("InvocationTarget Exception in secureExecute");
+      jemu.ui.Console.println("InvocationTarget Exception in secureExecute");
       Throwable t = i.getTargetException();
       if (t instanceof Exception)
         throw (Exception)t;

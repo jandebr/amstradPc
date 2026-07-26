@@ -3,6 +3,8 @@ package org.maia.amstrad.tape.model;
 import java.util.List;
 import java.util.Vector;
 
+import jemu.ui.Console;
+
 public class TapeProgram {
 
 	private List<Block> blocks;
@@ -41,7 +43,7 @@ public class TapeProgram {
 				Block prevBlock = getLastBlock();
 				int missingChunks = BlockData.MAXIMUM_CHUNKS_PER_BLOCK - prevBlock.getData().getNumberOfDataChunks();
 				if (missingChunks > 0) {
-					System.err.println("There are " + missingChunks + " missing data chunks in " + prevBlock);
+					Console.printlnErr("There are " + missingChunks + " missing data chunks in " + prevBlock);
 				}
 			}
 			getBlocks().add(block);

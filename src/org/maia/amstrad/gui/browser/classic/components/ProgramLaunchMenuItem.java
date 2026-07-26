@@ -6,6 +6,8 @@ import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.AmstradProgramLoader;
 import org.maia.amstrad.program.load.AmstradProgramLoaderFactory;
 
+import jemu.ui.Console;
+
 public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 
 	private long executeStartTime;
@@ -36,7 +38,7 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 							browser.getAmstradPc().getMonitor().setMode(mode);
 						}
 					} catch (AmstradProgramException exc) {
-						exc.printStackTrace();
+						Console.printStackTrace(exc);
 						browser.acquireKeyboard();
 						setFailed(true);
 					} finally {

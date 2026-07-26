@@ -16,6 +16,8 @@ import org.maia.amstrad.pc.monitor.cursor.AmstradMonitorCursorController;
 import org.maia.graphics2d.image.ImageUtils;
 import org.maia.util.SystemUtils;
 
+import jemu.ui.Console;
+
 public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 		implements AmstradMonitorCursorController, MouseMotionListener {
 
@@ -224,14 +226,14 @@ public class AmstradMonitorCursorControllerImpl extends AmstradPcStateAdapter
 
 		@Override
 		public void run() {
-			System.out.println("Cursor activity tracker started");
+			Console.println("Cursor activity tracker started");
 			while (!getAmstradPc().isTerminated()) {
 				if (!isCursorHidden() && isAutoHideCursor() && hasCursorBecomeInactive()) {
 					autoHideCursor();
 				}
 				SystemUtils.sleep(getAutoHideDelayMillis() / 2);
 			}
-			System.out.println("Cursor activity tracker stopped");
+			Console.println("Cursor activity tracker stopped");
 		}
 
 		private boolean hasCursorBecomeInactive() {

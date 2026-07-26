@@ -164,6 +164,30 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		return instance;
 	}
 
+	public static void print(String message) {
+		System.out.print(message);
+	}
+
+	public static void println() {
+		System.out.println();
+	}
+
+	public static void println(String message) {
+		System.out.println(message);
+	}
+
+	public static void printlnErr(Exception e) {
+		printlnErr(e.toString());
+	}
+
+	public static void printlnErr(String message) {
+		System.err.println(message);
+	}
+
+	public static void printStackTrace(Exception e) {
+		e.printStackTrace(System.err);
+	}
+
 	public void showInFrame() {
 		textArea.setText(outputSink.toString());
 		frameconsole.setVisible(true);
@@ -187,7 +211,7 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 			if (textArea.getSelectedText() == null)
 				textArea.selectAll();
 			textArea.copy();
-			System.out.println("Console content copied to clipboard.");
+			Console.println("Console content copied to clipboard.");
 		}
 		if (evt.getSource() == button3) {
 			saveFile();

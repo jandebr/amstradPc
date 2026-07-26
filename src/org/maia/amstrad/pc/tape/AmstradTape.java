@@ -15,6 +15,8 @@ import org.maia.amstrad.pc.AmstradPcDevice;
 import org.maia.util.GenericListenerList;
 import org.maia.util.io.IOUtils;
 
+import jemu.ui.Console;
+
 public abstract class AmstradTape extends AmstradPcDevice {
 
 	private GenericListenerList<AmstradTapeListener> tapeListeners;
@@ -35,13 +37,13 @@ public abstract class AmstradTape extends AmstradPcDevice {
 	public void loadSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException {
 		getBasicRuntime().load(readSourceCodeFromFile(sourceCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(sourceCodeFile.getParentFile());
-		System.out.println("Loaded source code from " + sourceCodeFile.getPath());
+		Console.println("Loaded source code from " + sourceCodeFile.getPath());
 	}
 
 	public void loadByteCodeFromFile(File byteCodeFile) throws IOException, BasicException {
 		getBasicRuntime().load(readByteCodeFromFile(byteCodeFile));
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(byteCodeFile.getParentFile());
-		System.out.println("Loaded byte code from " + byteCodeFile.getPath());
+		Console.println("Loaded byte code from " + byteCodeFile.getPath());
 	}
 
 	public abstract BasicSourceCode readSourceCodeFromFile(File sourceCodeFile) throws IOException, BasicException;
@@ -53,7 +55,7 @@ public abstract class AmstradTape extends AmstradPcDevice {
 		pw.print(getBasicRuntime().exportSourceCode().getText());
 		pw.close();
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-		System.out.println("Exported source code to " + file.getPath());
+		Console.println("Exported source code to " + file.getPath());
 	}
 
 	public void saveByteCodeToFile(File file) throws IOException, BasicException {
@@ -62,7 +64,7 @@ public abstract class AmstradTape extends AmstradPcDevice {
 		os.flush();
 		os.close();
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-		System.out.println("Exported byte code to " + file.getPath());
+		Console.println("Exported byte code to " + file.getPath());
 	}
 
 	public void loadBinaryFile(File binaryFile, int memoryStartAddress) throws IOException {

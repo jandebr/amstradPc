@@ -524,7 +524,7 @@ public int getRAMBank(){
 
   @Override
   public void hSyncStart() {
-   // System.out.println(hSyncCount);
+   // Console.println(hSyncCount);
     hSyncCount = 0;
     inHSyncA = true;
     renderer = syncRenderer;

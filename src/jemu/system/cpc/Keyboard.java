@@ -3,6 +3,7 @@ package jemu.system.cpc;
 import java.awt.event.*;
 import jemu.core.*;
 import jemu.core.device.keyboard.*;
+import jemu.ui.Console;
 
 /**
 * Title:        JavaCPC
@@ -44,7 +45,7 @@ public abstract class Keyboard extends MatrixKeyboard {
   public int readSelectedRow() {
       if (DEBUG){
       if (bytes[row]!=255)
-	System.out.println("Row: "+row+" Data: "+bytes[row]);
+	Console.println("Row: "+row+" Data: "+bytes[row]);
       }
     return bytes[row];
   }

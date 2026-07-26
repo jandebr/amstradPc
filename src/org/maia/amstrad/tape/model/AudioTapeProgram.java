@@ -15,6 +15,8 @@ import org.maia.amstrad.tape.model.profile.TapeProfile;
 import org.maia.amstrad.tape.read.AudioFile;
 import org.maia.util.io.IOUtils;
 
+import jemu.ui.Console;
+
 public class AudioTapeProgram extends TapeProgram {
 
 	private BasicSourceCode sourceCodeOnTape;
@@ -89,7 +91,7 @@ public class AudioTapeProgram extends TapeProgram {
 				modifiedSourceCode = new LocomotiveBasicSourceCode(
 						IOUtils.readTextFileContents(getFileStoringModifiedSourceCode()));
 			} catch (Exception e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 		}
 		return modifiedSourceCode;

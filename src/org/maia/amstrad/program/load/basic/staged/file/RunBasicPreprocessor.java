@@ -21,6 +21,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSessio
 import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.file.ChainRunBasicPreprocessor.ChainRunMacro;
 
+import jemu.ui.Console;
+
 public class RunBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public RunBasicPreprocessor() {
@@ -42,7 +44,7 @@ public class RunBasicPreprocessor extends FileCommandBasicPreprocessor {
 		try {
 			return Arrays.asList(stf.createBasicKeyword("RUN"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -88,7 +90,7 @@ public class RunBasicPreprocessor extends FileCommandBasicPreprocessor {
 	}
 
 	protected void handleRun(RunCommand command, BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		ChainRunMacro macro = session.getMacroAdded(ChainRunMacro.class);
 		try {
 			PreambleJumpingMacro jump = session.getMacroAdded(PreambleJumpingMacro.class);
@@ -101,7 +103,7 @@ public class RunBasicPreprocessor extends FileCommandBasicPreprocessor {
 			substituteLineNumberReference(macro.getLineNumberTo(), sourceCode.getSmallestLineNumber(), sourceCode);
 			resumeWithNewSourceCode(sourceCode, macro, session);
 		} catch (Exception e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 			endWithError(ERR_RUN_FAILURE, sourceCode, macro, session);
 		}
 	}

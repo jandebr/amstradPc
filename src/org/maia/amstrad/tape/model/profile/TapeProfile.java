@@ -12,6 +12,8 @@ import java.util.Vector;
 
 import org.maia.amstrad.tape.model.AudioRange;
 
+import jemu.ui.Console;
+
 public class TapeProfile implements Serializable {
 
 	private static final long serialVersionUID = -396706659339973964L;
@@ -34,7 +36,7 @@ public class TapeProfile implements Serializable {
 		try {
 			profile = (TapeProfile) in.readObject();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 		in.close();
 		return profile;

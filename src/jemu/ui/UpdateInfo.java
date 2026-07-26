@@ -181,7 +181,7 @@ JEditorPane  browsercontent = new JEditorPane ();
 
 /*    public void Download(String download){
         String extension = download;
-        System.out.println(extension + " - " + extension.length());
+        Console.println(extension + " - " + extension.length());
         extension = download.substring(extension.length()-4);
       FileDialog filedia = new FileDialog((Frame) this, "Download file...", FileDialog.SAVE);
         filedia.setFile("*"+extension);
@@ -190,7 +190,7 @@ JEditorPane  browsercontent = new JEditorPane ();
         if (filename != null) {
             if (!filename.toLowerCase().endsWith(extension))
                 filename = filename + extension;
-            System.out.println("Saving to " + filename);
+            Console.println("Saving to " + filename);
 
           String[]arg= {download, filename};
           copyURL.main(arg);

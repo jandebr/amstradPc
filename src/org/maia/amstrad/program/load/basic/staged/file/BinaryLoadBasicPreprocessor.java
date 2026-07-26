@@ -23,6 +23,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.util.io.IOUtils;
 
+import jemu.ui.Console;
+
 public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor implements LocomotiveBasicMemoryMap {
 
 	private static final int BLOCK_BYTESIZE = 2048;
@@ -46,7 +48,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 		try {
 			return Arrays.asList(stf.createBasicKeyword("LOAD"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -92,7 +94,7 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 
 	protected void handleBinaryLoad(BinaryLoadCommand command, FileReference fileReference, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		if (fileReference == null || !fileReference.getTargetFile().exists()) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
@@ -109,9 +111,9 @@ public class BinaryLoadBasicPreprocessor extends FileCommandBasicPreprocessor im
 							command.getMemoryOffset());
 				}
 				resumeRun(macro, session);
-				System.out.println("Completed " + command);
+				Console.println("Completed " + command);
 			} catch (Exception e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 				endWithError(ERR_BINARY_LOAD_FAILURE, sourceCode, macro, session);
 			} finally {
 				stopFileOperation(session);

@@ -32,6 +32,7 @@ import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
 import jemu.system.cpc.CPC;
 import jemu.ui.Autotype;
+import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.Display.PrimaryDisplaySourceListener;
 import jemu.ui.DisplayPerformanceListener;
@@ -171,10 +172,10 @@ public abstract class JemuAmstradPc extends AmstradPc
 	protected abstract void doTerminate();
 
 	private void waitUntilBasicRuntimeReady() {
-		System.out.println("Waiting until Basic runtime is Ready");
+		Console.println("Waiting until Basic runtime is Ready");
 		SystemUtils.sleep(1000L); // making sure "ready" turns false first
 		getBasicRuntime().waitUntilReady(8000L);
-		System.out.println("Basic runtime is Ready");
+		Console.println("Basic runtime is Ready");
 	}
 
 	@Override
@@ -251,7 +252,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 	public final void load(AmstradPcSnapshotFile snapshotFile) throws IOException {
 		checkStartedNotTerminated();
 		File file = snapshotFile.getFile();
-		System.out.println("Loading snapshot from " + file.getPath());
+		Console.println("Loading snapshot from " + file.getPath());
 		doLoad(file);
 		AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
 		fireProgramLoaded();
@@ -263,7 +264,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 	public void save(AmstradPcSnapshotFile snapshotFile) {
 		checkStartedNotTerminated();
 		File file = snapshotFile.getFile();
-		System.out.println("Saving snapshot to " + file.getPath());
+		Console.println("Saving snapshot to " + file.getPath());
 		Settings.set(Settings.SNAPSHOT_FILE, file.getAbsolutePath());
 		Switches.uncompressed = AmstradFileType.JAVACPC_SNAPSHOT_FILE_UNCOMPRESSED.matches(file);
 		Switches.save64 = true; // 64k RAM memory dump
@@ -578,7 +579,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 		}
 
 		public void start() {
-			System.out.println("Starting Display performance booster");
+			Console.println("Starting Display performance booster");
 			resetMonitoring();
 			addPerformanceListener(this);
 			addStateListener(this);
@@ -657,7 +658,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 
 		private synchronized void boost() {
 			if (!isPaused()) {
-				System.out.println(
+				Console.println(
 						"Display BOOST (avg=" + getAverageDataValue() + ", max=" + getMaximumDataValue() + ")");
 				getMemory().pauseComputerInstantly();
 				getMemory().resumeComputerInstantly();
@@ -674,7 +675,7 @@ public abstract class JemuAmstradPc extends AmstradPc
 						Math.round(minimumSecondsToNextBoost * secondsMultiplierBetweenBoosts),
 						maximumSecondsBetweenBoosts);
 			}
-			System.out.println("Next Display boost no earlier than " + minimumSecondsToNextBoost + " seconds");
+			Console.println("Next Display boost no earlier than " + minimumSecondsToNextBoost + " seconds");
 		}
 
 		private boolean isEligibleForBoost() {

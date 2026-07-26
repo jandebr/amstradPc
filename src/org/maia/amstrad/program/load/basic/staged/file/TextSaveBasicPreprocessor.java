@@ -26,6 +26,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.WaitResumeBasicPreprocessor.WaitResumeMacro;
 import org.maia.amstrad.program.load.basic.staged.file.PrintStreamCommand.Argument;
 
+import jemu.ui.Console;
+
 public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public TextSaveBasicPreprocessor() {
@@ -48,7 +50,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			return Arrays.asList(stf.createBasicKeyword("OPENOUT"), stf.createBasicKeyword("PRINT"),
 					stf.createBasicKeyword("CLOSEOUT"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -198,7 +200,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected void handleOpenout(OpenoutCommand command, FileReference fileReference, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		if (fileReference == null) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
@@ -208,9 +210,9 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 				session.openTextFileWriter(fileReference.getTargetFile());
 				delayFileOperation(DELAYMILLIS_OPENOUT);
 				resumeRun(macro, session);
-				System.out.println("Completed " + command);
+				Console.println("Completed " + command);
 			} catch (Exception e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 				stopFileOperation(session);
 				endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
 			}
@@ -219,7 +221,7 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected void handlePrintStream(PrintStreamCommand command, StringTypedVariableToken textBufferVariable,
 			BasicSourceCode sourceCode, StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			LocomotiveBasicVariableSpace vars = getRuntimeVariables(session);
@@ -227,9 +229,9 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 			session.getTextFileWriter().writeLine(value);
 			delayFileOperation(DELAYMILLIS_PRINTSTREAM);
 			resumeRun(macro, session);
-			System.out.println("Completed " + command);
+			Console.println("Completed " + command);
 		} catch (Exception e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 			stopFileOperation(session);
 			endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
 		}
@@ -237,15 +239,15 @@ public class TextSaveBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	protected void handleCloseout(CloseoutCommand command, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		WaitResumeMacro macro = session.getMacroAdded(WaitResumeMacro.class);
 		try {
 			session.closeTextFileWriter();
 			delayFileOperation(DELAYMILLIS_CLOSEOUT);
 			resumeRun(macro, session);
-			System.out.println("Completed " + command);
+			Console.println("Completed " + command);
 		} catch (Exception e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 			endWithError(ERR_TEXT_SAVE_FAILURE, sourceCode, macro, session);
 		} finally {
 			stopFileOperation(session);

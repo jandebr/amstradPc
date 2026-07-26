@@ -156,7 +156,7 @@ public class R6522 extends Device {
   }
   
   protected void setIFR(int value) {
-    //System.out.println("setIFR: " + Util.hex((byte)value) + ", IER=" + Util.hex((byte)ier));
+    //Console.println("setIFR: " + Util.hex((byte)value) + ", IER=" + Util.hex((byte)ier));
     int oldInt = ifr & 0x80;
     if ((value & ier & 0x7f) != 0) {
       ifr = value | 0x80;
@@ -186,7 +186,7 @@ public class R6522 extends Device {
       ca2 = value;
       if ((pcr & CA2_OUTPUT) == 0 && ((pcr & CA2_POSITIVE) != 0) == value)
         setIFR(ifr | INT_CA2);
-//      System.out.println("ca2 toggle: " + value + " ifr=" + ifr + ", pcr=" + Util.hex((byte)pcr));
+//      Console.println("ca2 toggle: " + value + " ifr=" + ifr + ", pcr=" + Util.hex((byte)pcr));
     }
   }
   
@@ -198,14 +198,14 @@ public class R6522 extends Device {
         if ((acr & T1_PB7) != 0)
           ports[PORT_B].write(ports[PORT_B].getOutput() ^ 0x80);
         setIFR(ifr | INT_T1);
-        //System.out.println("Free run timer 1");
+        //Console.println("Free run timer 1");
       }
       else if (t1int) {
         if ((acr & T1_PB7) != 0)
           ports[PORT_B].write(ports[PORT_B].getOutput() | 0x80);
         setIFR(ifr | INT_T1);
         t1int = false;
-        //System.out.println("One shot timer 1");
+        //Console.println("One shot timer 1");
       }
       else
         t1c = 0xfffe;

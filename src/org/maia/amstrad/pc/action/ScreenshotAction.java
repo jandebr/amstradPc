@@ -11,6 +11,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 
+import jemu.ui.Console;
+
 public abstract class ScreenshotAction extends FileChooserAction {
 
 	protected ScreenshotAction(AmstradPc amstradPc, String name) {
@@ -44,7 +46,7 @@ public abstract class ScreenshotAction extends FileChooserAction {
 			try {
 				ImageIO.write(image, "png", file);
 			} catch (Exception e) {
-				System.err.println("Failed to export screenshot: " + e.getMessage());
+				Console.printlnErr("Failed to export screenshot: " + e.getMessage());
 				showErrorMessageDialog("Error saving image", "Failed to save " + file.getName(), e);
 			}
 		}

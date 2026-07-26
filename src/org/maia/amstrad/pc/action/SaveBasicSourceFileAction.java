@@ -8,6 +8,8 @@ import javax.swing.JFileChooser;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
+import jemu.ui.Console;
+
 public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 
 	public SaveBasicSourceFileAction(AmstradPc amstradPc) {
@@ -32,7 +34,7 @@ public class SaveBasicSourceFileAction extends BasicSourceFileAction {
 						try {
 							getAmstradPc().getTape().saveSourceCodeToFile(file);
 						} catch (Exception e) {
-							System.err.println("Failed to save Basic source file: " + e.getMessage());
+							Console.printlnErr("Failed to save Basic source file: " + e.getMessage());
 							showErrorMessageDialog("Error saving Basic source file", "Failed to save " + file.getName(),
 									e);
 						}

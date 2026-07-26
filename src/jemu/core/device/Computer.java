@@ -33,6 +33,7 @@ import jemu.core.device.floppy.Drive;
 import jemu.core.device.memory.Memory;
 import jemu.core.device.memory.MemoryWriteObserver;
 import jemu.settings.Settings;
+import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.Switches;
 import jemu.util.diss.Disassembler;
@@ -225,10 +226,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 							EntryName.endsWith(".wav") || // PCM .wav file
 							EntryName.endsWith(".csw") // Compressed Square Wave .csw file
 					) {
-						System.out.println("Loading: " + EntryName);
+						Console.println("Loading: " + EntryName);
 						return zipinput;
 					} else {
-						System.out.println("Skipping " + zipentry.getName());
+						Console.println("Skipping " + zipentry.getName());
 					}
 				}
 			}
@@ -239,9 +240,9 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				pane.createDialog(null, "Choose file:").setVisible(true);
 				while (content[choosen].toLowerCase().endsWith(".diz")) {
 					choosen++;
-					System.out.println("file_id.diz file found... skipping!");
+					Console.println("file_id.diz file found... skipping!");
 				}
-				System.out.println("You have choosen " + content[choosen]);
+				Console.println("You have choosen " + content[choosen]);
 				Switches.choosenname = content[choosen];
 			}
 			for (int ir = 0; ir < choosen + 1; ir++)
@@ -257,7 +258,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		}
 		if (name.toLowerCase().endsWith(".snz") || name.toLowerCase().endsWith(".taz")
 				|| name.toLowerCase().endsWith(".dsz") || name.toLowerCase().endsWith(".szk")) {
-			System.out.println("Opening GZip compressed file...");
+			Console.println("Opening GZip compressed file...");
 			GZIPInputStream str = new GZIPInputStream(result);
 			result = str;
 		}
@@ -287,7 +288,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			}
 		}
 		if (!Switches.loaded)
-			System.out.println("Checking zip....");
+			Console.println("Checking zip....");
 		zipcount = 0;
 		LinkedList<String> entries = new LinkedList<String>();
 		count = rubbish = 0;
@@ -304,7 +305,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			String found = i.next();
 			content[count] = found;
 			String EntryName = found.toLowerCase();
-			System.out.println("Entry found: " + EntryName);
+			Console.println("Entry found: " + EntryName);
 			if (EntryName.endsWith(".dsk") || // amstrad diskimage
 					EntryName.endsWith(".cdt") || // amstrad tape
 					EntryName.endsWith(".tzx") || // spectrum tape
@@ -318,15 +319,15 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 			) {
 				box.addItem(found);
 				if (!Switches.loaded)
-					System.out.println("Found: " + found);
+					Console.println("Found: " + found);
 			} else {
 				if (!Switches.loaded)
-					System.out.println("Rubbish: " + found);
+					Console.println("Rubbish: " + found);
 				rubbish++;
 			}
 			count++;
 			zipcount++;
-			System.out.println("******* Count: " + count + " Rubbish: " + rubbish + " Found: " + found);
+			Console.println("******* Count: " + count + " Rubbish: " + rubbish + " Found: " + found);
 		}
 		zipinputr.close();
 		// if (count==1 && rubbish ==1)
@@ -581,7 +582,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	}
 
 	public void run() {
-		System.out.println(this + " Thread start");
+		Console.println(this + " Thread start");
 		while (!isStopped()) {
 			boolean shouldRun = false;
 			int shouldRunAction = 0;
@@ -590,10 +591,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 					setRunning(false);
 					fireActionEvent();
 					if (verboseStopStart)
-						System.out.println("Enter waitUninterrupted");
+						Console.println("Enter waitUninterrupted");
 					waitUninterrupted();
 					if (verboseStopStart)
-						System.out.println("Exit waitUninterrupted");
+						Console.println("Exit waitUninterrupted");
 				}
 				shouldRun = !isStopped() && action != STOP;
 				shouldRunAction = action;
@@ -609,10 +610,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 					startCycles = getProcessor().getCycles();
 					startTime = System.currentTimeMillis();
 					if (verboseStopStart)
-						System.out.println(this + " Emulate start (mode " + mode + ")");
+						Console.println(this + " Emulate start (mode " + mode + ")");
 					emulate(mode);
 					if (verboseStopStart)
-						System.out.println(this + " Emulate end");
+						Console.println(this + " Emulate end");
 				} catch (RuntimeException e) {
 					e.printStackTrace();
 				} finally {
@@ -624,7 +625,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		}
 		setRunning(false);
 		fireActionEvent();
-		System.out.println(this + " Thread end");
+		Console.println(this + " Thread end");
 	}
 
 	public synchronized void start() {
@@ -682,7 +683,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		if (thread == null)
 			return; // already disposed
 		if (verboseStopStart)
-			System.out.println(this + " Dispose");
+			Console.println(this + " Dispose");
 		stop();
 		stopped = true;
 		setAction(STOP); // awake when in stop-wait
@@ -707,7 +708,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	private synchronized void setRunning(boolean newRunning) {
 		running = newRunning;
 		if (verboseStopStart) {
-			System.out.println("Computer.setRunning(" + newRunning + ")");
+			Console.println("Computer.setRunning(" + newRunning + ")");
 			Thread.dumpStack();
 		}
 		this.notifyAll();
@@ -716,7 +717,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	private synchronized void setAction(int newAction) {
 		action = newAction;
 		if (verboseStopStart) {
-			System.out.println("Computer.setAction(" + newAction + ")");
+			Console.println("Computer.setAction(" + newAction + ")");
 			Thread.dumpStack();
 		}
 		this.notifyAll();
@@ -725,7 +726,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 	private synchronized void setConfirmStep(boolean newConfirmStep) {
 		confirmStep = newConfirmStep;
 		if (verboseStopStart) {
-			System.out.println("Computer.setConfirmStep(" + newConfirmStep + ")");
+			Console.println("Computer.setConfirmStep(" + newConfirmStep + ")");
 			Thread.dumpStack();
 		}
 		this.notifyAll();
@@ -782,7 +783,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 
 	public void reset() {
 		/*
-		 * System.out.println(this + " Reset"); stop(); getProcessor().reset(); start();
+		 * Console.println(this + " Reset"); stop(); getProcessor().reset(); start();
 		 */
 	}
 
@@ -794,7 +795,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 		final int n = devices.size();
 		for (int i = 0; i < n; i++) {
 			final Object device = devices.get(i);
-			System.out.println("Device connected: " + device);
+			Console.println("Device connected: " + device);
 		}
 	}
 
@@ -820,7 +821,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 					}
 				}
 			} catch (Exception e) {
-				System.out.println("Cannot get file list for " + this);
+				Console.println("Cannot get file list for " + this);
 			} finally {
 				if (reader != null)
 					try {
@@ -870,10 +871,10 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				setFrameSkip(0);
 				if (timer != null)
 					timer.resync();
-				// System.out.println(" R: " + (time - startTime));
+				// Console.println(" R: " + (time - startTime));
 				startTime = (timer != null ? timer.getCount() : System.currentTimeMillis());
 			} else {
-				// System.out.print(" S" + frameSkip);
+				// Console.print(" S" + frameSkip);
 				setFrameSkip(frameSkip + 1);
 			}
 		} else {
@@ -884,7 +885,7 @@ public abstract class Computer extends Device implements Runnable, ItemListener 
 				while ((time = timer != null ? timer.getCount() : System.currentTimeMillis()) < startTime) {
 					if (timer != null && System.currentTimeMillis() - start > maxResync) {
 						timer.resync();
-						// System.out.println("resync 2");
+						// Console.println("resync 2");
 						startTime = timer.getCount();
 						break;
 					}

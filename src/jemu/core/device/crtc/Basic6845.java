@@ -2,6 +2,7 @@ package jemu.core.device.crtc;
 
 import jemu.core.*;
 import jemu.core.device.*;
+import jemu.ui.Console;
 import jemu.ui.Switches;
 import jemu.system.cpc.CPC;
 
@@ -209,7 +210,7 @@ public class Basic6845 extends CRTC {
         inVSync = true;
         listener.vSyncStart();
       }
-      //  System.out.println("vSync Start: reg7=" + reg[7]);
+      //  Console.println("vSync Start: reg7=" + reg[7]);
     }
   }
 
@@ -217,7 +218,7 @@ public class Basic6845 extends CRTC {
       if (reg[9] == 0 && reg[4] == 0)
           vtAdj  =1;
     demoDetect();
-   // System.out.println(Integer.toString(vCC) + ":" + ra + " ");
+   // Console.println(Integer.toString(vCC) + ":" + ra + " ");
     if (inVSync && (vSyncCount = (vSyncCount + 1) & 0x0f) == vSyncWidth) {
       if (interlace && (frame == 0))
         eventMask[halfR0] |= EVENT_VSYNC_END;
@@ -260,7 +261,7 @@ public class Basic6845 extends CRTC {
 
   public void setRegister(int index, int value) {
     //  if (index != 6 && index != 0)
-   // System.out.println("Reg " + index + " = " + Util.hex((byte)value));
+   // Console.println("Reg " + index + " = " + Util.hex((byte)value));
     orig[index] = value & 0xff;
     value &= wrMask[index];
     if (reg[index] != value) {
@@ -380,7 +381,7 @@ public class Basic6845 extends CRTC {
     else
     vSyncWidth = (value >> 5) & 0x0f;
     if (debug)
-        System.err.println("setReg3: value is:" + value +
+        Console.printlnErr("setReg3: value is:" + value +
                 " hSyncWidth is:" + hSyncWidth + " vSyncWidth is:" +vSyncWidth);
   }
 

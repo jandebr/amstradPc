@@ -9,6 +9,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
+import jemu.ui.Console;
+
 public class AutoTypeFileAction extends FileChooserAction {
 
 	public AutoTypeFileAction(AmstradPc amstradPc) {
@@ -31,7 +33,7 @@ public class AutoTypeFileAction extends FileChooserAction {
 					try {
 						getAmstradPc().getKeyboard().typeFileContents(file);
 					} catch (Exception e) {
-						System.err.println("Failed to read text file: " + e.getMessage());
+						Console.printlnErr("Failed to read text file: " + e.getMessage());
 						showErrorMessageDialog("Error reading text file", "Failed to read " + file.getName(), e);
 					}
 				}

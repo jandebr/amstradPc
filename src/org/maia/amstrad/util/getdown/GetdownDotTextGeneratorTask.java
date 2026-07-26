@@ -11,6 +11,8 @@ import java.util.Date;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
+import jemu.ui.Console;
+
 public class GetdownDotTextGeneratorTask extends Task {
 
 	private File destinationFile;
@@ -47,17 +49,17 @@ public class GetdownDotTextGeneratorTask extends Task {
 
 	private void writeGetdownDotText(PrintWriter out) throws IOException {
 		String version = generateVersionString();
-		System.out.println("INFO version: " + version);
+		Console.println("INFO version: " + version);
 		BufferedReader reader = new BufferedReader(new FileReader("deploy/getdown/getdown.template.txt"));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			if (line.startsWith("#") && line.contains(VAR_AMSTRADPC_PROGRAMS)) {
 				if (getProgramSourceDir() != null && getProgramSourceDir().exists()) {
 					String rootPath = getProgramSourceDir().getAbsolutePath().replace('\\', '/');
-					System.out.println("INFO scanning program repository in " + rootPath);
+					Console.println("INFO scanning program repository in " + rootPath);
 					writeProgramsRecursively(getProgramSourceDir(), rootPath, out);
 				} else {
-					System.out.println("WARNING no programs inserted");
+					Console.println("WARNING no programs inserted");
 				}
 			} else {
 				out.println(replaceVariables(line, version));
@@ -75,7 +77,7 @@ public class GetdownDotTextGeneratorTask extends Task {
 					path = path.substring(1);
 				String resourcePath = new File(getProgramTargetBasePath(), path).getPath().replace('\\', '/');
 				out.println("resource = " + resourcePath);
-				System.out.println("INFO adding resource " + resourcePath);
+				Console.println("INFO adding resource " + resourcePath);
 			}
 		} else if (current.isDirectory()) {
 			for (File child : current.listFiles()) {

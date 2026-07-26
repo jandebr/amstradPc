@@ -5,6 +5,8 @@ import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemTermination;
 import org.maia.util.SystemUtils;
 
+import jemu.ui.Console;
+
 public class AmstradSystemCoreTermination implements AmstradSystemTermination {
 
 	private static final String SETTING_TERMINATE_COMMAND = "poweroff.command";
@@ -19,7 +21,7 @@ public class AmstradSystemCoreTermination implements AmstradSystemTermination {
 		if (isExecuteCommand()) {
 			executeCommand(system, getTerminationSystemCommand(system));
 		}
-		System.out.println("Exiting JVM");
+		Console.println("Exiting JVM");
 		SystemUtils.sleep(200L);
 		System.exit(0);
 	}

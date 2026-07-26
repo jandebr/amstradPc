@@ -27,6 +27,8 @@ import org.maia.amstrad.program.load.basic.staged.PreambleBasicPreprocessor.Prea
 import org.maia.amstrad.program.load.basic.staged.file.TextFileReader;
 import org.maia.amstrad.program.load.basic.staged.file.TextFileWriter;
 
+import jemu.ui.Console;
+
 public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession implements LocomotiveBasicMemoryMap {
 
 	private boolean produceRemarks;
@@ -80,7 +82,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 			try {
 				getTextFileWriter().close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Console.printStackTrace(e);
 			} finally {
 				setTextFileWriter(null);
 			}
@@ -98,7 +100,7 @@ public class StagedBasicProgramLoaderSession extends AmstradProgramLoaderSession
 			try {
 				getTextFileReader().close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Console.printStackTrace(e);
 			} finally {
 				setTextFileReader(null);
 			}

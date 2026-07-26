@@ -14,6 +14,8 @@ import org.maia.amstrad.tape.model.AudioRange;
 import org.maia.amstrad.tape.model.TapeProgramMetaData;
 import org.maia.amstrad.tape.read.AudioWaveFile;
 
+import jemu.ui.Console;
+
 public class TapeReaderTaskConfigurationIO implements AmstradProgramMetaDataConstants {
 
 	private static final String KEY_AUDIO_FILE = "audioFile";
@@ -157,7 +159,7 @@ public class TapeReaderTaskConfigurationIO implements AmstradProgramMetaDataCons
 				long length = Long.valueOf(lengthStr);
 				selection = new AudioRange(offset, length);
 			} catch (NumberFormatException e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 		}
 		return selection;

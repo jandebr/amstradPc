@@ -14,6 +14,8 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import jemu.ui.Console;
+
 public abstract class AmstradDisplayCanvas {
 
 	private AmstradGraphicsContext graphicsContext;
@@ -577,7 +579,7 @@ public abstract class AmstradDisplayCanvas {
 				customSymbol32 = false;
 				in.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Console.printStackTrace(e);
 			}
 		}
 

@@ -1,7 +1,7 @@
 package org.maia.amstrad;
 
 import java.io.File;
-import java.io.PrintStream;
+import java.io.OutputStream;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
 import org.maia.amstrad.pc.AmstradPc;
@@ -24,6 +24,7 @@ import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase;
 import org.maia.util.SystemUtils;
 
 import jemu.settings.Settings;
+import jemu.ui.Console;
 
 public abstract class AmstradContext {
 
@@ -128,9 +129,9 @@ public abstract class AmstradContext {
 
 	public abstract AmstradSettings getUserSettings();
 
-	public abstract PrintStream getConsoleOutputStream();
+	public abstract OutputStream getConsoleOutputStream();
 
-	public abstract PrintStream getConsoleErrorStream();
+	public abstract OutputStream getConsoleErrorStream();
 
 	public abstract AmstradProgramBrowser getProgramBrowser(AmstradPc amstradPc);
 
@@ -327,12 +328,12 @@ public abstract class AmstradContext {
 		if (systemCommand == null || systemCommand.isEmpty())
 			return;
 		try {
-			System.out.println("Executing system command: " + systemCommand);
+			Console.println("Executing system command: " + systemCommand);
 			Runtime.getRuntime().exec(systemCommand.trim().split(" "));
-			System.out.println("System command executed");
+			Console.println("System command executed");
 		} catch (Exception e) {
-			System.err.println("Failed to execute system command");
-			System.err.println(e);
+			Console.printlnErr("Failed to execute system command");
+			Console.printlnErr(e);
 		}
 	}
 

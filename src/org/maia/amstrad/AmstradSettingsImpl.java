@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import org.maia.util.SystemUtils;
 
+import jemu.ui.Console;
+
 public class AmstradSettingsImpl extends AmstradSettings {
 
 	private Properties properties;
@@ -64,7 +66,7 @@ public class AmstradSettingsImpl extends AmstradSettings {
 				t.start();
 			}
 			if (!key.equals("frame_xpos") && !key.equals("frame_ypos")) {
-				System.out.println("User setting '" + key + "' changed to '" + value + "'");
+				Console.println("User setting '" + key + "' changed to '" + value + "'");
 			}
 		}
 	}
@@ -74,9 +76,9 @@ public class AmstradSettingsImpl extends AmstradSettings {
 		File file = getPropertiesInputFile();
 		try {
 			props.load(new FileInputStream(file));
-			System.out.println("Loaded " + props.size() + " user settings from " + file.getAbsolutePath());
+			Console.println("Loaded " + props.size() + " user settings from " + file.getAbsolutePath());
 		} catch (IOException e) {
-			System.err.println("Can't load user settings (" + e.getMessage() + ")");
+			Console.printlnErr("Can't load user settings (" + e.getMessage() + ")");
 		}
 		return props;
 	}
@@ -86,9 +88,9 @@ public class AmstradSettingsImpl extends AmstradSettings {
 		if (file != null) {
 			try {
 				getProperties().store(new FileOutputStream(file), "[Settings]");
-				System.out.println("Saved user settings to " + file.getAbsolutePath());
+				Console.println("Saved user settings to " + file.getAbsolutePath());
 			} catch (IOException e) {
-				System.err.println("Can't save user settings (" + e.getMessage() + ")");
+				Console.printlnErr("Can't save user settings (" + e.getMessage() + ")");
 			}
 		}
 		setDirty(false);

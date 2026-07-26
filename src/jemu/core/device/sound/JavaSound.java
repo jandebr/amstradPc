@@ -14,6 +14,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import jemu.system.cpc.CPC;
+import jemu.ui.Console;
 import jemu.ui.Switches;
 
 /**
@@ -75,7 +76,7 @@ public class JavaSound extends SunAudio {
 		if (Switches.turbo >= 2) {
 			Switches.turbo--;
 		} else {
-			System.out.println("resync: start=" + startCount);
+			Console.println("resync: start=" + startCount);
 			if (jemu.ui.Display.showfps <= 0)
 				jemu.ui.Display.showfps = -200;
 		}

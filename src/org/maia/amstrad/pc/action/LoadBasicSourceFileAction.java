@@ -7,6 +7,8 @@ import javax.swing.JFileChooser;
 
 import org.maia.amstrad.pc.AmstradPc;
 
+import jemu.ui.Console;
+
 public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 
 	public LoadBasicSourceFileAction(AmstradPc amstradPc) {
@@ -33,7 +35,7 @@ public class LoadBasicSourceFileAction extends BasicSourceFileAction {
 						try {
 							getAmstradPc().getTape().loadSourceCodeFromFile(file);
 						} catch (Exception e) {
-							System.err.println("Failed to load Basic source file: " + e.getMessage());
+							Console.printlnErr("Failed to load Basic source file: " + e.getMessage());
 							showErrorMessageDialog("Error loading Basic source file",
 									"Failed to load " + file.getName(), e);
 						}

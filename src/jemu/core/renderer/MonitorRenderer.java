@@ -1,6 +1,7 @@
 package jemu.core.renderer;
 
 import jemu.core.Util;
+import jemu.ui.Console;
 import jemu.ui.Switches;
 
 /**
@@ -65,19 +66,19 @@ public class MonitorRenderer extends Renderer {
 
   public void setCycleFrequency(long value) {
     adder = (int)(0x10000L * 1000000L / value);
-    System.out.println("Frequency=" + value + ", adder=" + adder);
+    Console.println("Frequency=" + value + ", adder=" + adder);
   }
 
   public void hSyncStart() {
     /*if (debug)
-      System.out.println("HSync start: " + Integer.toHexString(hPos));*/
+      Console.println("HSync start: " + Integer.toHexString(hPos));*/
     hStart = hPos;
     inHSync = hadHSync = true;
   }
 
   public void hSyncEnd() {
     /*if (debug)
-      System.out.println("HSync end: " + Integer.toHexString(hPos)); */
+      Console.println("HSync end: " + Integer.toHexString(hPos)); */
     if (inHSync) {
       inHSync = false;
       adjustMoreLess(hPos);
@@ -86,7 +87,7 @@ public class MonitorRenderer extends Renderer {
 
   protected void adjustMoreLess(int pos) {
 /*    if (debug)
-      System.out.println("adjustMoreLess: " + Integer.toHexString(pos)); */
+      Console.println("adjustMoreLess: " + Integer.toHexString(pos)); */
     if (pos <= monHHalf){
       hLess += pos - hStart;
       hPos -=HSYNC_FREE_ADJUST;
@@ -102,7 +103,7 @@ public class MonitorRenderer extends Renderer {
   public void vSyncStart() {
     if (!inVSync) {
       if (debug)
-        System.out.println("vSync Start: " + vPos + ", hPos=" + hPos);
+        Console.println("vSync Start: " + vPos + ", hPos=" + hPos);
       vSync = -hPos;
       inVSync = true;
     }
@@ -114,7 +115,7 @@ public class MonitorRenderer extends Renderer {
       vSync += hPos;
       checkVSync();
       if (debug)
-        System.out.println("vSync End: " + vPos + ", hPos=" + hPos + ", length=" +
+        Console.println("vSync End: " + vPos + ", hPos=" + hPos + ", length=" +
           Integer.toHexString(vSync));
     }
   }
@@ -138,7 +139,7 @@ public class MonitorRenderer extends Renderer {
         hStart = 0;
       }
 /*      if (debug)
-        System.out.println("Monitor HSync: " + Integer.toHexString(monHSync) + ", more=" +
+        Console.println("Monitor HSync: " + Integer.toHexString(monHSync) + ", more=" +
           Integer.toHexString(hMore) + ", less=" + Integer.toHexString(hLess)); */
       int adjust, base;
       if (hLess > hMore) {        // Increase Sync position
@@ -171,7 +172,7 @@ public class MonitorRenderer extends Renderer {
       hSync();
 
 /*      if (debug)
-        System.out.println("Adjustments: inHSync=" + inHSync + ", hadHSync=" + hadHSync +
+        Console.println("Adjustments: inHSync=" + inHSync + ", hadHSync=" + hadHSync +
           ", adjust=" + Integer.toHexString(adjust) + ", base=" +
           Integer.toHexString(base) + ", free=" + Integer.toHexString(monHFree)); */
       monHSync = Math.max(HSYNC_MIN,Math.min(HSYNC_MAX,monHFree + adjust));
@@ -191,7 +192,7 @@ public class MonitorRenderer extends Renderer {
         boolean interlace = (vSync - monHSync) < monHHalf;
         monitorLine = (VHOLD_MIN - vPos) / 2 + vAdjust - (interlace ? 1 : 0);
         if (debug)
-          System.out.println("VSync: vPos=" + vPos + ", VH-vP=" + (VHOLD_MIN - vPos) + ", vSync=" + Util.hex(vSync) + ", row=" +
+          Console.println("VSync: vPos=" + vPos + ", VH-vP=" + (VHOLD_MIN - vPos) + ", vSync=" + Util.hex(vSync) + ", row=" +
             monitorLine + ", monHSync=" + Util.hex(monHSync) + ", inVSync=" + inVSync +
             ", interlace=" + interlace + ", hPos=" + hPos);
         vSync(interlace);
@@ -204,12 +205,12 @@ public class MonitorRenderer extends Renderer {
     vSyncMin = value + VHOLD_MID;
     vSyncMax = vSyncMin + VHOLD_MIN_RANGE + (int)Math.round((vSyncMin - VHOLD_MIN) *
       (VHOLD_MAX_RANGE - VHOLD_MIN_RANGE) / (VHOLD_MAX - VHOLD_MIN));
-    //System.out.println("VHold=" + value + ", vSyncMin=" + vSyncMin + ", vSyncMax=" + vSyncMax);
+    //Console.println("VHold=" + value + ", vSyncMin=" + vSyncMin + ", vSyncMax=" + vSyncMax);
   }
   
   public void setVerticalAdjust(int value) {
     vAdjust = value;
-   // System.out.println("vAdjust = " + vAdjust);
+   // Console.println("vAdjust = " + vAdjust);
   }
 
 }

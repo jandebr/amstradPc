@@ -32,6 +32,8 @@ import org.maia.swing.text.pte.PlainTextDocumentException;
 import org.maia.swing.text.pte.PlainTextEditor;
 import org.maia.swing.text.pte.model.PlainTextDocument;
 
+import jemu.ui.Console;
+
 public class AudioTapeIndexToolBar extends Box implements IndexSelectionListener, AmstradPcListener {
 
 	private AudioTapeIndexView indexView;
@@ -143,7 +145,7 @@ public class AudioTapeIndexToolBar extends Box implements IndexSelectionListener
 			try {
 				documentEditor.revert(false);
 			} catch (PlainTextDocumentException e) {
-				e.printStackTrace();
+				Console.printStackTrace(e);
 			}
 		}
 	}
@@ -426,7 +428,7 @@ public class AudioTapeIndexToolBar extends Box implements IndexSelectionListener
 						try {
 							launchProgram(tapeProgram);
 						} catch (AmstradProgramException e) {
-							System.err.println(e);
+							Console.printlnErr(e);
 						} finally {
 							setEnabled(true);
 						}

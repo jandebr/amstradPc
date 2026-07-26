@@ -177,7 +177,7 @@ public class Debugger extends JFrame implements MouseListener, ItemListener, Act
     			bp = new StopBreakpoint(computer.getProcessor(), breakaddress);
                 computer.getProcessor().attachProgramCounterObserver(bp);
     			breakpoints.put(breakaddress, bp);
-				System.out.println("StopBreakpoint added at &" + Util.hex(breakaddress));
+				Console.println("StopBreakpoint added at &" + Util.hex(breakaddress));
     		}
     		this.repaint();
     	}
@@ -189,7 +189,7 @@ public class Debugger extends JFrame implements MouseListener, ItemListener, Act
     		if (bp != null) {
         		computer.getProcessor().detachProgramCounterObserver(bp);
         		breakpoints.remove(breakaddress);
-				System.out.println("StopBreakpoint removed at &" + Util.hex(breakaddress));
+				Console.println("StopBreakpoint removed at &" + Util.hex(breakaddress));
     		}
     		this.repaint();
     	}
@@ -386,7 +386,7 @@ public class Debugger extends JFrame implements MouseListener, ItemListener, Act
     }
     else if (evt.getSource() == eDisassembler) {
     breakaddress = eDisassembler.getAddress(evt.getY());
-    System.out.println("Breakaddress = "+ Util.hex(breakaddress));
+    Console.println("Breakaddress = "+ Util.hex(breakaddress));
       Debugger.this.eDisassemblerMouseClicked(evt);
     }
   }
@@ -420,7 +420,7 @@ public class Debugger extends JFrame implements MouseListener, ItemListener, Act
                 p.detachProgramCounterObserver(bp);
     		}
     		breakpoints.clear();
-    		System.out.println("StopBreakpoint all removed");
+    		Console.println("StopBreakpoint all removed");
     	}
   }
 

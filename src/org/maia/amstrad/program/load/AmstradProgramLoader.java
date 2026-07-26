@@ -9,6 +9,8 @@ import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.AmstradProgramStoredInFile;
 
+import jemu.ui.Console;
+
 public abstract class AmstradProgramLoader {
 
 	private AmstradPc amstradPc;
@@ -24,7 +26,7 @@ public abstract class AmstradProgramLoader {
 		if (program instanceof AmstradProgramStoredInFile) {
 			File file = ((AmstradProgramStoredInFile) program).getFile();
 			AmstradFactory.getInstance().getAmstradContext().setCurrentDirectory(file.getParentFile());
-			System.out.println("Loaded program from file " + file.getPath());
+			Console.println("Loaded program from file " + file.getPath());
 		}
 		new AmstradProgramRuntimeDisposer(programRuntime).startTracking();
 		return programRuntime;

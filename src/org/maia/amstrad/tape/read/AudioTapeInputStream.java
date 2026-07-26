@@ -238,7 +238,7 @@ public class AudioTapeInputStream extends TapeInputStream {
 		if (i == n) {
 			float avgDx = sum / (float) n;
 			setSpeedFactor(LONGWAVE_LENGTH_NORMALSPEED / avgDx);
-			// System.out.println("Update speed factor to " + getSpeedFactor());
+			// Console.println("Update speed factor to " + getSpeedFactor());
 		}
 		restoreMemorizedState();
 	}

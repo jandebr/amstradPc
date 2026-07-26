@@ -35,6 +35,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSessio
 import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 import org.maia.amstrad.program.load.basic.staged.StagedLineNumberMapping;
 
+import jemu.ui.Console;
+
 public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 
 	public ChainMergeBasicPreprocessor() {
@@ -56,7 +58,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 		try {
 			return Arrays.asList(stf.createBasicKeyword("CHAIN"));
 		} catch (BasicSyntaxException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}
@@ -126,7 +128,7 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 	protected void handleChainMerge(ChainMergeCommand command, AmstradProgram chainedProgram,
 			FileReference chainedProgramReference, BasicSourceCode sourceCode,
 			StagedBasicProgramLoaderSession session) {
-		System.out.println("Handling " + command);
+		Console.println("Handling " + command);
 		ChainMergeMacro macro = session.getMacroAdded(ChainMergeMacro.class);
 		if (chainedProgram == null) {
 			endWithError(ERR_FILE_NOT_FOUND, sourceCode, macro, session);
@@ -144,11 +146,11 @@ public class ChainMergeBasicPreprocessor extends FileCommandBasicPreprocessor {
 					performChainMerge(command, chainedProgram, sourceCode, session);
 				}
 				resumeWithNewSourceCode(getResumeLineNumber(command, sourceCode), sourceCode, session);
-				System.out.println("Completed " + command);
+				Console.println("Completed " + command);
 			} catch (BasicMemoryFullException e) {
 				endWithError(ERR_MEMORY_FULL, sourceCodeBeforeMerge, macro, session);
 			} catch (Exception e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 				endWithError(ERR_CHAIN_MERGE_FAILURE, sourceCodeBeforeMerge, macro, session);
 			} finally {
 				stopFileOperation(session);

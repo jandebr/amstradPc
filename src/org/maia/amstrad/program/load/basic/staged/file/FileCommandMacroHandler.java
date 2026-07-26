@@ -15,6 +15,8 @@ import org.maia.amstrad.program.load.basic.staged.StagedBasicProgramLoaderSessio
 import org.maia.amstrad.program.load.basic.staged.StagedCommand;
 import org.maia.amstrad.program.load.basic.staged.StagedCommandResolver;
 
+import jemu.ui.Console;
+
 public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 
 	private BasicSourceCode sourceCode;
@@ -46,7 +48,7 @@ public abstract class FileCommandMacroHandler extends StagedBasicMacroHandler {
 				refProgram = AmstradFactory.getInstance().createBasicDescribedProgram(fileReference.getTargetFile(),
 						fileReference.getMetadataFile());
 			} catch (AmstradProgramException e) {
-				System.err.println("Failed to instantiate the referenced program: " + fileReference);
+				Console.printlnErr("Failed to instantiate the referenced program: " + fileReference);
 			}
 		}
 		return refProgram;

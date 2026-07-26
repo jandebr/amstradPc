@@ -28,6 +28,8 @@ import org.maia.io.inputdevice.controller.config.ia.RequiredInputCommands;
 import org.maia.io.inputdevice.joystick.Joystick;
 import org.maia.io.inputdevice.joystick.JoystickCommand;
 
+import jemu.ui.Console;
+
 public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderListener {
 
 	private AmstradJoystickDevice joystickDevice;
@@ -170,7 +172,7 @@ public class AmstradJoystickDeviceConfigurator implements JInteractiveBuilderLis
 		try {
 			InputControllerConfigurationByPropertiesBuilder.writePropertiesToFile(file, props, null);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 		}
 	}
 

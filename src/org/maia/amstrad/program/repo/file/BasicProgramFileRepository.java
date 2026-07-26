@@ -7,6 +7,8 @@ import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramException;
 
+import jemu.ui.Console;
+
 public class BasicProgramFileRepository extends FileBasedAmstradProgramRepository {
 
 	public BasicProgramFileRepository(File rootFolder) {
@@ -33,7 +35,7 @@ public class BasicProgramFileRepository extends FileBasedAmstradProgramRepositor
 		try {
 			return AmstradFactory.getInstance().createBasicDescribedProgram(programName, basicFile, metadataFile);
 		} catch (AmstradProgramException e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 			return AmstradFactory.getInstance().createBasicProgram(programName, basicFile);
 		}
 	}

@@ -25,13 +25,13 @@ public class copyURL
       try
       {
           URL           url  = new URL(args[0]);
-          System.out.println("Opening connection to " + args[0] + "...");
+          Console.println("Opening connection to " + args[0] + "...");
           URLConnection urlC = url.openConnection();
           // Copy resource to local file, use remote file
           // if no local file name specified
           InputStream is = url.openStream();
           // Print info about resource
-          System.out.print("Copying resource (type: " +
+          Console.print("Copying resource (type: " +
                            urlC.getContentType());
           Date date=new Date(urlC.getLastModified());
 
@@ -56,12 +56,12 @@ public class copyURL
           }
           is.close();
           fos.close();
-          System.out.println(count + " byte(s) copied");
+          Console.println(count + " byte(s) copied");
         CPC.download = true;
       }
       catch (MalformedURLException e)
-      { System.err.println(e.toString()); }
+      { Console.printlnErr(e.toString()); }
       catch (IOException e)
-      { System.err.println(e.toString()); }
+      { Console.printlnErr(e.toString()); }
   }
 }

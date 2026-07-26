@@ -23,6 +23,8 @@ import org.maia.amstrad.basic.locomotive.token.BasicKeywordToken;
 import org.maia.amstrad.basic.locomotive.token.LiteralRemarkToken;
 import org.maia.amstrad.program.load.basic.BasicPreprocessor;
 
+import jemu.ui.Console;
+
 public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 
 	public static final int LEVEL_NONE = 0;
@@ -61,7 +63,7 @@ public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 		if (printStats) {
 			int bytesAfter = session.getBasicRuntime().getCompiler().compile(sourceCode).getByteCount();
 			int bytesReduction = bytesBefore - bytesAfter;
-			System.out.println("Compacted source code on level " + level + " with " + bytesReduction + " bytes (from "
+			Console.println("Compacted source code on level " + level + " with " + bytesReduction + " bytes (from "
 					+ bytesBefore + " to " + bytesAfter + " bytes)");
 		}
 	}
@@ -76,7 +78,7 @@ public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 		try {
 			level = Math.max(Math.min(Integer.parseInt(value), LEVEL_ULTRA), LEVEL_NONE);
 		} catch (NumberFormatException e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 		}
 		return level;
 	}
@@ -136,7 +138,7 @@ public class CompactBasicPreprocessor extends StagedBasicPreprocessor {
 				max -= LINE_LENGTH_MARGIN * getCountOfKeywordsActedOnWhenStaging(line);
 				max -= LINE_LENGTH_MARGIN * getCountOfKeywordsActedOnWhenStaging(nextLine);
 			} catch (BasicSyntaxException e) {
-				e.printStackTrace();
+				Console.printStackTrace(e);
 			}
 			return max;
 		}

@@ -213,7 +213,7 @@ public class Autotype extends WindowAdapter implements WindowListener, ActionLis
 			autotext = "\n" + autotext;
 			CPCPrinter.Processed = false;
 		}
-		// System.out.println("Autotext is:\n"+autotext);
+		// Console.println("Autotext is:\n"+autotext);
 		textArea.selectAll();
 		Switches.getfromautotype = 1;
 		open();
@@ -226,7 +226,7 @@ public class Autotype extends WindowAdapter implements WindowListener, ActionLis
 			autotext = "\n" + autotext;
 			CPCPrinter.Processed = false;
 		}
-		// System.out.println("Autotext is:\n"+autotext);
+		// Console.println("Autotext is:\n"+autotext);
 		Switches.getfromautotype = 1;
 		textArea.selectAll();
 		// typeconsole.setVisible(false);

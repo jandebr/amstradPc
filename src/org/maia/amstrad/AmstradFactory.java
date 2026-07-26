@@ -2,8 +2,9 @@ package org.maia.amstrad;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,9 +52,11 @@ import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.impl.AmstradDesktopSystem;
 import org.maia.amstrad.system.impl.AmstradEntertainmentSystem;
 import org.maia.amstrad.system.impl.AmstradJavaCpcSystem;
+import org.maia.util.StringUtils;
 
 import jemu.core.device.Computer;
 import jemu.settings.Settings;
+import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.DisplayCanvasRenderDelegate;
 import jemu.ui.DisplayClassicRenderDelegate;
@@ -68,6 +71,8 @@ public class AmstradFactory {
 
 	private static AmstradFactory instance;
 
+	private static final String SETTING_CONSOLE_FILE = "console.file";
+
 	static {
 		new AmstradMenuDefaultLookAndFeel(); // Remember default Look & Feel settings
 	}
@@ -78,7 +83,18 @@ public class AmstradFactory {
 	public AmstradContext getAmstradContext() {
 		if (context == null) {
 			AmstradSettings userSettings = createUserSettings();
-			context = new AmstradContextImpl(userSettings, System.out, System.err);
+			OutputStream consoleOut = System.out;
+			OutputStream consoleErr = System.err;
+			String consoleFile = userSettings.get(SETTING_CONSOLE_FILE, null);
+			if (!StringUtils.isEmpty(consoleFile)) {
+				try {
+					consoleOut = new FileOutputStream(consoleFile);
+					consoleErr = consoleOut;
+				} catch (Exception e) {
+					Console.printlnErr(e);
+				}
+			}
+			context = new AmstradContextImpl(userSettings, consoleOut, consoleErr);
 		}
 		return context;
 	}
@@ -133,7 +149,7 @@ public class AmstradFactory {
 		try {
 			computer = Computer.createComputer(null, computerSystem);
 		} catch (Exception e) {
-			System.err.println(e);
+			Console.printlnErr(e);
 		}
 		return computer;
 	}
@@ -154,7 +170,7 @@ public class AmstradFactory {
 		} else {
 			delegate = new DisplayClassicRenderDelegate();
 		}
-		System.out.println("Display render delegate " + delegate.getName());
+		Console.println("Display render delegate " + delegate.getName());
 		return delegate;
 	}
 
@@ -266,14 +282,14 @@ public class AmstradFactory {
 
 		private AmstradSettings userSettings;
 
-		private PrintStream consoleOutputStream;
+		private OutputStream consoleOutputStream;
 
-		private PrintStream consoleErrorStream;
+		private OutputStream consoleErrorStream;
 
 		private Map<AmstradPc, Boolean> basicProtectiveModes;
 
-		public AmstradContextImpl(AmstradSettings userSettings, PrintStream consoleOutputStream,
-				PrintStream consoleErrorStream) {
+		public AmstradContextImpl(AmstradSettings userSettings, OutputStream consoleOutputStream,
+				OutputStream consoleErrorStream) {
 			this.userSettings = userSettings;
 			this.consoleOutputStream = consoleOutputStream;
 			this.consoleErrorStream = consoleErrorStream;
@@ -286,12 +302,12 @@ public class AmstradFactory {
 		}
 
 		@Override
-		public PrintStream getConsoleOutputStream() {
+		public OutputStream getConsoleOutputStream() {
 			return consoleOutputStream;
 		}
 
 		@Override
-		public PrintStream getConsoleErrorStream() {
+		public OutputStream getConsoleErrorStream() {
 			return consoleErrorStream;
 		}
 

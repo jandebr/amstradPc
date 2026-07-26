@@ -10,6 +10,7 @@
 package jemu.core.device.floppy;
 
 import jemu.core.device.*;
+import jemu.ui.Console;
 import jemu.ui.Switches;
 
 /**
@@ -151,7 +152,7 @@ public class Drive extends Device {
 
   public byte[] getSector(int c, int h, int r, int n) {
       if (DEBUG){
-          System.out.println(" C:"+c+" H:"+h+" R:"+r+" N:"+n);
+          Console.println(" C:"+c+" H:"+h+" R:"+r+" N:"+n);
       }
     return discs[head] == null ? null : discs[head].readSector(cylinder, head, c, h, r, n);
   }

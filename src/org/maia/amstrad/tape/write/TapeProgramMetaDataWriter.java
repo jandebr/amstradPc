@@ -14,6 +14,8 @@ import org.maia.amstrad.tape.model.AudioTapeProgram;
 import org.maia.amstrad.tape.model.TapeProgramMetaData;
 import org.maia.util.StringUtils;
 
+import jemu.ui.Console;
+
 public class TapeProgramMetaDataWriter implements AmstradProgramMetaDataConstants {
 
 	public TapeProgramMetaDataWriter() {
@@ -73,7 +75,7 @@ public class TapeProgramMetaDataWriter implements AmstradProgramMetaDataConstant
 			return FileReferenceDiscoveryService
 					.sortBySourceFilename(FileReferenceDiscoveryService.discover(program.getSourceCodeOnTape()));
 		} catch (BasicException e) {
-			e.printStackTrace();
+			Console.printStackTrace(e);
 			return Collections.emptyList();
 		}
 	}

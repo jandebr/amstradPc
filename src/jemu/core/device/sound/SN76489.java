@@ -92,7 +92,7 @@ public class SN76489 extends SoundDevice {
     }
     else
       tone[lastTone] = (tone[lastTone] & 0x0f) | ((value & 0x3f) << 4);
-    //System.out.println("Sound Write: " + Util.hex((byte)value) + ", Tone3=" + tone[0] + 
+    //Console.println("Sound Write: " + Util.hex((byte)value) + ", Tone3=" + tone[0] + 
     //  ", Tone2=" + tone[2] + ", Tone1=" + tone[1] + ", noiseRate=" + noiseRate + ", white=" + whiteNoise);
   }
   

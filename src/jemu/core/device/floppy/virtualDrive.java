@@ -10,6 +10,7 @@ import java.net.URL;
 import java.awt.event.*;
 import javax.swing.*;
 import jemu.settings.Settings;
+import jemu.ui.Console;
 
 /**
  *
@@ -88,7 +89,7 @@ import jemu.settings.Settings;
         }
 
    protected void rePaint(){
-             System.out.println("Zoomfactor is: " + this.multipler);
+             Console.println("Zoomfactor is: " + this.multipler);
              this.setSize(98*this.multipler,160*this.multipler);
              this.oldY = this.getHeight();
    }

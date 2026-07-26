@@ -19,6 +19,8 @@ import org.maia.amstrad.tape.task.TapeReaderTask;
 import org.maia.swing.dialog.ActionableDialog;
 import org.maia.swing.dialog.ActionableDialogAdapter;
 
+import jemu.ui.Console;
+
 public class TapeReaderApplicationView extends JPanel {
 
 	private File taskConfigurationFile;
@@ -108,7 +110,7 @@ public class TapeReaderApplicationView extends JPanel {
 				try {
 					setResultsView(createResultsView(UIFactoryTape.getScreenSize().width)); // can take time
 				} catch (Exception e) {
-					System.err.println(e);
+					Console.printlnErr(e);
 					setResultsView(null);
 				}
 				SwingUtilities.invokeLater(new Runnable() {
@@ -222,7 +224,7 @@ public class TapeReaderApplicationView extends JPanel {
 			try {
 				TapeReaderTaskConfigurationIO.writeToFile(cfg, getTaskConfigurationFile());
 			} catch (IOException e) {
-				System.err.println(e);
+				Console.printlnErr(e);
 			}
 		}
 

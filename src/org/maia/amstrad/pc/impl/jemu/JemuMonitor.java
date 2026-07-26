@@ -19,6 +19,7 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourc
 import org.maia.util.SystemUtils;
 
 import jemu.settings.Settings;
+import jemu.ui.Console;
 import jemu.ui.Display;
 import jemu.ui.DisplayOverlay;
 import jemu.ui.DisplayView;
@@ -387,7 +388,7 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 
 		@Override
 		public void run() {
-			System.out.println("Autonomous display render thread started");
+			Console.println("Autonomous display render thread started");
 			long frameTimeMs = 1000L / getMaximumFps();
 			long frameTimeNanos = frameTimeMs * 1000000L;
 			final Display display = getJemuDisplay();
@@ -396,7 +397,7 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 				display.updateImage(true);
 				SystemUtils.sleepNanos(frameTimeNanos - (System.nanoTime() - t0));
 			}
-			System.out.println("Autonomous display render thread stopped");
+			Console.println("Autonomous display render thread stopped");
 		}
 
 		public void stopRendering() {
@@ -448,7 +449,7 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 		public void dispose(JComponent displayComponent) {
 			getSource().dispose(displayComponent);
 			if (getSource().isRestoreMonitorSettingsOnDispose()) {
-				System.out.println("Restoring monitor settings");
+				Console.println("Restoring monitor settings");
 				restoreMonitorSettings();
 			}
 		}

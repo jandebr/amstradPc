@@ -8,6 +8,8 @@ import javax.swing.JFileChooser;
 import org.maia.amstrad.AmstradFileType;
 import org.maia.amstrad.pc.AmstradPc;
 
+import jemu.ui.Console;
+
 public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 
 	public SaveBasicBinaryFileAction(AmstradPc amstradPc) {
@@ -32,7 +34,7 @@ public class SaveBasicBinaryFileAction extends BasicBinaryFileAction {
 						try {
 							getAmstradPc().getTape().saveByteCodeToFile(file);
 						} catch (Exception e) {
-							System.err.println("Failed to save Basic binary file: " + e.getMessage());
+							Console.printlnErr("Failed to save Basic binary file: " + e.getMessage());
 							showErrorMessageDialog("Error saving Basic binary file", "Failed to save " + file.getName(),
 									e);
 						}
