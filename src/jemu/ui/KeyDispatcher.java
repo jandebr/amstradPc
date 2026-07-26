@@ -61,7 +61,7 @@ public class KeyDispatcher implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		debugPrintKeyEvent("KEY PRESSED", e);
+		// debugPrintKeyEvent("KEY PRESSED", e);
 		// Remember modifiers
 		int keyCode = e.getKeyCode();
 		if (keyCode == KeyEvent.VK_CONTROL) {
@@ -81,7 +81,7 @@ public class KeyDispatcher implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		debugPrintKeyEvent("KEY RELEASED", e);
+		// debugPrintKeyEvent("KEY RELEASED", e);
 		// Map & handle key release
 		e = cloneKeyEvent(e);
 		virtualShiftKey = false;
@@ -243,7 +243,7 @@ public class KeyDispatcher implements KeyListener {
 
 	protected void dispatchKeyToDestination(KeyEvent e) {
 		if (hasDestination() && e != null) {
-			debugPrintKeyEvent("KEY DISPATCHED", e);
+			// debugPrintKeyEvent("KEY DISPATCHED", e);
 			getDestination().processKeyEvent(e);
 		}
 	}

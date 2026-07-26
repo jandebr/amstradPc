@@ -1,7 +1,6 @@
 package org.maia.amstrad.pc.joystick;
 
 import java.awt.event.KeyEvent;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
 
@@ -111,19 +110,15 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 						keyEvent = getMenuAdapter().translateToKeyEvent(event);
 					}
 					if (keyEvent != null) {
-						try {
-							final AmstradJoystickKeyEvent keyEventFinal = keyEvent;
-							SwingUtilities.invokeAndWait(new Runnable() {
+						final AmstradJoystickKeyEvent keyEventFinal = keyEvent;
+						SwingUtilities.invokeLater(new Runnable() {
 
-								@Override
-								public void run() {
-									popupMenu.handleKeyEvent(keyEventFinal);
-								}
-							});
-						} catch (InvocationTargetException | InterruptedException e) {
-						} finally {
-							event.consume();
-						}
+							@Override
+							public void run() {
+								popupMenu.handleKeyEvent(keyEventFinal);
+							}
+						});
+						event.consume();
 					}
 				}
 			}
@@ -182,18 +177,14 @@ public class AmstradJoystickController extends AmstradMonitorAdapter
 			if (!event.isFiredByAutoRepeat() || displaySource.isAutoRepeatAccepted(event.getCommand())) {
 				AmstradJoystickKeyEvent keyEvent = getMenuAdapter().translateToKeyEvent(event);
 				if (keyEvent != null) {
-					try {
-						SwingUtilities.invokeAndWait(new Runnable() {
+					SwingUtilities.invokeLater(new Runnable() {
 
-							@Override
-							public void run() {
-								dispatchKeyEvent(keyEvent, displaySource);
-							}
-						});
-					} catch (InvocationTargetException | InterruptedException e) {
-					} finally {
-						event.consume();
-					}
+						@Override
+						public void run() {
+							dispatchKeyEvent(keyEvent, displaySource);
+						}
+					});
+					event.consume();
 				}
 			}
 		}

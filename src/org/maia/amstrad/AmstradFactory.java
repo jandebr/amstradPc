@@ -53,8 +53,6 @@ import org.maia.amstrad.system.impl.AmstradDesktopSystem;
 import org.maia.amstrad.system.impl.AmstradEntertainmentSystem;
 import org.maia.amstrad.system.impl.AmstradJavaCpcSystem;
 import org.maia.util.StringUtils;
-import org.maia.util.SystemUtils;
-import org.maia.util.SystemUtils.PackageStrackTraceFilter;
 
 import jemu.core.device.Computer;
 import jemu.settings.Settings;
@@ -74,8 +72,6 @@ public class AmstradFactory {
 	private static AmstradFactory instance;
 
 	private static final String SETTING_CONSOLE_FILE = "console.file";
-
-	private static final String SETTING_DEBUG_STACKTRACES = "debug.stack_traces";
 
 	static {
 		new AmstradMenuDefaultLookAndFeel(); // Remember default Look & Feel settings
@@ -99,10 +95,6 @@ public class AmstradFactory {
 				}
 			}
 			context = new AmstradContextImpl(userSettings, consoleOut, consoleErr);
-			if (userSettings.getBool(SETTING_DEBUG_STACKTRACES, false)) {
-				SystemUtils.printAllStackTracesPeriodically(20,
-						new PackageStrackTraceFilter("jemu", "org.maia.amstrad"));
-			}
 		}
 		return context;
 	}
