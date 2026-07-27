@@ -43,7 +43,6 @@ import org.maia.amstrad.gui.sprite.SpriteColorMap;
 import org.maia.amstrad.gui.sprite.SpriteColorMapImpl;
 import org.maia.amstrad.gui.sprite.SpriteImage;
 import org.maia.amstrad.gui.sprite.SpriteImageRLE;
-import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAwtDisplaySource;
@@ -110,13 +109,10 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 
 	private long carouselOutlineShowTimeMillis;
 
-	private static final String SETTING_STARTUP_ANIMATION_COLOR = "program_browser.startup_animation.force_color";
-
 	protected CarouselProgramBrowserDisplaySourceBase(CarouselAmstradProgramBrowser programBrowser) {
 		super(programBrowser.getAmstradPc());
 		this.programBrowser = programBrowser;
 		this.graphicsContext = getAmstradPc().getMonitor().getGraphicsContext();
-		setRestoreMonitorSettingsOnDispose(true); // as this source switches to COLOR
 		setAutoPauseResume(true);
 	}
 
@@ -126,12 +122,8 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		setBackground(getTheme().getBackgroundColor());
 		setAnimationFactory(createAnimationFactory());
 		clearCarouselOutlineShowTimeMillis();
-		if (getUserSettings().getBool(SETTING_STARTUP_ANIMATION_COLOR, false)) {
-			getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR); // ahead of startup action
-		}
 		initStartupAction(); // ahead of buildUI()
 		super.init(displayComponent, graphicsContext); // invokes createLayoutManager() and buildUI()
-		getAmstradPc().getMonitor().setMode(AmstradMonitorMode.COLOR);
 		setFocusManager(createFocusManager());
 		initFocusManager();
 		initCarousel();

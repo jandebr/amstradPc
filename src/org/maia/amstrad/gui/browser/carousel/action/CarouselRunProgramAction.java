@@ -35,14 +35,14 @@ public class CarouselRunProgramAction extends CarouselAction {
 				AmstradMonitorMode mode = program.getPreferredMonitorMode();
 				try {
 					host.releaseKeyboard();
+					if (mode != null) {
+						amstradPc.getMonitor().setMode(mode);
+					}
 					amstradPc.reboot(true, true);
 					getProgramLoader(program).load(program).run();
 					host.getProgramBrowser().fireProgramRun(program);
 					sleepCurrentThreadUntilMinimumAnimationDuration();
 					host.close();
-					if (mode != null) {
-						amstradPc.getMonitor().setMode(mode);
-					}
 				} catch (AmstradProgramException exc) {
 					Console.printStackTrace(exc);
 					host.acquireKeyboard();

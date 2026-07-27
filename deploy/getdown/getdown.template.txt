@@ -52,6 +52,7 @@ jvmarg = -Djavacpc.images.phylopic.db-path=images/phylopic-db.zip
 desktop.jvmarg = -Djavacpc.mode=DESKTOP
 desktop.jvmarg = -Djavacpc.images.cache_capacity=50
 entertainment.jvmarg = -Djavacpc.mode=ENTERTAINMENT
+entertainment.jvmarg = -Djavacpc.monitor=COLOUR
 entertainment.jvmarg = -Djavacpc.program_browser.style.entertainment=??modern
 entertainment.jvmarg = -Djavacpc.images.cache_capacity=100
 entertainment.jvmarg = -Djavacpc.basic_staging.enable=true
