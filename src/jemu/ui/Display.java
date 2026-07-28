@@ -264,7 +264,7 @@ public class Display extends JComponent {
 		if (displaySource != null) {
 			displaySource.init(this);
 			setSecondaryDisplaySource(displaySource);
-			getRenderDelegate().refreshDisplay();
+			refresh();
 		}
 	}
 
@@ -273,8 +273,12 @@ public class Display extends JComponent {
 		if (displaySource != null) {
 			setSecondaryDisplaySource(null);
 			displaySource.dispose(this);
-			getRenderDelegate().refreshDisplay();
+			refresh();
 		}
+	}
+	
+	public void refresh() {
+		getRenderDelegate().refreshDisplay();
 	}
 
 	public boolean hasSecondaryDisplaySource() {

@@ -33,18 +33,25 @@ public class CarouselRunProgramAction extends CarouselAction {
 			public void run() {
 				AmstradProgram program = getProgramNode().getProgram();
 				AmstradMonitorMode mode = program.getPreferredMonitorMode();
+				boolean closed = false;
 				try {
 					host.releaseKeyboard();
+					amstradPc.reboot(true, true);
 					if (mode != null) {
 						amstradPc.getMonitor().setMode(mode);
 					}
-					amstradPc.reboot(true, true);
-					getProgramLoader(program).load(program).run();
-					host.getProgramBrowser().fireProgramRun(program);
+					amstradPc.getMonitor().refreshDisplay();
+					AmstradProgramRuntime rt = getProgramLoader(program).load(program);
 					sleepCurrentThreadUntilMinimumAnimationDuration();
 					host.close();
+					closed = true;
+					rt.run();
+					host.getProgramBrowser().fireProgramRun(program);
 				} catch (AmstradProgramException exc) {
 					Console.printStackTrace(exc);
+					if (closed) {
+						host.show();
+					}
 					host.acquireKeyboard();
 					host.notifyProgramRunFailState(getProgramNode(), true);
 				}

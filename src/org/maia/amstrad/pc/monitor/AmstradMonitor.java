@@ -149,6 +149,8 @@ public abstract class AmstradMonitor extends AmstradPcDevice {
 		}
 	}
 
+	public abstract void refreshDisplay();
+
 	public abstract void swapDisplaySource(AmstradAlternativeDisplaySource displaySource);
 
 	public abstract void resetDisplaySource();

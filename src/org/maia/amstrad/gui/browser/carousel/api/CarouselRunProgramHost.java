@@ -10,6 +10,8 @@ public interface CarouselRunProgramHost extends CarouselHost {
 
 	void releaseKeyboard();
 
+	void show();
+
 	void close();
 
 	void notifyProgramRunFailState(ProgramNode programNode, boolean failed);

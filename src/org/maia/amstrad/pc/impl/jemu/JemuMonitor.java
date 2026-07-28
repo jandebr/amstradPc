@@ -235,6 +235,11 @@ public abstract class JemuMonitor extends AmstradMonitor implements AmstradPcSta
 	}
 
 	@Override
+	public void refreshDisplay() {
+		getJemuDisplay().refresh();
+	}
+
+	@Override
 	public void swapDisplaySource(AmstradAlternativeDisplaySource displaySource) {
 		synchronized (getAmstradPc()) {
 			checkStarted();
