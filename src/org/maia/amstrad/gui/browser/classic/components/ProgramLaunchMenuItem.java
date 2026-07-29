@@ -1,6 +1,7 @@
 package org.maia.amstrad.gui.browser.classic.components;
 
 import org.maia.amstrad.gui.browser.classic.ClassicProgramBrowserDisplaySource;
+import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
 import org.maia.amstrad.program.AmstradProgramException;
 import org.maia.amstrad.program.load.AmstradProgramLoader;
@@ -27,16 +28,18 @@ public abstract class ProgramLaunchMenuItem extends ProgramMenuItem {
 				public void run() {
 					ClassicProgramBrowserDisplaySource browser = getBrowserDisplaySource();
 					AmstradMonitorMode mode = getProgram().getPreferredMonitorMode();
+					AmstradPc amstradPc = browser.getAmstradPc();
 					try {
 						browser.releaseKeyboard();
-						browser.getAmstradPc().reboot(true, true);
+						amstradPc.reboot(true, true);
 						launchProgram();
 						setFailed(false);
 						// browser.closeModalWindow();
 						browser.close();
 						if (mode != null) {
-							browser.getAmstradPc().getMonitor().setMode(mode);
+							amstradPc.getMonitor().setMode(mode);
 						}
+						amstradPc.getMonitor().refreshDisplay();
 					} catch (AmstradProgramException exc) {
 						Console.printStackTrace(exc);
 						browser.acquireKeyboard();
