@@ -28,6 +28,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	private boolean showTapeActivity = true;
 
+	private boolean showAutotype = true;
+
 	protected AmstradSystemAbstractScreen(String screenIdentifier, AmstradSystem amstradSystem) {
 		if (screenIdentifier == null)
 			throw new NullPointerException("Screen identifier is null");
@@ -133,6 +135,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	public void setShowTapeActivity(boolean show) {
 		this.showTapeActivity = show;
+	}
+
+	@Override
+	public boolean isShowAutotype() {
+		return showAutotype;
+	}
+
+	public void setShowAutotype(boolean show) {
+		this.showAutotype = show;
 	}
 
 }

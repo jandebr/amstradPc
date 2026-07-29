@@ -1,5 +1,6 @@
 package org.maia.amstrad.system;
 
+import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.tape.AmstradTape;
@@ -84,5 +85,14 @@ public interface AmstradSystemScreen {
 	 * @see AmstradTape#isActive()
 	 */
 	boolean isShowTapeActivity();
+
+	/**
+	 * Tells whether visual indications for automatic typing are to be shown on screen
+	 * 
+	 * @return <code>true</code> iff automatic typing is to be shown
+	 * 
+	 * @see AmstradKeyboard#isAutotyping()
+	 */
+	boolean isShowAutotype();
 
 }

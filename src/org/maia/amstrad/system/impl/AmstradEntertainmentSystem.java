@@ -68,6 +68,7 @@ public class AmstradEntertainmentSystem extends AmstradSystem {
 		screen.setPopupMenu(new ProgramPopupMenuMaker().createPopupMenu());
 		screen.setShowTurbo(false);
 		screen.setShowTapeActivity(false);
+		screen.setShowAutotype(false);
 		return screen;
 	}
 

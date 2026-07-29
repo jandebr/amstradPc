@@ -12,6 +12,8 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
 public class AutotypeDisplayOverlay extends AbstractDisplayOverlay {
 
+	public static boolean DEFAULT_SHOW_AUTOTYPE = true;
+
 	public AutotypeDisplayOverlay(AmstradPc amstracPc) {
 		super(amstracPc);
 	}
@@ -19,12 +21,21 @@ public class AutotypeDisplayOverlay extends AbstractDisplayOverlay {
 	@Override
 	public void renderOntoDisplay(AmstradDisplayView displayView, Rectangle displayBounds, Insets monitorInsets,
 			boolean offscreenImage, AmstradGraphicsContext graphicsContext) {
-		if (getAmstracPc().getMonitor().isAlternativeDisplaySourceShowing() || offscreenImage)
-			return;
 		if (getAmstracPc().getKeyboard().isAutotyping()) {
-			ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.autotypeOverlayIcon
-					: UIResources.autotypeSmallOverlayIcon;
-			drawIconTopLeft(icon, displayView, displayBounds, monitorInsets);
+			if (isShowAutotypeEnabled() && !offscreenImage
+					&& !getAmstracPc().getMonitor().isAlternativeDisplaySourceShowing()) {
+				ImageIcon icon = isLargeDisplay(displayBounds) ? UIResources.autotypeOverlayIcon
+						: UIResources.autotypeSmallOverlayIcon;
+				drawIconTopLeft(icon, displayView, displayBounds, monitorInsets);
+			}
+		}
+	}
+
+	private boolean isShowAutotypeEnabled() {
+		if (isAmstradSystemSetup()) {
+			return getAmstradSystem().getCurrentScreen().isShowAutotype();
+		} else {
+			return DEFAULT_SHOW_AUTOTYPE;
 		}
 	}
 
