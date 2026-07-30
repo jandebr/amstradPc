@@ -40,7 +40,6 @@ public class CarouselRunProgramAction extends CarouselAction {
 					if (mode != null) {
 						amstradPc.getMonitor().setMode(mode);
 					}
-					amstradPc.getMonitor().refreshDisplay();
 					AmstradProgramRuntime rt = getProgramLoader(program).load(program);
 					sleepCurrentThreadUntilMinimumAnimationDuration();
 					host.close();

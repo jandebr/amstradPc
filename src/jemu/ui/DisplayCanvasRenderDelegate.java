@@ -328,9 +328,17 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 
 		private void renderFrame() {
 			if (hasSecondaryDisplaySource()) {
-				renderSecondaryDisplaySource();
+				renderSecondaryDisplaySource(); // full update by design
 			} else {
-				renderPrimaryDisplaySource();
+				boolean fullUpdate = updateDisplayState();
+				fullUpdate = fullUpdate || System.currentTimeMillis() >= getScheduledFullCanvasUpdateTimestamp();
+				if (fullUpdate) {
+					int fullUpdateSecondInterval = getFullCanvasUpdateSecondInterval();
+					setScheduledFullCanvasUpdateTimestamp(
+							fullUpdateSecondInterval > 0 ? System.currentTimeMillis() + fullUpdateSecondInterval * 1000L
+									: Long.MAX_VALUE);
+				}
+				renderPrimaryDisplaySource(fullUpdate);
 			}
 		}
 
@@ -339,7 +347,7 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 			repaintDisplayImmediately();
 		}
 
-		private void renderPrimaryDisplaySource() {
+		private void renderPrimaryDisplaySource(boolean fullUpdate) {
 			TransitState transitState = null;
 			PaintState paintState = null;
 			CanvasState canvasState = null;
@@ -356,30 +364,21 @@ public class DisplayCanvasRenderDelegate extends DisplayRenderDelegate implement
 					paintState.update(transitState);
 				}
 				synchronized (paintSemaphore) {
-					boolean fullUpdate = shouldUpdateFullCanvas();
-					if (fullUpdate) {
-						int fullUpdateSecondInterval = getFullCanvasUpdateSecondInterval();
-						setScheduledFullCanvasUpdateTimestamp(fullUpdateSecondInterval > 0
-								? System.currentTimeMillis() + fullUpdateSecondInterval * 1000L
-								: Long.MAX_VALUE);
-						log("Full canvas update");
-					}
 					canvasState.update(paintState, fullUpdate);
+					if (fullUpdate)
+						log("Full canvas update");
 					setImageToPaint(canvasState.getCanvas());
 				}
 				repaintDisplayImmediately();
 			}
 		}
 
-		private boolean shouldUpdateFullCanvas() {
-			if (System.currentTimeMillis() >= getScheduledFullCanvasUpdateTimestamp()) {
-				return true;
-			} else if (getDisplayState().isDifferentFrom(DisplayCanvasRenderDelegate.this)) {
+		private boolean updateDisplayState() {
+			boolean needsUpdate = getDisplayState().isDifferentFrom(DisplayCanvasRenderDelegate.this);
+			if (needsUpdate) {
 				getDisplayState().update(DisplayCanvasRenderDelegate.this);
-				return true;
-			} else {
-				return false;
 			}
+			return needsUpdate;
 		}
 
 		public void stopRendering() {
