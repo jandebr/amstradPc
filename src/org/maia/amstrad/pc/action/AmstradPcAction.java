@@ -5,7 +5,9 @@ import java.awt.Component;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.MenuElement;
 
 import org.maia.amstrad.AmstradContext;
 import org.maia.amstrad.AmstradFactory;
@@ -27,6 +29,19 @@ public abstract class AmstradPcAction extends AbstractAction
 	protected AmstradPcAction(AmstradPc amstradPc, String name) {
 		super(name);
 		this.amstradPc = amstradPc;
+	}
+
+	public boolean isContainedInMenu(MenuElement element) {
+		if (element instanceof JMenuItem) {
+			Action actionItem = ((JMenuItem) element).getAction();
+			return actionItem != null && actionItem.equals(this);
+		} else {
+			for (MenuElement subElement : element.getSubElements()) {
+				if (isContainedInMenu(subElement))
+					return true;
+			}
+			return false;
+		}
 	}
 
 	protected void showInfoMessageDialog(String dialogMessage) {

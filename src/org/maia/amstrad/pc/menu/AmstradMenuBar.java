@@ -7,6 +7,7 @@ import javax.swing.event.MenuListener;
 
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcFrame;
+import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.util.GenericListenerList;
 
 public class AmstradMenuBar extends JMenuBar implements AmstradMenu {
@@ -61,6 +62,11 @@ public class AmstradMenuBar extends JMenuBar implements AmstradMenu {
 
 	protected AmstradPcFrame getFrame() {
 		return getAmstradPc().getFrame();
+	}
+
+	@Override
+	public boolean containsAction(AmstradPcAction action) {
+		return action != null && action.isContainedInMenu(this);
 	}
 
 	@Override

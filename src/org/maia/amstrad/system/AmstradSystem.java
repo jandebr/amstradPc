@@ -6,6 +6,7 @@ import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.AmstradPcStateAdapter;
+import org.maia.amstrad.pc.keyboard.virtual.AmstradVirtualKeyboard;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
 import org.maia.amstrad.pc.monitor.AmstradMonitorAdapter;
@@ -114,6 +115,17 @@ public abstract class AmstradSystem {
 			AmstradPopupMenu popupMenu = currentScreen.getPopupMenu();
 			if (popupMenu != null) {
 				popupMenu.install();
+				autoCloseVirtualKeyboard(popupMenu);
+			}
+		}
+	}
+
+	private void autoCloseVirtualKeyboard(AmstradPopupMenu popupMenu) {
+		AmstradVirtualKeyboard virtualKeyboard = getAmstradPc().getVirtualKeyboard();
+		if (virtualKeyboard != null && virtualKeyboard.isActive()) {
+			if (!popupMenu.containsAction(getAmstradPc().getActions().getVirtualKeyboardAction())) {
+				Console.println("Auto close virtual keyboard");
+				virtualKeyboard.deactivate();
 			}
 		}
 	}

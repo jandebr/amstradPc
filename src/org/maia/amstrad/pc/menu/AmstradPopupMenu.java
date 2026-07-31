@@ -15,6 +15,7 @@ import javax.swing.event.PopupMenuListener;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.pc.AmstradPc;
+import org.maia.amstrad.pc.action.AmstradPcAction;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardAdapter;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboardEvent;
 import org.maia.amstrad.pc.monitor.AmstradMonitor;
@@ -141,6 +142,11 @@ public class AmstradPopupMenu extends JPopupMenu implements AmstradMenu {
 
 	public boolean isPopupMenuShowing() {
 		return isPopupMenuInstalled() && isShowing();
+	}
+
+	@Override
+	public boolean containsAction(AmstradPcAction action) {
+		return action != null && action.isContainedInMenu(this);
 	}
 
 	private AmstradMonitor getMonitor() {
