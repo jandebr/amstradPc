@@ -144,8 +144,7 @@ public class TapeReaderTaskConfigurator extends JPanel implements SelectionListe
 
 	private JLabel createInfoLabelForFileIn() {
 		JLabel label = new JLabel(UIResourcesTape.infoSmallIcon);
-		label.setToolTipText(
-				"<html>WAV file specs:<ul><li>single channel (mono)</li><li>16 bits per sample (little-endian, two's complement signed integers)</li></ul></html>");
+		label.setToolTipText("WAV file specs: mono channel, 48 kHz or more, 16 bits per sample");
 		return label;
 	}
 
