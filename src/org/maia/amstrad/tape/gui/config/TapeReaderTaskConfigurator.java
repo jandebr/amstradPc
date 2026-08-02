@@ -109,7 +109,7 @@ public class TapeReaderTaskConfigurator extends JPanel implements SelectionListe
 		c.insets = new Insets(4, 4, 4, 4);
 		c.gridy = 0;
 		c.gridx = 0;
-		panel.add(new JLabel("Input WAV file:"), c);
+		panel.add(createFileInComponent(), c);
 		c.gridx++;
 		c.weightx = 1.0;
 		panel.add(getAudioFileField(), c);
@@ -132,6 +132,21 @@ public class TapeReaderTaskConfigurator extends JPanel implements SelectionListe
 		panel.add(getCleanupOutputDirectoryCheckBox(), c);
 		panel.setBorder(BorderFactory.createTitledBorder("Files"));
 		return panel;
+	}
+
+	private JComponent createFileInComponent() {
+		Box box = Box.createHorizontalBox();
+		box.add(createInfoLabelForFileIn());
+		box.add(Box.createHorizontalStrut(2));
+		box.add(new JLabel("Input WAV file:"));
+		return box;
+	}
+
+	private JLabel createInfoLabelForFileIn() {
+		JLabel label = new JLabel(UIResourcesTape.infoSmallIcon);
+		label.setToolTipText(
+				"<html>WAV file specs:<ul><li>single channel (mono)</li><li>16 bits per sample (little-endian, two's complement signed integers)</li></ul></html>");
+		return label;
 	}
 
 	private FileInputField createAudioFileField() {

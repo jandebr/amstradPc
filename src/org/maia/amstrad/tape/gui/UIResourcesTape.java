@@ -17,6 +17,8 @@ public class UIResourcesTape {
 
 	public static Icon spinnerIcon = loadIcon("spinner48.gif");
 
+	public static Icon infoSmallIcon = loadIcon("info12.png");
+
 	public static Icon errorIcon = loadIcon("error.png");
 
 	public static Icon tapeIcon = loadIcon("tape16.png");
