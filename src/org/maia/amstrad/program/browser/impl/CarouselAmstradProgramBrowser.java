@@ -31,7 +31,7 @@ public class CarouselAmstradProgramBrowser extends AmstradProgramBrowser {
 
 	@Override
 	public boolean isShowControlKeys() {
-		return false;
+		return true;
 	}
 
 	@Override

@@ -1,5 +1,8 @@
 package org.maia.amstrad.system.impl.screen;
 
+import java.util.List;
+
+import org.maia.amstrad.gui.overlay.controlkeys.ControlKey;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.system.AmstradSystem;
 
@@ -12,6 +15,8 @@ public class AmstradSystemProgramBrowserScreen extends AmstradSystemCustomScreen
 	private boolean showPauseOverride;
 
 	private boolean showControlKeysOverride;
+
+	private boolean additionalControlKeysOverride;
 
 	private static final String SCREEN_ID = "PROGRAM_BROWSER";
 
@@ -78,6 +83,21 @@ public class AmstradSystemProgramBrowserScreen extends AmstradSystemCustomScreen
 	public void setShowControlKeys(boolean show) {
 		super.setShowControlKeys(show);
 		showControlKeysOverride = true;
+	}
+
+	@Override
+	public List<ControlKey> getAdditionalControlKeys() {
+		if (additionalControlKeysOverride) {
+			return super.getAdditionalControlKeys();
+		} else {
+			return getAmstradSystem().getProgramBrowser().getAdditionalControlKeys();
+		}
+	}
+
+	@Override
+	public void setAdditionalControlKeys(List<ControlKey> controlKeys) {
+		super.setAdditionalControlKeys(controlKeys);
+		additionalControlKeysOverride = true;
 	}
 
 }

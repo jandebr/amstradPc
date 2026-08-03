@@ -10,12 +10,12 @@ import java.util.Map;
 
 import org.maia.amstrad.gui.browser.classic.ClassicProgramInfoDisplaySource;
 import org.maia.amstrad.gui.overlay.AutotypeDisplayOverlay;
-import org.maia.amstrad.gui.overlay.ControlKeysDisplayOverlay;
 import org.maia.amstrad.gui.overlay.PauseDisplayOverlay;
 import org.maia.amstrad.gui.overlay.StackedDisplayOverlay;
 import org.maia.amstrad.gui.overlay.SystemStatsDisplayOverlay;
 import org.maia.amstrad.gui.overlay.TapeDisplayOverlay;
 import org.maia.amstrad.gui.overlay.TurboDisplayOverlay;
+import org.maia.amstrad.gui.overlay.controlkeys.ControlKeysDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.ProgramBrowserAction;

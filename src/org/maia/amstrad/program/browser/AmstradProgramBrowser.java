@@ -1,8 +1,12 @@
 package org.maia.amstrad.program.browser;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.AmstradSettings;
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
+import org.maia.amstrad.gui.overlay.controlkeys.ControlKey;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramType;
@@ -19,6 +23,8 @@ public abstract class AmstradProgramBrowser {
 
 	private ProgramBrowserDisplaySource displaySource;
 
+	private List<ControlKey> additionalControlKeys;
+
 	private GenericListenerList<AmstradProgramBrowserListener> listeners;
 
 	private static final String SETTING_ENABLE_BASIC_STAGING = "basic_staging.enable";
@@ -29,10 +35,15 @@ public abstract class AmstradProgramBrowser {
 		this.programRepository = programRepository;
 		this.style = style;
 		this.displaySource = createDisplaySource();
+		this.additionalControlKeys = new Vector<ControlKey>();
 		this.listeners = new GenericListenerList<AmstradProgramBrowserListener>();
 	}
 
 	protected abstract ProgramBrowserDisplaySource createDisplaySource();
+
+	protected void addAdditionalControlKey(ControlKey controlKey) {
+		getAdditionalControlKeys().add(controlKey);
+	}
 
 	public void addListener(AmstradProgramBrowserListener listener) {
 		getListeners().addListener(listener);
@@ -94,6 +105,10 @@ public abstract class AmstradProgramBrowser {
 
 	public ProgramBrowserDisplaySource getDisplaySource() {
 		return displaySource;
+	}
+
+	public List<ControlKey> getAdditionalControlKeys() {
+		return additionalControlKeys;
 	}
 
 	private GenericListenerList<AmstradProgramBrowserListener> getListeners() {

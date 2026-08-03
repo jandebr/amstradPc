@@ -1,4 +1,4 @@
-package org.maia.amstrad.gui.overlay;
+package org.maia.amstrad.gui.overlay.controlkeys;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -6,14 +6,14 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JComponent;
 
+import org.maia.amstrad.gui.overlay.AbstractDisplayOverlay;
 import org.maia.amstrad.pc.AmstradPc;
-import org.maia.amstrad.pc.action.ProgramInfoAction;
-import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.display.AmstradDisplayView;
 import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 
@@ -51,19 +51,20 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 	private long autohideOffsetTime;
 
-	private List<ControlKey> controlKeys;
+	private List<ControlKey> allControlKeys;
+
+	private List<ControlKey> defaultControlKeys;
 
 	public ControlKeysDisplayOverlay(AmstradPc amstracPc) {
 		super(amstracPc);
-		this.controlKeys = new Vector<ControlKey>();
-		populateControlKeys();
+		this.allControlKeys = new Vector<ControlKey>();
+		this.defaultControlKeys = new Vector<ControlKey>();
+		populateDefaultControlKeys();
 	}
 
-	private void populateControlKeys() {
-		getControlKeys().add(new ProgramRunControlKey());
-		getControlKeys().add(new ProgramMenuControlKey());
-		getControlKeys().add(new ProgramInfoControlKey());
-		getControlKeys().add(new PopupMenuControlKey());
+	private void populateDefaultControlKeys() {
+		getDefaultControlKeys().add(new ProgramInfoControlKey(getAmstracPc())); // when in native screen
+		getDefaultControlKeys().add(new PopupMenuControlKey(getAmstracPc()));
 	}
 
 	@Override
@@ -131,7 +132,8 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 	private void renderControlKeysBar(AmstradDisplayView displayView, FontMetrics fm, int extremeBarLeft, int barTop,
 			int extremeBarWidth, int barHeight) {
-		int spanWidth = computeVisibleControlKeysWidth(fm);
+		List<ControlKey> controlKeys = getAllControlKeys();
+		int spanWidth = computeVisibleControlKeysWidth(controlKeys, fm);
 		if (spanWidth > 0) {
 			// Box
 			int barLeft = extremeBarLeft + (extremeBarWidth - spanWidth) / 2 - BOX_HOR_PADDING;
@@ -143,8 +145,8 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 			g2.setFont(fm.getFont());
 			int xLeft = BOX_HOR_PADDING;
 			int yBaseline = (barHeight + fm.getAscent() - fm.getDescent()) / 2 + 1;
-			for (ControlKey controlKey : getControlKeys()) {
-				if (controlKey.isVisible()) {
+			for (ControlKey controlKey : controlKeys) {
+				if (controlKey.isAvailable()) {
 					renderControlKey(controlKey, fm, g2, xLeft, yBaseline);
 					xLeft += computeControlKeyWidth(controlKey, fm);
 					xLeft += HOR_SEPARATION;
@@ -168,11 +170,11 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		g2.drawString(controlKey.getKey(), xLeft, yBaseline);
 	}
 
-	private int computeVisibleControlKeysWidth(FontMetrics fm) {
+	private int computeVisibleControlKeysWidth(List<ControlKey> controlKeys, FontMetrics fm) {
 		int width = 0;
 		int visible = 0;
-		for (ControlKey controlKey : getControlKeys()) {
-			if (controlKey.isVisible()) {
+		for (ControlKey controlKey : controlKeys) {
+			if (controlKey.isAvailable()) {
 				width += computeControlKeyWidth(controlKey, fm);
 				visible++;
 			}
@@ -186,8 +188,27 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 		return fm.stringWidth(controlKey.toString());
 	}
 
-	private List<ControlKey> getControlKeys() {
-		return controlKeys;
+	private synchronized List<ControlKey> getAllControlKeys() {
+		allControlKeys.clear();
+		allControlKeys.addAll(getContextualControlKeys());
+		allControlKeys.addAll(getDefaultControlKeys());
+		return allControlKeys;
+	}
+
+	private List<ControlKey> getDefaultControlKeys() {
+		return defaultControlKeys;
+	}
+
+	protected List<ControlKey> getContextualControlKeys() {
+		List<ControlKey> controlKeys = null;
+		if (isAmstradSystemSetup()) {
+			controlKeys = getAmstradSystem().getCurrentScreen().getAdditionalControlKeys();
+		}
+		if (controlKeys != null) {
+			return controlKeys;
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 	private Font getFont(AmstradGraphicsContext graphicsContext) {
@@ -235,94 +256,6 @@ public class ControlKeysDisplayOverlay extends AbstractDisplayOverlay {
 
 	private void setAutohideOffsetTime(long time) {
 		this.autohideOffsetTime = time;
-	}
-
-	private abstract class ControlKey {
-
-		private String key;
-
-		private String label;
-
-		protected ControlKey(String key, String label) {
-			this.key = key;
-			this.label = label;
-		}
-
-		public abstract boolean isAvailable();
-
-		public boolean isVisible() {
-			return isAvailable();
-		}
-
-		protected boolean isProgramBrowserShowing() {
-			return getAmstradContext().isProgramBrowserShowing(getAmstracPc());
-		}
-
-		@Override
-		public String toString() {
-			return getKey() + "  " + getLabel();
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-	}
-
-	private class PopupMenuControlKey extends ControlKey {
-
-		public PopupMenuControlKey() {
-			super(AmstradPopupMenu.KEY_TRIGGER_TEXT, "Menu");
-		}
-
-		@Override
-		public boolean isAvailable() {
-			return getAmstracPc().getMonitor().isPopupMenuInstalled();
-		}
-
-	}
-
-	private class ProgramInfoControlKey extends ControlKey {
-
-		public ProgramInfoControlKey() {
-			super(ProgramInfoAction.KEY_TRIGGER_TEXT, "Info");
-		}
-
-		@Override
-		public boolean isAvailable() {
-			return isProgramBrowserShowing() || getAmstracPc().getActions().getProgramInfoAction().isEnabled();
-		}
-
-	}
-
-	private class ProgramRunControlKey extends ControlKey {
-
-		public ProgramRunControlKey() {
-			super("SPACE", "Run");
-		}
-
-		@Override
-		public boolean isAvailable() {
-			return isProgramBrowserShowing();
-		}
-
-	}
-
-	private class ProgramMenuControlKey extends ControlKey {
-
-		public ProgramMenuControlKey() {
-			super("ENTER", "Select");
-		}
-
-		@Override
-		public boolean isAvailable() {
-			return isProgramBrowserShowing();
-		}
-
 	}
 
 }

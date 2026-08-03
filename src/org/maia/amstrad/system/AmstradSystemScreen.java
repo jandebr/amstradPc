@@ -1,5 +1,8 @@
 package org.maia.amstrad.system;
 
+import java.util.List;
+
+import org.maia.amstrad.gui.overlay.controlkeys.ControlKey;
 import org.maia.amstrad.pc.keyboard.AmstradKeyboard;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
@@ -30,6 +33,14 @@ public interface AmstradSystemScreen {
 	 * @return The popup menu, or <code>null</code> when none
 	 */
 	AmstradPopupMenu getPopupMenu();
+
+	/**
+	 * Returns any additional control keys (i.e., key shortcuts) for this screen
+	 * 
+	 * @return List of additional control keys, <code>null</code> or the empty list when none
+	 * @see #isShowControlKeys()
+	 */
+	List<ControlKey> getAdditionalControlKeys();
 
 	/**
 	 * Tells whether to show the monitor for this screen

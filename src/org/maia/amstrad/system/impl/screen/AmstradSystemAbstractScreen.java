@@ -1,7 +1,9 @@
 package org.maia.amstrad.system.impl.screen;
 
+import java.util.List;
 import java.util.Objects;
 
+import org.maia.amstrad.gui.overlay.controlkeys.ControlKey;
 import org.maia.amstrad.pc.menu.AmstradPopupMenu;
 import org.maia.amstrad.system.AmstradSystem;
 import org.maia.amstrad.system.AmstradSystemScreen;
@@ -13,6 +15,8 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 	private AmstradSystem amstradSystem;
 
 	private AmstradPopupMenu popupMenu;
+
+	private List<ControlKey> additionalControlKeys;
 
 	private boolean showMonitor = true;
 
@@ -68,6 +72,15 @@ public abstract class AmstradSystemAbstractScreen implements AmstradSystemScreen
 
 	public void setPopupMenu(AmstradPopupMenu popupMenu) {
 		this.popupMenu = popupMenu;
+	}
+
+	@Override
+	public List<ControlKey> getAdditionalControlKeys() {
+		return additionalControlKeys;
+	}
+
+	public void setAdditionalControlKeys(List<ControlKey> controlKeys) {
+		this.additionalControlKeys = controlKeys;
 	}
 
 	protected AmstradSystem getAmstradSystem() {
