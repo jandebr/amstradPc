@@ -1,5 +1,7 @@
 package org.maia.amstrad.gui.browser.carousel.animation.startup.dragon;
 
+import java.awt.Point;
+
 import org.maia.amstrad.gui.sprite.SpriteImage;
 
 public class DragonPose {
@@ -24,6 +26,11 @@ public class DragonPose {
 				DragonOrientation.RIGHT_FACING, imageOrientationY);
 		getLookRightFacing().setMirroredLook(getLookLeftFacing());
 		getLookLeftFacing().setMirroredLook(getLookRightFacing());
+	}
+
+	public void setMouthPosition(Point position) {
+		getLookLeftFacing().setMouthPosition(position);
+		getLookRightFacing().setMouthPosition(position);
 	}
 
 	public DragonLook getLook(DragonOrientation orientation) {

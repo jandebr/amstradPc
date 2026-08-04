@@ -87,6 +87,14 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 		return toMonitorColors(colorMap);
 	}
 
+	protected SpriteColorMap createDragonFireColors() {
+		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
+		colorMap.setColor(0, new Color(249, 221, 77));
+		colorMap.setColor(1, new Color(250, 134, 32));
+		colorMap.setColor(2, new Color(242, 24, 3));
+		return toMonitorColors(colorMap);
+	}
+
 	protected SpriteColorMap createProjectileColors() {
 		SpriteColorMapImpl colorMap = new SpriteColorMapImpl();
 		colorMap.setColor(0, new Color(33, 32, 32));
@@ -245,7 +253,8 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 	protected class FearsomeDragon extends Dragon {
 
 		public FearsomeDragon() {
-			super(createDragonColors(), getCatalog().getPoseWingsDown().getLookRightFacing(), 0, 0);
+			super(createDragonColors(), createDragonFireColors(), getCatalog().getPoseWingsDown().getLookRightFacing(),
+					0, 0);
 		}
 
 		public void start() {
@@ -397,8 +406,12 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 
 		private void hover() {
 			setState(DragonState.HOVERING);
+			Point location = getMouthLocation();
+			if (location == null)
+				location = getCenterLocation();
+			int x = location.x;
 			int cx = getCastle().getCenter().x;
-			turnIf((getX() > cx && isRightFacing()) || (getX() < cx && isLeftFacing()));
+			turnIf((x > cx && isRightFacing()) || (x < cx && isLeftFacing()));
 			long durationMillis = getRandomizer().drawLongIntegerNumber(1500L, 2500L);
 			appendGlobalAnimation(getCatalog().createShiftAnimation(durationMillis));
 		}

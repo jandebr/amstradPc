@@ -1,5 +1,7 @@
 package org.maia.amstrad.gui.browser.carousel.animation.startup.dragon;
 
+import java.awt.Point;
+
 import org.maia.amstrad.gui.browser.carousel.animation.startup.dragon.CarouselDragonFightAnimation.Projectile;
 import org.maia.amstrad.gui.sprite.SpriteImage;
 import org.maia.amstrad.gui.sprite.SpriteImageRLE;
@@ -113,6 +115,7 @@ public class DragonCatalog {
 	public DragonPose getPoseWingsUp() {
 		if (poseWingsUp == null) {
 			poseWingsUp = new DragonPose(getWingsUpImage(), 11, 13, 0);
+			poseWingsUp.setMouthPosition(new Point(1, 26));
 		}
 		return poseWingsUp;
 	}
@@ -120,6 +123,7 @@ public class DragonCatalog {
 	public DragonPose getPoseWingsMidway() {
 		if (poseWingsMidway == null) {
 			poseWingsMidway = new DragonPose(getWingsMidwayImage(), 12, 5, 3);
+			poseWingsMidway.setMouthPosition(new Point(1, 23));
 		}
 		return poseWingsMidway;
 	}
@@ -127,6 +131,7 @@ public class DragonCatalog {
 	public DragonPose getPoseWingsDown() {
 		if (poseWingsDown == null) {
 			poseWingsDown = new DragonPose(getWingsDownImage(), 0, 0, 15);
+			poseWingsDown.setMouthPosition(new Point(12, 11));
 		}
 		return poseWingsDown;
 	}
