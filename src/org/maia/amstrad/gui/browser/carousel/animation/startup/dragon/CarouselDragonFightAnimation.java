@@ -384,19 +384,25 @@ public class CarouselDragonFightAnimation extends CarouselPortholePixelatedAnima
 		private Point2D selectHoverTargetLocation() {
 			Point2D target = null;
 			Point2D current = new Point2D(getX(), getY());
+			Randomizer rnd = getRandomizer();
 			int w = getLook().getImage().getWidth();
 			int h = getLook().getImage().getHeight();
 			int xMin = -getLook().getImageOffsetX();
 			int xMax = xMin + getPortholePixelWidth() - w - 20;
-			Randomizer rnd = getRandomizer();
+			int attempt = 0;
+			int maxAttempt = 10;
 			do {
+				attempt++;
 				List<Rectangle> zones = getCastle().getHoverZones();
 				Rectangle zone = zones.get(rnd.drawIntegerNumber(0, zones.size() - 1));
 				double tx = zone.getX() - w / 2.0 + rnd.drawDoubleUnitNumber() * zone.getWidth();
-				if (tx >= xMin && tx <= xMax) {
-					double ty = zone.getY() - h / 2.0 + rnd.drawDoubleUnitNumber() * zone.getHeight();
-					Point2D tp = new Point2D(tx, ty);
-					if (current.distanceTo(tp) >= 40.0) {
+				double ty = zone.getY() - h / 2.0 + rnd.drawDoubleUnitNumber() * zone.getHeight();
+				Point2D tp = new Point2D(tx, ty);
+				if (attempt == maxAttempt) {
+					target = tp;
+				} else if (tx >= xMin && tx <= xMax) {
+					double minDistance = Math.min(40.0, 10.0 * (maxAttempt - attempt - 1));
+					if (current.distanceTo(tp) > minDistance) {
 						target = tp;
 					}
 				}
