@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Properties;
 
 import org.maia.amstrad.program.repo.cleaner.GetdownProgramFileRepositoryCleaner;
+import org.maia.util.SystemUtils;
+import org.maia.util.SystemUtils.PackageStrackTraceFilter;
 
 public class AmstradMain {
 
@@ -11,14 +13,18 @@ public class AmstradMain {
 
 	public static final String SETTING_OVERRIDE_FLAG_INIT_VALUE = "??";
 
+	public static final String SETTING_DEBUG_STACKTRACES = "debug.stacktraces";
+
 	public static void main(String[] args) throws Exception {
 		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
-		overrideSettingsFromSytemProperties(context.getUserSettings());
+		AmstradSettings settings = context.getUserSettings();
+		overrideSettingsFromSystemProperties(settings);
+		enableDebugOptions(settings);
 		cleanManagedProgramRepository(context);
 		context.setupAmstradSystem().launch(args);
 	}
 
-	private static void overrideSettingsFromSytemProperties(AmstradSettings settings) {
+	private static void overrideSettingsFromSystemProperties(AmstradSettings settings) {
 		Properties props = System.getProperties();
 		for (String prop : props.stringPropertyNames()) {
 			if (prop.startsWith(SETTING_OVERRIDE_PREFIX)) {
@@ -33,6 +39,12 @@ public class AmstradMain {
 					settings.set(key, value);
 				}
 			}
+		}
+	}
+
+	private static void enableDebugOptions(AmstradSettings settings) {
+		if (settings.getBool(SETTING_DEBUG_STACKTRACES, false)) {
+			SystemUtils.printAllStackTracesPeriodically(30, new PackageStrackTraceFilter("jemu", "org.maia"));
 		}
 	}
 
