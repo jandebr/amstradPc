@@ -74,6 +74,8 @@ public abstract class AmstradContext {
 
 	private static final String SETTING_DISPLAY_RENDER_MAXFPS = Settings.DISPLAY_RENDER_MAXFPS;
 
+	private static final String SETTING_DEBUG_STACKTRACES = "debug.stacktraces";
+
 	private static final String SYSTEM_PROPERTY_GETDOWN = "com.threerings.getdown";
 
 	private static final String SYSTEM_PROPERTY_VERSION = "javacpc-version";
@@ -318,6 +320,10 @@ public abstract class AmstradContext {
 
 	public boolean isLaunchedByGetdown() {
 		return Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_GETDOWN, "false"));
+	}
+
+	public boolean isDebugStackTracesEnabled() {
+		return getUserSettings().getBool(SETTING_DEBUG_STACKTRACES, false);
 	}
 
 	public String getVersionString() {

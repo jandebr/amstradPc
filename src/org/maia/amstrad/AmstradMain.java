@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import org.maia.amstrad.program.repo.cleaner.GetdownProgramFileRepositoryCleaner;
 import org.maia.util.SystemUtils;
-import org.maia.util.SystemUtils.PackageStrackTraceFilter;
+import org.maia.util.SystemUtils.PackageStackTraceFilter;
 
 public class AmstradMain {
 
@@ -13,13 +13,13 @@ public class AmstradMain {
 
 	public static final String SETTING_OVERRIDE_FLAG_INIT_VALUE = "??";
 
-	public static final String SETTING_DEBUG_STACKTRACES = "debug.stacktraces";
-
 	public static void main(String[] args) throws Exception {
 		AmstradContext context = AmstradFactory.getInstance().getAmstradContext();
 		AmstradSettings settings = context.getUserSettings();
 		overrideSettingsFromSystemProperties(settings);
-		enableDebugOptions(settings);
+		if (context.isDebugStackTracesEnabled()) {
+			SystemUtils.printAllStackTracesPeriodically(30, new PackageStackTraceFilter("jemu", "org.maia"));
+		}
 		cleanManagedProgramRepository(context);
 		context.setupAmstradSystem().launch(args);
 	}
@@ -39,12 +39,6 @@ public class AmstradMain {
 					settings.set(key, value);
 				}
 			}
-		}
-	}
-
-	private static void enableDebugOptions(AmstradSettings settings) {
-		if (settings.getBool(SETTING_DEBUG_STACKTRACES, false)) {
-			SystemUtils.printAllStackTracesPeriodically(30, new PackageStrackTraceFilter("jemu", "org.maia"));
 		}
 	}
 
