@@ -1,6 +1,6 @@
 package org.maia.amstrad.gui.browser;
 
-public enum ProgramBrowserStartupAnimationControl {
+public enum ProgramBrowserStartupAnimationTrigger {
 
 	/**
 	 * Always show a startup animation
@@ -19,14 +19,14 @@ public enum ProgramBrowserStartupAnimationControl {
 
 	private String displayName;
 
-	private ProgramBrowserStartupAnimationControl(String displayName) {
+	private ProgramBrowserStartupAnimationTrigger(String displayName) {
 		this.displayName = displayName;
 	}
 
-	public static ProgramBrowserStartupAnimationControl withDisplayName(String displayName) {
-		for (ProgramBrowserStartupAnimationControl control : ProgramBrowserStartupAnimationControl.values()) {
-			if (control.getDisplayName().equals(displayName))
-				return control;
+	public static ProgramBrowserStartupAnimationTrigger withDisplayName(String displayName) {
+		for (ProgramBrowserStartupAnimationTrigger trigger : ProgramBrowserStartupAnimationTrigger.values()) {
+			if (trigger.getDisplayName().equals(displayName))
+				return trigger;
 		}
 		return null;
 	}

@@ -13,7 +13,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JComponent;
 
 import org.maia.amstrad.gui.browser.ProgramBrowserDisplaySource;
-import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationTrigger;
 import org.maia.amstrad.gui.browser.carousel.CarouselComponent.CarouselOutline;
 import org.maia.amstrad.gui.browser.carousel.CarouselCoverImageFactory.CassetteCoverImageFactory;
 import org.maia.amstrad.gui.browser.carousel.action.CarouselAction;
@@ -319,13 +319,13 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 	private void renderStartupAnimation(Graphics2D g, int width, int height, CarouselStartupAction startup) {
 		boolean browserReady = getEnterFolderActionInProgress() == null;
 		boolean endAnimation = browserReady;
-		ProgramBrowserStartupAnimationControl control = getStartupAnimationControl();
-		if (!ProgramBrowserStartupAnimationControl.NEVER.equals(control)) {
+		ProgramBrowserStartupAnimationTrigger trigger = getStartupAnimationTrigger();
+		if (!ProgramBrowserStartupAnimationTrigger.NEVER.equals(trigger)) {
 			renderAnimation(g, width, height, startup);
 			if (isProlongedStartupAnimation()) {
 				renderStartupAnimationProlongedIndication(g, width, height);
 			}
-			if (ProgramBrowserStartupAnimationControl.ALWAYS.equals(control) || startup.isAnimationStarted()) {
+			if (ProgramBrowserStartupAnimationTrigger.ALWAYS.equals(trigger) || startup.isAnimationStarted()) {
 				boolean minAnimationElapsedTime = startup.isAnimationStarted()
 						&& startup.getAnimationElapsedTimeMillis() >= startup.getMinimumAnimationDurationMillis();
 				endAnimation = browserReady && minAnimationElapsedTime && !isProlongedStartupAnimation();
@@ -954,8 +954,8 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		this.startupActionInProgress = action;
 	}
 
-	private ProgramBrowserStartupAnimationControl getStartupAnimationControl() {
-		return getAmstradContext().getStartupAnimationControl();
+	private ProgramBrowserStartupAnimationTrigger getStartupAnimationTrigger() {
+		return getAmstradContext().getStartupAnimationTrigger();
 	}
 
 	@Override

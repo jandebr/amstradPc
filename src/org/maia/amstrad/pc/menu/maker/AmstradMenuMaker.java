@@ -16,12 +16,12 @@ import javax.swing.KeyStroke;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.UIResources;
-import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationTrigger;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.action.AmstradPcActions;
 import org.maia.amstrad.pc.action.MonitorModeAction;
 import org.maia.amstrad.pc.action.MonitorSizeAction;
-import org.maia.amstrad.pc.action.ProgramBrowserStartupAnimationControlAction;
+import org.maia.amstrad.pc.action.ProgramBrowserStartupAnimationTriggerAction;
 import org.maia.amstrad.pc.action.ProgramBrowserStyleAction;
 import org.maia.amstrad.pc.joystick.AmstradJoystick;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
@@ -106,23 +106,23 @@ public abstract class AmstradMenuMaker {
 		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
-	protected JMenu createProgramBrowserStartupAnimationControlMenu() {
+	protected JMenu createProgramBrowserStartupAnimationTriggerMenu() {
 		JMenu menu = new JMenu("Browser startup animation");
 		ButtonGroup buttonGroup = new ButtonGroup();
-		for (ProgramBrowserStartupAnimationControl control : ProgramBrowserStartupAnimationControl.values()) {
-			JRadioButtonMenuItem controlOption = createProgramBrowserStartupAnimationControlMenuItem(control);
-			menu.add(controlOption);
-			buttonGroup.add(controlOption);
+		for (ProgramBrowserStartupAnimationTrigger trigger : ProgramBrowserStartupAnimationTrigger.values()) {
+			JRadioButtonMenuItem triggerOption = createProgramBrowserStartupAnimationTriggerMenuItem(trigger);
+			menu.add(triggerOption);
+			buttonGroup.add(triggerOption);
 		}
-		ProgramBrowserStartupAnimationControlMenuHelper helper = new ProgramBrowserStartupAnimationControlMenuHelper(
+		ProgramBrowserStartupAnimationTriggerMenuHelper helper = new ProgramBrowserStartupAnimationTriggerMenuHelper(
 				buttonGroup);
 		return updateMenuLookAndFeel(menu, UIResources.browserStartupIcon);
 	}
 
-	protected JRadioButtonMenuItem createProgramBrowserStartupAnimationControlMenuItem(
-			ProgramBrowserStartupAnimationControl control) {
+	protected JRadioButtonMenuItem createProgramBrowserStartupAnimationTriggerMenuItem(
+			ProgramBrowserStartupAnimationTrigger trigger) {
 		JRadioButtonMenuItem item = new JRadioButtonMenuItem(
-				getActions().getProgramBrowserStartupAnimationControlAction(control));
+				getActions().getProgramBrowserStartupAnimationTriggerAction(trigger));
 		return (JRadioButtonMenuItem) updateMenuItemLookAndFeel(item);
 	}
 
@@ -504,22 +504,22 @@ public abstract class AmstradMenuMaker {
 
 	}
 
-	private class ProgramBrowserStartupAnimationControlMenuHelper {
+	private class ProgramBrowserStartupAnimationTriggerMenuHelper {
 
 		private ButtonGroup buttonGroup;
 
-		public ProgramBrowserStartupAnimationControlMenuHelper(ButtonGroup buttonGroup) {
+		public ProgramBrowserStartupAnimationTriggerMenuHelper(ButtonGroup buttonGroup) {
 			this.buttonGroup = buttonGroup;
 			syncMenu();
 		}
 
 		private void syncMenu() {
-			ProgramBrowserStartupAnimationControl control = AmstradFactory.getInstance().getAmstradContext()
-					.getStartupAnimationControl();
+			ProgramBrowserStartupAnimationTrigger trigger = AmstradFactory.getInstance().getAmstradContext()
+					.getStartupAnimationTrigger();
 			for (Enumeration<AbstractButton> en = getButtonGroup().getElements(); en.hasMoreElements();) {
 				AbstractButton button = en.nextElement();
-				if (((ProgramBrowserStartupAnimationControlAction) button.getAction()).getStartupAnimationControl()
-						.equals(control)) {
+				if (((ProgramBrowserStartupAnimationTriggerAction) button.getAction()).getStartupAnimationTrigger()
+						.equals(trigger)) {
 					button.setSelected(true);
 				}
 			}

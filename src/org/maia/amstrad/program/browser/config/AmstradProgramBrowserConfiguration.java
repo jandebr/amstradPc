@@ -1,6 +1,6 @@
 package org.maia.amstrad.program.browser.config;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationTrigger;
 import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
 import org.maia.amstrad.program.repo.config.AmstradProgramRepositoryConfiguration;
 
@@ -10,7 +10,7 @@ public class AmstradProgramBrowserConfiguration {
 
 	private AmstradProgramBrowserStyle style;
 
-	private ProgramBrowserStartupAnimationControl startupAnimationControl;
+	private ProgramBrowserStartupAnimationTrigger startupAnimationTrigger;
 
 	public AmstradProgramBrowserConfiguration(AmstradProgramRepositoryConfiguration repositoryConfiguration) {
 		this.repositoryConfiguration = repositoryConfiguration;
@@ -28,12 +28,12 @@ public class AmstradProgramBrowserConfiguration {
 		this.style = style;
 	}
 
-	public ProgramBrowserStartupAnimationControl getStartupAnimationControl() {
-		return startupAnimationControl;
+	public ProgramBrowserStartupAnimationTrigger getStartupAnimationTrigger() {
+		return startupAnimationTrigger;
 	}
 
-	public void setStartupAnimationControl(ProgramBrowserStartupAnimationControl control) {
-		this.startupAnimationControl = control;
+	public void setStartupAnimationTrigger(ProgramBrowserStartupAnimationTrigger trigger) {
+		this.startupAnimationTrigger = trigger;
 	}
 
 }

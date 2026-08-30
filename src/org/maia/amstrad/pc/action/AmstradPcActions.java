@@ -3,7 +3,7 @@ package org.maia.amstrad.pc.action;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationControl;
+import org.maia.amstrad.gui.browser.ProgramBrowserStartupAnimationTrigger;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.pc.joystick.AmstradJoystickID;
 import org.maia.amstrad.pc.monitor.AmstradMonitorMode;
@@ -23,7 +23,7 @@ public class AmstradPcActions {
 
 	private Map<AmstradProgramBrowserStyle, ProgramBrowserStyleAction> programBrowserStyleActions;
 
-	private Map<ProgramBrowserStartupAnimationControl, ProgramBrowserStartupAnimationControlAction> programBrowserStartupAnimationControlActions;
+	private Map<ProgramBrowserStartupAnimationTrigger, ProgramBrowserStartupAnimationTriggerAction> programBrowserStartupAnimationTriggerActions;
 
 	private ProgramInfoAction programInfoAction;
 
@@ -114,7 +114,7 @@ public class AmstradPcActions {
 	public AmstradPcActions(AmstradPc amstradPc) {
 		this.amstradPc = amstradPc;
 		this.programBrowserStyleActions = new HashMap<AmstradProgramBrowserStyle, ProgramBrowserStyleAction>();
-		this.programBrowserStartupAnimationControlActions = new HashMap<ProgramBrowserStartupAnimationControl, ProgramBrowserStartupAnimationControlAction>();
+		this.programBrowserStartupAnimationTriggerActions = new HashMap<ProgramBrowserStartupAnimationTrigger, ProgramBrowserStartupAnimationTriggerAction>();
 		this.joystickSetupActions = new HashMap<AmstradJoystickID, JoystickSetupAction>();
 		this.joystickActivationActions = new HashMap<AmstradJoystickID, JoystickActivationAction>();
 	}
@@ -149,12 +149,12 @@ public class AmstradPcActions {
 		return action;
 	}
 
-	public ProgramBrowserStartupAnimationControlAction getProgramBrowserStartupAnimationControlAction(
-			ProgramBrowserStartupAnimationControl control) {
-		ProgramBrowserStartupAnimationControlAction action = programBrowserStartupAnimationControlActions.get(control);
+	public ProgramBrowserStartupAnimationTriggerAction getProgramBrowserStartupAnimationTriggerAction(
+			ProgramBrowserStartupAnimationTrigger trigger) {
+		ProgramBrowserStartupAnimationTriggerAction action = programBrowserStartupAnimationTriggerActions.get(trigger);
 		if (action == null) {
-			action = new ProgramBrowserStartupAnimationControlAction(control, getAmstradPc());
-			programBrowserStartupAnimationControlActions.put(control, action);
+			action = new ProgramBrowserStartupAnimationTriggerAction(trigger, getAmstradPc());
+			programBrowserStartupAnimationTriggerActions.put(trigger, action);
 		}
 		return action;
 	}
