@@ -86,56 +86,65 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 	protected static Color chooseImageFrameColor(Image image, Color darkFrameColor, Color brightFrameColor,
 			Randomizer rnd) {
 		BufferedImage bufImage = ImageUtils.convertToBufferedImage(image);
-		float brightness = getOpaqueOutlineBrightness(bufImage);
-		if (brightness >= 0f) {
-			// background matching brightness of the opaque outline
-			if (brightness < ColorUtils.getBrightness(darkFrameColor)
-					|| brightness > ColorUtils.getBrightness(brightFrameColor)) {
-				return new Color(Color.HSBtoRGB(0, 0, brightness));
-			} else if (brightness < 0.5f) {
-				return darkFrameColor;
+		Color color = getOpaqueOutlineConstantColor(bufImage);
+		if (color == null) {
+			float brightness = getOpaqueOutlineBrightness(bufImage);
+			if (brightness >= 0f) {
+				// frame matching brightness of the opaque outline
+				if (brightness < ColorUtils.getBrightness(darkFrameColor)
+						|| brightness > ColorUtils.getBrightness(brightFrameColor)) {
+					color = new Color(Color.HSBtoRGB(0, 0, brightness));
+				} else if (brightness < 0.5f) {
+					color = darkFrameColor;
+				} else {
+					color = brightFrameColor;
+				}
 			} else {
-				return brightFrameColor;
-			}
-		} else {
-			// (semi)transparent outline, background providing contrast with content
-			brightness = getContentBrightness(bufImage, rnd);
-			if (brightness < 0.5f) {
-				return brightFrameColor;
-			} else {
-				return darkFrameColor;
+				// (semi)transparent outline, frame providing contrast with content
+				brightness = getContentBrightness(bufImage, rnd);
+				if (brightness < 0.5f) {
+					color = brightFrameColor;
+				} else {
+					color = darkFrameColor;
+				}
 			}
 		}
+		return color;
+	}
+
+	private static Color getOpaqueOutlineConstantColor(BufferedImage image) {
+		Color color = null;
+		ImageOutlineTraverser traverser = new ImageOutlineTraverser(image);
+		while (traverser.hasNextRgb()) {
+			int rgb = traverser.nextRgb();
+			int alpha = rgb >>> 24;
+			if (alpha < 0xff) {
+				return null; // not opaque
+			}
+			if (color == null) {
+				color = new Color(rgb);
+			} else if (color.getRGB() != rgb) {
+				return null; // not constant
+			}
+		}
+		return color;
 	}
 
 	private static float getOpaqueOutlineBrightness(BufferedImage image) {
 		float brightness = 0f;
-		int width = ImageUtils.getWidth(image);
-		int height = ImageUtils.getHeight(image);
-		int nrSamples = (width + height) * 2;
 		int red = 0, green = 0, blue = 0;
-		for (int i = 0; i < nrSamples; i++) {
-			int x = 0, y = 0;
-			if (i < width) {
-				x = i;
-			} else if (i < width + height) {
-				x = width - 1;
-				y = i - width;
-			} else if (i < width * 2 + height) {
-				x = i - width - height;
-				y = height - 1;
-			} else {
-				y = i - width * 2 - height;
-			}
-			int rgb = image.getRGB(x, y);
+		ImageOutlineTraverser traverser = new ImageOutlineTraverser(image);
+		while (traverser.hasNextRgb()) {
+			int rgb = traverser.nextRgb();
 			int alpha = rgb >>> 24;
 			if (alpha < 0xff) {
-				return -1f;
+				return -1f; // not opaque
 			}
 			red += (rgb & 0xff0000) >> 16;
 			green += (rgb & 0xff00) >> 8;
 			blue += rgb & 0xff;
 		}
+		int nrSamples = traverser.getOutlinePixelCount();
 		if (nrSamples > 0) {
 			red /= nrSamples;
 			green /= nrSamples;
@@ -196,6 +205,90 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 
 	public void setBackgroundColor(Color backgroundColor) {
 		this.backgroundColor = backgroundColor;
+	}
+
+	private static class ImageOutlineTraverser {
+
+		private BufferedImage image;
+
+		private int outlineWidth;
+
+		private int outlineHeight;
+
+		private int outlinePixelCount;
+
+		private int outlinePixelIndex;
+
+		public ImageOutlineTraverser(BufferedImage image) {
+			this.image = image;
+			this.outlineWidth = ImageUtils.getWidth(image);
+			this.outlineHeight = ImageUtils.getHeight(image);
+			this.outlinePixelCount = computeOutlinePixelCount();
+		}
+
+		private int computeOutlinePixelCount() {
+			int width = getOutlineWidth();
+			int height = getOutlineHeight();
+			if (width == 0 || height == 0) {
+				return 0;
+			} else if (width == 1) {
+				return height;
+			} else if (height == 1) {
+				return width;
+			} else {
+				return (width + height) * 2 - 4;
+			}
+		}
+
+		public boolean hasNextRgb() {
+			return getOutlinePixelIndex() < getOutlinePixelCount();
+		}
+
+		public int nextRgb() {
+			int x = 0, y = 0;
+			int width = getOutlineWidth();
+			int height = getOutlineHeight();
+			int i = getOutlinePixelIndex();
+			if (i < width) {
+				x = i;
+			} else if (i < width + height - 1) {
+				x = width - 1;
+				y = 1 + i - width;
+			} else if (i < width * 2 + height - 2) {
+				x = width * 2 + height - 3 - i;
+				y = height - 1;
+			} else if (i < getOutlinePixelCount()) {
+				y = height * 2 + width * 2 - 4 - i;
+			}
+			int rgb = getImage().getRGB(x, y);
+			setOutlinePixelIndex(i + 1);
+			return rgb;
+		}
+
+		public BufferedImage getImage() {
+			return image;
+		}
+
+		public int getOutlineWidth() {
+			return outlineWidth;
+		}
+
+		public int getOutlineHeight() {
+			return outlineHeight;
+		}
+
+		public int getOutlinePixelCount() {
+			return outlinePixelCount;
+		}
+
+		private int getOutlinePixelIndex() {
+			return outlinePixelIndex;
+		}
+
+		private void setOutlinePixelIndex(int index) {
+			this.outlinePixelIndex = index;
+		}
+
 	}
 
 }
