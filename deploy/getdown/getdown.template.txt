@@ -53,6 +53,7 @@ desktop.jvmarg = -Djavacpc.mode=DESKTOP
 desktop.jvmarg = -Djavacpc.images.cache_capacity=50
 entertainment.jvmarg = -Djavacpc.mode=ENTERTAINMENT
 entertainment.jvmarg = -Djavacpc.program_browser.style.entertainment=??modern
+entertainment.jvmarg = -Djavacpc.program_browser.cover_images.folders.modern=??featured
 entertainment.jvmarg = -Djavacpc.images.cache_capacity=100
 entertainment.jvmarg = -Djavacpc.basic_staging.enable=true
 javacpc.jvmarg = -Djavacpc.mode=JAVACPC

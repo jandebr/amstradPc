@@ -5,7 +5,6 @@ import org.maia.amstrad.gui.browser.carousel.CarouselProgramBrowserDisplaySource
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
 import org.maia.amstrad.program.browser.AmstradProgramBrowserStyle;
-import org.maia.amstrad.program.browser.config.AmstradProgramBrowserCoverImageOption;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 
 public class CarouselAmstradProgramBrowser extends AmstradProgramBrowser {
@@ -18,11 +17,6 @@ public class CarouselAmstradProgramBrowser extends AmstradProgramBrowser {
 	@Override
 	protected ProgramBrowserDisplaySource createDisplaySource() {
 		return new CarouselProgramBrowserDisplaySource(this);
-	}
-
-	@Override
-	protected AmstradProgramBrowserCoverImageOption getDefaultCoverImageOptionForFolders() {
-		return AmstradProgramBrowserCoverImageOption.FEATURED;
 	}
 
 	@Override
