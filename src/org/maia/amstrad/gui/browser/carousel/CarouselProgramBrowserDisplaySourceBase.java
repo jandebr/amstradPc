@@ -47,6 +47,7 @@ import org.maia.amstrad.pc.monitor.display.AmstradGraphicsContext;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourceType;
 import org.maia.amstrad.pc.monitor.display.source.AmstradAwtDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
+import org.maia.amstrad.program.browser.config.AmstradProgramBrowserCoverImageOption;
 import org.maia.amstrad.program.browser.impl.CarouselAmstradProgramBrowser;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
@@ -154,8 +155,10 @@ public abstract class CarouselProgramBrowserDisplaySourceBase extends AmstradAwt
 		CarouselCoverImageFactory factory = getCoverImageFactory();
 		if (factory == null || !factory.getImageSize().equals(imageSize) || !factory.getTheme().equals(theme)) {
 			factory = createCoverImageFactory(imageSize, theme);
-			setProgramCoverImageProducer(factory.createProgramCoverImageProducer());
-			setFolderCoverImageProducer(factory.createFolderCoverImageProducer());
+			AmstradProgramBrowserCoverImageOption programOption = getProgramBrowser().getCoverImageOptionForPrograms();
+			AmstradProgramBrowserCoverImageOption folderOption = getProgramBrowser().getCoverImageOptionForFolders();
+			setProgramCoverImageProducer(factory.createProgramCoverImageProducer(programOption));
+			setFolderCoverImageProducer(factory.createFolderCoverImageProducer(folderOption, programOption));
 			setCoverImageFactory(factory);
 		}
 	}

@@ -42,10 +42,12 @@ public abstract class AmstradCoverImageProducer implements PooledImageProducer {
 
 	protected Image getCoverImageFromRepository(Node node) {
 		Image image = null;
-		AmstradProgramImage imageProxy = node.getCoverImage();
-		if (imageProxy != null) {
-			image = imageProxy.getImage();
-			imageProxy.disposeImage(); // free up image pool
+		if (node != null) {
+			AmstradProgramImage imageProxy = node.getCoverImage();
+			if (imageProxy != null) {
+				image = imageProxy.getImage();
+				imageProxy.disposeImage(); // free up image pool
+			}
 		}
 		return image;
 	}

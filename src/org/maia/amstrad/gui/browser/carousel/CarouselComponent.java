@@ -60,39 +60,6 @@ public class CarouselComponent extends SlidingItemListComponent {
 		getCarouselPopulationTaskWorker().addTask(new CarouselCancelPopulationTask(callback));
 	}
 
-	protected ProgramNode selectFeaturedProgramNode(FolderNode folderNode) {
-		ProgramNode featured = folderNode.getFeaturedProgramNode();
-		if (featured == null) {
-			ProgramNode winnerWithCoverImage = null;
-			ProgramNode winnerWithoutCoverImage = null;
-			int winnerWithCoverImageBlocksOnTape = -1;
-			int winnerWithoutCoverImageBlocksOnTape = -1;
-			for (Node node : folderNode.getChildNodes()) {
-				if (node.isProgram()) {
-					ProgramNode programNode = node.asProgram();
-					int blocks = programNode.getProgram().getBlocksOnTape();
-					if (programNode.getCoverImage() != null) {
-						if (blocks > winnerWithCoverImageBlocksOnTape) {
-							winnerWithCoverImageBlocksOnTape = blocks;
-							winnerWithCoverImage = programNode;
-						}
-					} else {
-						if (blocks > winnerWithoutCoverImageBlocksOnTape) {
-							winnerWithoutCoverImageBlocksOnTape = blocks;
-							winnerWithoutCoverImage = programNode;
-						}
-					}
-				}
-			}
-			if (winnerWithCoverImage != null) {
-				featured = winnerWithCoverImage;
-			} else if (winnerWithoutCoverImage != null) {
-				featured = winnerWithoutCoverImage;
-			}
-		}
-		return featured;
-	}
-
 	public CarouselOutline createOutline(int thickness) {
 		return new CarouselOutline(this, thickness);
 	}
@@ -241,7 +208,7 @@ public class CarouselComponent extends SlidingItemListComponent {
 					}
 					if (node.isFolder()) {
 						FolderNode childFolderNode = node.asFolder();
-						ProgramNode featuredProgramNode = selectFeaturedProgramNode(childFolderNode);
+						ProgramNode featuredProgramNode = childFolderNode.autoSelectFeaturedProgramNode();
 						items.add(getItemMaker().createCarouselItemForFolder(childFolderNode, featuredProgramNode,
 								carousel));
 					} else {

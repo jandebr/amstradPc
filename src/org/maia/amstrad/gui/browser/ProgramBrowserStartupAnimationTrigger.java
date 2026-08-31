@@ -23,14 +23,6 @@ public enum ProgramBrowserStartupAnimationTrigger {
 		this.displayName = displayName;
 	}
 
-	public static ProgramBrowserStartupAnimationTrigger withDisplayName(String displayName) {
-		for (ProgramBrowserStartupAnimationTrigger trigger : ProgramBrowserStartupAnimationTrigger.values()) {
-			if (trigger.getDisplayName().equals(displayName))
-				return trigger;
-		}
-		return null;
-	}
-
 	public String getDisplayName() {
 		return displayName;
 	}

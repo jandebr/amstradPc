@@ -10,6 +10,7 @@ import org.maia.amstrad.gui.overlay.controlkeys.ControlKey;
 import org.maia.amstrad.pc.AmstradPc;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.AmstradProgramType;
+import org.maia.amstrad.program.browser.config.AmstradProgramBrowserCoverImageOption;
 import org.maia.amstrad.program.repo.AmstradProgramRepository;
 import org.maia.util.GenericListenerList;
 
@@ -26,6 +27,10 @@ public abstract class AmstradProgramBrowser {
 	private List<ControlKey> additionalControlKeys;
 
 	private GenericListenerList<AmstradProgramBrowserListener> listeners;
+
+	private static final String SETTING_COVER_IMAGE_FOLDER_OPTION = "program_browser.cover_images.folders";
+
+	private static final String SETTING_COVER_IMAGE_PROGRAM_OPTION = "program_browser.cover_images.programs";
 
 	private static final String SETTING_ENABLE_BASIC_STAGING = "basic_staging.enable";
 
@@ -67,6 +72,41 @@ public abstract class AmstradProgramBrowser {
 
 	public AmstradProgram getCurrentProgram() {
 		return getDisplaySource().getCurrentProgram();
+	}
+
+	public AmstradProgramBrowserCoverImageOption getCoverImageOptionForFolders() {
+		return getCoverImageOption(SETTING_COVER_IMAGE_FOLDER_OPTION, getDefaultCoverImageOptionForFolders());
+	}
+
+	public AmstradProgramBrowserCoverImageOption getCoverImageOptionForPrograms() {
+		return getCoverImageOption(SETTING_COVER_IMAGE_PROGRAM_OPTION, getDefaultCoverImageOptionForPrograms());
+	}
+
+	private AmstradProgramBrowserCoverImageOption getCoverImageOption(String setting,
+			AmstradProgramBrowserCoverImageOption defaultOption) {
+		AmstradProgramBrowserCoverImageOption option = null;
+		String value = getAmstradSettings().get(setting + "." + getStyle().getDisplayName().toLowerCase(), null);
+		if (value == null) {
+			value = getAmstradSettings().get(setting, null);
+		}
+		if (value != null) {
+			try {
+				option = AmstradProgramBrowserCoverImageOption.valueOf(value.trim().toUpperCase());
+			} catch (IllegalArgumentException e) {
+			}
+		}
+		if (option == null) {
+			option = defaultOption;
+		}
+		return option;
+	}
+
+	protected AmstradProgramBrowserCoverImageOption getDefaultCoverImageOptionForFolders() {
+		return AmstradProgramBrowserCoverImageOption.REPOSITORY;
+	}
+
+	protected AmstradProgramBrowserCoverImageOption getDefaultCoverImageOptionForPrograms() {
+		return AmstradProgramBrowserCoverImageOption.REPOSITORY;
 	}
 
 	public abstract boolean isShowMonitor();

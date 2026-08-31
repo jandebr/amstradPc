@@ -4,9 +4,10 @@ import java.awt.Dimension;
 import java.awt.Image;
 
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 
 public interface AmstradFolderPosterImageMaker {
 
-	Image makePosterImage(FolderNode folderNode, Dimension size);
+	Image makePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension size);
 
 }

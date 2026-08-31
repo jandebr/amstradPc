@@ -4,16 +4,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.AmstradProgramPosterImage;
 import org.maia.amstrad.gui.covers.AmstradProgramPosterImageMaker;
 import org.maia.amstrad.gui.covers.ImageDetailLevel;
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
-import org.maia.graphics2d.image.ImageUtils;
-import org.maia.swing.layout.FillMode;
-import org.maia.util.Randomizer;
 
 public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageProducer {
 
@@ -21,13 +18,8 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 
 	private AmstradProgramPosterImageMaker posterImageMaker;
 
-	private Color posterBackgroundColorDark;
-
-	private Color posterBackgroundColorBright;
-
-	public CassetteProgramCoverImageProducer(Dimension imageSize, Color backgroundColor,
-			Color posterBackgroundColorDark, Color posterBackgroundColorBright, Font titleFont, Color titleColor,
-			Color titleBackground, float titleRelativeVerticalPosition,
+	public CassetteProgramCoverImageProducer(Dimension imageSize, Color backgroundColor, Font titleFont,
+			Color titleColor, Color titleBackground, float titleRelativeVerticalPosition,
 			AmstradProgramPosterImageMaker posterImageMaker) {
 		super(imageSize, backgroundColor);
 		double scaleFactor = imageSize.getHeight() / ClosedCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
@@ -36,43 +28,22 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		this.imageMaker.setTitleColor(titleColor);
 		this.imageMaker.setTitleBackground(titleBackground);
 		this.imageMaker.setTitleRelativeVerticalPosition(titleRelativeVerticalPosition);
-		this.posterBackgroundColorDark = posterBackgroundColorDark;
-		this.posterBackgroundColorBright = posterBackgroundColorBright;
 		this.posterImageMaker = posterImageMaker;
 	}
 
 	@Override
 	protected Image produceImage(ProgramNode programNode) {
 		ClosedCassetteCoverImageMaker imageMaker = getImageMaker();
-		ProgramPosterImage posterImage = producePosterImage(programNode, imageMaker.getScaledPosterSize(),
+		AmstradProgramPosterImage posterImage = producePosterImage(programNode, imageMaker.getScaledPosterSize(),
 				ImageDetailLevel.FULL);
 		imageMaker.setTitle(posterImage.isUntitledImage() ? programNode.getName() : null);
 		imageMaker.setRandomizer(createRandomizer(programNode));
 		return imageMaker.makeCoverImage(posterImage.getImage(), true, getEmbedding());
 	}
 
-	protected ProgramPosterImage producePosterImage(ProgramNode programNode, Dimension posterSize,
+	protected AmstradProgramPosterImage producePosterImage(ProgramNode programNode, Dimension posterSize,
 			ImageDetailLevel detailLevel) {
-		Image image = getCoverImageFromRepository(programNode);
-		if (image != null) {
-			return toPosterImage(image, posterSize, createRandomizer(programNode));
-		} else {
-			return inventPosterImage(programNode, posterSize, detailLevel);
-		}
-	}
-
-	protected ProgramPosterImage toPosterImage(Image image, Dimension posterSize, Randomizer rnd) {
-		Color bgDark = getPosterBackgroundColorDark();
-		Color bgBright = getPosterBackgroundColorBright();
-		Color bg = chooseImageFrameColor(image, bgDark, bgBright, rnd);
-		Image framedImage = frameImageToSize(image, posterSize, FillMode.FIT, bg);
-		return new ProgramPosterImage(framedImage, false); // assuming titled
-	}
-
-	protected ProgramPosterImage inventPosterImage(ProgramNode programNode, Dimension posterSize,
-			ImageDetailLevel detailLevel) {
-		Image image = getPosterImageMaker().makePosterImage(programNode, posterSize, detailLevel);
-		return new ProgramPosterImage(image, true); // assuming untitled
+		return getPosterImageMaker().makePosterImage(programNode, posterSize, detailLevel);
 	}
 
 	protected CoverImageEmbedding getEmbedding() {
@@ -95,37 +66,8 @@ public class CassetteProgramCoverImageProducer extends AmstradProgramCoverImageP
 		return imageMaker;
 	}
 
-	public Color getPosterBackgroundColorDark() {
-		return posterBackgroundColorDark;
-	}
-
-	public Color getPosterBackgroundColorBright() {
-		return posterBackgroundColorBright;
-	}
-
 	private AmstradProgramPosterImageMaker getPosterImageMaker() {
 		return posterImageMaker;
-	}
-
-	static class ProgramPosterImage {
-
-		private BufferedImage image;
-
-		private boolean untitledImage;
-
-		public ProgramPosterImage(Image image, boolean untitledImage) {
-			this.image = ImageUtils.convertToBufferedImage(image);
-			this.untitledImage = untitledImage;
-		}
-
-		public BufferedImage getImage() {
-			return image;
-		}
-
-		public boolean isUntitledImage() {
-			return untitledImage;
-		}
-
 	}
 
 }

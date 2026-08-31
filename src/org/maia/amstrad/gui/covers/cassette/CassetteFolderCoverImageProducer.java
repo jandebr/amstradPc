@@ -5,10 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 
-import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradFolderPosterImageMaker;
-import org.maia.amstrad.gui.covers.ImageDetailLevel;
 import org.maia.amstrad.gui.covers.cassette.CassetteCoverImageMaker.CoverImageEmbedding;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
@@ -19,22 +17,16 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 
 	private OpenCassetteCoverImageMaker imageMaker;
 
-	private CassetteProgramCoverImageProducer programImageMaker;
-
-	private AmstradFolderPosterImageMaker folderImageMaker;
-
-	private static final String SETTING_SHOW_FEATURED_PROGRAMS = "program_browser.modern.cover_images.show_featured_programs";
+	private AmstradFolderPosterImageMaker posterImageMaker;
 
 	public CassetteFolderCoverImageProducer(Dimension imageSize, Color backgroundColor, Font titleFont,
-			Color titleColor, CassetteProgramCoverImageProducer programImageMaker,
-			AmstradFolderPosterImageMaker folderImageMaker) {
+			Color titleColor, AmstradFolderPosterImageMaker posterImageMaker) {
 		super(imageSize, backgroundColor);
 		double scaleFactor = imageSize.getHeight() / OpenCassetteCoverImageMaker.CANONICAL_SIZE.getHeight();
 		this.imageMaker = new OpenCassetteCoverImageMaker(null, scaleFactor);
 		this.imageMaker.setTitleFont(titleFont);
 		this.imageMaker.setTitleColor(titleColor);
-		this.programImageMaker = programImageMaker;
-		this.folderImageMaker = folderImageMaker;
+		this.posterImageMaker = posterImageMaker;
 	}
 
 	@Override
@@ -49,12 +41,7 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 	}
 
 	protected Image producePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension posterSize) {
-		if (featuredProgramNode != null && isShowFeaturedPrograms()) {
-			return getProgramImageMaker().producePosterImage(featuredProgramNode, posterSize, ImageDetailLevel.MINIMAL)
-					.getImage();
-		} else {
-			return getFolderImageMaker().makePosterImage(folderNode, posterSize);
-		}
+		return getPosterImageMaker().makePosterImage(folderNode, featuredProgramNode, posterSize);
 	}
 
 	protected Color getCassettePrintColor(FolderNode folderNode) {
@@ -81,21 +68,12 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 		return getImageMaker().getCoverImageBaselineMeasuredFromBottom(getEmbedding());
 	}
 
-	protected boolean isShowFeaturedPrograms() {
-		return AmstradFactory.getInstance().getAmstradContext().getUserSettings()
-				.getBool(SETTING_SHOW_FEATURED_PROGRAMS, true);
-	}
-
 	private OpenCassetteCoverImageMaker getImageMaker() {
 		return imageMaker;
 	}
 
-	private CassetteProgramCoverImageProducer getProgramImageMaker() {
-		return programImageMaker;
-	}
-
-	private AmstradFolderPosterImageMaker getFolderImageMaker() {
-		return folderImageMaker;
+	private AmstradFolderPosterImageMaker getPosterImageMaker() {
+		return posterImageMaker;
 	}
 
 }

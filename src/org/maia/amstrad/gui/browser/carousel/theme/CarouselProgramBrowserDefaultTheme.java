@@ -229,12 +229,12 @@ public class CarouselProgramBrowserDefaultTheme implements CarouselProgramBrowse
 	}
 
 	@Override
-	public Color getCarouselProgramPosterBackgroundColorDark() {
+	public Color getCarouselPosterBackgroundColorDark() {
 		return COLOR_0;
 	}
 
 	@Override
-	public Color getCarouselProgramPosterBackgroundColorBright() {
+	public Color getCarouselPosterBackgroundColorBright() {
 		return COLOR_18;
 	}
 

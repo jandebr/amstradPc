@@ -1,19 +1,29 @@
 package org.maia.amstrad.gui.browser.carousel;
 
 import java.awt.Dimension;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.maia.amstrad.AmstradFactory;
 import org.maia.amstrad.gui.browser.carousel.theme.CarouselProgramBrowserTheme;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
+import org.maia.amstrad.gui.covers.AmstradFolderPosterImageMaker;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.AmstradProgramPosterImageMaker;
+import org.maia.amstrad.gui.covers.FeaturedProgramPosterImageMaker;
+import org.maia.amstrad.gui.covers.cascade.CascadedFolderPosterImageMaker;
+import org.maia.amstrad.gui.covers.cascade.CascadedProgramPosterImageMaker;
 import org.maia.amstrad.gui.covers.cassette.CassetteFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.cassette.CassetteProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.repo.RepositoryFolderCoverImageProducer;
+import org.maia.amstrad.gui.covers.repo.RepositoryProgramCoverImageProducer;
 import org.maia.amstrad.gui.covers.stock.StockFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.stock.StockProgramCoverImageProducer;
 import org.maia.amstrad.gui.covers.stock.badge.EmbossedBadgeCoverImageMaker;
 import org.maia.amstrad.gui.covers.stock.badge.PhylopicBadgeCoverImageMaker;
 import org.maia.amstrad.gui.covers.stock.fabric.CheckerboardPatchPatternGenerator;
 import org.maia.amstrad.gui.covers.stock.fabric.FabricCoverImageMaker;
+import org.maia.amstrad.program.browser.config.AmstradProgramBrowserCoverImageOption;
 import org.maia.svg.phylopic.db.PhylopicSvgOfflineDatabase;
 
 public abstract class CarouselCoverImageFactory {
@@ -27,9 +37,11 @@ public abstract class CarouselCoverImageFactory {
 		this.theme = theme;
 	}
 
-	public abstract AmstradProgramCoverImageProducer createProgramCoverImageProducer();
+	public abstract AmstradProgramCoverImageProducer createProgramCoverImageProducer(
+			AmstradProgramBrowserCoverImageOption programOption);
 
-	public abstract AmstradFolderCoverImageProducer createFolderCoverImageProducer();
+	public abstract AmstradFolderCoverImageProducer createFolderCoverImageProducer(
+			AmstradProgramBrowserCoverImageOption folderOption, AmstradProgramBrowserCoverImageOption programOption);
 
 	public Dimension getImageSize() {
 		return imageSize;
@@ -41,34 +53,78 @@ public abstract class CarouselCoverImageFactory {
 
 	public static class CassetteCoverImageFactory extends CarouselCoverImageFactory {
 
-		private AmstradProgramCoverImageProducer programCoverImageProducer;
+		private Map<AmstradProgramBrowserCoverImageOption, CassetteProgramCoverImageProducer> programCoverImageProducerMap;
 
-		private AmstradFolderCoverImageProducer folderCoverImageProducer;
+		private Map<AmstradProgramBrowserCoverImageOption, CassetteFolderCoverImageProducer> folderCoverImageProducerMap;
+
+		private StockProgramCoverImageProducer stockProgramCoverImageProducer;
+
+		private StockFolderCoverImageProducer stockFolderCoverImageProducer;
 
 		public CassetteCoverImageFactory(Dimension imageSize, CarouselProgramBrowserTheme theme) {
 			super(imageSize, theme);
-			init();
+			this.programCoverImageProducerMap = new HashMap<AmstradProgramBrowserCoverImageOption, CassetteProgramCoverImageProducer>();
+			this.folderCoverImageProducerMap = new HashMap<AmstradProgramBrowserCoverImageOption, CassetteFolderCoverImageProducer>();
 		}
 
-		private void init() {
-			Dimension imageSize = getImageSize();
-			CarouselProgramBrowserTheme theme = getTheme();
-			// (nested) stock image producers
-			FabricCoverImageMaker fabric = createFabricCoverImageMaker();
-			EmbossedBadgeCoverImageMaker badge = createProgramBadgeImageMaker();
-			StockFolderCoverImageProducer stockFolder = new StockFolderCoverImageProducer(imageSize, fabric);
-			StockProgramCoverImageProducer stockProgram = new StockProgramCoverImageProducer(stockFolder, badge);
-			// Cassette image producers
-			CassetteProgramCoverImageProducer cassetteProgram = new CassetteProgramCoverImageProducer(imageSize,
-					theme.getBackgroundColor(), theme.getCarouselProgramPosterBackgroundColorDark(),
-					theme.getCarouselProgramPosterBackgroundColorBright(), theme.getCarouselProgramTitleFont(),
-					theme.getCarouselProgramTitleColor(), theme.getCarouselProgramTitleBackgroundColor(),
-					theme.getCarouselProgramTitleRelativeVerticalPosition(), stockProgram);
-			CassetteFolderCoverImageProducer cassetteFolder = new CassetteFolderCoverImageProducer(imageSize,
-					theme.getBackgroundColor(), theme.getCarouselFolderTitleFont(), theme.getCarouselFolderTitleColor(),
-					cassetteProgram, stockFolder);
-			setProgramCoverImageProducer(cassetteProgram);
-			setFolderCoverImageProducer(cassetteFolder);
+		@Override
+		public CassetteProgramCoverImageProducer createProgramCoverImageProducer(
+				AmstradProgramBrowserCoverImageOption programOption) {
+			CassetteProgramCoverImageProducer imageProducer = programCoverImageProducerMap.get(programOption);
+			if (imageProducer == null) {
+				CarouselProgramBrowserTheme theme = getTheme();
+				AmstradProgramPosterImageMaker posterImageMaker = createProgramPosterImageMaker(programOption);
+				imageProducer = new CassetteProgramCoverImageProducer(getImageSize(), theme.getBackgroundColor(),
+						theme.getCarouselProgramTitleFont(), theme.getCarouselProgramTitleColor(),
+						theme.getCarouselProgramTitleBackgroundColor(),
+						theme.getCarouselProgramTitleRelativeVerticalPosition(), posterImageMaker);
+				programCoverImageProducerMap.put(programOption, imageProducer);
+			}
+			return imageProducer;
+		}
+
+		@Override
+		public CassetteFolderCoverImageProducer createFolderCoverImageProducer(
+				AmstradProgramBrowserCoverImageOption folderOption,
+				AmstradProgramBrowserCoverImageOption programOption) {
+			CassetteFolderCoverImageProducer imageProducer = folderCoverImageProducerMap.get(folderOption);
+			if (imageProducer == null) {
+				CarouselProgramBrowserTheme theme = getTheme();
+				AmstradFolderPosterImageMaker posterImageMaker = createFolderPosterImageMaker(folderOption,
+						programOption);
+				imageProducer = new CassetteFolderCoverImageProducer(getImageSize(), theme.getBackgroundColor(),
+						theme.getCarouselFolderTitleFont(), theme.getCarouselFolderTitleColor(), posterImageMaker);
+				folderCoverImageProducerMap.put(folderOption, imageProducer);
+			}
+			return imageProducer;
+		}
+
+		private AmstradProgramPosterImageMaker createProgramPosterImageMaker(
+				AmstradProgramBrowserCoverImageOption programOption) {
+			CascadedProgramPosterImageMaker cascade = new CascadedProgramPosterImageMaker();
+			if (AmstradProgramBrowserCoverImageOption.REPOSITORY.equals(programOption)) {
+				cascade.appendImageMaker(new RepositoryProgramCoverImageProducer(getImageSize(),
+						getTheme().getCarouselPosterBackgroundColorDark(),
+						getTheme().getCarouselPosterBackgroundColorBright()));
+			}
+			cascade.appendImageMaker(getStockProgramCoverImageProducer()); // fallback
+			return cascade;
+		}
+
+		private AmstradFolderPosterImageMaker createFolderPosterImageMaker(
+				AmstradProgramBrowserCoverImageOption folderOption,
+				AmstradProgramBrowserCoverImageOption programOption) {
+			CascadedFolderPosterImageMaker cascade = new CascadedFolderPosterImageMaker();
+			if (AmstradProgramBrowserCoverImageOption.REPOSITORY.equals(folderOption)) {
+				cascade.appendImageMaker(new RepositoryFolderCoverImageProducer(getImageSize(),
+						getTheme().getCarouselPosterBackgroundColorDark(),
+						getTheme().getCarouselPosterBackgroundColorBright()));
+			} else if (AmstradProgramBrowserCoverImageOption.FEATURED.equals(folderOption)) {
+				cascade.appendImageMaker(
+						new FeaturedProgramPosterImageMaker(createProgramPosterImageMaker(programOption)));
+			}
+			cascade.appendImageMaker(getStockFolderCoverImageProducer()); // fallback
+			return cascade;
 		}
 
 		protected FabricCoverImageMaker createFabricCoverImageMaker() {
@@ -80,22 +136,21 @@ public abstract class CarouselCoverImageFactory {
 			return new PhylopicBadgeCoverImageMaker(db);
 		}
 
-		@Override
-		public AmstradProgramCoverImageProducer createProgramCoverImageProducer() {
-			return programCoverImageProducer;
+		private StockProgramCoverImageProducer getStockProgramCoverImageProducer() {
+			if (stockProgramCoverImageProducer == null) {
+				StockFolderCoverImageProducer stockFolder = getStockFolderCoverImageProducer();
+				EmbossedBadgeCoverImageMaker badge = createProgramBadgeImageMaker();
+				stockProgramCoverImageProducer = new StockProgramCoverImageProducer(stockFolder, badge);
+			}
+			return stockProgramCoverImageProducer;
 		}
 
-		@Override
-		public AmstradFolderCoverImageProducer createFolderCoverImageProducer() {
-			return folderCoverImageProducer;
-		}
-
-		private void setProgramCoverImageProducer(AmstradProgramCoverImageProducer imageProducer) {
-			this.programCoverImageProducer = imageProducer;
-		}
-
-		private void setFolderCoverImageProducer(AmstradFolderCoverImageProducer imageProducer) {
-			this.folderCoverImageProducer = imageProducer;
+		private StockFolderCoverImageProducer getStockFolderCoverImageProducer() {
+			if (stockFolderCoverImageProducer == null) {
+				FabricCoverImageMaker fabric = createFabricCoverImageMaker();
+				stockFolderCoverImageProducer = new StockFolderCoverImageProducer(getImageSize(), fabric);
+			}
+			return stockFolderCoverImageProducer;
 		}
 
 	}

@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImage;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.AmstradProgramPosterImage;
 import org.maia.amstrad.gui.covers.AmstradProgramPosterImageMaker;
 import org.maia.amstrad.gui.covers.ImageDetailLevel;
 import org.maia.amstrad.gui.covers.stock.badge.EmbossedBadgeCoverImageMaker;
@@ -32,11 +33,12 @@ public class StockProgramCoverImageProducer extends AmstradProgramCoverImageProd
 
 	@Override
 	protected Image produceImage(ProgramNode programNode) {
-		return makePosterImage(programNode, getImageSize(), ImageDetailLevel.FULL);
+		return makePosterImage(programNode, getImageSize(), ImageDetailLevel.FULL).getImage();
 	}
 
 	@Override
-	public Image makePosterImage(ProgramNode programNode, Dimension size, ImageDetailLevel detailLevel) {
+	public AmstradProgramPosterImage makePosterImage(ProgramNode programNode, Dimension size,
+			ImageDetailLevel detailLevel) {
 		BufferedImage poster = makePosterBackground(programNode.getParent(), size);
 		if (ImageDetailLevel.FULL.equals(detailLevel)) {
 			Insets insets = EmbossedBadgeCoverImageMaker.computeCenteredBadgeInsets(poster, BADGE_PADDING_RATIO);
@@ -44,7 +46,7 @@ public class StockProgramCoverImageProducer extends AmstradProgramCoverImageProd
 			String badgeId = programNode.getProgram().getCoverImageBadgeId();
 			poster = getBadgeImageMaker().overlayEmbossedBadge(poster, insets, badgeId);
 		}
-		return poster;
+		return new AmstradProgramPosterImage(poster, true); // assuming untitled
 	}
 
 	protected BufferedImage makePosterBackground(FolderNode folderNode, Dimension size) {

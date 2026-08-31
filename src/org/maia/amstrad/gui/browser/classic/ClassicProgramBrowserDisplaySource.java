@@ -22,6 +22,7 @@ import org.maia.amstrad.gui.covers.AmstradFolderCoverImage;
 import org.maia.amstrad.gui.covers.AmstradFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImage;
 import org.maia.amstrad.gui.covers.AmstradProgramCoverImageProducer;
+import org.maia.amstrad.gui.covers.repo.FeaturedProgramFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.repo.RepositoryFolderCoverImageProducer;
 import org.maia.amstrad.gui.covers.repo.RepositoryProgramCoverImageProducer;
 import org.maia.amstrad.pc.joystick.AmstradJoystickCommand;
@@ -31,8 +32,11 @@ import org.maia.amstrad.pc.monitor.display.source.AmstradAlternativeDisplaySourc
 import org.maia.amstrad.pc.monitor.display.source.AmstradWindowDisplaySource;
 import org.maia.amstrad.program.AmstradProgram;
 import org.maia.amstrad.program.browser.AmstradProgramBrowser;
+import org.maia.amstrad.program.browser.config.AmstradProgramBrowserCoverImageOption;
 import org.maia.amstrad.program.image.AmstradProgramImage;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.FolderNode;
 import org.maia.amstrad.program.repo.AmstradProgramRepository.Node;
+import org.maia.amstrad.program.repo.AmstradProgramRepository.ProgramNode;
 import org.maia.amstrad.system.AmstradSystemSettings;
 import org.maia.util.StringUtils;
 
@@ -60,8 +64,6 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	private AmstradFolderCoverImageProducer folderCoverImageProducer;
 
 	private boolean programInfoShortcutActive;
-
-	private static final String SETTING_SHOW_COVER_IMAGES = "program_browser.classic.cover_images.show";
 
 	private static final String SETTING_SHOW_MINI_INFO = "program_browser.classic.mini_info.show";
 
@@ -108,11 +110,26 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 	}
 
 	protected AmstradProgramCoverImageProducer createProgramCoverImageProducer(Dimension imageSize) {
-		return new RepositoryProgramCoverImageProducer(imageSize);
+		AmstradProgramCoverImageProducer imageProducer = null;
+		AmstradProgramBrowserCoverImageOption programOption = getProgramBrowser().getCoverImageOptionForPrograms();
+		if (AmstradProgramBrowserCoverImageOption.REPOSITORY.equals(programOption)) {
+			imageProducer = new RepositoryProgramCoverImageProducer(imageSize);
+		}
+		return imageProducer;
 	}
 
 	protected AmstradFolderCoverImageProducer createFolderCoverImageProducer(Dimension imageSize) {
-		return new RepositoryFolderCoverImageProducer(imageSize);
+		AmstradFolderCoverImageProducer imageProducer = null;
+		AmstradProgramBrowserCoverImageOption folderOption = getProgramBrowser().getCoverImageOptionForFolders();
+		AmstradProgramBrowserCoverImageOption programOption = getProgramBrowser().getCoverImageOptionForPrograms();
+		if (AmstradProgramBrowserCoverImageOption.REPOSITORY.equals(folderOption)) {
+			imageProducer = new RepositoryFolderCoverImageProducer(imageSize);
+		} else if (AmstradProgramBrowserCoverImageOption.FEATURED.equals(folderOption)) {
+			if (AmstradProgramBrowserCoverImageOption.REPOSITORY.equals(programOption)) {
+				imageProducer = new FeaturedProgramFolderCoverImageProducer(imageSize);
+			}
+		}
+		return imageProducer;
 	}
 
 	@Override
@@ -600,19 +617,36 @@ public class ClassicProgramBrowserDisplaySource extends AmstradWindowDisplaySour
 
 	private Image getCurrentCoverImage() {
 		Image image = null;
-		if (getUserSettings().getBool(SETTING_SHOW_COVER_IMAGES, true)) {
-			AmstradCoverImage imageProxy = null;
-			Node node = getCurrentNode();
-			if (node != null) {
-				if (node.isProgram()) {
-					imageProxy = new AmstradProgramCoverImage(node.asProgram(), getProgramCoverImageProducer());
-				} else if (node.isFolder()) {
-					imageProxy = new AmstradFolderCoverImage(node.asFolder(), getFolderCoverImageProducer());
-				}
+		AmstradCoverImage imageProxy = null;
+		Node node = getCurrentNode();
+		if (node != null) {
+			if (node.isProgram()) {
+				imageProxy = getProgramCoverImage(node.asProgram());
+			} else if (node.isFolder()) {
+				imageProxy = getFolderCoverImage(node.asFolder());
 			}
-			if (imageProxy != null) {
-				image = imageProxy.requestImage();
-			}
+		}
+		if (imageProxy != null) {
+			image = imageProxy.requestImage();
+		}
+		return image;
+	}
+
+	private AmstradProgramCoverImage getProgramCoverImage(ProgramNode node) {
+		AmstradProgramCoverImage image = null;
+		AmstradProgramCoverImageProducer imageProducer = getProgramCoverImageProducer();
+		if (imageProducer != null) {
+			image = new AmstradProgramCoverImage(node, imageProducer);
+		}
+		return image;
+	}
+
+	private AmstradFolderCoverImage getFolderCoverImage(FolderNode node) {
+		AmstradFolderCoverImage image = null;
+		AmstradFolderCoverImageProducer imageProducer = getFolderCoverImageProducer();
+		if (imageProducer != null) {
+			ProgramNode featured = node.autoSelectFeaturedProgramNode();
+			image = new AmstradFolderCoverImage(node, featured, imageProducer);
 		}
 		return image;
 	}

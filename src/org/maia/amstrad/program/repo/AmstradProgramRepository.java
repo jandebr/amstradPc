@@ -178,6 +178,39 @@ public abstract class AmstradProgramRepository {
 			return null;
 		}
 
+		public ProgramNode autoSelectFeaturedProgramNode() {
+			ProgramNode featured = getFeaturedProgramNode();
+			if (featured == null) {
+				ProgramNode winnerWithCoverImage = null;
+				ProgramNode winnerWithoutCoverImage = null;
+				int winnerWithCoverImageBlocksOnTape = -1;
+				int winnerWithoutCoverImageBlocksOnTape = -1;
+				for (Node node : getChildNodes()) {
+					if (node.isProgram()) {
+						ProgramNode programNode = node.asProgram();
+						int blocks = programNode.getProgram().getBlocksOnTape();
+						if (programNode.getCoverImage() != null) {
+							if (blocks > winnerWithCoverImageBlocksOnTape) {
+								winnerWithCoverImageBlocksOnTape = blocks;
+								winnerWithCoverImage = programNode;
+							}
+						} else {
+							if (blocks > winnerWithoutCoverImageBlocksOnTape) {
+								winnerWithoutCoverImageBlocksOnTape = blocks;
+								winnerWithoutCoverImage = programNode;
+							}
+						}
+					}
+				}
+				if (winnerWithCoverImage != null) {
+					featured = winnerWithCoverImage;
+				} else if (winnerWithoutCoverImage != null) {
+					featured = winnerWithoutCoverImage;
+				}
+			}
+			return featured;
+		}
+
 	}
 
 	public static abstract class ProgramNode extends Node {

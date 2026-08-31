@@ -32,11 +32,11 @@ public class StockFolderCoverImageProducer extends AmstradFolderCoverImageProduc
 
 	@Override
 	protected Image produceImage(FolderNode folderNode, ProgramNode featuredProgramNode) {
-		return makePosterImage(folderNode, getImageSize());
+		return makePosterImage(folderNode, featuredProgramNode, getImageSize());
 	}
 
 	@Override
-	public Image makePosterImage(FolderNode folderNode, Dimension size) {
+	public Image makePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension size) {
 		FabricHints hints = new FabricHints().withBaseColor(getFolderBaseColor(folderNode));
 		FabricCoverImageMaker imageMaker = getImageMaker();
 		imageMaker.setRandomizer(createRandomizer(folderNode));
