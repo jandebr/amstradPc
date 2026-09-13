@@ -16,13 +16,15 @@ public class FeaturedProgramPosterImageMaker implements AmstradFolderPosterImage
 
 	@Override
 	public Image makePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension size) {
-		AmstradProgramPosterImage posterImage = getFeaturedImageMaker().makePosterImage(featuredProgramNode, size,
-				ImageDetailLevel.MINIMAL);
-		if (posterImage != null) {
-			return posterImage.getImage();
-		} else {
-			return null;
+		Image image = null;
+		if (featuredProgramNode != null) {
+			AmstradProgramPosterImage posterImage = getFeaturedImageMaker().makePosterImage(featuredProgramNode, size,
+					ImageDetailLevel.MINIMAL);
+			if (posterImage != null) {
+				image = posterImage.getImage();
+			}
 		}
+		return image;
 	}
 
 	private AmstradProgramPosterImageMaker getFeaturedImageMaker() {

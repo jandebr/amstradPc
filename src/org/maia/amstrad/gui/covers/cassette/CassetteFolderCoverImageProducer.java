@@ -31,13 +31,17 @@ public class CassetteFolderCoverImageProducer extends AmstradFolderCoverImagePro
 
 	@Override
 	protected Image produceImage(FolderNode folderNode, ProgramNode featuredProgramNode) {
+		Image image = null;
 		OpenCassetteCoverImageMaker imageMaker = getImageMaker();
 		Dimension posterSize = imageMaker.scaleSize(ClosedCassetteCoverImageMaker.CANONICAL_POSTER_REGION.getSize());
 		Image posterImage = producePosterImage(folderNode, featuredProgramNode, posterSize);
-		imageMaker.setTitle(folderNode.getName());
-		imageMaker.setRandomizer(createRandomizer(folderNode));
-		imageMaker.setPrintColor(getCassettePrintColor(folderNode));
-		return imageMaker.makeCoverImage(ImageUtils.convertToBufferedImage(posterImage), getEmbedding());
+		if (posterImage != null) {
+			imageMaker.setTitle(folderNode.getName());
+			imageMaker.setRandomizer(createRandomizer(folderNode));
+			imageMaker.setPrintColor(getCassettePrintColor(folderNode));
+			image = imageMaker.makeCoverImage(ImageUtils.convertToBufferedImage(posterImage), getEmbedding());
+		}
+		return image;
 	}
 
 	protected Image producePosterImage(FolderNode folderNode, ProgramNode featuredProgramNode, Dimension posterSize) {
