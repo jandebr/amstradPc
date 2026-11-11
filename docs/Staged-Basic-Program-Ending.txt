@@ -1,0 +1,9 @@
+See org.maia.amstrad.program.load.basic.staged.EndingBasicPreprocessor
+
+Source code			Ends?		Staged code
+-------------------	-----------	------------------------------------------------------
+END					Yes			GOTO ending macro
+STOP 				Yes			GOTO ending macro
+ON BREAK STOP		Yes			ON BREAK GOSUB ending macro
+GOTO loop			No			Preserves GOTO loop (requires Break-Interrupt to end)
+Code horizon		No			Inserts GOTO loop (requires Break-Interrupt to end)
